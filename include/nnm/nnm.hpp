@@ -844,7 +844,7 @@ public:
             Number y;
             Number z;
         };
-        Number data[];
+        Number data[3];
     };
 
     Vector3()
