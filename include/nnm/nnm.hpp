@@ -7,7 +7,6 @@
 #include <functional>
 
 namespace nnm {
-
 inline double pi = 3.141592653589793238462643383279502;
 inline double epsilon = 0.00001;
 
@@ -219,7 +218,9 @@ using Quaternionf = Quaternion<float>;
 using Quaterniond = Quaternion<double>;
 
 enum class Axis2 { x, y };
+
 enum class Axis3 { x, y, z };
+
 enum class Axis4 { x, y, z, w };
 
 template <typename Number>
@@ -844,6 +845,7 @@ public:
             Number y;
             Number z;
         };
+
         Number data[3];
     };
 
@@ -1232,9 +1234,15 @@ public:
 
 class Vector3i {
 public:
-    int x;
-    int y;
-    int z;
+    union {
+        struct {
+            int x;
+            int y;
+            int z;
+        };
+
+        int data[3];
+    };
 
     Vector3i()
         : x(0)
@@ -1294,20 +1302,6 @@ public:
         return sqrt(static_cast<Number>(length_sqrd()));
     }
 
-    [[nodiscard]] Axis3 max_axis() const
-    {
-        int max_val = x;
-        auto max_axis = Axis3::x;
-        if (y > max_val) {
-            max_val = y;
-            max_axis = Axis3::y;
-        }
-        if (z > max_val) {
-            max_axis = Axis3::z;
-        }
-        return max_axis;
-    }
-
     [[nodiscard]] Axis3 min_axis() const
     {
         int min_val = x;
@@ -1322,6 +1316,20 @@ public:
         return min_axis;
     }
 
+    [[nodiscard]] Axis3 max_axis() const
+    {
+        int max_val = x;
+        auto max_axis = Axis3::x;
+        if (y > max_val) {
+            max_val = y;
+            max_axis = Axis3::y;
+        }
+        if (z > max_val) {
+            max_axis = Axis3::z;
+        }
+        return max_axis;
+    }
+
     [[nodiscard]] bool operator!=(const Vector3i other) const
     {
         return x != other.x || y != other.y || z != other.z;
@@ -1332,7 +1340,7 @@ public:
         return { x % other.x, y % other.y, z % other.z };
     }
 
-    Vector3i& operator%=(Vector3i other)
+    Vector3i& operator%=(const Vector3i other)
     {
         x %= other.x;
         y %= other.y;
@@ -1366,6 +1374,19 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector3i operator*(const int value) const
+    {
+        return { x * value, y * value, z * value };
+    }
+
+    Vector3i& operator*=(const int value)
+    {
+        x *= value;
+        y *= value;
+        z *= value;
+        return *this;
+    }
+
     [[nodiscard]] Vector3i operator+(const Vector3i& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
@@ -1380,7 +1401,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator-(Vector3i other) const
+    [[nodiscard]] Vector3i operator-(const Vector3i other) const
     {
         return { x - other.x, y - other.y, z - other.z };
     }
@@ -1406,16 +1427,16 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator/(const int val) const
+    [[nodiscard]] Vector3i operator/(const int value) const
     {
-        return { x / val, y / val, z / val };
+        return { x / value, y / value, z / value };
     }
 
-    Vector3i& operator/=(const int val)
+    Vector3i& operator/=(const int value)
     {
-        x /= val;
-        y /= val;
-        z /= val;
+        x /= value;
+        y /= value;
+        z /= value;
         return *this;
     }
 
@@ -1435,7 +1456,16 @@ public:
 
     [[nodiscard]] bool operator<=(const Vector3i other) const
     {
-        return *this < other || *this == other;
+        if (x != other.x) {
+            return x < other.x;
+        }
+        if (y != other.y) {
+            return y < other.y;
+        }
+        if (z != other.z) {
+            return z < other.z;
+        }
+        return true;
     }
 
     [[nodiscard]] bool operator==(const Vector3i other) const
@@ -1473,16 +1503,7 @@ public:
 
     [[nodiscard]] int& operator[](const int index)
     {
-        switch (index) {
-        case 0:
-            return x;
-        case 1:
-            return y;
-        case 2:
-            return z;
-        default:
-            return x;
-        }
+        return data[index];
     }
 
     [[nodiscard]] int& operator[](const Axis3 axis)
@@ -1507,6 +1528,11 @@ public:
     [[nodiscard]] Vector3i operator-() const
     {
         return { -x, -y, -z };
+    }
+
+    [[nodiscard]] explicit operator bool() const
+    {
+        return x != 0 || y != 0 || z != 0;
     }
 };
 
@@ -2236,6 +2262,7 @@ public:
 
     union {
         Vector data;
+
         struct {
             float x;
             float y;
@@ -3636,6 +3663,7 @@ Matrix3<Number> Quaternion<Number>::matrix() const
 {
     return Matrix3<Number>::from_quaternion(*this);
 }
+
 template <typename Number>
 Quaternion<Number> Quaternion<Number>::normalize() const
 {
@@ -3667,7 +3695,6 @@ Vector2<Number>::Vector2(const Vector2i& vector)
     , y(vector.y)
 {
 }
-
 }
 
 template <>

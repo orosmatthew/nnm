@@ -1211,21 +1211,27 @@ TEST_CASE("Vector3", "[Vector3]")
     {
         nnm::Vector3 v1_copy(v1);
         nnm::Vector3 v2_copy(v2);
+
         v1 *= v2;
         REQUIRE(v1 == nnm::Vector3(3.0, 8.0, -6.0));
         v1 = v1_copy;
+
         v1 *= 2.0;
         REQUIRE(v1 == nnm::Vector3(2.0, 4.0, 6.0));
         v1 = v1_copy;
+
         v2 /= v1;
         REQUIRE(v2 == nnm::Vector3(3.0, 2.0, -2.0 / 3.0));
         v2 = v2_copy;
+
         v2 /= 2.0;
         REQUIRE(v2 == nnm::Vector3(1.5, 2.0, -1.0));
         v2 = v2_copy;
+
         v1 += v2;
         REQUIRE(v1 == nnm::Vector3(4.0, 6.0, 1.0));
         v1 = v1_copy;
+
         v2 -= v1;
         REQUIRE(v2 == nnm::Vector3(2.0, 2.0, -5.0));
         v2 = v2_copy;
@@ -1254,5 +1260,157 @@ TEST_CASE("Vector3", "[Vector3]")
     {
         REQUIRE(static_cast<bool>(v1));
         REQUIRE_FALSE(static_cast<bool>(nnm::Vector3(0.0, 0.0, 0.0)));
+    }
+}
+
+TEST_CASE("Vector3i", "[Vector3i]")
+{
+    SECTION("Constructors")
+    {
+        const nnm::Vector3i v_default;
+        REQUIRE(v_default.x == 0);
+        REQUIRE(v_default.y == 0);
+        REQUIRE(v_default.z == 0);
+        const nnm::Vector3i v_from_vec3(nnm::Vector3(1.0f, -2.0f, 3.0f));
+        REQUIRE(v_from_vec3.x == 1);
+        REQUIRE(v_from_vec3.y == -2);
+        REQUIRE(v_from_vec3.z == 3);
+        const nnm::Vector3i v_with_params(1, -2, 3);
+        REQUIRE(v_with_params.x == 1);
+        REQUIRE(v_with_params.y == -2);
+        REQUIRE(v_with_params.z == 3);
+    }
+
+    SECTION("Static methods")
+    {
+        const auto v_all_threes = nnm::Vector3i::all(3);
+        REQUIRE(v_all_threes.x == 3);
+        REQUIRE(v_all_threes.y == 3);
+        REQUIRE(v_all_threes.z == 3);
+        const auto v_zero = nnm::Vector3i::zero();
+        REQUIRE(v_zero.x == 0);
+        REQUIRE(v_zero.y == 0);
+        REQUIRE(v_zero.z == 0);
+        const auto v_one = nnm::Vector3i::one();
+        REQUIRE(v_one.x == 1);
+        REQUIRE(v_one.y == 1);
+        REQUIRE(v_one.z == 1);
+    }
+
+    SECTION("abs")
+    {
+        nnm::Vector3i v(0, -2, 3);
+        REQUIRE(v.abs() == nnm::Vector3i(0, 2, 3));
+    }
+
+    SECTION("clamp")
+    {
+        nnm::Vector3i v(0, -2, 3);
+        REQUIRE(v.clamp({ -1, -3, -2 }, { 1, 5, 100 }) == nnm::Vector3i(0, -2, 3));
+        REQUIRE(v.clamp({ 1, 3, 5 }, { 2, 5, 100 }) == nnm::Vector3i(1, 3, 5));
+        REQUIRE(v.clamp({ -10, -5, -100 }, { -1, -4, 3 }) == nnm::Vector3i(-1, -4, 3));
+    }
+
+    SECTION("length_sqrd")
+    {
+        nnm::Vector3i v(1, -2, 3);
+        REQUIRE(v.length_sqrd() == 14);
+    }
+
+    SECTION("length")
+    {
+        nnm::Vector3i v(1, -2, 3);
+        REQUIRE(nnm::approx_equal(v.length<double>(), nnm::sqrt(14.0)));
+    }
+
+    SECTION("min/max axis")
+    {
+        nnm::Vector3i v1(1, -2, 3);
+        REQUIRE(v1.min_axis() == nnm::Axis3::y);
+        REQUIRE(v1.max_axis() == nnm::Axis3::z);
+        nnm::Vector3i v2(-1, 2, -3);
+        REQUIRE(v2.min_axis() == nnm::Axis3::z);
+        REQUIRE(v2.max_axis() == nnm::Axis3::y);
+    }
+
+    nnm::Vector3i v1(1, 2, -3);
+    nnm::Vector3i v2(-3, 4, 100);
+    nnm::Vector3i v3(1, 2, -3);
+
+    SECTION("Equality and Inequality Operators")
+    {
+        REQUIRE(v1 == v3);
+        REQUIRE_FALSE(v1 != v3);
+        REQUIRE(v1 != v2);
+        REQUIRE_FALSE(v1 == v2);
+    }
+
+    SECTION("Arithmetic Operators")
+    {
+        REQUIRE(v1 % v2 == nnm::Vector3i(1, 2, -3));
+        REQUIRE(v1 % 2 == nnm::Vector3i(1, 0, -1));
+        REQUIRE(v1 * v2 == nnm::Vector3i(-3, 8, -300));
+        REQUIRE(v1 * 2 == nnm::Vector3i(2, 4, -6));
+        REQUIRE(v1 + v2 == nnm::Vector3i(-2, 6, 97));
+        REQUIRE(v2 - v1 == nnm::Vector3i(-4, 2, 103));
+        REQUIRE(v2 / v1 == nnm::Vector3i(-3, 2, -33));
+        REQUIRE(v2 / 2 == nnm::Vector3i(-1, 2, 50));
+        REQUIRE(+v1 == v1);
+        REQUIRE(-v1 == nnm::Vector3i(-1, -2, 3));
+    }
+
+    SECTION("Compound Assignment Operators")
+    {
+        nnm::Vector3i v1_copy(v1);
+        nnm::Vector3i v2_copy(v2);
+
+        v1 *= v2;
+        REQUIRE(v1 == nnm::Vector3i(-3, 8, -300));
+        v1 = v1_copy;
+
+        v1 *= 2;
+        REQUIRE(v1 == nnm::Vector3i(2, 4, -6));
+        v1 = v1_copy;
+
+        v2 /= v1;
+        REQUIRE(v2 == nnm::Vector3i(-3, 2, -33));
+        v2 = v2_copy;
+
+        v2 /= 2;
+        REQUIRE(v2 == nnm::Vector3i(-1, 2, 50));
+        v2 = v2_copy;
+
+        v1 += v2;
+        REQUIRE(v1 == nnm::Vector3i(-2, 6, 97));
+        v1 = v1_copy;
+
+        v2 -= v1;
+        REQUIRE(v2 == nnm::Vector3i(-4, 2, 103));
+        v2 = v2_copy;
+    }
+
+    SECTION("Comparison Operators")
+    {
+        REQUIRE(v2 < v1);
+        REQUIRE(v2 <= v1);
+        REQUIRE_FALSE(v2 > v1);
+        REQUIRE_FALSE(v2 >= v1);
+    }
+
+    SECTION("Indexing Operators")
+    {
+        REQUIRE(v1[0] == 1);
+        REQUIRE(v1[1] == 2);
+        REQUIRE(v1[2] == -3);
+
+        REQUIRE(v1[nnm::Axis3::x] == 1);
+        REQUIRE(v1[nnm::Axis3::y] == 2);
+        REQUIRE(v1[nnm::Axis3::z] == -3);
+    }
+
+    SECTION("Conversion Operators")
+    {
+        REQUIRE(static_cast<bool>(v1));
+        REQUIRE_FALSE(static_cast<bool>(nnm::Vector3i(0, 0, 0)));
     }
 }
