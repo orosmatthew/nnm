@@ -226,8 +226,13 @@ enum class Axis4 { x, y, z, w };
 template <typename Number>
 class Vector2 {
 public:
-    Number x;
-    Number y;
+    union {
+        struct {
+            Number x;
+            Number y;
+        };
+        Number data[2];
+    };
 
     Vector2()
         : x(0.0)
@@ -524,12 +529,24 @@ public:
         return true;
     }
 
+    [[nodiscard]] Number operator[](const int index) const
+    {
+        // TODO: extra checks
+        return data[index];
+    }
+
     [[nodiscard]] Number& operator[](const int index)
     {
-        switch (index) {
-        case 0:
+        // TODO: extra checks
+        return data[index];
+    }
+
+    [[nodiscard]] Number operator[](const Axis2 axis) const
+    {
+        switch (axis) {
+        case Axis2::x:
             return x;
-        case 1:
+        case Axis2::y:
             return y;
         default:
             return x;
@@ -566,8 +583,13 @@ public:
 
 class Vector2i {
 public:
-    int x;
-    int y;
+    union {
+        struct {
+            int x;
+            int y;
+        };
+        int data[2] {};
+    };
 
     Vector2i()
         : x(0)
@@ -796,12 +818,24 @@ public:
         return true;
     }
 
+    [[nodiscard]] int operator[](const int index) const
+    {
+        // TODO: extra checks
+        return data[index];
+    }
+
     [[nodiscard]] int& operator[](const int index)
     {
-        switch (index) {
-        case 0:
+        // TODO: extra checks
+        return data[index];
+    }
+
+    [[nodiscard]] int operator[](const Axis2 axis) const
+    {
+        switch (axis) {
+        case Axis2::x:
             return x;
-        case 1:
+        case Axis2::y:
             return y;
         default:
             return x;
@@ -1240,8 +1274,7 @@ public:
             int y;
             int z;
         };
-
-        int data[3];
+        int data[3] {};
     };
 
     Vector3i()
