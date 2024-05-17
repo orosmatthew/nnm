@@ -197,6 +197,11 @@ using Vector3d = Vector3<double>;
 class Vector3i;
 
 template <typename Number>
+class Matrix2;
+using Matrix2f = Matrix2<float>;
+using Matrix2d = Matrix2<double>;
+
+template <typename Number>
 class Matrix3;
 using Matrix3f = Matrix3<float>;
 using Matrix3d = Matrix3<double>;
@@ -2617,246 +2622,551 @@ public:
 };
 
 template <typename Number>
+class Matrix2 {
+public:
+    using Column = Vector2<Number>;
+
+    union {
+        struct {
+            Number c0r0;
+            Number c0r1;
+            Number c1r0;
+            Number c1r1;
+        };
+        Column columns[2];
+    };
+
+    Matrix2()
+        : c0r0(1.0)
+        , c0r1(0.0)
+        , c1r0(0.0)
+        , c1r1(1.0)
+    {
+    }
+
+    Matrix2(const Column& column_0, const Column& column_1)
+        : c0r0(column_0[0])
+        , c0r1(column_0[1])
+        , c1r0(column_1[0])
+        , c1r1(column_1[1])
+    {
+    }
+
+    Matrix2(Number c0r0, Number c0r1, Number c1r0, Number c1r1)
+        : c0r0(c0r0)
+        , c0r1(c0r1)
+        , c1r0(c1r0)
+        , c1r1(c1r1)
+    {
+    }
+
+    [[nodiscard]] static Matrix2 all(Number value)
+    {
+        return { { value, value }, { value, value } };
+    }
+
+    [[nodiscard]] static Matrix2 zero()
+    {
+        return all(0.0);
+    }
+
+    [[nodiscard]] static Matrix2 one()
+    {
+        return all(1.0);
+    }
+
+    [[nodiscard]] static Matrix2 identity()
+    {
+        return { { 1.0, 0.0 }, { 0.0, 1.0 } };
+    }
+
+    Number trace() const
+    {
+        return at(0, 0) + at(1, 1);
+    }
+
+    Number determinant() const
+    {
+        return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
+    }
+
+    Number minor(const int column, const int row) const
+    {
+        const int other_column = (column + 1) % 2;
+        const int other_row = (row + 1) % 2;
+        return at(other_column, other_row);
+    }
+
+    Number cofactor_at(const int column, const int row) const
+    {
+        return nnm::pow(-1.0, static_cast<Number>(column + 1 + row + 1)) * minor(column, row);
+    }
+
+    Matrix2 cofactor() const
+    {
+        return { { cofactor_at(0, 0), cofactor_at(0, 1) }, { cofactor_at(1, 0), cofactor_at(1, 1) } };
+    }
+
+    Matrix2 transpose() const
+    {
+        return { { at(0, 0), at(1, 0) }, { at(0, 1), at(1, 1) } };
+    }
+
+    Matrix2 adjugate() const
+    {
+        return cofactor().transpose();
+    }
+
+    Matrix2 unsafe_inverse() const
+    {
+        return adjugate() / determinant();
+    }
+
+    std::optional<Matrix2> inverse() const
+    {
+        const Number det = determinant();
+        if (det == 0.0) {
+            return std::nullopt;
+        }
+        return adjugate() / det;
+    }
+
+    [[nodiscard]] bool approx_equal(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (!nnm::approx_equal(at(c, r), other.at(c, r))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    [[nodiscard]] bool approx_zero() const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (!nnm::approx_zero(at(c, r))) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    Number at(const int column, const int row) const
+    {
+        return columns[column][row];
+    }
+
+    Number& at(const int column, const int row)
+    {
+        return columns[column][row];
+    }
+
+    const Column& operator[](const int index) const
+    {
+        return columns[index];
+    }
+
+    Column& operator[](const int index)
+    {
+        return columns[index];
+    }
+
+    bool operator==(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) != other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool operator!=(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) != other.at(c, r)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool operator<(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) < other.at(c, r)) {
+                    return true;
+                }
+                if (at(c, r) > other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool operator<=(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) < other.at(c, r)) {
+                    return true;
+                }
+                if (at(c, r) > other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool operator>(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) > other.at(c, r)) {
+                    return true;
+                }
+                if (at(c, r) < other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool operator>=(const Matrix2& other) const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) > other.at(c, r)) {
+                    return true;
+                }
+                if (at(c, r) < other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
+    {
+        Matrix2 result;
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                result.at(c, r) = at(c, 0) * other.at(0, r) + at(c, 1) * other.at(1, r);
+            }
+        }
+        return result;
+    }
+
+    Matrix2& operator*=(const Matrix2& other)
+    {
+        *this = *this * other;
+        return *this;
+    }
+
+    [[nodiscard]] Vector2<Number> operator*(const Vector2<Number>& vector) const
+    {
+        Vector2<Number> result;
+        for (int r = 0; r < 2; ++r) {
+            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1];
+        }
+        return result;
+    }
+
+    [[nodiscard]] Matrix2 operator*(Number value) const
+    {
+        return { columns[0] * value, columns[1] * value };
+    }
+
+    Matrix2& operator*=(Number value)
+    {
+        columns[0] *= value;
+        columns[1] *= value;
+        return *this;
+    }
+
+    [[nodiscard]] Matrix2 operator/(Number value) const
+    {
+        return { columns[0] / value, columns[1] / value };
+    }
+
+    Matrix2& operator/=(Number value)
+    {
+        columns[0] /= value;
+        columns[1] /= value;
+        return *this;
+    }
+
+    explicit operator bool() const
+    {
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                if (at(c, r) != 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};
+
+template <typename Number>
 class Matrix3 {
 public:
     using Column = Vector3<Number>;
 
-    Column col0;
-    Column col1;
-    Column col2;
+    Column columns[3];
 
     Matrix3()
-        : col0(Column(1.0f, 0.0f, 0.0f))
-        , col1(Column(0.0f, 1.0f, 0.0f))
-        , col2(Column(0.0f, 0.0f, 1.0f))
+        : columns({ 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 0.0, 0.0, 1.0 })
     {
     }
 
-    Matrix3(const Column& col0, const Column& col1, const Column& col2)
-        : col0(col0)
-        , col1(col1)
-        , col2(col2)
+    Matrix3(const Column& column_1, const Column& column_2, const Column& column_3)
+        : columns(column_1, column_2, column_3)
     {
     }
 
     Matrix3(float c0r0, float c0r1, float c0r2, float c1r0, float c1r1, float c1r2, float c2r0, float c2r1, float c2r2)
-        : col0(Column(c0r0, c0r1, c0r2))
-        , col1(Column(c1r0, c1r1, c1r2))
-        , col2(Column(c2r0, c2r1, c2r2))
+        : columns({ c0r0, c0r1, c0r2 }, { c1r0, c1r1, c1r2 }, { c2r0, c2r1, c2r2 })
     {
     }
 
-    [[nodiscard]] static Matrix3 from_axis_angle(const Vector3<Number>& axis, const float angle)
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_axis_angle(const Vector3<Number>& axis, const float angle)
+    // {
+    //     Matrix3 result;
+    //
+    //     const Vector3 axis_norm = axis.normalize();
+    //
+    //     const float sin_angle = sin(angle);
+    //     const float cos_angle = cos(angle);
+    //     const float t = 1.0f - cos_angle;
+    //
+    //     result[0][0] = axis_norm.x * axis_norm.x * t + cos_angle;
+    //     result[0][1] = axis_norm.y * axis_norm.x * t + axis_norm.z * sin_angle;
+    //     result[0][2] = axis_norm.z * axis_norm.x * t - axis_norm.y * sin_angle;
+    //
+    //     result[1][0] = axis_norm.x * axis_norm.y * t - axis_norm.z * sin_angle;
+    //     result[1][1] = axis_norm.y * axis_norm.y * t + cos_angle;
+    //     result[1][2] = axis_norm.z * axis_norm.y * t + axis_norm.x * sin_angle;
+    //
+    //     result[2][0] = axis_norm.x * axis_norm.z * t + axis_norm.y * sin_angle;
+    //     result[2][1] = axis_norm.y * axis_norm.z * t - axis_norm.x * sin_angle;
+    //     result[2][2] = axis_norm.z * axis_norm.z * t + cos_angle;
+    //
+    //     return result;
+    // }
+
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_euler(const Vector3<Number>& euler)
+    // {
+    //     float c = nnm::cos(euler.x);
+    //     float s = nnm::sin(euler.x);
+    //     const Matrix3 x { 1.0f, 0.0f, 0.0f, 0.0f, c, -s, 0.0f, s, c };
+    //
+    //     c = nnm::cos(euler.y);
+    //     s = nnm::sin(euler.y);
+    //     const Matrix3 y { c, 0.0f, s, 0.0f, 1.0f, 0.0f, -s, 0.0f, c };
+    //
+    //     c = nnm::cos(euler.z);
+    //     s = nnm::sin(euler.z);
+    //     const Matrix3 z { c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f };
+    //
+    //     return x * (y * z);
+    // }
+
+    [[nodiscard]] static Matrix3 all(Number value)
     {
-        Matrix3 result;
-
-        const Vector3 axis_norm = axis.normalize();
-
-        const float sin_angle = sin(angle);
-        const float cos_angle = cos(angle);
-        const float t = 1.0f - cos_angle;
-
-        result[0][0] = axis_norm.x * axis_norm.x * t + cos_angle;
-        result[0][1] = axis_norm.y * axis_norm.x * t + axis_norm.z * sin_angle;
-        result[0][2] = axis_norm.z * axis_norm.x * t - axis_norm.y * sin_angle;
-
-        result[1][0] = axis_norm.x * axis_norm.y * t - axis_norm.z * sin_angle;
-        result[1][1] = axis_norm.y * axis_norm.y * t + cos_angle;
-        result[1][2] = axis_norm.z * axis_norm.y * t + axis_norm.x * sin_angle;
-
-        result[2][0] = axis_norm.x * axis_norm.z * t + axis_norm.y * sin_angle;
-        result[2][1] = axis_norm.y * axis_norm.z * t - axis_norm.x * sin_angle;
-        result[2][2] = axis_norm.z * axis_norm.z * t + cos_angle;
-
-        return result;
-    }
-
-    [[nodiscard]] static Matrix3 from_euler(const Vector3<Number>& euler)
-    {
-        float c = nnm::cos(euler.x);
-        float s = nnm::sin(euler.x);
-        const Matrix3 x { 1.0f, 0.0f, 0.0f, 0.0f, c, -s, 0.0f, s, c };
-
-        c = nnm::cos(euler.y);
-        s = nnm::sin(euler.y);
-        const Matrix3 y { c, 0.0f, s, 0.0f, 1.0f, 0.0f, -s, 0.0f, c };
-
-        c = nnm::cos(euler.z);
-        s = nnm::sin(euler.z);
-        const Matrix3 z { c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f };
-
-        return x * (y * z);
+        return { { value, value, value }, { value, value, value }, { value, value, value } };
     }
 
     [[nodiscard]] static Matrix3 zero()
     {
-        return { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+        return all(0.0);
+    }
+
+    [[nodiscard]] static Matrix3 one()
+    {
+        return all(1.0);
     }
 
     [[nodiscard]] static Matrix3 identity()
     {
-        return { 1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f };
+        return { { 1.0, 0.0, 0.0 }, { 0.0, 1.0, 0.0 }, { 0.0, 0.0, 1.0 } };
     }
 
-    [[nodiscard]] static Matrix3 from_quaternion(const Quaternion<Number>& quaternion)
-    {
-        Matrix3 result;
-        result[0][0] = 2 * (quaternion.x * quaternion.x + quaternion.y * quaternion.y) - 1;
-        result[0][1] = 2 * (quaternion.y * quaternion.z - quaternion.x * quaternion.w);
-        result[0][2] = 2 * (quaternion.y * quaternion.w + quaternion.x * quaternion.z);
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_quaternion(const Quaternion<Number>& quaternion)
+    // {
+    //     Matrix3 result;
+    //     result[0][0] = 2 * (quaternion.x * quaternion.x + quaternion.y * quaternion.y) - 1;
+    //     result[0][1] = 2 * (quaternion.y * quaternion.z - quaternion.x * quaternion.w);
+    //     result[0][2] = 2 * (quaternion.y * quaternion.w + quaternion.x * quaternion.z);
+    //
+    //     result[1][0] = 2 * (quaternion.y * quaternion.z + quaternion.x * quaternion.w);
+    //     result[1][1] = 2 * (quaternion.x * quaternion.x + quaternion.z * quaternion.z) - 1;
+    //     result[1][2] = 2 * (quaternion.z * quaternion.w - quaternion.x * quaternion.y);
+    //
+    //     result[2][0] = 2 * (quaternion.y * quaternion.w - quaternion.x * quaternion.z);
+    //     result[2][1] = 2 * (quaternion.z * quaternion.w + quaternion.x * quaternion.y);
+    //     result[2][2] = 2 * (quaternion.x * quaternion.x + quaternion.w * quaternion.w) - 1;
+    //
+    //     return result;
+    // }
 
-        result[1][0] = 2 * (quaternion.y * quaternion.z + quaternion.x * quaternion.w);
-        result[1][1] = 2 * (quaternion.x * quaternion.x + quaternion.z * quaternion.z) - 1;
-        result[1][2] = 2 * (quaternion.z * quaternion.w - quaternion.x * quaternion.y);
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_quaternion_scale(
+    //     const Quaternion<Number>& quaternion, const Vector3<Number>& scale)
+    // {
+    //     Matrix3 result;
+    //
+    //     result[0][0] = scale.x;
+    //     result[1][1] = scale.y;
+    //     result[2][2] = scale.z;
+    //
+    //     result = result.rotate(quaternion);
+    //     return result;
+    // }
 
-        result[2][0] = 2 * (quaternion.y * quaternion.w - quaternion.x * quaternion.z);
-        result[2][1] = 2 * (quaternion.z * quaternion.w + quaternion.x * quaternion.y);
-        result[2][2] = 2 * (quaternion.x * quaternion.x + quaternion.w * quaternion.w) - 1;
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_scale(const Vector3<Number>& scale)
+    // {
+    //     return identity().scale(scale);
+    // }
 
-        return result;
-    }
+    // TODO: move
+    // [[nodiscard]] static Matrix3 look_at(const Vector3<Number>& target, const Vector3<Number>& up)
+    // {
+    //     Matrix3 result;
+    //
+    //     const Vector3 vz = normalize(-target);
+    //     const Vector3 vx = normalize(up.cross(vz));
+    //     const Vector3 vy = vz.cross(vx);
+    //
+    //     result[0][0] = vx.x;
+    //     result[0][1] = vy.x;
+    //     result[0][2] = vz.x;
+    //     result[1][0] = vx.y;
+    //     result[1][1] = vy.y;
+    //     result[1][2] = vz.y;
+    //     result[2][0] = vx.z;
+    //     result[2][1] = vy.z;
+    //     result[2][2] = vz.z;
+    //
+    //     return result;
+    // }
 
-    [[nodiscard]] static Matrix3 from_quaternion_scale(
-        const Quaternion<Number>& quaternion, const Vector3<Number>& scale)
-    {
-        Matrix3 result;
+    // TODO: idk about this?
+    //[[nodiscard]] static Matrix3 from_matrix(const Matrix4<Number>& matrix);
 
-        result[0][0] = scale.x;
-        result[1][1] = scale.y;
-        result[2][2] = scale.z;
+    // TODO: move
+    // [[nodiscard]] static Matrix3 from_direction(const Vector3<Number>& dir, const Vector3<Number>& up)
+    // {
+    //     const Vector3 axis_x = up.cross(dir).normalize();
+    //     const Vector3 axis_y = dir.cross(axis_x).normalize();
+    //
+    //     Matrix3 result;
+    //
+    //     result[0][0] = axis_x.x;
+    //     result[0][1] = axis_y.x;
+    //     result[0][2] = dir.x;
+    //     result[1][0] = axis_x.y;
+    //     result[1][1] = axis_y.y;
+    //     result[1][2] = dir.y;
+    //     result[2][0] = axis_x.z;
+    //     result[2][1] = axis_y.z;
+    //     result[2][2] = dir.z;
+    //
+    //     return result;
+    // }
 
-        result = result.rotate(quaternion);
-        return result;
-    }
+    // TODO: move
+    // [[nodiscard]] Vector3<Number> euler() const
+    // {
+    //     Vector3<Number> euler;
+    //     if (const float sy = (*this)[2][0]; sy < 1.0f) {
+    //         if (sy > -1.0f) {
+    //             if ((*this)[0][1] == 0.0f && (*this)[1][0] == 0.0f && (*this)[2][1] == 0.0f && (*this)[1][2] == 0.0f
+    //                 && (*this)[1][1] == 1.0f) {
+    //                 euler.x = 0.0f;
+    //                 euler.y = atan2((*this)[2][0], (*this)[0][0]);
+    //                 euler.z = 0.0f;
+    //             }
+    //             else {
+    //                 euler.x = atan2(-(*this)[2][1], (*this)[2][2]);
+    //                 euler.y = asin(sy);
+    //                 euler.z = atan2(-(*this)[1][0], (*this)[0][0]);
+    //             }
+    //         }
+    //         else {
+    //             euler.x = atan2((*this)[1][2], (*this)[1][1]);
+    //             euler.y = -pi / 2.0f;
+    //             euler.z = 0.0f;
+    //         }
+    //     }
+    //     else {
+    //         euler.x = atan2((*this)[1][2], (*this)[1][1]);
+    //         euler.y = pi / 2.0f;
+    //         euler.z = 0.0f;
+    //     }
+    //     return euler;
+    // }
 
-    [[nodiscard]] static Matrix3 from_scale(const Vector3<Number>& scale)
-    {
-        return identity().scale(scale);
-    }
-
-    [[nodiscard]] static Matrix3 look_at(const Vector3<Number>& target, const Vector3<Number>& up)
-    {
-        Matrix3 result;
-
-        const Vector3 vz = normalize(-target);
-        const Vector3 vx = normalize(up.cross(vz));
-        const Vector3 vy = vz.cross(vx);
-
-        result[0][0] = vx.x;
-        result[0][1] = vy.x;
-        result[0][2] = vz.x;
-        result[1][0] = vx.y;
-        result[1][1] = vy.y;
-        result[1][2] = vz.y;
-        result[2][0] = vx.z;
-        result[2][1] = vy.z;
-        result[2][2] = vz.z;
-
-        return result;
-    }
-
-    [[nodiscard]] static Matrix3 from_matrix(const Matrix4<Number>& matrix);
-
-    [[nodiscard]] static Matrix3 from_direction(const Vector3<Number>& dir, const Vector3<Number>& up)
-    {
-        const Vector3 axis_x = up.cross(dir).normalize();
-        const Vector3 axis_y = dir.cross(axis_x).normalize();
-
-        Matrix3 result;
-
-        result[0][0] = axis_x.x;
-        result[0][1] = axis_y.x;
-        result[0][2] = dir.x;
-        result[1][0] = axis_x.y;
-        result[1][1] = axis_y.y;
-        result[1][2] = dir.y;
-        result[2][0] = axis_x.z;
-        result[2][1] = axis_y.z;
-        result[2][2] = dir.z;
-
-        return result;
-    }
-
-    [[nodiscard]] Vector3<Number> euler() const
-    {
-        Vector3<Number> euler;
-        if (const float sy = (*this)[2][0]; sy < 1.0f) {
-            if (sy > -1.0f) {
-                if ((*this)[0][1] == 0.0f && (*this)[1][0] == 0.0f && (*this)[2][1] == 0.0f && (*this)[1][2] == 0.0f
-                    && (*this)[1][1] == 1.0f) {
-                    euler.x = 0.0f;
-                    euler.y = atan2((*this)[2][0], (*this)[0][0]);
-                    euler.z = 0.0f;
-                }
-                else {
-                    euler.x = atan2(-(*this)[2][1], (*this)[2][2]);
-                    euler.y = asin(sy);
-                    euler.z = atan2(-(*this)[1][0], (*this)[0][0]);
-                }
-            }
-            else {
-                euler.x = atan2((*this)[1][2], (*this)[1][1]);
-                euler.y = -pi / 2.0f;
-                euler.z = 0.0f;
-            }
-        }
-        else {
-            euler.x = atan2((*this)[1][2], (*this)[1][1]);
-            euler.y = pi / 2.0f;
-            euler.z = 0.0f;
-        }
-        return euler;
-    }
-
-    [[nodiscard]] Vector3<Number> scale() const
-    {
-        const Vector3 scale_abs = Vector3(
-            Vector3((*this)[0][0], (*this)[0][1], (*this)[0][2]).length(),
-            Vector3((*this)[1][0], (*this)[1][1], (*this)[1][2]).length(),
-            Vector3((*this)[2][0], (*this)[2][1], (*this)[2][2]).length());
-
-        if (determinant() > 0) {
-            return scale_abs;
-        }
-        return -scale_abs;
-    }
+    // TODO: move
+    // [[nodiscard]] Vector3<Number> scale() const
+    // {
+    //     const Vector3 scale_abs = Vector3(
+    //         Vector3((*this)[0][0], (*this)[0][1], (*this)[0][2]).length(),
+    //         Vector3((*this)[1][0], (*this)[1][1], (*this)[1][2]).length(),
+    //         Vector3((*this)[2][0], (*this)[2][1], (*this)[2][2]).length());
+    //
+    //     if (determinant() > 0) {
+    //         return scale_abs;
+    //     }
+    //     return -scale_abs;
+    // }
 
     [[nodiscard]] float determinant() const
     {
-        const float a00 = (*this)[0][0];
-        const float a01 = (*this)[1][0];
-        const float a02 = (*this)[2][0];
-        const float a10 = (*this)[0][1];
-        const float a11 = (*this)[1][1];
-        const float a12 = (*this)[2][1];
-        const float a20 = (*this)[0][2];
-        const float a21 = (*this)[1][2];
-        const float a22 = (*this)[2][2];
+        // x x x
+        // x d d
+        // x d d
+        Number det_bottom_right = at(1, 1) * at(2, 2) - at(2, 1) * at(1, 2);
 
-        return a00 * a11 * a22 + a01 * a12 * a20 + a02 * a10 * a21 - a02 * a11 * a20 - a01 * a10 * a22
-            - a00 * a12 * a21;
+        // x x x
+        // d x d
+        // d x d
+        Number det_bottom_split = at(0, 1) * at(2, 2) - at(2, 1) * at(0, 2);
+
+        // x x x
+        // d d x
+        // d d x
+        Number det_bottom_left = at(0, 1) * at(1, 2) - at(1, 1) * at(0, 2);
+
+        return at(0, 0) * det_bottom_right - at(1, 0) * det_bottom_split + at(2, 0) * det_bottom_left;
     }
 
     [[nodiscard]] float trace() const
     {
-        return (*this)[0][0] + (*this)[1][1] + (*this)[2][2];
+        return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
     [[nodiscard]] Matrix3 transpose() const
     {
-        Matrix3 result;
-
-        result[0][0] = (*this)[0][0];
-        result[0][1] = (*this)[1][0];
-        result[0][2] = (*this)[2][0];
-        result[1][0] = (*this)[0][1];
-        result[1][1] = (*this)[1][1];
-        result[1][2] = (*this)[2][1];
-        result[2][0] = (*this)[0][2];
-        result[2][1] = (*this)[1][2];
-        result[2][2] = (*this)[2][2];
-
-        return result;
+        return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) } };
     }
 
     [[nodiscard]] Matrix3 inverse() const
@@ -2903,10 +3213,11 @@ public:
         return matrix;
     }
 
-    [[nodiscard]] Matrix3 rotate(const Vector3<Number>& axis, const float angle) const
-    {
-        return Matrix3::from_axis_angle(axis, angle) * *this;
-    }
+    // TODO: move
+    // [[nodiscard]] Matrix3 rotate(const Vector3<Number>& axis, const float angle) const
+    // {
+    //     return Matrix3::from_axis_angle(axis, angle) * *this;
+    // }
 
     [[nodiscard]] Matrix3 rotate(const Quaternion<Number>& quaternion) const
     {
@@ -2931,9 +3242,9 @@ public:
 
     [[nodiscard]] Matrix3 orthonormalize() const
     {
-        Column x = col0;
-        Column y = col1;
-        Column z = col2;
+        Column x = columns[0];
+        Column y = columns[1];
+        Column z = columns[2];
 
         x = normalize(x);
         y = y - x * dot(x, y);
@@ -2976,30 +3287,22 @@ public:
 
     Column& operator[](const int index)
     {
-        switch (index) {
-        case 0:
-            return col0;
-        case 1:
-            return col1;
-        case 2:
-            return col2;
-        default:
-            return col0;
-        }
+        return columns[index];
     }
 
     const Column& operator[](const int index) const
     {
-        switch (index) {
-        case 0:
-            return col0;
-        case 1:
-            return col1;
-        case 2:
-            return col2;
-        default:
-            return col0;
-        }
+        return columns[index];
+    }
+
+    Number& at(const int column, const int row)
+    {
+        return columns[column][row];
+    }
+
+    Number at(const int column, const int row) const
+    {
+        return columns[column][row];
     }
 
     [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
@@ -3013,9 +3316,9 @@ public:
 
     void operator+=(const Matrix3& other)
     {
-        col0 += other[0];
-        col1 += other[1];
-        col2 += other[2];
+        columns[0] += other[0];
+        columns[1] += other[1];
+        columns[2] += other[2];
     }
 
     [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
@@ -3029,9 +3332,9 @@ public:
 
     void operator-=(const Matrix3& other)
     {
-        col0 -= other[0];
-        col1 -= other[1];
-        col2 -= other[2];
+        columns[0] -= other[0];
+        columns[1] -= other[1];
+        columns[2] -= other[2];
     }
 
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
@@ -3065,9 +3368,9 @@ public:
 
     void operator*=(float val)
     {
-        col0 *= val;
-        col1 *= val;
-        col2 *= val;
+        columns[0] *= val;
+        columns[1] *= val;
+        columns[2] *= val;
     }
 
     [[nodiscard]] Matrix3 operator*(int val) const
@@ -3081,9 +3384,9 @@ public:
 
     void operator*=(int val)
     {
-        col0 *= val;
-        col1 *= val;
-        col2 *= val;
+        columns[0] *= val;
+        columns[1] *= val;
+        columns[2] *= val;
     }
 
     [[nodiscard]] Vector3<Number> operator*(Vector3<Number> vector) const
@@ -3096,13 +3399,13 @@ public:
 
     [[nodiscard]] bool operator!=(const Matrix3& other) const
     {
-        if (col0 != other.col0) {
+        if (columns[0] != other.columns[0]) {
             return false;
         }
-        if (col1 != other.col1) {
+        if (columns[1] != other.columns[1]) {
             return false;
         }
-        if (col2 != other.col2) {
+        if (columns[2] != other.columns[2]) {
             return false;
         }
         return true;
@@ -3110,61 +3413,61 @@ public:
 
     [[nodiscard]] bool operator==(const Matrix3& other) const
     {
-        return col0 == other.col0 && col1 == other.col1 && col2 == other.col2;
+        return columns[0] == other.columns[0] && columns[1] == other.columns[1] && columns[2] == other.columns[2];
     }
 
     [[nodiscard]] bool operator<(const Matrix3& other) const
     {
-        if (col0 != other.col0) {
-            return col0 < other.col0;
+        if (columns[0] != other.columns[0]) {
+            return columns[0] < other.columns[0];
         }
-        if (col1 != other.col1) {
-            return col1 < other.col1;
+        if (columns[1] != other.columns[1]) {
+            return columns[1] < other.columns[1];
         }
-        if (col2 != other.col2) {
-            return col2 < other.col2;
+        if (columns[2] != other.columns[2]) {
+            return columns[2] < other.columns[2];
         }
         return false;
     }
 
     [[nodiscard]] bool operator<=(const Matrix3& other) const
     {
-        if (col0 != other.col0) {
-            return col0 < other.col0;
+        if (columns[0] != other.columns[0]) {
+            return columns[0] < other.columns[0];
         }
-        if (col1 != other.col1) {
-            return col1 < other.col1;
+        if (columns[1] != other.columns[1]) {
+            return columns[1] < other.columns[1];
         }
-        if (col2 != other.col2) {
-            return col2 < other.col2;
+        if (columns[2] != other.columns[2]) {
+            return columns[2] < other.columns[2];
         }
         return true;
     }
 
     [[nodiscard]] bool operator>(const Matrix3& other) const
     {
-        if (col0 != other.col0) {
-            return col0 > other.col0;
+        if (columns[0] != other.columns[0]) {
+            return columns[0] > other.columns[0];
         }
-        if (col1 != other.col1) {
-            return col1 > other.col1;
+        if (columns[1] != other.columns[1]) {
+            return columns[1] > other.columns[1];
         }
-        if (col2 != other.col2) {
-            return col2 > other.col2;
+        if (columns[2] != other.columns[2]) {
+            return columns[2] > other.columns[2];
         }
         return false;
     }
 
     [[nodiscard]] bool operator>=(const Matrix3& other) const
     {
-        if (col0 != other.col0) {
-            return col0 > other.col0;
+        if (columns[0] != other.columns[0]) {
+            return columns[0] > other.columns[0];
         }
-        if (col1 != other.col1) {
-            return col1 > other.col1;
+        if (columns[1] != other.columns[1]) {
+            return columns[1] > other.columns[1];
         }
-        if (col2 != other.col2) {
-            return col2 > other.col2;
+        if (columns[2] != other.columns[2]) {
+            return columns[2] > other.columns[2];
         }
         return true;
     }
@@ -3703,15 +4006,15 @@ Quaternion<Number> Quaternion<Number>::normalize() const
     return *this / this->length();
 }
 
-template <typename Number>
-Matrix3<Number> Matrix3<Number>::from_matrix(const Matrix4<Number>& matrix)
-{
-    Matrix3 result;
-    result[0] = Column(matrix[0][0], matrix[0][1], matrix[0][2]);
-    result[1] = Column(matrix[1][0], matrix[1][1], matrix[1][2]);
-    result[2] = Column(matrix[2][0], matrix[2][1], matrix[2][2]);
-    return result;
-}
+// template <typename Number>
+// Matrix3<Number> Matrix3<Number>::from_matrix(const Matrix4<Number>& matrix)
+// {
+//     Matrix3 result;
+//     result[0] = Column(matrix[0][0], matrix[0][1], matrix[0][2]);
+//     result[1] = Column(matrix[1][0], matrix[1][1], matrix[1][2]);
+//     result[2] = Column(matrix[2][0], matrix[2][1], matrix[2][2]);
+//     return result;
+// }
 
 template <typename Number>
 Vector4i::Vector4i(const Vector4<Number>& vector)

@@ -1414,3 +1414,184 @@ TEST_CASE("Vector3i", "[Vector3i]")
         REQUIRE_FALSE(static_cast<bool>(nnm::Vector3i(0, 0, 0)));
     }
 }
+
+TEST_CASE("Matrix2", "[Matrix2]")
+{
+    SECTION("Constructors")
+    {
+        const nnm::Matrix2d mat_default;
+        REQUIRE(mat_default.c0r0 == 1.0);
+        REQUIRE(mat_default.c0r1 == 0.0);
+        REQUIRE(mat_default.c1r0 == 0.0);
+        REQUIRE(mat_default.c1r1 == 1.0);
+
+        const nnm::Matrix2d mat_cols({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat_cols.c0r0 == 1.0);
+        REQUIRE(mat_cols.c0r1 == -2.0);
+        REQUIRE(mat_cols.c1r0 == -3.0);
+        REQUIRE(mat_cols.c1r1 == 4.0);
+
+        const nnm::Matrix2d mat_elements(1.0, -2.0, -3.0, 4.0);
+        REQUIRE(mat_elements.c0r0 == 1.0);
+        REQUIRE(mat_elements.c0r1 == -2.0);
+        REQUIRE(mat_elements.c1r0 == -3.0);
+        REQUIRE(mat_elements.c1r1 == 4.0);
+    }
+
+    SECTION("Static methods")
+    {
+        const auto mat_all_three = nnm::Matrix2d::all(3.0);
+        REQUIRE(mat_all_three.c0r0 == 3.0);
+        REQUIRE(mat_all_three.c0r1 == 3.0);
+        REQUIRE(mat_all_three.c1r0 == 3.0);
+        REQUIRE(mat_all_three.c1r1 == 3.0);
+
+        const auto mat_zero = nnm::Matrix2d::zero();
+        REQUIRE(mat_zero.c0r0 == 0.0);
+        REQUIRE(mat_zero.c0r1 == 0.0);
+        REQUIRE(mat_zero.c1r0 == 0.0);
+        REQUIRE(mat_zero.c1r1 == 0.0);
+
+        const auto mat_one = nnm::Matrix2d::one();
+        REQUIRE(mat_one.c0r0 == 1.0);
+        REQUIRE(mat_one.c0r1 == 1.0);
+        REQUIRE(mat_one.c1r0 == 1.0);
+        REQUIRE(mat_one.c1r1 == 1.0);
+
+        const auto mat_identity = nnm::Matrix2d::identity();
+        REQUIRE(mat_identity.c0r0 == 1.0);
+        REQUIRE(mat_identity.c0r1 == 0.0);
+        REQUIRE(mat_identity.c1r0 == 0.0);
+        REQUIRE(mat_identity.c1r1 == 1.0);
+    }
+
+    SECTION("trace")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(nnm::approx_equal(mat.trace(), 5.0));
+    }
+
+    SECTION("determinant")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(nnm::approx_equal(mat.determinant(), -2.0));
+    }
+
+    SECTION("minor")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat.minor(0, 0) == 4.0);
+        REQUIRE(mat.minor(0, 1) == -3.0);
+        REQUIRE(mat.minor(1, 0) == -2.0);
+        REQUIRE(mat.minor(1, 1) == 1.0);
+    }
+
+    SECTION("cofactor")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat.cofactor_at(0, 0) == 4.0);
+        REQUIRE(mat.cofactor_at(0, 1) == 3.0);
+        REQUIRE(mat.cofactor_at(1, 0) == 2.0);
+        REQUIRE(mat.cofactor_at(1, 1) == 1.0);
+        REQUIRE(mat.cofactor() == nnm::Matrix2d({ 4.0, 3.0 }, { 2.0, 1.0 }));
+    }
+
+    SECTION("transpose")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat.transpose() == nnm::Matrix2d({ 1.0, -3.0 }, { -2.0, 4.0 }));
+    }
+
+    SECTION("adjugate")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat.adjugate() == nnm::Matrix2d({ 4.0, 2.0 }, { 3.0, 1.0 }));
+    }
+
+    SECTION("inverse")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        const std::optional<nnm::Matrix2d> mat_inv = mat.inverse();
+        REQUIRE(mat_inv.has_value());
+        REQUIRE(mat.inverse()->approx_equal({ { -2.0, -1.0 }, { -1.5, -0.5 } }));
+        REQUIRE(mat.unsafe_inverse().approx_equal({ { -2.0, -1.0 }, { -1.5, -0.5 } }));
+        REQUIRE_FALSE(nnm::Matrix2d::zero().inverse().has_value());
+    }
+
+    SECTION("approx")
+    {
+        const nnm::Matrix2d mat1({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat1.approx_equal({ { 1.00000001, -1.9999999 }, { -3.00000001, 3.99999999 } }));
+        REQUIRE_FALSE(mat1.approx_equal({ { 1.1, -1.9 }, { -3.1, 3.9 } }));
+        const nnm::Matrix2d mat2({ 0.00000001, -0.00000001 }, { -0.00000001, 0.00000001 });
+        REQUIRE(mat2.approx_zero());
+        REQUIRE_FALSE(mat1.approx_zero());
+    }
+
+    SECTION("accessors")
+    {
+        const nnm::Matrix2d mat({ 1.0, -2.0 }, { -3.0, 4.0 });
+        REQUIRE(mat.at(0, 0) == 1.0);
+        REQUIRE(mat.at(0, 1) == -2.0);
+        REQUIRE(mat.at(1, 0) == -3.0);
+        REQUIRE(mat.at(1, 1) == 4.0);
+
+        REQUIRE(mat[0][0] == 1.0);
+        REQUIRE(mat[0][1] == -2.0);
+        REQUIRE(mat[1][0] == -3.0);
+        REQUIRE(mat[1][1] == 4.0);
+    }
+
+    nnm::Matrix2d m1({ 1.0, -2.0 }, { -3.0, 4.0 });
+    nnm::Matrix2d m2({ -4.0, 3.0 }, { 2.0, -1.0 });
+    nnm::Matrix2d m3({ 1.0, -2.0 }, { -3.0, 4.0 });
+
+    SECTION("equality and inequality")
+    {
+        REQUIRE(m1 == m3);
+        REQUIRE_FALSE(m1 != m3);
+        REQUIRE(m1 != m2);
+        REQUIRE_FALSE(m1 == m2);
+    }
+
+    SECTION("arithmetic")
+    {
+        REQUIRE(m1 * m2 == nnm::Matrix2d({ -8.0, 5.0 }, { 20.0, -13.0 }));
+        REQUIRE(m1 * 2.0 == nnm::Matrix2d({ 2.0, -4.0 }, { -6.0, 8.0 }));
+        REQUIRE((m2 / 2.0).approx_equal(nnm::Matrix2d({ -2.0, 1.5 }, { 1.0, -0.5 })));
+    }
+
+    SECTION("compound assignment")
+    {
+        nnm::Matrix2d m1_copy(m1);
+        nnm::Matrix2d m2_copy(m2);
+
+        m1 *= m2;
+        REQUIRE(m1 == nnm::Matrix2d({ -8.0, 5.0 }, { 20.0, -13.0 }));
+        m1 = m1_copy;
+
+        m1 *= 2.0;
+        REQUIRE(m1 == nnm::Matrix2d({ 2.0, -4.0 }, { -6.0, 8.0 }));
+        m1 = m1_copy;
+
+        m2 /= 2.0;
+        REQUIRE(m2.approx_equal(nnm::Matrix2d({ -2.0, 1.5 }, { 1.0, -0.5 })));
+        m2 = m2_copy;
+    }
+
+    SECTION("comparison")
+    {
+        REQUIRE(m2 < m1);
+        REQUIRE(m2 <= m1);
+        REQUIRE_FALSE(m1 < m2);
+        REQUIRE_FALSE(m1 <= m2);
+        REQUIRE(m1 >= m3);
+        REQUIRE(m1 <= m3);
+    }
+
+    SECTION("bool conversion")
+    {
+        REQUIRE(static_cast<bool>(m1));
+        REQUIRE_FALSE(static_cast<bool>(nnm::Matrix2d::zero()));
+    }
+}
