@@ -716,12 +716,9 @@ TEST_CASE("Vector2", "[Vector2]")
         v2 = v_copy;
     }
 
-    SECTION("Comparison Operators")
+    SECTION("Comparison Operator")
     {
         REQUIRE(v1 < v2);
-        REQUIRE(v1 <= v2);
-        REQUIRE_FALSE(v1 > v2);
-        REQUIRE_FALSE(v1 >= v2);
     }
 
     SECTION("Indexing Operators")
@@ -869,12 +866,9 @@ TEST_CASE("Vector2i", "[Vector2i]")
         v2 = v_copy;
     }
 
-    SECTION("Comparison Operators")
+    SECTION("Comparison Operator")
     {
         REQUIRE(v1 < v2);
-        REQUIRE(v1 <= v2);
-        REQUIRE_FALSE(v1 > v2);
-        REQUIRE_FALSE(v1 >= v2);
     }
 
     SECTION("Indexing Operators")
@@ -1237,12 +1231,9 @@ TEST_CASE("Vector3", "[Vector3]")
         v2 = v2_copy;
     }
 
-    SECTION("Comparison Operators")
+    SECTION("Comparison Operator")
     {
         REQUIRE(v1 < v2);
-        REQUIRE(v1 <= v2);
-        REQUIRE_FALSE(v1 > v2);
-        REQUIRE_FALSE(v1 >= v2);
     }
 
     SECTION("Indexing Operators")
@@ -1389,12 +1380,9 @@ TEST_CASE("Vector3i", "[Vector3i]")
         v2 = v2_copy;
     }
 
-    SECTION("Comparison Operators")
+    SECTION("Comparison Operator")
     {
         REQUIRE(v2 < v1);
-        REQUIRE(v2 <= v1);
-        REQUIRE_FALSE(v2 > v1);
-        REQUIRE_FALSE(v2 >= v1);
     }
 
     SECTION("Indexing Operators")
@@ -1582,11 +1570,7 @@ TEST_CASE("Matrix2", "[Matrix2]")
     SECTION("comparison")
     {
         REQUIRE(m2 < m1);
-        REQUIRE(m2 <= m1);
         REQUIRE_FALSE(m1 < m2);
-        REQUIRE_FALSE(m1 <= m2);
-        REQUIRE(m1 >= m3);
-        REQUIRE(m1 <= m3);
     }
 
     SECTION("bool conversion")
