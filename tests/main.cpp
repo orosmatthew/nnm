@@ -1736,4 +1736,45 @@ TEST_CASE("Basis2")
         REQUIRE(b1.shear({ 2.0f, -0.5f }).value().matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
         REQUIRE(b1.unsafe_shear({ 2.0f, -0.5f }).matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
     }
+
+    SECTION("approx equal")
+    {
+        const nnm::Basis2 b1;
+        REQUIRE(b1.approx_equal(
+            nnm::Basis2::unsafe_from_matrix({ { 1.0000000f, 0.000000001f }, { -0.000000001f, 0.9999999f } })));
+        const auto b2 = nnm::Basis2::from_rotation(nnm::pi);
+        REQUIRE_FALSE(b2.approx_equal(nnm::Basis2()));
+    }
+
+    SECTION("accessors")
+    {
+        auto b1 = nnm::Basis2::unsafe_from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+        REQUIRE(b1.at(0, 0) == 1.0f);
+        REQUIRE(b1.at(0, 1) == -2.0f);
+        REQUIRE(b1.at(1, 0) == -3.0f);
+        REQUIRE(b1.at(1, 1) == 4.0f);
+        REQUIRE(b1.unsafe_at(0, 0) == 1.0f);
+        REQUIRE(b1.unsafe_at(0, 1) == -2.0f);
+        REQUIRE(b1.unsafe_at(1, 0) == -3.0f);
+        REQUIRE(b1[0] == nnm::Vector2 { 1.0f, -2.0f });
+        REQUIRE(b1[1] == nnm::Vector2 { -3.0f, 4.0f });
+    }
+
+    SECTION("equality")
+    {
+        const nnm::Basis2 b1;
+        const nnm::Basis2 b2;
+        const auto b3 = nnm::Basis2::from_rotation(nnm::pi);
+        REQUIRE(b1 == b2);
+        REQUIRE_FALSE(b1 != b2);
+        REQUIRE(b1 != b3);
+        REQUIRE_FALSE(b1 == b3);
+    }
+
+    SECTION("comparison")
+    {
+        const auto b1 = nnm::Basis2::unsafe_from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+        const auto b2 = nnm::Basis2::unsafe_from_matrix({ { -4.0f, 3.0f }, { 2.0f, -1.0f } });
+        REQUIRE(b2 < b1);
+    }
 }

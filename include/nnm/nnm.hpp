@@ -521,13 +521,11 @@ public:
 
     [[nodiscard]] float operator[](const int index) const
     {
-        // TODO: extra checks
         return data[index];
     }
 
     [[nodiscard]] float& operator[](const int index)
     {
-        // TODO: extra checks
         return data[index];
     }
 
@@ -775,13 +773,11 @@ public:
 
     [[nodiscard]] int operator[](const int index) const
     {
-        // TODO: extra checks
         return data[index];
     }
 
     [[nodiscard]] int& operator[](const int index)
     {
-        // TODO: extra checks
         return data[index];
     }
 
@@ -995,7 +991,6 @@ public:
 
     [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
     {
-        // TODO: add checks for min/max
         if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
             const auto norm = normalize();
             if (const float length = sqrt(length_sqr); length < min) {
@@ -1020,7 +1015,6 @@ public:
 
     [[nodiscard]] Vector3 rotate(Vector3 axis, const float angle) const
     {
-        // TODO: maybe just check normalization
         axis = axis.normalize();
         // Rodrigues rotation formula
         return *this * cos(angle) + axis.cross(*this) * sin(angle) + axis * (1.0f - cos(angle)) * axis.dot(*this);
