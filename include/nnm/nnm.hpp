@@ -215,8 +215,15 @@ inline int min(const int a, const int b)
 
 inline float log2(const float value)
 {
-    // TODO: Check 0 and negative
     return std::log2(value);
+}
+
+inline std::optional<float> safe_log2(const float value)
+{
+    if (value <= 0.0f) {
+        return std::nullopt;
+    }
+    return log2(value);
 }
 
 class Vector2;

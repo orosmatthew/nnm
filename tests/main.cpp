@@ -420,7 +420,10 @@ TEST_CASE("log2")
     REQUIRE(nnm::approx_equal(nnm::log2(0.5f), -1.0f));
     REQUIRE(nnm::approx_equal(nnm::log2(4.0f), 2.0f));
 
-    // TODO: Check 0 and negative
+    REQUIRE(nnm::safe_log2(1.0f).has_value());
+    REQUIRE(nnm::approx_equal(nnm::safe_log2(1.0f).value(), 0.0f));
+    REQUIRE_FALSE(nnm::safe_log2(0.0f).has_value());
+    REQUIRE_FALSE(nnm::safe_log2(-10.0f).has_value());
 }
 
 TEST_CASE("Vector2")
