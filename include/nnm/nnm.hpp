@@ -11,6 +11,16 @@ namespace nnm {
 inline float pi = 3.141592653589793238462643383279502f;
 inline float epsilon = 0.00001f;
 
+inline float sign(const float value)
+{
+    return value >= 0 ? 1.0f : -1.0f;
+}
+
+inline int sign(const int value)
+{
+    return value >= 0 ? 1 : -1;
+}
+
 inline float abs(const float value)
 {
     return std::abs(value);
@@ -111,10 +121,20 @@ inline float floor(const float value)
     return std::floor(value);
 }
 
+inline float unclamped_lerp(const float from, const float to, const float weight)
+{
+    return from + weight * (to - from);
+}
+
 inline float lerp(const float from, const float to, const float weight)
 {
-    // TODO: Extra check weight between 0 and 1
-    return from + weight * (to - from);
+    if (weight >= 1.0f) {
+        return to;
+    }
+    if (weight <= 0.0f) {
+        return from;
+    }
+    return unclamped_lerp(from, to, weight);
 }
 
 inline float sin(const float value)
@@ -159,14 +179,28 @@ inline float degrees(const float radians, const float pi = nnm::pi)
 
 inline float asin(const float value)
 {
-    // TODO: Check range
     return std::asin(value);
+}
+
+inline std::optional<float> safe_asin(const float value)
+{
+    if (value < -1.0f || value > 1.0f) {
+        return std::nullopt;
+    }
+    return asin(value);
 }
 
 inline float acos(const float value)
 {
-    // TODO: Check range
     return std::acos(value);
+}
+
+inline std::optional<float> safe_acos(const float value)
+{
+    if (value < -1.0f || value > 1.0f) {
+        return std::nullopt;
+    }
+    return acos(value);
 }
 
 inline float min(const float a, const float b)
@@ -187,21 +221,14 @@ inline float log2(const float value)
 
 class Vector2;
 class Vector2i;
-
 class Vector3;
 class Vector3i;
-
 class Matrix2;
-
 class Basis2;
-
 class Matrix3;
-
 class Matrix4;
-
 class Vector4;
 class Vector4i;
-
 class Quaternion;
 
 enum class Axis2 { x, y };
@@ -215,7 +242,7 @@ public:
             float x;
             float y;
         };
-        float data[2];
+        std::array<float, 2> data;
     };
 
     Vector2() // NOLINT(*-pro-type-member-init)
@@ -544,16 +571,16 @@ public:
             int x;
             int y;
         };
-        int data[2] {};
+        std::array<int, 2> data;
     };
 
-    Vector2i()
+    Vector2i() // NOLINT(*-pro-type-member-init)
         : x(0)
         , y(0)
     {
     }
 
-    Vector2i(const int x, const int y)
+    Vector2i(const int x, const int y) // NOLINT(*-pro-type-member-init)
         : x(x)
         , y(y)
     {
@@ -799,8 +826,7 @@ public:
             float y;
             float z;
         };
-
-        float data[3];
+        std::array<float, 3> data;
     };
 
     Vector3() // NOLINT(*-pro-type-member-init)
@@ -2418,24 +2444,6 @@ public:
         return adjugate() / det;
     }
 
-    [[nodiscard]] std::pair<Matrix2, Matrix2> qr_decompose() const
-    {
-        // Gram-Schmidt process
-        Matrix2 q_mat;
-        Matrix2 r_mat;
-        for (int c = 0; c < 2; ++c) {
-            q_mat[c] = at(c);
-            for (int prev = 0; prev < c; ++prev) {
-                const Vector2 proj = at(c).project(q_mat[prev]);
-                r_mat[c][prev] = q_mat[prev].dot(at(c));
-                q_mat[c] = q_mat[c] - proj;
-            }
-            r_mat[c][c] = q_mat[c].length();
-            q_mat[c] = q_mat[c].normalize();
-        }
-        return { q_mat, r_mat };
-    }
-
     [[nodiscard]] bool approx_equal(const Matrix2& other) const
     {
         for (int c = 0; c < 2; ++c) {
@@ -2619,19 +2627,35 @@ public:
         return std::nullopt;
     }
 
-    static Basis2 from_angle(const float angle)
+    static Basis2 from_rotation(const float angle)
     {
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
-    static Basis2 from_scale(const Vector2& factor)
+    static Basis2 unsafe_from_scale(const Vector2& factor)
     {
         return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
     }
 
-    static Basis2 from_shear(const Vector2& vector)
+    static std::optional<Basis2> from_scale(const Vector2& factor)
     {
-        return Basis2({ { 1.0, vector.x }, { vector.y, 1.0 } });
+        if (auto basis = unsafe_from_scale(factor); basis.valid()) {
+            return basis;
+        }
+        return std::nullopt;
+    }
+
+    static Basis2 unsafe_from_shear(const Vector2& vector)
+    {
+        return Basis2({ { 1.0f, vector.x }, { vector.y, 1.0f } });
+    }
+
+    static std::optional<Basis2> from_shear(const Vector2& vector)
+    {
+        if (auto basis = unsafe_from_shear(vector); basis.valid()) {
+            return basis;
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
@@ -2651,50 +2675,33 @@ public:
 
     [[nodiscard]] Basis2 rotate(const float angle) const
     {
-        return Basis2(m_matrix * from_angle(angle).matrix());
+        return Basis2(m_matrix * from_rotation(angle).matrix());
     }
 
-    [[nodiscard]] Basis2 scale(const Vector2& vector) const
+    [[nodiscard]] Basis2 unsafe_scale(const Vector2& factor) const
     {
-        return Basis2(m_matrix * from_scale(vector).matrix());
+        return Basis2(m_matrix * unsafe_from_scale(factor).matrix());
     }
 
-    [[nodiscard]] Basis2 shear(const Vector2& vector) const
+    [[nodiscard]] std::optional<Basis2> scale(const Vector2& factor) const
     {
-        return Basis2(m_matrix * from_shear(vector).matrix());
+        if (const auto basis = from_scale(factor); basis.has_value()) {
+            return Basis2(m_matrix * basis.value().matrix());
+        }
+        return std::nullopt;
     }
 
-    [[nodiscard]] float angle() const
+    [[nodiscard]] Basis2 unsafe_shear(const Vector2& vector) const
     {
-        return atan2(m_matrix[0][1], m_matrix[0][0]);
+        return Basis2(m_matrix * unsafe_from_shear(vector).matrix());
     }
 
-    [[nodiscard]] Vector2 scale() const
+    [[nodiscard]] std::optional<Basis2> shear(const Vector2& vector) const
     {
-        const float scale_x = sqrt(sqrd(m_matrix[0][0]) + sqrd(m_matrix[0][1]));
-        const float scale_y = sqrt(sqrd(m_matrix[1][0]) + sqrd(m_matrix[1][1]));
-        return { scale_x, scale_y };
-    }
-
-    [[nodiscard]] std::pair<Basis2, Basis2> qr_decompose() const
-    {
-        auto [q, r] = m_matrix.qr_decompose();
-        return { Basis2(q), Basis2(r) };
-    }
-
-    struct Decomposition {
-        Vector2 scale;
-        Vector2 shear;
-        float angle = 0.0f;
-    };
-
-    [[nodiscard]] Decomposition decompose() const
-    {
-        auto [q, r] = qr_decompose();
-        const Vector2 scale { r[0][0], r[1][1] };
-        const Vector2 shear { r[1][0] / r[0][0], r[0][1] / r[1][1] };
-        const float angle = atan2(q[1][0], q[0][0]);
-        return { scale, shear, angle };
+        if (const auto basis = from_shear(vector); basis.has_value()) {
+            return Basis2(m_matrix * basis.value().matrix());
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool approx_equal(const Basis2& other) const
@@ -2764,24 +2771,138 @@ public:
     }
 };
 
+class Transform2 {
+public:
+    Basis2 basis;
+    Vector2 origin;
+
+    Transform2() = default;
+
+    Transform2(const Basis2& basis, const Vector2& origin)
+        : basis(basis)
+        , origin(origin)
+    {
+    }
+
+    static Transform2 from_position(const Vector2& pos)
+    {
+        return { Basis2(), pos };
+    }
+
+    static Transform2 from_rotation_position(const float angle, const Vector2& pos)
+    {
+        return { Basis2::from_rotation(angle), pos };
+    }
+
+    static Transform2 unsafe_from_scale_rotation_position(const Vector2& scale, const float angle, const Vector2& pos)
+    {
+        auto basis = Basis2::unsafe_from_scale(scale);
+        basis = basis.rotate(angle);
+        return Transform2 { basis, pos };
+    }
+
+    static std::optional<Transform2> from_scale_rotation_position(
+        const Vector2& scale, const float angle, const Vector2& pos)
+    {
+        const auto scaled_basis = Basis2::from_scale(scale);
+        if (!scaled_basis.has_value()) {
+            return std::nullopt;
+        }
+        const auto rotated_basis = scaled_basis.value().rotate(angle);
+        return Transform2 { rotated_basis, pos };
+    }
+
+    static Transform2 unsafe_from_scale_rotation_shear_position(
+        const Vector2& scale, const float angle, const Vector2& shear, const Vector2& pos)
+    {
+        auto basis = Basis2::unsafe_from_scale(scale);
+        basis = basis.rotate(angle);
+        basis = basis.unsafe_shear(shear);
+        return Transform2 { basis, pos };
+    }
+
+    static std::optional<Transform2> from_scale_rotation_shear_position(
+        const Vector2& scale, const float angle, const Vector2& shear, const Vector2& pos)
+    {
+        const auto scaled_basis = Basis2::from_scale(scale);
+        if (!scaled_basis.has_value()) {
+            return std::nullopt;
+        }
+        const auto rotated_basis = scaled_basis.value().rotate(angle);
+        const auto sheared_basis = rotated_basis.shear(shear);
+        if (!sheared_basis.has_value()) {
+            return std::nullopt;
+        }
+        return Transform2 { sheared_basis.value(), pos };
+    }
+
+    // TODO: unsafe_from_matrix
+
+    [[nodiscard]] bool valid() const
+    {
+        return basis.valid();
+    }
+
+    [[nodiscard]] Transform2 rotate(const float angle) const
+    {
+        return { basis.rotate(angle), origin };
+    }
+
+    [[nodiscard]] Transform2 unsafe_scale(const Vector2& factor) const
+    {
+        return Transform2 { basis.unsafe_scale(factor), origin };
+    }
+
+    [[nodiscard]] std::optional<Transform2> scale(const Vector2& factor) const
+    {
+        if (const auto scaled_basis = basis.scale(factor); scaled_basis.has_value()) {
+            return Transform2 { scaled_basis.value(), origin };
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 unsafe_shear(const Vector2& vector) const
+    {
+        return { basis.unsafe_shear(vector), origin };
+    }
+
+    [[nodiscard]] std::optional<Transform2> shear(const Vector2& vector) const
+    {
+        if (const auto sheared_basis = basis.shear(vector); sheared_basis.has_value()) {
+            return Transform2 { sheared_basis.value(), origin };
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    {
+        return { basis, origin + offset };
+    }
+
+    [[nodiscard]] Vector2 translation() const
+    {
+        return origin;
+    }
+};
+
 class Matrix3 {
 public:
     using Column = Vector3;
 
-    Column columns[3];
+    std::array<Column, 3> columns;
 
     Matrix3()
-        : columns({ 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })
+        : columns({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } })
     {
     }
 
     Matrix3(const Column& column_1, const Column& column_2, const Column& column_3)
-        : columns(column_1, column_2, column_3)
+        : columns({ column_1, column_2, column_3 })
     {
     }
 
     Matrix3(float c0r0, float c0r1, float c0r2, float c1r0, float c1r1, float c1r2, float c2r0, float c2r1, float c2r2)
-        : columns({ c0r0, c0r1, c0r2 }, { c1r0, c1r1, c1r2 }, { c2r0, c2r1, c2r2 })
+        : columns({ { c0r0, c0r1, c0r2 }, { c1r0, c1r1, c1r2 }, { c2r0, c2r1, c2r2 } })
     {
     }
 

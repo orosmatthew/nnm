@@ -3,7 +3,17 @@
 
 // ReSharper disable CppDFATimeOver
 
-TEST_CASE("abs", "[abs]")
+TEST_CASE("sign")
+{
+    REQUIRE(nnm::sign(0.0f) == 1.0f);
+    REQUIRE(nnm::sign(1.0f) == 1.0f);
+    REQUIRE(nnm::sign(-1.0f) == -1.0f);
+    REQUIRE(nnm::sign(0) == 1);
+    REQUIRE(nnm::sign(1) == 1);
+    REQUIRE(nnm::sign(-1) == -1);
+}
+
+TEST_CASE("abs")
 {
     REQUIRE(nnm::abs(0) == 0);
     REQUIRE(nnm::abs(1) == 1);
@@ -13,22 +23,22 @@ TEST_CASE("abs", "[abs]")
     REQUIRE(nnm::abs(-1.0f) == 1.0f);
 }
 
-TEST_CASE("is_zero_approx", "[is_zero_approx]")
+TEST_CASE("is_zero_approx")
 {
-    REQUIRE(nnm::approx_zero(0.0, 0.01));
-    REQUIRE(nnm::approx_zero(0.005, 0.01));
-    REQUIRE(nnm::approx_zero(0.01, 0.01));
-    REQUIRE(nnm::approx_zero(-0.005, 0.01));
-    REQUIRE(nnm::approx_zero(-0.01, 0.01));
-    REQUIRE(nnm::approx_zero(1e-15, 1e-14));
-    REQUIRE_FALSE(nnm::approx_zero(1e-14, 1e-15));
-    REQUIRE(nnm::approx_zero(-1e-15, 1e-14));
-    REQUIRE_FALSE(nnm::approx_zero(-1e-14, 1e-15));
-    REQUIRE_FALSE(nnm::approx_zero(1.0, 0.0));
-    REQUIRE(nnm::approx_zero(0.0, 0.0));
+    REQUIRE(nnm::approx_zero(0.0f, 0.01f));
+    REQUIRE(nnm::approx_zero(0.005f, 0.01f));
+    REQUIRE(nnm::approx_zero(0.01f, 0.01f));
+    REQUIRE(nnm::approx_zero(-0.005f, 0.01f));
+    REQUIRE(nnm::approx_zero(-0.01f, 0.01f));
+    REQUIRE(nnm::approx_zero(1e-15f, 1e-14f));
+    REQUIRE_FALSE(nnm::approx_zero(1e-14f, 1e-15f));
+    REQUIRE(nnm::approx_zero(-1e-15f, 1e-14f));
+    REQUIRE_FALSE(nnm::approx_zero(-1e-14f, 1e-15f));
+    REQUIRE_FALSE(nnm::approx_zero(1.0f, 0.0f));
+    REQUIRE(nnm::approx_zero(0.0f, 0.0f));
 }
 
-TEST_CASE("max", "[max]")
+TEST_CASE("max")
 {
     REQUIRE(nnm::max(5, 10) == 10);
     REQUIRE(nnm::max(10, 5) == 10);
@@ -45,7 +55,7 @@ TEST_CASE("max", "[max]")
     REQUIRE(nnm::max(-3.14159f, -2.71828f) == -2.71828f);
 }
 
-TEST_CASE("approx_lte", "[approx_lte]")
+TEST_CASE("approx_lte")
 {
     REQUIRE(nnm::approx_lte(1.0f, 1.0f, 0.01f));
     REQUIRE(nnm::approx_lte(1.0f, 1.005f, 0.01f));
@@ -57,7 +67,7 @@ TEST_CASE("approx_lte", "[approx_lte]")
     REQUIRE_FALSE(nnm::approx_lte(4.0f, 2.0f, 1e-10f));
 }
 
-TEST_CASE("is_equal_approx", "[is_equal_approx]")
+TEST_CASE("is_equal_approx")
 {
     REQUIRE(nnm::approx_equal(1.0f, 1.0f, 0.01f));
     REQUIRE(nnm::approx_equal(1.0f, 1.005f, 0.01f));
@@ -72,7 +82,7 @@ TEST_CASE("is_equal_approx", "[is_equal_approx]")
     REQUIRE(nnm::approx_equal(1.0e20f, 1.000000000001e20f, 1e-10f));
 }
 
-TEST_CASE("approx_gte", "[approx_gte]")
+TEST_CASE("approx_gte")
 {
     REQUIRE(nnm::approx_gte(1.0f, 1.0f, 0.01f));
     REQUIRE(nnm::approx_gte(1.0f, 0.995f, 0.01f));
@@ -84,7 +94,7 @@ TEST_CASE("approx_gte", "[approx_gte]")
     REQUIRE_FALSE(nnm::approx_gte(2.0f, 4.0f, 1e-14f));
 }
 
-TEST_CASE("ceil", "[ceil]")
+TEST_CASE("ceil")
 {
     REQUIRE(nnm::ceil(5.3f) == 6.0f);
     REQUIRE(nnm::ceil(5.7f) == 6.0f);
@@ -99,7 +109,7 @@ TEST_CASE("ceil", "[ceil]")
     REQUIRE(nnm::ceil(-3.14159f) == -3.0f);
 }
 
-TEST_CASE("clamp", "[clamp]")
+TEST_CASE("clamp")
 {
     REQUIRE(nnm::clamp(5, 0, 10) == 5);
     REQUIRE(nnm::clamp(-5, 0, 10) == 0);
@@ -114,7 +124,7 @@ TEST_CASE("clamp", "[clamp]")
     REQUIRE(nnm::clamp(-6, -5, -1) == -5);
 }
 
-TEST_CASE("sqrt", "[sqrt]")
+TEST_CASE("sqrt")
 {
     REQUIRE(nnm::sqrt(4.0f) == 2.0f);
     REQUIRE(nnm::sqrt(9.0f) == 3.0f);
@@ -129,7 +139,7 @@ TEST_CASE("sqrt", "[sqrt]")
     REQUIRE(nnm::approx_equal(nnm::sqrt(1.0e20f), 1.0e10f));
 }
 
-TEST_CASE("pow", "[pow]")
+TEST_CASE("pow")
 {
     REQUIRE(nnm::pow(2.0f, 3.0f) == 8.0f);
     REQUIRE(nnm::pow(3.0f, 2.0f) == 9.0f);
@@ -155,7 +165,7 @@ TEST_CASE("pow", "[pow]")
     REQUIRE(nnm::approx_equal(nnm::pow(2.f, 100.0f), 1.2676506002282294e30f));
 }
 
-TEST_CASE("sqrd", "[sqrd]")
+TEST_CASE("sqrd")
 {
     REQUIRE(nnm::sqrd(2) == 4);
     REQUIRE(nnm::sqrd(3) == 9);
@@ -172,7 +182,7 @@ TEST_CASE("sqrd", "[sqrd]")
     REQUIRE(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
 }
 
-TEST_CASE("floor", "[floor]")
+TEST_CASE("floor")
 {
     REQUIRE(nnm::floor(5.3f) == 5.0f);
     REQUIRE(nnm::floor(5.7f) == 5.0f);
@@ -191,7 +201,7 @@ TEST_CASE("floor", "[floor]")
     REQUIRE(nnm::floor(-3.14159f) == -4.0f);
 }
 
-TEST_CASE("lerp", "[lerp]")
+TEST_CASE("lerp")
 {
     REQUIRE(nnm::lerp(0.0f, 10.0f, 0.5f) == 5.0f);
     REQUIRE(nnm::lerp(0.0f, 10.0f, 0.25f) == 2.5f);
@@ -206,9 +216,15 @@ TEST_CASE("lerp", "[lerp]")
 
     REQUIRE(nnm::lerp(5.0f, 10.0f, 1.0f) == 10.0f);
     REQUIRE(nnm::lerp(5.0f, 10.0f, 1.0f) == 10.0f);
+
+    REQUIRE(nnm::lerp(5.0f, 10.0f, 10.0f) == 10.0f);
+    REQUIRE(nnm::lerp(5.0f, 10.0f, -10.0f) == 5.0f);
+
+    REQUIRE(nnm::unclamped_lerp(5.0f, 10.0f, 10.0f) == 55.0f);
+    REQUIRE(nnm::unclamped_lerp(5.0f, 10.0f, -10.0f) == -45.0f);
 }
 
-TEST_CASE("sin", "[sin]")
+TEST_CASE("sin")
 {
     REQUIRE(nnm::approx_equal(nnm::sin(0.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::sin(nnm::pi / 6.0f), 0.5f));
@@ -227,7 +243,7 @@ TEST_CASE("sin", "[sin]")
     REQUIRE(nnm::approx_equal(nnm::sin(6.0f * nnm::pi), 0.0f));
 }
 
-TEST_CASE("cos", "[cos]")
+TEST_CASE("cos")
 {
     REQUIRE(nnm::approx_equal(nnm::cos(0.0f), 1.0f));
     REQUIRE(nnm::approx_equal(nnm::cos(nnm::pi / 6.0f), nnm::sqrt(3.0f) / 2.0f));
@@ -246,7 +262,7 @@ TEST_CASE("cos", "[cos]")
     REQUIRE(nnm::approx_equal(nnm::cos(6.0f * nnm::pi), 1.0f));
 }
 
-TEST_CASE("tan", "[tan]")
+TEST_CASE("tan")
 {
     REQUIRE(nnm::approx_equal(nnm::tan(0.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::tan(nnm::pi / 4.0f), 1.0f));
@@ -262,7 +278,7 @@ TEST_CASE("tan", "[tan]")
     REQUIRE(nnm::approx_equal(nnm::tan(6.0f * nnm::pi), 0.0f));
 }
 
-TEST_CASE("round", "[round]")
+TEST_CASE("round")
 {
     REQUIRE(nnm::round(5.3f) == 5.0f);
     REQUIRE(nnm::round(5.7f) == 6.0f);
@@ -278,7 +294,7 @@ TEST_CASE("round", "[round]")
     REQUIRE(nnm::round(-3.14159f) == -3.0f);
 }
 
-TEST_CASE("atan", "[atan]")
+TEST_CASE("atan")
 {
     REQUIRE(nnm::approx_equal(nnm::atan(0.5f), 0.4636476f));
     REQUIRE(nnm::approx_equal(nnm::atan(1.0f), 0.7853981f));
@@ -294,7 +310,7 @@ TEST_CASE("atan", "[atan]")
     REQUIRE(nnm::approx_equal(nnm::atan(-1.0e20f), -1.5707963f));
 }
 
-TEST_CASE("atan2", "[atan2]")
+TEST_CASE("atan2")
 {
     REQUIRE(nnm::approx_equal(nnm::atan2(1.0f, 1.0f), 0.7853981633974483f));
     REQUIRE(nnm::approx_equal(nnm::atan2(1.0f, 2.0f), 0.4636476090008061f));
@@ -310,7 +326,7 @@ TEST_CASE("atan2", "[atan2]")
     REQUIRE(nnm::approx_equal(nnm::atan2(-1.0e20f, -1.0e20f), -2.356194490192345f));
 }
 
-TEST_CASE("radians", "[radians]")
+TEST_CASE("radians")
 {
     REQUIRE(nnm::approx_equal(nnm::radians(0.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::radians(45.0f), nnm::pi / 4.0f));
@@ -329,7 +345,7 @@ TEST_CASE("radians", "[radians]")
     REQUIRE(nnm::approx_equal(nnm::radians(180.0f, 3.14159f), 3.14159f));
 }
 
-TEST_CASE("degrees", "[degrees]")
+TEST_CASE("degrees")
 {
     REQUIRE(nnm::approx_equal(nnm::degrees(0.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::degrees(nnm::pi / 4.0f), 45.0f));
@@ -348,7 +364,7 @@ TEST_CASE("degrees", "[degrees]")
     REQUIRE(nnm::approx_equal(nnm::degrees(3.14159f, 3.14159f), 180.0f));
 }
 
-TEST_CASE("asin", "[asin]")
+TEST_CASE("asin")
 {
     REQUIRE(nnm::approx_equal(nnm::asin(0.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::asin(0.5f), 0.5235987756f));
@@ -356,10 +372,15 @@ TEST_CASE("asin", "[asin]")
     REQUIRE(nnm::approx_equal(nnm::asin(1.0f), 1.570796327f));
     REQUIRE(nnm::approx_equal(nnm::asin(-1.0f), -1.570796327f));
 
-    // TODO: Check range
+    REQUIRE(nnm::safe_asin(1.0f).has_value());
+    REQUIRE(nnm::approx_equal(nnm::safe_asin(1.0f).value(), 1.570796327f));
+    REQUIRE(nnm::safe_asin(-1.0f).has_value());
+    REQUIRE(nnm::approx_equal(nnm::safe_asin(-1.0f).value(), -1.570796327f));
+    REQUIRE_FALSE(nnm::safe_asin(1.1f).has_value());
+    REQUIRE_FALSE(nnm::safe_asin(-1.1f).has_value());
 }
 
-TEST_CASE("acos", "[acos]")
+TEST_CASE("acos")
 {
     REQUIRE(nnm::approx_equal(nnm::acos(1.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::acos(0.5f), 1.047197551f));
@@ -367,10 +388,15 @@ TEST_CASE("acos", "[acos]")
     REQUIRE(nnm::approx_equal(nnm::acos(0.0f), 1.570796327f));
     REQUIRE(nnm::approx_equal(nnm::acos(-1.0f), 3.141592654f));
 
-    // TODO: Check range
+    REQUIRE(nnm::safe_acos(1.0f).has_value());
+    REQUIRE(nnm::approx_equal(nnm::safe_acos(1.0f).value(), 0.0f));
+    REQUIRE(nnm::safe_acos(-1.0f).has_value());
+    REQUIRE(nnm::approx_equal(nnm::safe_acos(-1.0f).value(), 3.141592654f));
+    REQUIRE_FALSE(nnm::safe_acos(1.1f).has_value());
+    REQUIRE_FALSE(nnm::safe_acos(-1.1f).has_value());
 }
 
-TEST_CASE("min", "[min]")
+TEST_CASE("min")
 {
     REQUIRE(nnm::min(1, 2) == 1);
     REQUIRE(nnm::min(5, 3) == 3);
@@ -384,7 +410,7 @@ TEST_CASE("min", "[min]")
     REQUIRE(nnm::min(3.14f, 2.71f) == 2.71f);
 }
 
-TEST_CASE("log2", "[log2]")
+TEST_CASE("log2")
 {
     REQUIRE(nnm::approx_equal(nnm::log2(1.0f), 0.0f));
     REQUIRE(nnm::approx_equal(nnm::log2(2.0f), 1.0f));
@@ -397,7 +423,7 @@ TEST_CASE("log2", "[log2]")
     // TODO: Check 0 and negative
 }
 
-TEST_CASE("Vector2", "[Vector2]")
+TEST_CASE("Vector2")
 {
     SECTION("Default constructor")
     {
@@ -570,7 +596,7 @@ TEST_CASE("Vector2", "[Vector2]")
         REQUIRE(nnm::approx_equal(v.length(), 5.0f));
 
         v = nnm::Vector2(-2.0f, 5.0f);
-        REQUIRE(nnm::approx_equal(v.length(), sqrt(29.0f)));
+        REQUIRE(nnm::approx_equal(v.length(), nnm::sqrt(29.0f)));
 
         v = nnm::Vector2(0.0f, 0.0f);
         REQUIRE(nnm::approx_equal(v.length(), 0.0f));
@@ -747,7 +773,7 @@ TEST_CASE("Vector2", "[Vector2]")
     }
 }
 
-TEST_CASE("Vector2i", "[Vector2i]")
+TEST_CASE("Vector2i")
 {
     SECTION("Default constructor")
     {
@@ -897,7 +923,7 @@ TEST_CASE("Vector2i", "[Vector2i]")
     }
 }
 
-TEST_CASE("Vector3", "[Vector3]")
+TEST_CASE("Vector3")
 {
     SECTION("Constructors")
     {
@@ -1264,7 +1290,7 @@ TEST_CASE("Vector3", "[Vector3]")
     }
 }
 
-TEST_CASE("Vector3i", "[Vector3i]")
+TEST_CASE("Vector3i")
 {
     SECTION("Constructors")
     {
@@ -1409,7 +1435,7 @@ TEST_CASE("Vector3i", "[Vector3i]")
     }
 }
 
-TEST_CASE("Matrix2", "[Matrix2]")
+TEST_CASE("Matrix2")
 {
     SECTION("Constructors")
     {
@@ -1512,33 +1538,6 @@ TEST_CASE("Matrix2", "[Matrix2]")
         REQUIRE_FALSE(nnm::Matrix2::zero().inverse().has_value());
     }
 
-    SECTION("QR decompose")
-    {
-        // identity
-        const nnm::Matrix2 m1 { { 1.0f, 0.0f }, { 0.0f, 1.0f } };
-        auto [q1, r1] = m1.qr_decompose();
-        const auto a1 = q1.transpose() * r1;
-        REQUIRE(a1.approx_equal(m1));
-        REQUIRE(q1.approx_equal(nnm::Matrix2::identity()));
-        REQUIRE(r1.approx_equal(nnm::Matrix2::identity()));
-
-        // diagonal
-        const nnm::Matrix2 m2 { { 2.0f, 0.0f }, { 0.0f, 3.0f } };
-        auto [q2, r2] = m2.qr_decompose();
-        const auto a2 = q2.transpose() * r2;
-        REQUIRE(a2.approx_equal(m2));
-        REQUIRE(q2.approx_equal(nnm::Matrix2::identity()));
-        REQUIRE(r2.approx_equal({ { 2.0f, 0.0f }, { 0.0f, 3.0f } }));
-
-        // general
-        const nnm::Matrix2 m3 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
-        auto [q3, r3] = m3.qr_decompose();
-        const auto a3 = q3.transpose() * r3;
-        REQUIRE(a3.approx_equal(m3));
-        REQUIRE(q3.approx_equal({ { 0.44721f, -0.894427f }, { -0.894427f, -0.447214f } }));
-        REQUIRE(r3.approx_equal({ { 2.23607f, 0.0f }, { -4.91935f, 0.894427f } }));
-    }
-
     SECTION("approx")
     {
         const nnm::Matrix2 mat1({ 1.0f, -2.0f }, { -3.0f, 4.0f });
@@ -1613,7 +1612,7 @@ TEST_CASE("Matrix2", "[Matrix2]")
     }
 }
 
-TEST_CASE("Basis2", "[Basis2]")
+TEST_CASE("Basis2")
 {
     SECTION("constructor")
     {
@@ -1621,16 +1620,54 @@ TEST_CASE("Basis2", "[Basis2]")
         REQUIRE(b.matrix() == nnm::Matrix2::identity());
     }
 
-    SECTION("from angle")
+    SECTION("from matrix")
     {
-        const auto b1 = nnm::Basis2::from_angle(0.0f);
+        const auto m1 = nnm::Matrix2::identity();
+        const auto b1 = nnm::Basis2::unsafe_from_matrix(m1);
+        REQUIRE(b1 == nnm::Basis2());
+        REQUIRE(b1.matrix() == nnm::Matrix2::identity());
+        const auto m2 = nnm::Matrix2::zero();
+        const auto b2 = nnm::Basis2::from_matrix(m2);
+        REQUIRE_FALSE(b2.has_value());
+        const auto b3 = nnm::Basis2::from_matrix(m1);
+        REQUIRE(b3.has_value());
+        REQUIRE(b3.value().matrix() == nnm::Matrix2::identity());
+    }
+
+    SECTION("from rotation")
+    {
+        const auto b1 = nnm::Basis2::from_rotation(0.0f);
         REQUIRE(b1.matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
-        const auto b2 = nnm::Basis2::from_angle(nnm::pi / 2.0f);
+        const auto b2 = nnm::Basis2::from_rotation(nnm::pi / 2.0f);
         REQUIRE(b2.matrix().approx_equal({ { 0.0f, 1.0f }, { -1.0f, 0.0f } }));
-        const auto b3 = nnm::Basis2::from_angle(nnm::pi);
+        const auto b3 = nnm::Basis2::from_rotation(nnm::pi);
         REQUIRE(b3.matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
-        const auto b4 = nnm::Basis2::from_angle(2.0f * nnm::pi);
+        const auto b4 = nnm::Basis2::from_rotation(2.0f * nnm::pi);
         REQUIRE(b4.matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
+    }
+
+    SECTION("from scale")
+    {
+        const auto b1 = nnm::Basis2::from_scale({ 2.0f, -3.0f });
+        REQUIRE(b1.has_value());
+        REQUIRE(b1.value().matrix() == nnm::Matrix2 { { 2.0f, 0.0f }, { 0.0f, -3.0f } });
+        const auto b2 = nnm::Basis2::unsafe_from_scale({ 2.0f, -3.0f });
+        REQUIRE(b2.matrix() == nnm::Matrix2 { { 2.0f, 0.0f }, { 0.0f, -3.0f } });
+        const auto b3 = nnm::Basis2::from_scale({ 0.0f, 1.0f });
+        REQUIRE_FALSE(b3.has_value());
+        const auto b4 = nnm::Basis2::from_scale({ -1.0f, 0.0f });
+        REQUIRE_FALSE(b4.has_value());
+    }
+
+    SECTION("from shear")
+    {
+        const auto b1 = nnm::Basis2::from_shear({ 2.0f, -3.0f });
+        REQUIRE(b1.has_value());
+        REQUIRE(b1.value().matrix() == nnm::Matrix2 { { 1.0f, 2.0f }, { -3.0f, 1.0f } });
+        const auto b2 = nnm::Basis2::unsafe_from_shear({ 2.0f, -3.0f });
+        REQUIRE(b2.matrix() == nnm::Matrix2 { { 1.0f, 2.0f }, { -3.0f, 1.0f } });
+        const auto b3 = nnm::Basis2::from_shear({ 1.0f, 1.0f });
+        REQUIRE_FALSE(b3.has_value());
     }
 
     SECTION("valid")
@@ -1641,5 +1678,59 @@ TEST_CASE("Basis2", "[Basis2]")
         REQUIRE(b1.valid());
         REQUIRE_FALSE(b2.valid());
         REQUIRE_FALSE(b3.valid());
+    }
+
+    SECTION("matrix")
+    {
+        REQUIRE(nnm::Basis2().matrix() == nnm::Matrix2::identity());
+        REQUIRE(nnm::Basis2().unsafe_matrix() == nnm::Matrix2::identity());
+    }
+
+    SECTION("rotate")
+    {
+        const nnm::Basis2 b1;
+        REQUIRE(b1.rotate(0.0f).approx_equal(b1));
+        REQUIRE(b1.rotate(nnm::pi / 2.0f).matrix().approx_equal({ { 0.0f, 1.0f }, { -1.0f, 0.0f } }));
+        REQUIRE(b1.rotate(-nnm::pi / 2.0f).matrix().approx_equal({ { 0.0f, -1.0f }, { 1.0f, 0.0f } }));
+        REQUIRE(b1.rotate(2.0f * nnm::pi).approx_equal(b1));
+        const auto b2 = nnm::Basis2::unsafe_from_scale({ 2.0f, 0.5f });
+        const auto b2_rotated = b2.rotate(nnm::pi / 4.0f).matrix();
+        REQUIRE(b2_rotated.approx_equal(
+            { { nnm::sqrt(2.0f), nnm::sqrt(2.0f) / 4.0f }, { -nnm::sqrt(2.0f), nnm::sqrt(2.0f) / 4.0f } }));
+    }
+
+    SECTION("scale")
+    {
+        const nnm::Basis2 b1;
+        REQUIRE_FALSE(b1.scale({ 0.0f, 0.0f }).has_value());
+        REQUIRE_FALSE(b1.unsafe_scale({ 0.0f, 0.0f }).valid());
+        REQUIRE(b1.unsafe_scale({ 0.0f, 0.0f }).matrix().approx_equal(nnm::Matrix2::zero()));
+
+        REQUIRE(b1.scale({ 2.0f, 2.0f }).has_value());
+        REQUIRE(b1.scale({ 2.0f, 2.0f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
+        REQUIRE(b1.unsafe_scale({ 2.0f, 2.0f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
+
+        REQUIRE(b1.scale({ 2.0f, 0.5f }).has_value());
+        REQUIRE(b1.scale({ 2.0f, 0.5f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
+        REQUIRE(b1.unsafe_scale({ 2.0f, 0.5f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
+
+        REQUIRE(b1.scale({ -1.0f, -1.0f }).has_value());
+        REQUIRE(b1.scale({ -1.0f, -1.0f }).value().matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
+        REQUIRE(b1.unsafe_scale({ -1.0f, -1.0f }).matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
+    }
+
+    SECTION("shear")
+    {
+        const nnm::Basis2 b1;
+        REQUIRE(b1.shear({ 0.0f, 0.0f }).has_value());
+        REQUIRE(b1.shear({ 0.0f, 0.0f }).value().matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
+        REQUIRE(b1.unsafe_shear({ 0.0f, 0.0f }).matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
+
+        REQUIRE_FALSE(b1.shear({ 1.0f, 1.0f }).has_value());
+        REQUIRE(b1.unsafe_shear({ 1.0f, 1.0f }).matrix().approx_equal({ { 1.0f, 1.0f }, { 1.0f, 1.0f } }));
+
+        REQUIRE(b1.shear({ 2.0f, -0.5f }).has_value());
+        REQUIRE(b1.shear({ 2.0f, -0.5f }).value().matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
+        REQUIRE(b1.unsafe_shear({ 2.0f, -0.5f }).matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
     }
 }
