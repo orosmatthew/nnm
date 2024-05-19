@@ -360,6 +360,11 @@ public:
         return result;
     }
 
+    [[nodiscard]] Vector2 project(const Vector2& onto) const
+    {
+        return onto * (dot(onto) / onto.length_sqrd());
+    }
+
     [[nodiscard]] Vector2 rotate(const float angle) const
     {
         Vector2 result;
@@ -2416,18 +2421,19 @@ public:
     [[nodiscard]] std::pair<Matrix2, Matrix2> qr_decompose() const
     {
         // Gram-Schmidt process
-        Matrix2 q;
-        Matrix2 r;
-        for (int i = 0; i < 2; ++i) {
-            q[i] = at(i);
-            for (int j = 0; j < i; ++j) {
-                r[j][i] = q[j].dot(at[i]);
-                q[i] -= q[j] * r[j][i];
+        Matrix2 q_mat;
+        Matrix2 r_mat;
+        for (int c = 0; c < 2; ++c) {
+            q_mat[c] = at(c);
+            for (int prev = 0; prev < c; ++prev) {
+                const Vector2 proj = at(c).project(q_mat[prev]);
+                r_mat[c][prev] = q_mat[prev].dot(at(c));
+                q_mat[c] = q_mat[c] - proj;
             }
-            r[i][i] = q[i].length();
-            q[i] = q[i].normalize();
+            r_mat[c][c] = q_mat[c].length();
+            q_mat[c] = q_mat[c].normalize();
         }
-        return { q, r };
+        return { q_mat, r_mat };
     }
 
     [[nodiscard]] bool approx_equal(const Matrix2& other) const
@@ -2528,7 +2534,7 @@ public:
         Matrix2 result;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
-                result.at(c, r) = at(c, 0) * other.at(0, r) + at(c, 1) * other.at(1, r);
+                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1);
             }
         }
         return result;
@@ -2678,15 +2684,15 @@ public:
 
     struct Decomposition {
         Vector2 scale;
-        float shear {};
-        float angle {};
+        Vector2 shear;
+        float angle = 0.0f;
     };
 
     [[nodiscard]] Decomposition decompose() const
     {
         auto [q, r] = qr_decompose();
         const Vector2 scale { r[0][0], r[1][1] };
-        const float shear = r[1][0] / r[0][0];
+        const Vector2 shear { r[1][0] / r[0][0], r[0][1] / r[1][1] };
         const float angle = atan2(q[1][0], q[0][0]);
         return { scale, shear, angle };
     }

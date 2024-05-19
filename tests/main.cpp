@@ -638,6 +638,21 @@ TEST_CASE("Vector2", "[Vector2]")
         REQUIRE(incident.reflect(normal) == nnm::Vector2(-3.0f, 4.0f));
     }
 
+    SECTION("project")
+    {
+        const nnm::Vector2 v1 { 1.0f, 0.0f };
+        const nnm::Vector2 v2 { 0.0f, 1.0f };
+        REQUIRE(v1.project(v2).approx_equal({ 0.0f, 0.0f }));
+
+        const nnm::Vector2 v3 { 1.0f, 1.0f };
+        const nnm::Vector2 v4 { 2.0f, 2.0f };
+        REQUIRE(v3.project(v4).approx_equal({ 1.0f, 1.0f }));
+
+        const nnm::Vector2 v5 { 1.0f, -2.0f };
+        const nnm::Vector2 v6 { -3.0f, 4.0f };
+        REQUIRE(v5.project(v6).approx_equal({ 1.32f, -1.76f }));
+    }
+
     SECTION("rotate")
     {
         nnm::Vector2 v(1.0f, 0.0f);
@@ -1497,6 +1512,33 @@ TEST_CASE("Matrix2", "[Matrix2]")
         REQUIRE_FALSE(nnm::Matrix2::zero().inverse().has_value());
     }
 
+    SECTION("QR decompose")
+    {
+        // identity
+        const nnm::Matrix2 m1 { { 1.0f, 0.0f }, { 0.0f, 1.0f } };
+        auto [q1, r1] = m1.qr_decompose();
+        const auto a1 = q1.transpose() * r1;
+        REQUIRE(a1.approx_equal(m1));
+        REQUIRE(q1.approx_equal(nnm::Matrix2::identity()));
+        REQUIRE(r1.approx_equal(nnm::Matrix2::identity()));
+
+        // diagonal
+        const nnm::Matrix2 m2 { { 2.0f, 0.0f }, { 0.0f, 3.0f } };
+        auto [q2, r2] = m2.qr_decompose();
+        const auto a2 = q2.transpose() * r2;
+        REQUIRE(a2.approx_equal(m2));
+        REQUIRE(q2.approx_equal(nnm::Matrix2::identity()));
+        REQUIRE(r2.approx_equal({ { 2.0f, 0.0f }, { 0.0f, 3.0f } }));
+
+        // general
+        const nnm::Matrix2 m3 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+        auto [q3, r3] = m3.qr_decompose();
+        const auto a3 = q3.transpose() * r3;
+        REQUIRE(a3.approx_equal(m3));
+        REQUIRE(q3.approx_equal({ { 0.44721f, -0.894427f }, { -0.894427f, -0.447214f } }));
+        REQUIRE(r3.approx_equal({ { 2.23607f, 0.0f }, { -4.91935f, 0.894427f } }));
+    }
+
     SECTION("approx")
     {
         const nnm::Matrix2 mat1({ 1.0f, -2.0f }, { -3.0f, 4.0f });
@@ -1535,7 +1577,7 @@ TEST_CASE("Matrix2", "[Matrix2]")
 
     SECTION("arithmetic")
     {
-        REQUIRE(m1 * m2 == nnm::Matrix2({ -8.0f, 5.0f }, { 20.0f, -13.0f }));
+        REQUIRE(m1 * m2 == nnm::Matrix2({ -13.0f, 20.0f }, { 5.0f, -8.0f }));
         REQUIRE(m1 * 2.0f == nnm::Matrix2({ 2.0f, -4.0f }, { -6.0f, 8.0f }));
         REQUIRE((m2 / 2.0f).approx_equal(nnm::Matrix2({ -2.0f, 1.5f }, { 1.0f, -0.5f })));
     }
@@ -1546,7 +1588,7 @@ TEST_CASE("Matrix2", "[Matrix2]")
         nnm::Matrix2 m2_copy(m2);
 
         m1 *= m2;
-        REQUIRE(m1 == nnm::Matrix2({ -8.0f, 5.0f }, { 20.0f, -13.0f }));
+        REQUIRE(m1 == nnm::Matrix2({ -13.0f, 20.0f }, { 5.0f, -8.0f }));
         m1 = m1_copy;
 
         m1 *= 2.0f;
