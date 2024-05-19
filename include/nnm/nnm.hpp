@@ -2413,6 +2413,23 @@ public:
         return adjugate() / det;
     }
 
+    [[nodiscard]] std::pair<Matrix2, Matrix2> qr_decompose() const
+    {
+        // Gram-Schmidt process
+        Matrix2 q;
+        Matrix2 r;
+        for (int i = 0; i < 2; ++i) {
+            q[i] = at(i);
+            for (int j = 0; j < i; ++j) {
+                r[j][i] = q[j].dot(at[i]);
+                q[i] -= q[j] * r[j][i];
+            }
+            r[i][i] = q[i].length();
+            q[i] = q[i].normalize();
+        }
+        return { q, r };
+    }
+
     [[nodiscard]] bool approx_equal(const Matrix2& other) const
     {
         for (int c = 0; c < 2; ++c) {
@@ -2435,6 +2452,16 @@ public:
             }
         }
         return true;
+    }
+
+    [[nodiscard]] Column at(const int column) const
+    {
+        return columns[column];
+    }
+
+    Column& at(const int column)
+    {
+        return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
@@ -2645,18 +2672,7 @@ public:
 
     [[nodiscard]] std::pair<Basis2, Basis2> qr_decompose() const
     {
-        // Gram-Schmidt process
-        Matrix2 q;
-        Matrix2 r;
-        for (int i = 0; i < 2; ++i) {
-            q[i] = m_matrix[i];
-            for (int j = 0; j < i; ++j) {
-                r[j][i] = q[j].dot(m_matrix[i]);
-                q[i] -= q[j] * r[j][i];
-            }
-            r[i][i] = q[i].length();
-            q[i] = q[i].normalize();
-        }
+        auto [q, r] = m_matrix.qr_decompose();
         return { Basis2(q), Basis2(r) };
     }
 
