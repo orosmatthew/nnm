@@ -1551,11 +1551,11 @@ int main()
         test_section("inverse");
         {
             const nnm::Matrix2 mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            const std::optional<nnm::Matrix2> mat_inv = mat.inverse();
+            const std::optional<nnm::Matrix2> mat_inv = mat.safe_inverse();
             ASSERT(mat_inv.has_value());
-            ASSERT(mat.inverse()->approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
-            ASSERT(mat.unsafe_inverse().approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
-            ASSERT_FALSE(nnm::Matrix2::zero().inverse().has_value());
+            ASSERT(mat.safe_inverse()->approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
+            ASSERT(mat.inverse().approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
+            ASSERT_FALSE(nnm::Matrix2::zero().safe_inverse().has_value());
         }
 
         test_section("approx");
@@ -1643,13 +1643,13 @@ int main()
         test_section("from matrix");
         {
             const auto m1 = nnm::Matrix2::identity();
-            const auto b1 = nnm::Basis2::unsafe_from_matrix(m1);
+            const auto b1 = nnm::Basis2::from_matrix(m1);
             ASSERT(b1 == nnm::Basis2());
             ASSERT(b1.matrix() == nnm::Matrix2::identity());
             const auto m2 = nnm::Matrix2::zero();
-            const auto b2 = nnm::Basis2::from_matrix(m2);
+            const auto b2 = nnm::Basis2::safe_from_matrix(m2);
             ASSERT_FALSE(b2.has_value());
-            const auto b3 = nnm::Basis2::from_matrix(m1);
+            const auto b3 = nnm::Basis2::safe_from_matrix(m1);
             ASSERT(b3.has_value());
             ASSERT(b3.value().matrix() == nnm::Matrix2::identity());
         }
@@ -1668,33 +1668,33 @@ int main()
 
         test_section("from scale");
         {
-            const auto b1 = nnm::Basis2::from_scale({ 2.0f, -3.0f });
+            const auto b1 = nnm::Basis2::safe_from_scale({ 2.0f, -3.0f });
             ASSERT(b1.has_value());
             ASSERT(b1.value().matrix() == nnm::Matrix2({ 2.0f, 0.0f }, { 0.0f, -3.0f }));
-            const auto b2 = nnm::Basis2::unsafe_from_scale({ 2.0f, -3.0f });
+            const auto b2 = nnm::Basis2::from_scale({ 2.0f, -3.0f });
             ASSERT(b2.matrix() == nnm::Matrix2({ 2.0f, 0.0f }, { 0.0f, -3.0f }));
-            const auto b3 = nnm::Basis2::from_scale({ 0.0f, 1.0f });
+            const auto b3 = nnm::Basis2::safe_from_scale({ 0.0f, 1.0f });
             ASSERT_FALSE(b3.has_value());
-            const auto b4 = nnm::Basis2::from_scale({ -1.0f, 0.0f });
+            const auto b4 = nnm::Basis2::safe_from_scale({ -1.0f, 0.0f });
             ASSERT_FALSE(b4.has_value());
         }
 
         test_section("from shear");
         {
-            const auto b1 = nnm::Basis2::from_shear({ 2.0f, -3.0f });
+            const auto b1 = nnm::Basis2::safe_from_shear({ 2.0f, -3.0f });
             ASSERT(b1.has_value());
             ASSERT(b1.value().matrix() == nnm::Matrix2({ 1.0f, 2.0f }, { -3.0f, 1.0f }));
-            const auto b2 = nnm::Basis2::unsafe_from_shear({ 2.0f, -3.0f });
+            const auto b2 = nnm::Basis2::from_shear({ 2.0f, -3.0f });
             ASSERT(b2.matrix() == nnm::Matrix2({ 1.0f, 2.0f }, { -3.0f, 1.0f }));
-            const auto b3 = nnm::Basis2::from_shear({ 1.0f, 1.0f });
+            const auto b3 = nnm::Basis2::safe_from_shear({ 1.0f, 1.0f });
             ASSERT_FALSE(b3.has_value());
         }
 
         test_section("valid");
         {
             const nnm::Basis2 b1;
-            const auto b2 = nnm::Basis2::unsafe_from_matrix(nnm::Matrix2::zero());
-            const auto b3 = nnm::Basis2::unsafe_from_matrix({ { 1.0f, -2.0f }, { 2.0f, -4.0f } });
+            const auto b2 = nnm::Basis2::from_matrix(nnm::Matrix2::zero());
+            const auto b3 = nnm::Basis2::from_matrix({ { 1.0f, -2.0f }, { 2.0f, -4.0f } });
             ASSERT(b1.valid());
             ASSERT_FALSE(b2.valid());
             ASSERT_FALSE(b3.valid());
@@ -1703,7 +1703,7 @@ int main()
         test_section("matrix");
         {
             ASSERT(nnm::Basis2().matrix() == nnm::Matrix2::identity());
-            ASSERT(nnm::Basis2().unsafe_matrix() == nnm::Matrix2::identity());
+            ASSERT(nnm::Basis2().matrix() == nnm::Matrix2::identity());
         }
 
         test_section("rotate");
@@ -1713,7 +1713,7 @@ int main()
             ASSERT(b1.rotate(nnm::pi / 2.0f).matrix().approx_equal({ { 0.0f, 1.0f }, { -1.0f, 0.0f } }));
             ASSERT(b1.rotate(-nnm::pi / 2.0f).matrix().approx_equal({ { 0.0f, -1.0f }, { 1.0f, 0.0f } }));
             ASSERT(b1.rotate(2.0f * nnm::pi).approx_equal(b1));
-            const auto b2 = nnm::Basis2::unsafe_from_scale({ 2.0f, 0.5f });
+            const auto b2 = nnm::Basis2::from_scale({ 2.0f, 0.5f });
             const auto b2_rotated = b2.rotate(nnm::pi / 4.0f).matrix();
             ASSERT(b2_rotated.approx_equal(
                 { { nnm::sqrt(2.0f), nnm::sqrt(2.0f) / 4.0f }, { -nnm::sqrt(2.0f), nnm::sqrt(2.0f) / 4.0f } }));
@@ -1722,57 +1722,57 @@ int main()
         test_section("scale");
         {
             const nnm::Basis2 b1;
-            ASSERT_FALSE(b1.scale({ 0.0f, 0.0f }).has_value());
-            ASSERT_FALSE(b1.unsafe_scale({ 0.0f, 0.0f }).valid());
-            ASSERT(b1.unsafe_scale({ 0.0f, 0.0f }).matrix().approx_equal(nnm::Matrix2::zero()));
+            ASSERT_FALSE(b1.safe_scale({ 0.0f, 0.0f }).has_value());
+            ASSERT_FALSE(b1.scale({ 0.0f, 0.0f }).valid());
+            ASSERT(b1.scale({ 0.0f, 0.0f }).matrix().approx_equal(nnm::Matrix2::zero()));
 
-            ASSERT(b1.scale({ 2.0f, 2.0f }).has_value());
-            ASSERT(b1.scale({ 2.0f, 2.0f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
-            ASSERT(b1.unsafe_scale({ 2.0f, 2.0f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
+            ASSERT(b1.safe_scale({ 2.0f, 2.0f }).has_value());
+            ASSERT(b1.safe_scale({ 2.0f, 2.0f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
+            ASSERT(b1.scale({ 2.0f, 2.0f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 2.0f } }));
 
-            ASSERT(b1.scale({ 2.0f, 0.5f }).has_value());
-            ASSERT(b1.scale({ 2.0f, 0.5f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
-            ASSERT(b1.unsafe_scale({ 2.0f, 0.5f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
+            ASSERT(b1.safe_scale({ 2.0f, 0.5f }).has_value());
+            ASSERT(b1.safe_scale({ 2.0f, 0.5f }).value().matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
+            ASSERT(b1.scale({ 2.0f, 0.5f }).matrix().approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
 
-            ASSERT(b1.scale({ -1.0f, -1.0f }).has_value());
-            ASSERT(b1.scale({ -1.0f, -1.0f }).value().matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
-            ASSERT(b1.unsafe_scale({ -1.0f, -1.0f }).matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
+            ASSERT(b1.safe_scale({ -1.0f, -1.0f }).has_value());
+            ASSERT(b1.safe_scale({ -1.0f, -1.0f }).value().matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
+            ASSERT(b1.scale({ -1.0f, -1.0f }).matrix().approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
         }
 
         test_section("shear");
         {
             const nnm::Basis2 b1;
-            ASSERT(b1.shear({ 0.0f, 0.0f }).has_value());
-            ASSERT(b1.shear({ 0.0f, 0.0f }).value().matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
-            ASSERT(b1.unsafe_shear({ 0.0f, 0.0f }).matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
+            ASSERT(b1.safe_shear({ 0.0f, 0.0f }).has_value());
+            ASSERT(b1.safe_shear({ 0.0f, 0.0f }).value().matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
+            ASSERT(b1.shear({ 0.0f, 0.0f }).matrix().approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
 
-            ASSERT_FALSE(b1.shear({ 1.0f, 1.0f }).has_value());
-            ASSERT(b1.unsafe_shear({ 1.0f, 1.0f }).matrix().approx_equal({ { 1.0f, 1.0f }, { 1.0f, 1.0f } }));
+            ASSERT_FALSE(b1.safe_shear({ 1.0f, 1.0f }).has_value());
+            ASSERT(b1.shear({ 1.0f, 1.0f }).matrix().approx_equal({ { 1.0f, 1.0f }, { 1.0f, 1.0f } }));
 
-            ASSERT(b1.shear({ 2.0f, -0.5f }).has_value());
-            ASSERT(b1.shear({ 2.0f, -0.5f }).value().matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
-            ASSERT(b1.unsafe_shear({ 2.0f, -0.5f }).matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
+            ASSERT(b1.safe_shear({ 2.0f, -0.5f }).has_value());
+            ASSERT(b1.safe_shear({ 2.0f, -0.5f }).value().matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
+            ASSERT(b1.shear({ 2.0f, -0.5f }).matrix().approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
         }
 
         test_section("approx equal");
         {
             const nnm::Basis2 b1;
             ASSERT(b1.approx_equal(
-                nnm::Basis2::unsafe_from_matrix({ { 1.0000000f, 0.000000001f }, { -0.000000001f, 0.9999999f } })));
+                nnm::Basis2::from_matrix({ { 1.0000000f, 0.000000001f }, { -0.000000001f, 0.9999999f } })));
             const auto b2 = nnm::Basis2::from_rotation(nnm::pi);
             ASSERT_FALSE(b2.approx_equal(nnm::Basis2()));
         }
 
         test_section("accessors");
         {
-            auto b1 = nnm::Basis2::unsafe_from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            auto b1 = nnm::Basis2::from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
             ASSERT(b1.at(0, 0) == 1.0f);
             ASSERT(b1.at(0, 1) == -2.0f);
             ASSERT(b1.at(1, 0) == -3.0f);
             ASSERT(b1.at(1, 1) == 4.0f);
-            ASSERT(b1.unsafe_at(0, 0) == 1.0f);
-            ASSERT(b1.unsafe_at(0, 1) == -2.0f);
-            ASSERT(b1.unsafe_at(1, 0) == -3.0f);
+            ASSERT(b1.at(0, 0) == 1.0f);
+            ASSERT(b1.at(0, 1) == -2.0f);
+            ASSERT(b1.at(1, 0) == -3.0f);
             ASSERT(b1[0] == nnm::Vector2(1.0f, -2.0f));
             ASSERT(b1[1] == nnm::Vector2(-3.0f, 4.0f));
         }
@@ -1790,8 +1790,8 @@ int main()
 
         test_section("comparison");
         {
-            const auto b1 = nnm::Basis2::unsafe_from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            const auto b2 = nnm::Basis2::unsafe_from_matrix({ { -4.0f, 3.0f }, { 2.0f, -1.0f } });
+            const auto b1 = nnm::Basis2::from_matrix({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            const auto b2 = nnm::Basis2::from_matrix({ { -4.0f, 3.0f }, { 2.0f, -1.0f } });
             ASSERT(b2 < b1);
         }
     }

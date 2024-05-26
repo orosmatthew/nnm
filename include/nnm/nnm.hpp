@@ -2433,12 +2433,12 @@ public:
         return cofactor().transpose();
     }
 
-    [[nodiscard]] Matrix2 unsafe_inverse() const
+    [[nodiscard]] Matrix2 inverse() const
     {
         return adjugate() / determinant();
     }
 
-    [[nodiscard]] std::optional<Matrix2> inverse() const
+    [[nodiscard]] std::optional<Matrix2> safe_inverse() const
     {
         const float det = determinant();
         if (det == 0.0) {
@@ -2617,12 +2617,12 @@ public:
     {
     }
 
-    static Basis2 unsafe_from_matrix(const Matrix2& matrix)
+    static Basis2 from_matrix(const Matrix2& matrix)
     {
         return Basis2(matrix);
     }
 
-    static std::optional<Basis2> from_matrix(const Matrix2& matrix)
+    static std::optional<Basis2> safe_from_matrix(const Matrix2& matrix)
     {
         if (matrix.determinant() != 0.0) {
             return Basis2(matrix);
@@ -2635,27 +2635,27 @@ public:
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
-    static Basis2 unsafe_from_scale(const Vector2& factor)
+    static Basis2 from_scale(const Vector2& factor)
     {
         return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
     }
 
-    static std::optional<Basis2> from_scale(const Vector2& factor)
+    static std::optional<Basis2> safe_from_scale(const Vector2& factor)
     {
-        if (auto basis = unsafe_from_scale(factor); basis.valid()) {
+        if (auto basis = from_scale(factor); basis.valid()) {
             return basis;
         }
         return std::nullopt;
     }
 
-    static Basis2 unsafe_from_shear(const Vector2& vector)
+    static Basis2 from_shear(const Vector2& vector)
     {
         return Basis2({ { 1.0f, vector.x }, { vector.y, 1.0f } });
     }
 
-    static std::optional<Basis2> from_shear(const Vector2& vector)
+    static std::optional<Basis2> safe_from_shear(const Vector2& vector)
     {
-        if (auto basis = unsafe_from_shear(vector); basis.valid()) {
+        if (auto basis = from_shear(vector); basis.valid()) {
             return basis;
         }
         return std::nullopt;
@@ -2671,7 +2671,7 @@ public:
         return m_matrix;
     }
 
-    Matrix2& unsafe_matrix()
+    Matrix2& matrix()
     {
         return m_matrix;
     }
@@ -2681,27 +2681,27 @@ public:
         return Basis2(m_matrix * from_rotation(angle).matrix());
     }
 
-    [[nodiscard]] Basis2 unsafe_scale(const Vector2& factor) const
+    [[nodiscard]] Basis2 scale(const Vector2& factor) const
     {
-        return Basis2(m_matrix * unsafe_from_scale(factor).matrix());
+        return Basis2(m_matrix * from_scale(factor).matrix());
     }
 
-    [[nodiscard]] std::optional<Basis2> scale(const Vector2& factor) const
+    [[nodiscard]] std::optional<Basis2> safe_scale(const Vector2& factor) const
     {
-        if (const auto basis = from_scale(factor); basis.has_value()) {
+        if (const auto basis = safe_from_scale(factor); basis.has_value()) {
             return Basis2(m_matrix * basis.value().matrix());
         }
         return std::nullopt;
     }
 
-    [[nodiscard]] Basis2 unsafe_shear(const Vector2& vector) const
+    [[nodiscard]] Basis2 shear(const Vector2& vector) const
     {
-        return Basis2(m_matrix * unsafe_from_shear(vector).matrix());
+        return Basis2(m_matrix * from_shear(vector).matrix());
     }
 
-    [[nodiscard]] std::optional<Basis2> shear(const Vector2& vector) const
+    [[nodiscard]] std::optional<Basis2> safe_shear(const Vector2& vector) const
     {
-        if (const auto basis = from_shear(vector); basis.has_value()) {
+        if (const auto basis = safe_from_shear(vector); basis.has_value()) {
             return Basis2(m_matrix * basis.value().matrix());
         }
         return std::nullopt;
@@ -2724,7 +2724,7 @@ public:
         return m_matrix[column][row];
     }
 
-    float& unsafe_at(const int column, const int row)
+    float& at(const int column, const int row)
     {
         return m_matrix[column][row];
     }
@@ -2792,54 +2792,38 @@ public:
         return { Basis2(), pos };
     }
 
-    static Transform2 from_rotation_position(const float angle, const Vector2& pos)
+    static Transform2 from_rotation(const float angle)
     {
-        return { Basis2::from_rotation(angle), pos };
+        return { Basis2::from_rotation(angle), Vector2() };
     }
 
-    static Transform2 unsafe_from_scale_rotation_position(const Vector2& scale, const float angle, const Vector2& pos)
+    static Transform2 from_scale(const Vector2& factor)
     {
-        auto basis = Basis2::unsafe_from_scale(scale);
-        basis = basis.rotate(angle);
-        return Transform2 { basis, pos };
+        return { Basis2::from_scale(factor), Vector2() };
     }
 
-    static std::optional<Transform2> from_scale_rotation_position(
-        const Vector2& scale, const float angle, const Vector2& pos)
+    static std::optional<Transform2> safe_from_scale(const Vector2& factor)
     {
-        const auto scaled_basis = Basis2::from_scale(scale);
-        if (!scaled_basis.has_value()) {
-            return std::nullopt;
+        if (const auto basis = Basis2::safe_from_scale(factor); basis.has_value()) {
+            return Transform2 { basis.value(), Vector2() };
         }
-        const auto rotated_basis = scaled_basis.value().rotate(angle);
-        return Transform2 { rotated_basis, pos };
+        return std::nullopt;
     }
 
-    static Transform2 unsafe_from_scale_rotation_shear_position(
-        const Vector2& scale, const float angle, const Vector2& shear, const Vector2& pos)
+    static Transform2 from_shear(const Vector2& vector)
     {
-        auto basis = Basis2::unsafe_from_scale(scale);
-        basis = basis.rotate(angle);
-        basis = basis.unsafe_shear(shear);
-        return Transform2 { basis, pos };
+        return { Basis2::from_shear(vector), Vector2() };
     }
 
-    static std::optional<Transform2> from_scale_rotation_shear_position(
-        const Vector2& scale, const float angle, const Vector2& shear, const Vector2& pos)
+    static std::optional<Transform2> safe_from_shear(const Vector2& vector)
     {
-        const auto scaled_basis = Basis2::from_scale(scale);
-        if (!scaled_basis.has_value()) {
-            return std::nullopt;
+        if (const auto basis = Basis2::safe_from_shear(vector); basis.has_value()) {
+            return Transform2 { basis.value(), Vector2() };
         }
-        const auto rotated_basis = scaled_basis.value().rotate(angle);
-        const auto sheared_basis = rotated_basis.shear(shear);
-        if (!sheared_basis.has_value()) {
-            return std::nullopt;
-        }
-        return Transform2 { sheared_basis.value(), pos };
+        return std::nullopt;
     }
 
-    // TODO: unsafe_from_matrix
+    // TODO: from_matrix
 
     [[nodiscard]] bool valid() const
     {
@@ -2851,27 +2835,27 @@ public:
         return { basis.rotate(angle), origin };
     }
 
-    [[nodiscard]] Transform2 unsafe_scale(const Vector2& factor) const
+    [[nodiscard]] Transform2 scale(const Vector2& factor) const
     {
-        return Transform2 { basis.unsafe_scale(factor), origin };
+        return Transform2 { basis.scale(factor), origin };
     }
 
-    [[nodiscard]] std::optional<Transform2> scale(const Vector2& factor) const
+    [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
     {
-        if (const auto scaled_basis = basis.scale(factor); scaled_basis.has_value()) {
+        if (const auto scaled_basis = basis.safe_scale(factor); scaled_basis.has_value()) {
             return Transform2 { scaled_basis.value(), origin };
         }
         return std::nullopt;
     }
 
-    [[nodiscard]] Transform2 unsafe_shear(const Vector2& vector) const
+    [[nodiscard]] Transform2 shear(const Vector2& vector) const
     {
-        return { basis.unsafe_shear(vector), origin };
+        return { basis.shear(vector), origin };
     }
 
-    [[nodiscard]] std::optional<Transform2> shear(const Vector2& vector) const
+    [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
     {
-        if (const auto sheared_basis = basis.shear(vector); sheared_basis.has_value()) {
+        if (const auto sheared_basis = basis.safe_shear(vector); sheared_basis.has_value()) {
             return Transform2 { sheared_basis.value(), origin };
         }
         return std::nullopt;
