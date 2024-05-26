@@ -15,12 +15,12 @@ inline float epsilon = 0.00001f;
 
 inline float sign(const float value)
 {
-    return value >= 0 ? 1.0f : -1.0f;
+    return std::copysign(1.0f, value);
 }
 
 inline int sign(const int value)
 {
-    return value >= 0 ? 1 : -1;
+    return (value >= 0) - (value < 0);
 }
 
 inline float abs(const float value)
