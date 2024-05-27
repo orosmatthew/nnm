@@ -3445,7 +3445,9 @@ public:
 
     [[nodiscard]] bool valid() const
     {
-        return Basis2(matrix.sub_matrix2_at(0, 0)).valid();
+        const bool basis_valid = matrix.sub_matrix2_at(0, 0).determinant() != 0.0;
+        const bool last_row_valid = matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
+        return basis_valid && last_row_valid;
     }
 
     [[nodiscard]] Basis2 basis() const
