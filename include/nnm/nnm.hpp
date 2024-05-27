@@ -2604,22 +2604,17 @@ public:
 };
 
 class Basis2 {
-    Matrix2 m_matrix;
-
-    explicit Basis2(const Matrix2 matrix)
-        : m_matrix(matrix)
-    {
-    }
-
 public:
+    Matrix2 matrix;
+
     Basis2()
-        : m_matrix(Matrix2::identity())
+        : matrix(Matrix2::identity())
     {
     }
 
-    static Basis2 from_matrix(const Matrix2& matrix)
+    explicit Basis2(const Matrix2& matrix)
+        : matrix(matrix)
     {
-        return Basis2(matrix);
     }
 
     static std::optional<Basis2> safe_from_matrix(const Matrix2& matrix)
@@ -2663,46 +2658,36 @@ public:
 
     [[nodiscard]] bool valid() const
     {
-        return m_matrix.determinant() != 0.0;
-    }
-
-    [[nodiscard]] const Matrix2& matrix() const
-    {
-        return m_matrix;
-    }
-
-    Matrix2& matrix()
-    {
-        return m_matrix;
+        return matrix.determinant() != 0.0;
     }
 
     [[nodiscard]] Basis2 rotate(const float angle) const
     {
-        return Basis2(m_matrix * from_rotation(angle).matrix());
+        return Basis2(matrix * from_rotation(angle).matrix);
     }
 
     [[nodiscard]] Basis2 scale(const Vector2& factor) const
     {
-        return Basis2(m_matrix * from_scale(factor).matrix());
+        return Basis2(matrix * from_scale(factor).matrix);
     }
 
     [[nodiscard]] std::optional<Basis2> safe_scale(const Vector2& factor) const
     {
         if (const auto basis = safe_from_scale(factor); basis.has_value()) {
-            return Basis2(m_matrix * basis.value().matrix());
+            return Basis2(matrix * basis.value().matrix);
         }
         return std::nullopt;
     }
 
     [[nodiscard]] Basis2 shear(const Vector2& vector) const
     {
-        return Basis2(m_matrix * from_shear(vector).matrix());
+        return Basis2(matrix * from_shear(vector).matrix);
     }
 
     [[nodiscard]] std::optional<Basis2> safe_shear(const Vector2& vector) const
     {
         if (const auto basis = safe_from_shear(vector); basis.has_value()) {
-            return Basis2(m_matrix * basis.value().matrix());
+            return Basis2(matrix * basis.value().matrix);
         }
         return std::nullopt;
     }
@@ -2721,17 +2706,17 @@ public:
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        return m_matrix[column][row];
+        return matrix[column][row];
     }
 
     float& at(const int column, const int row)
     {
-        return m_matrix[column][row];
+        return matrix[column][row];
     }
 
     const Matrix2::Column& operator[](const int index) const
     {
-        return m_matrix[index];
+        return matrix[index];
     }
 
     bool operator==(const Basis2& other) const
@@ -3387,101 +3372,127 @@ public:
 };
 
 class Transform2 {
-    Matrix3 m_matrix;
-
 public:
+    Matrix3 matrix;
+
     Transform2()
-        : m_matrix(Matrix3::identity())
+        : matrix(Matrix3::identity())
     {
     }
 
-    Transform2(const Basis2& basis, const Vector2& origin)
+    explicit Transform2(const Matrix3& matrix)
+        : matrix(matrix)
     {
+    }
+
+    static std::optional<Transform2> safe_from_matrix(const Matrix3& matrix)
+    {
+        if (const auto transform = Transform2(matrix); transform.valid()) {
+            return transform;
+        }
+        return std::nullopt;
+    }
+
+    static Transform2 from_basis_position(const Basis2& basis, const Vector2& pos)
+    {
+        Matrix3 matrix;
+        matrix = matrix.sub_matrix2(0, 0, basis.matrix);
+        matrix[2][0] = pos.x;
+        matrix[2][1] = pos.y;
+        return Transform2(matrix);
     }
 
     static Transform2 from_position(const Vector2& pos)
     {
-        return { Basis2(), pos };
+        return from_basis_position(Basis2(), pos);
+    }
+
+    static Transform2 from_basis(const Basis2& basis)
+    {
+        return from_basis_position(basis, Vector2::zero());
     }
 
     static Transform2 from_rotation(const float angle)
     {
-        return { Basis2::from_rotation(angle), Vector2() };
+        return from_basis_position(Basis2::from_rotation(angle), Vector2());
     }
 
     static Transform2 from_scale(const Vector2& factor)
     {
-        return { Basis2::from_scale(factor), Vector2() };
+        return from_basis_position(Basis2::from_scale(factor), Vector2());
     }
 
     static std::optional<Transform2> safe_from_scale(const Vector2& factor)
     {
-        if (const auto basis = Basis2::safe_from_scale(factor); basis.has_value()) {
-            return Transform2 { basis.value(), Vector2() };
+        if (const auto transform = from_scale(factor); transform.valid()) {
+            return transform;
         }
         return std::nullopt;
     }
 
     static Transform2 from_shear(const Vector2& vector)
     {
-        return { Basis2::from_shear(vector), Vector2() };
+        return from_basis_position(Basis2::from_shear(vector), Vector2());
     }
 
     static std::optional<Transform2> safe_from_shear(const Vector2& vector)
     {
-        if (const auto basis = Basis2::safe_from_shear(vector); basis.has_value()) {
-            return Transform2 { basis.value(), Vector2() };
+        if (const auto transform = from_shear(vector); transform.valid()) {
+            return transform;
         }
         return std::nullopt;
     }
 
-    // TODO: from_matrix
+    [[nodiscard]] bool valid() const
+    {
+        return Basis2(matrix.sub_matrix2_at(0, 0)).valid();
+    }
 
-    // [[nodiscard]] bool valid() const
-    // {
-    //     return basis.valid();
-    // }
-    //
-    // [[nodiscard]] Transform2 rotate(const float angle) const
-    // {
-    //     return { basis.rotate(angle), origin };
-    // }
-    //
-    // [[nodiscard]] Transform2 scale(const Vector2& factor) const
-    // {
-    //     return Transform2 { basis.scale(factor), origin };
-    // }
-    //
-    // [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
-    // {
-    //     if (const auto scaled_basis = basis.safe_scale(factor); scaled_basis.has_value()) {
-    //         return Transform2 { scaled_basis.value(), origin };
-    //     }
-    //     return std::nullopt;
-    // }
-    //
-    // [[nodiscard]] Transform2 shear(const Vector2& vector) const
-    // {
-    //     return { basis.shear(vector), origin };
-    // }
-    //
-    // [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
-    // {
-    //     if (const auto sheared_basis = basis.safe_shear(vector); sheared_basis.has_value()) {
-    //         return Transform2 { sheared_basis.value(), origin };
-    //     }
-    //     return std::nullopt;
-    // }
-    //
-    // [[nodiscard]] Transform2 translate(const Vector2& offset) const
-    // {
-    //     return { basis, origin + offset };
-    // }
-    //
-    // [[nodiscard]] Vector2 translation() const
-    // {
-    //     return origin;
-    // }
+    [[nodiscard]] Basis2 basis() const
+    {
+        return Basis2(matrix.sub_matrix2_at(0, 0));
+    }
+
+    [[nodiscard]] Vector2 position() const
+    {
+        return { matrix[2][0], matrix[2][1] };
+    }
+
+    [[nodiscard]] Transform2 rotate(const float angle) const
+    {
+        return from_basis_position(basis().rotate(angle), position());
+    }
+
+    [[nodiscard]] Transform2 scale(const Vector2& factor) const
+    {
+        return from_basis_position(basis().scale(factor), position());
+    }
+
+    [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
+    {
+        if (const auto transform = scale(factor); transform.valid()) {
+            return transform;
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 shear(const Vector2& vector) const
+    {
+        return from_basis_position(basis().shear(vector), position());
+    }
+
+    [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
+    {
+        if (const auto transform = shear(vector); transform.valid()) {
+            return transform;
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    {
+        return from_basis_position(basis(), position() + offset);
+    }
 };
 
 class Matrix4 {
