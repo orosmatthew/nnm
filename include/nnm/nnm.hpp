@@ -2349,7 +2349,7 @@ public:
             float c1r0;
             float c1r1;
         };
-        Column columns[2];
+        std::array<Column, 2> columns;
     };
 
     Matrix2()
@@ -2415,7 +2415,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
-        return pow(-1.0, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
+        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
     }
 
     [[nodiscard]] Matrix2 cofactor() const
@@ -2441,7 +2441,7 @@ public:
     [[nodiscard]] std::optional<Matrix2> safe_inverse() const
     {
         const float det = determinant();
-        if (det == 0.0) {
+        if (det == 0.0f) {
             return std::nullopt;
         }
         return adjugate() / det;
@@ -2774,122 +2774,70 @@ public:
     }
 };
 
-class Transform2 {
-public:
-    Basis2 basis;
-    Vector2 origin;
-
-    Transform2() = default;
-
-    Transform2(const Basis2& basis, const Vector2& origin)
-        : basis(basis)
-        , origin(origin)
-    {
-    }
-
-    static Transform2 from_position(const Vector2& pos)
-    {
-        return { Basis2(), pos };
-    }
-
-    static Transform2 from_rotation(const float angle)
-    {
-        return { Basis2::from_rotation(angle), Vector2() };
-    }
-
-    static Transform2 from_scale(const Vector2& factor)
-    {
-        return { Basis2::from_scale(factor), Vector2() };
-    }
-
-    static std::optional<Transform2> safe_from_scale(const Vector2& factor)
-    {
-        if (const auto basis = Basis2::safe_from_scale(factor); basis.has_value()) {
-            return Transform2 { basis.value(), Vector2() };
-        }
-        return std::nullopt;
-    }
-
-    static Transform2 from_shear(const Vector2& vector)
-    {
-        return { Basis2::from_shear(vector), Vector2() };
-    }
-
-    static std::optional<Transform2> safe_from_shear(const Vector2& vector)
-    {
-        if (const auto basis = Basis2::safe_from_shear(vector); basis.has_value()) {
-            return Transform2 { basis.value(), Vector2() };
-        }
-        return std::nullopt;
-    }
-
-    // TODO: from_matrix
-
-    [[nodiscard]] bool valid() const
-    {
-        return basis.valid();
-    }
-
-    [[nodiscard]] Transform2 rotate(const float angle) const
-    {
-        return { basis.rotate(angle), origin };
-    }
-
-    [[nodiscard]] Transform2 scale(const Vector2& factor) const
-    {
-        return Transform2 { basis.scale(factor), origin };
-    }
-
-    [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
-    {
-        if (const auto scaled_basis = basis.safe_scale(factor); scaled_basis.has_value()) {
-            return Transform2 { scaled_basis.value(), origin };
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]] Transform2 shear(const Vector2& vector) const
-    {
-        return { basis.shear(vector), origin };
-    }
-
-    [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
-    {
-        if (const auto sheared_basis = basis.safe_shear(vector); sheared_basis.has_value()) {
-            return Transform2 { sheared_basis.value(), origin };
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]] Transform2 translate(const Vector2& offset) const
-    {
-        return { basis, origin + offset };
-    }
-
-    [[nodiscard]] Vector2 translation() const
-    {
-        return origin;
-    }
-};
-
 class Matrix3 {
 public:
     using Column = Vector3;
 
-    std::array<Column, 3> columns;
+    union {
+        struct {
+            float c0r0;
+            float c0r1;
+            float c0r2;
+            float c1r0;
+            float c1r1;
+            float c1r2;
+            float c2r0;
+            float c2r1;
+            float c2r2;
+        };
+        std::array<Column, 3> columns;
+    };
 
     Matrix3()
-        : columns({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } })
+        : c0r0(1.0f)
+        , c0r1(0.0f)
+        , c0r2(0.0f)
+        , c1r0(0.0f)
+        , c1r1(1.0f)
+        , c1r2(0.0f)
+        , c2r0(0.0f)
+        , c2r1(0.0f)
+        , c2r2(1.0f)
     {
     }
 
     Matrix3(const Column& column_1, const Column& column_2, const Column& column_3)
-        : columns({ column_1, column_2, column_3 })
+        : c0r0(column_1[0])
+        , c0r1(column_1[1])
+        , c0r2(column_1[2])
+        , c1r0(column_2[0])
+        , c1r1(column_2[1])
+        , c1r2(column_2[2])
+        , c2r0(column_3[0])
+        , c2r1(column_3[1])
+        , c2r2(column_3[2])
     {
     }
 
-    Matrix3(float c0r0, float c0r1, float c0r2, float c1r0, float c1r1, float c1r2, float c2r0, float c2r1, float c2r2)
-        : columns({ { c0r0, c0r1, c0r2 }, { c1r0, c1r1, c1r2 }, { c2r0, c2r1, c2r2 } })
+    Matrix3(
+        const float c0r0,
+        const float c0r1,
+        const float c0r2,
+        const float c1r0,
+        const float c1r1,
+        const float c1r2,
+        const float c2r0,
+        const float c2r1,
+        const float c2r2)
+        : c0r0(c0r0)
+        , c0r1(c0r1)
+        , c0r2(c0r2)
+        , c1r0(c1r0)
+        , c1r1(c1r1)
+        , c1r2(c1r2)
+        , c2r0(c2r0)
+        , c2r1(c2r1)
+        , c2r2(c2r2)
     {
     }
 
@@ -2955,6 +2903,11 @@ public:
     [[nodiscard]] static Matrix3 identity()
     {
         return { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
+    }
+
+    [[nodiscard]] float trace() const
+    {
+        return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
     // TODO: move
@@ -3096,9 +3049,41 @@ public:
         return at(0, 0) * det_bottom_right - at(1, 0) * det_bottom_split + at(2, 0) * det_bottom_left;
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] float minor(const int column, const int row) const
     {
-        return at(0, 0) + at(1, 1) + at(2, 2);
+        Matrix2 minor_matrix;
+        int minor_col = 0;
+        for (int c = 0; c < 3; ++c) {
+            if (c == column) {
+                continue;
+            }
+            int minor_row = 0;
+            for (int r = 0; r < 3; ++r) {
+                if (r == row) {
+                    continue;
+                }
+                minor_matrix[minor_col][minor_row] = at(c, r);
+                ++minor_row;
+            }
+            ++minor_col;
+        }
+        return minor_matrix.determinant();
+    }
+
+    [[nodiscard]] float cofactor_at(const int column, const int row) const
+    {
+        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
+    }
+
+    [[nodiscard]] Matrix3 cofactor() const
+    {
+        Matrix3 result;
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                result[c][r] = cofactor_at(c, r);
+            }
+        }
+        return result;
     }
 
     [[nodiscard]] Matrix3 transpose() const
@@ -3106,35 +3091,23 @@ public:
         return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) } };
     }
 
+    [[nodiscard]] Matrix3 adjugate() const
+    {
+        return cofactor().transpose();
+    }
+
     [[nodiscard]] Matrix3 inverse() const
     {
-        const float a11 = (*this)[0][0];
-        const float a12 = (*this)[1][0];
-        const float a13 = (*this)[2][0];
-        const float a21 = (*this)[0][1];
-        const float a22 = (*this)[1][1];
-        const float a23 = (*this)[2][1];
-        const float a31 = (*this)[0][2];
-        const float a32 = (*this)[1][2];
-        const float a33 = (*this)[2][2];
+        return adjugate() / determinant();
+    }
 
-        const float inv_det = 1.0f
-            / (a11 * a22 * a33 + a12 * a33 * a31 + a13 * a21 * a32 - a13 * a22 * a31 - a12 * a21 * a33
-               - a11 * a23 * a32);
-
-        Matrix3 result;
-
-        result[0][0] = (a22 * a33 - a23 * a32) * inv_det;
-        result[0][1] = -(a21 * a33 - a23 * a31) * inv_det;
-        result[0][2] = (a21 * a32 - a22 * a31) * inv_det;
-        result[1][0] = -(a12 * a33 - a13 * a32) * inv_det;
-        result[1][1] = (a11 * a33 - a13 * a31) * inv_det;
-        result[1][2] = -(a11 * a32 - a12 * a31) * inv_det;
-        result[2][0] = (a12 * a23 - a13 * a22) * inv_det;
-        result[2][1] = -(a11 * a23 - a13 * a21) * inv_det;
-        result[2][2] = (a11 * a22 - a12 * a21) * inv_det;
-
-        return result;
+    [[nodiscard]] std::optional<Matrix3> safe_inverse() const
+    {
+        const float det = determinant();
+        if (det == 0.0f) {
+            return std::nullopt;
+        }
+        return adjugate() / det;
     }
 
     // [[nodiscard]] Matrix3 spherical_linear_interpolate(const Matrix3& to, float weight) const
@@ -3156,41 +3129,41 @@ public:
     //     return Matrix3::from_axis_angle(axis, angle) * *this;
     // }
 
-    [[nodiscard]] Matrix3 rotate(const Quaternion& quaternion) const
-    {
-        return quaternion.matrix() * *this;
-    }
+    // [[nodiscard]] Matrix3 rotate(const Quaternion& quaternion) const
+    // {
+    //     return quaternion.matrix() * *this;
+    // }
 
-    [[nodiscard]] Matrix3 scale(const Vector3& scale) const
-    {
-        Matrix3 result = *this;
-        result[0][0] *= scale.x;
-        result[1][0] *= scale.x;
-        result[2][0] *= scale.x;
-        result[0][1] *= scale.y;
-        result[1][1] *= scale.y;
-        result[2][1] *= scale.y;
-        result[0][2] *= scale.z;
-        result[1][2] *= scale.z;
-        result[2][2] *= scale.z;
-
-        return result;
-    }
-
-    [[nodiscard]] Matrix3 orthonormalize() const
-    {
-        Column x = columns[0];
-        Column y = columns[1];
-        Column z = columns[2];
-
-        x = x.normalize();
-        y = y - x * x.dot(y);
-        y = y.normalize();
-        z = z - x * x.dot(z) - y * y.dot(z);
-        z = z.normalize();
-
-        return { x, y, z };
-    }
+    // [[nodiscard]] Matrix3 scale(const Vector3& scale) const
+    // {
+    //     Matrix3 result = *this;
+    //     result[0][0] *= scale.x;
+    //     result[1][0] *= scale.x;
+    //     result[2][0] *= scale.x;
+    //     result[0][1] *= scale.y;
+    //     result[1][1] *= scale.y;
+    //     result[2][1] *= scale.y;
+    //     result[0][2] *= scale.z;
+    //     result[1][2] *= scale.z;
+    //     result[2][2] *= scale.z;
+    //
+    //     return result;
+    // }
+    //
+    // [[nodiscard]] Matrix3 orthonormalize() const
+    // {
+    //     Column x = columns[0];
+    //     Column y = columns[1];
+    //     Column z = columns[2];
+    //
+    //     x = x.normalize();
+    //     y = y - x * x.dot(y);
+    //     y = y.normalize();
+    //     z = z - x * x.dot(z) - y * y.dot(z);
+    //     z = z.normalize();
+    //
+    //     return { x, y, z };
+    // }
 
     // [[nodiscard]] bool is_equal_approx(const Matrix3& other) const
     // {
@@ -3212,29 +3185,48 @@ public:
     //     return true;
     // }
 
-    [[nodiscard]] Quaternion quaternion() const
-    {
-        return Quaternion::from_matrix(*this);
-    }
+    // [[nodiscard]] Quaternion quaternion() const
+    // {
+    //     return Quaternion::from_matrix(*this);
+    // }
 
     // [[nodiscard]] Matrix4 with_translation(Vector3 translation) const
     // {
     //     return Matrix4::from_basis_translation(*this, translation);
     // }
 
-    Column& operator[](const int index)
+    [[nodiscard]] bool approx_equal(const Matrix3& other) const
     {
-        return columns[index];
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (!nnm::approx_equal(at(c, r), other.at(c, r))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    const Column& operator[](const int index) const
+    [[nodiscard]] bool approx_zero() const
     {
-        return columns[index];
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (!nnm::approx_zero(at(c, r))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
-    float& at(const int column, const int row)
+    [[nodiscard]] Column at(const int column) const
     {
-        return columns[column][row];
+        return columns[column];
+    }
+
+    Column& at(const int column)
+    {
+        return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
@@ -3242,113 +3234,220 @@ public:
         return columns[column][row];
     }
 
-    [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
+    float& at(const int column, const int row)
     {
-        auto result = *this;
-        result[0] += other[0];
-        result[1] += other[1];
-        result[2] += other[2];
-        return result;
+        return columns[column][row];
     }
 
-    void operator+=(const Matrix3& other)
+    const Column& operator[](const int index) const
     {
-        columns[0] += other[0];
-        columns[1] += other[1];
-        columns[2] += other[2];
+        return columns[index];
     }
 
-    [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
+    Column& operator[](const int index)
     {
-        auto result = *this;
-        result[0] -= other[0];
-        result[1] -= other[1];
-        result[2] -= other[2];
-        return result;
+        return columns[index];
     }
 
-    void operator-=(const Matrix3& other)
+    [[nodiscard]] bool operator==(const Matrix3& other) const
     {
-        columns[0] -= other[0];
-        columns[1] -= other[1];
-        columns[2] -= other[2];
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (at(c, r) != other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    bool operator!=(const Matrix3& other) const
+    {
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (at(c, r) != other.at(c, r)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] bool operator<(const Matrix3& other) const
+    {
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (at(c, r) < other.at(c, r)) {
+                    return true;
+                }
+                if (at(c, r) > other.at(c, r)) {
+                    return false;
+                }
+            }
+        }
+        return false;
     }
 
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
     {
         Matrix3 result;
-        result[0][0] = (*this)[0][0] * other[0][0] + (*this)[0][1] * other[1][0] + (*this)[0][2] * other[2][0];
-        result[0][1] = (*this)[0][0] * other[0][1] + (*this)[0][1] * other[1][1] + (*this)[0][2] * other[2][1];
-        result[0][2] = (*this)[0][0] * other[0][2] + (*this)[0][1] * other[1][2] + (*this)[0][2] * other[2][2];
-        result[1][0] = (*this)[1][0] * other[0][0] + (*this)[1][1] * other[1][0] + (*this)[1][2] * other[2][0];
-        result[1][1] = (*this)[1][0] * other[0][1] + (*this)[1][1] * other[1][1] + (*this)[1][2] * other[2][1];
-        result[1][2] = (*this)[1][0] * other[0][2] + (*this)[1][1] * other[1][2] + (*this)[1][2] * other[2][2];
-        result[2][0] = (*this)[2][0] * other[0][0] + (*this)[2][1] * other[1][0] + (*this)[2][2] * other[2][0];
-        result[2][1] = (*this)[2][0] * other[0][1] + (*this)[2][1] * other[1][1] + (*this)[2][2] * other[2][1];
-        result[2][2] = (*this)[2][0] * other[0][2] + (*this)[2][1] * other[1][2] + (*this)[2][2] * other[2][2];
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1);
+            }
+        }
         return result;
     }
 
-    void operator*=(const Matrix3& other)
+    Matrix3& operator*=(const Matrix3& other)
     {
         *this = *this * other;
+        return *this;
     }
 
-    [[nodiscard]] Matrix3 operator*(const float val) const
+    [[nodiscard]] Vector3 operator*(const Vector3& vector) const
     {
-        Matrix3 result = *this;
-        result[0] *= val;
-        result[1] *= val;
-        result[2] *= val;
+        Vector3 result;
+        for (int r = 0; r < 3; ++r) {
+            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1] + at(2, r) * vector[2];
+        }
         return result;
     }
 
-    void operator*=(const float val)
+    [[nodiscard]] Matrix3 operator*(const float value) const
     {
-        columns[0] *= val;
-        columns[1] *= val;
-        columns[2] *= val;
+        return { columns[0] * value, columns[1] * value, columns[2] * value };
     }
 
-    [[nodiscard]] Vector3 operator*(const Vector3 vector) const
+    Matrix3& operator*=(const float value)
     {
-        const Matrix3& m = *this;
-        return { m[0][0] * vector.x + m[0][1] * vector.y + m[0][2] * vector.z,
-                 m[1][0] * vector.x + m[1][1] * vector.y + m[1][2] * vector.z,
-                 m[2][0] * vector.x + m[2][1] * vector.y + m[2][2] * vector.z };
+        columns[0] *= value;
+        columns[1] *= value;
+        columns[2] *= value;
+        return *this;
     }
 
-    [[nodiscard]] bool operator!=(const Matrix3& other) const
+    [[nodiscard]] Matrix3 operator/(const float value) const
     {
-        if (columns[0] != other.columns[0]) {
-            return false;
-        }
-        if (columns[1] != other.columns[1]) {
-            return false;
-        }
-        if (columns[2] != other.columns[2]) {
-            return false;
-        }
-        return true;
+        return { columns[0] / value, columns[1] / value, columns[2] / value };
     }
 
-    [[nodiscard]] bool operator==(const Matrix3& other) const
+    Matrix3& operator/=(const float value)
     {
-        return columns[0] == other.columns[0] && columns[1] == other.columns[1] && columns[2] == other.columns[2];
+        columns[0] /= value;
+        columns[1] /= value;
+        columns[2] /= value;
+        return *this;
     }
 
-    [[nodiscard]] bool operator<(const Matrix3& other) const
+    explicit operator bool() const
     {
-        if (columns[0] != other.columns[0]) {
-            return columns[0] < other.columns[0];
-        }
-        if (columns[1] != other.columns[1]) {
-            return columns[1] < other.columns[1];
-        }
-        if (columns[2] != other.columns[2]) {
-            return columns[2] < other.columns[2];
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                if (at(c, r) != 0) {
+                    return true;
+                }
+            }
         }
         return false;
+    }
+};
+
+class Transform2 {
+public:
+    Basis2 basis;
+    Vector2 origin;
+
+    Transform2() = default;
+
+    Transform2(const Basis2& basis, const Vector2& origin)
+        : basis(basis)
+        , origin(origin)
+    {
+    }
+
+    static Transform2 from_position(const Vector2& pos)
+    {
+        return { Basis2(), pos };
+    }
+
+    static Transform2 from_rotation(const float angle)
+    {
+        return { Basis2::from_rotation(angle), Vector2() };
+    }
+
+    static Transform2 from_scale(const Vector2& factor)
+    {
+        return { Basis2::from_scale(factor), Vector2() };
+    }
+
+    static std::optional<Transform2> safe_from_scale(const Vector2& factor)
+    {
+        if (const auto basis = Basis2::safe_from_scale(factor); basis.has_value()) {
+            return Transform2 { basis.value(), Vector2() };
+        }
+        return std::nullopt;
+    }
+
+    static Transform2 from_shear(const Vector2& vector)
+    {
+        return { Basis2::from_shear(vector), Vector2() };
+    }
+
+    static std::optional<Transform2> safe_from_shear(const Vector2& vector)
+    {
+        if (const auto basis = Basis2::safe_from_shear(vector); basis.has_value()) {
+            return Transform2 { basis.value(), Vector2() };
+        }
+        return std::nullopt;
+    }
+
+    // TODO: from_matrix
+
+    [[nodiscard]] bool valid() const
+    {
+        return basis.valid();
+    }
+
+    [[nodiscard]] Transform2 rotate(const float angle) const
+    {
+        return { basis.rotate(angle), origin };
+    }
+
+    [[nodiscard]] Transform2 scale(const Vector2& factor) const
+    {
+        return Transform2 { basis.scale(factor), origin };
+    }
+
+    [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
+    {
+        if (const auto scaled_basis = basis.safe_scale(factor); scaled_basis.has_value()) {
+            return Transform2 { scaled_basis.value(), origin };
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 shear(const Vector2& vector) const
+    {
+        return { basis.shear(vector), origin };
+    }
+
+    [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
+    {
+        if (const auto sheared_basis = basis.safe_shear(vector); sheared_basis.has_value()) {
+            return Transform2 { sheared_basis.value(), origin };
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    {
+        return { basis, origin + offset };
+    }
+
+    [[nodiscard]] Vector2 translation() const
+    {
+        return origin;
     }
 };
 

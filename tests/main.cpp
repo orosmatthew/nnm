@@ -1599,6 +1599,9 @@ int main()
             ASSERT(m1 * m2 == nnm::Matrix2({ -13.0f, 20.0f }, { 5.0f, -8.0f }));
             ASSERT(m1 * 2.0f == nnm::Matrix2({ 2.0f, -4.0f }, { -6.0f, 8.0f }));
             ASSERT((m2 / 2.0f).approx_equal(nnm::Matrix2({ -2.0f, 1.5f }, { 1.0f, -0.5f })));
+
+            ASSERT((nnm::Matrix2::identity() * nnm::Vector2(1.0f, 2.0f)).approx_equal(nnm::Vector2(1.0f, 2.0f)));
+            ASSERT((m1 * nnm::Vector2(1.0f, 2.0f)).approx_equal(nnm::Vector2(-5.0f, 6.0f)));
         }
 
         test_section("compound assignment");
