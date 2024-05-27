@@ -3049,7 +3049,7 @@ public:
         return at(0, 0) * det_bottom_right - at(1, 0) * det_bottom_split + at(2, 0) * det_bottom_left;
     }
 
-    [[nodiscard]] float minor(const int column, const int row) const
+    [[nodiscard]] float minor_at(const int column, const int row) const
     {
         Matrix2 minor_matrix;
         int minor_col = 0;
@@ -3070,9 +3070,20 @@ public:
         return minor_matrix.determinant();
     }
 
+    [[nodiscard]] Matrix3 minor() const
+    {
+        Matrix3 result;
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                result[c][r] = minor_at(c, r);
+            }
+        }
+        return result;
+    }
+
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
-        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
+        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix3 cofactor() const
@@ -3088,7 +3099,7 @@ public:
 
     [[nodiscard]] Matrix3 transpose() const
     {
-        return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 0), at(1, 0), at(2, 0) } };
+        return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 1), at(1, 1), at(2, 1) }, { at(0, 2), at(1, 2), at(2, 2) } };
     }
 
     [[nodiscard]] Matrix3 adjugate() const
@@ -3293,7 +3304,7 @@ public:
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1);
+                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1) + at(2, r) * other.at(c, 2);
             }
         }
         return result;
