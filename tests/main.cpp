@@ -1917,6 +1917,18 @@ int main()
             ASSERT(m1[1] == nnm::Vector3(-3.0f, -2.0f, -1.0f));
         }
 
+        test_section("sub matrices");
+        {
+            ASSERT(m1.sub_matrix2_at(0, 0) == nnm::Matrix2({ 1.0f, 2.0f }, { -3.0f, -2.0f }));
+            ASSERT(m1.sub_matrix2_at(1, 1) == nnm::Matrix2({ -2.0f, -1.0f }, { -4.0f, 6.0f }));
+            ASSERT(
+                m1.sub_matrix2(0, 0, nnm::Matrix2({ 1.0f, 2.0f }, { 3.0f, 4.0f }))
+                == nnm::Matrix3({ 1.0f, 2.0f, 3.0f }, { 3.0f, 4.0f, -1.0f }, { 2.0f, -4.0f, 6.0f }));
+            ASSERT(
+                m1.sub_matrix2(1, 1, nnm::Matrix2({ 1.0f, 2.0f }, { 3.0f, 4.0f }))
+                == nnm::Matrix3({ 1.0f, 2.0f, 3.0f }, { -3.0f, 1.0f, 2.0f }, { 2.0f, 3.0f, 4.0f }));
+        }
+
         test_section("equality");
         {
             ASSERT(m1 == nnm::Matrix3({ 1.0f, 2.0f, 3.0f }, { -3.0f, -2.0f, -1.0f }, { 2.0f, -4.0f, 6.0f }));
