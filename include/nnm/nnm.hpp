@@ -8,6 +8,20 @@
 
 // ReSharper disable CppDFATimeOver
 
+#if defined(NNM_BOUNDS_CHECK_THROW)
+#include <stdexcept>
+#define NNM_BOUNDS_CHECK(msg, expression) \
+    if (!(expression))                    \
+        throw std::out_of_range(msg);
+#elif defined(NNM_BOUNDS_CHECK_PRINT)
+#include <iostream>
+#define NNM_BOUNDS_CHECK(msg, expression) \
+    if (!(expression))                    \
+        std::cerr << __FILE__ << ":" << __LINE__ << " Out of range: " << msg << std::endl;
+#else
+#define NNM_BOUNDS_CHECK(msg, expression)
+#endif
+
 namespace nnm {
 
 inline float pi = 3.141592653589793238462643383279502f;
@@ -523,11 +537,13 @@ public:
 
     [[nodiscard]] float operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
     [[nodiscard]] float& operator[](const int index)
     {
+        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
@@ -775,11 +791,13 @@ public:
 
     [[nodiscard]] int operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
     [[nodiscard]] int& operator[](const int index)
     {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
@@ -1134,11 +1152,13 @@ public:
 
     [[nodiscard]] float& operator[](const int index)
     {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
     [[nodiscard]] const float& operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
@@ -1389,8 +1409,15 @@ public:
         return x == other.x && y == other.y && z == other.z;
     }
 
-    [[nodiscard]] int& operator[](const int index)
+    int operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    int& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
         return data[index];
     }
 
@@ -2473,32 +2500,38 @@ public:
 
     [[nodiscard]] Column at(const int column) const
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
     Column& at(const int column)
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
     float& at(const int column, const int row)
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
-    const Column& operator[](const int index) const
+    const Column& operator[](const int column) const
     {
-        return columns[index];
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        return columns[column];
     }
 
-    Column& operator[](const int index)
+    Column& operator[](const int column)
     {
-        return columns[index];
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        return columns[column];
     }
 
     bool operator==(const Matrix2& other) const
@@ -2706,16 +2739,19 @@ public:
 
     [[nodiscard]] float at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
     float& at(const int column, const int row)
     {
+        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
     const Matrix2::Column& operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Basis2", index >= 0 && index <= 1);
         return matrix[index];
     }
 
@@ -3217,32 +3253,38 @@ public:
 
     [[nodiscard]] Column at(const int column) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 );
         return columns[column];
     }
 
     Column& at(const int column)
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 );
         return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
     float& at(const int column, const int row)
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
-    const Column& operator[](const int index) const
+    const Column& operator[](const int column) const
     {
-        return columns[index];
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        return columns[column];
     }
 
-    Column& operator[](const int index)
+    Column& operator[](const int column)
     {
-        return columns[index];
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        return columns[column];
     }
 
     [[nodiscard]] Matrix2 sub_matrix2_at(const int column, const int row) const
