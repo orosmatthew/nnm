@@ -198,25 +198,9 @@ inline float asin(const float value)
     return std::asin(value);
 }
 
-inline std::optional<float> safe_asin(const float value)
-{
-    if (value < -1.0f || value > 1.0f) {
-        return std::nullopt;
-    }
-    return asin(value);
-}
-
 inline float acos(const float value)
 {
     return std::acos(value);
-}
-
-inline std::optional<float> safe_acos(const float value)
-{
-    if (value < -1.0f || value > 1.0f) {
-        return std::nullopt;
-    }
-    return acos(value);
 }
 
 inline float min(const float a, const float b)
@@ -232,14 +216,6 @@ inline int min(const int a, const int b)
 inline float log2(const float value)
 {
     return std::log2(value);
-}
-
-inline std::optional<float> safe_log2(const float value)
-{
-    if (value <= 0.0f) {
-        return std::nullopt;
-    }
-    return log2(value);
 }
 
 class Vector2;
@@ -2435,6 +2411,7 @@ public:
 
     [[nodiscard]] float minor(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         const int other_column = (column + 1) % 2;
         const int other_row = (row + 1) % 2;
         return at(other_column, other_row);
@@ -2442,6 +2419,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
     }
 
@@ -2460,12 +2438,12 @@ public:
         return cofactor().transpose();
     }
 
-    [[nodiscard]] Matrix2 inverse() const
+    [[nodiscard]] Matrix2 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
 
-    [[nodiscard]] std::optional<Matrix2> safe_inverse() const
+    [[nodiscard]] std::optional<Matrix2> inverse() const
     {
         const float det = determinant();
         if (det == 0.0f) {
@@ -2650,14 +2628,6 @@ public:
     {
     }
 
-    static std::optional<Basis2> safe_from_matrix(const Matrix2& matrix)
-    {
-        if (matrix.determinant() != 0.0) {
-            return Basis2(matrix);
-        }
-        return std::nullopt;
-    }
-
     static Basis2 from_rotation(const float angle)
     {
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
@@ -2668,25 +2638,9 @@ public:
         return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
     }
 
-    static std::optional<Basis2> safe_from_scale(const Vector2& factor)
-    {
-        if (auto basis = from_scale(factor); basis.valid()) {
-            return basis;
-        }
-        return std::nullopt;
-    }
-
     static Basis2 from_shear(const Vector2& vector)
     {
         return Basis2({ { 1.0f, vector.x }, { vector.y, 1.0f } });
-    }
-
-    static std::optional<Basis2> safe_from_shear(const Vector2& vector)
-    {
-        if (auto basis = from_shear(vector); basis.valid()) {
-            return basis;
-        }
-        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
@@ -2699,17 +2653,19 @@ public:
         return Basis2(matrix * from_rotation(angle).matrix);
     }
 
+    [[nodiscard]] Basis2 rotate_local(const float angle) const
+    {
+        return Basis2(from_rotation(angle).matrix * matrix);
+    }
+
     [[nodiscard]] Basis2 scale(const Vector2& factor) const
     {
         return Basis2(matrix * from_scale(factor).matrix);
     }
 
-    [[nodiscard]] std::optional<Basis2> safe_scale(const Vector2& factor) const
+    [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
     {
-        if (const auto basis = safe_from_scale(factor); basis.has_value()) {
-            return Basis2(matrix * basis.value().matrix);
-        }
-        return std::nullopt;
+        return Basis2(from_scale(factor).matrix * matrix);
     }
 
     [[nodiscard]] Basis2 shear(const Vector2& vector) const
@@ -2717,12 +2673,9 @@ public:
         return Basis2(matrix * from_shear(vector).matrix);
     }
 
-    [[nodiscard]] std::optional<Basis2> safe_shear(const Vector2& vector) const
+    [[nodiscard]] Basis2 shear_local(const Vector2& vector) const
     {
-        if (const auto basis = safe_from_shear(vector); basis.has_value()) {
-            return Basis2(matrix * basis.value().matrix);
-        }
-        return std::nullopt;
+        return Basis2(from_shear(vector).matrix * matrix);
     }
 
     [[nodiscard]] bool approx_equal(const Basis2& other) const
@@ -3072,6 +3025,7 @@ public:
 
     [[nodiscard]] float minor_at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         Matrix2 minor_matrix;
         int minor_col = 0;
         for (int c = 0; c < 3; ++c) {
@@ -3104,6 +3058,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
@@ -3128,12 +3083,12 @@ public:
         return cofactor().transpose();
     }
 
-    [[nodiscard]] Matrix3 inverse() const
+    [[nodiscard]] Matrix3 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
 
-    [[nodiscard]] std::optional<Matrix3> safe_inverse() const
+    [[nodiscard]] std::optional<Matrix3> inverse() const
     {
         const float det = determinant();
         if (det == 0.0f) {
@@ -3253,13 +3208,13 @@ public:
 
     [[nodiscard]] Column at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 );
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
     Column& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 );
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
@@ -3289,6 +3244,7 @@ public:
 
     [[nodiscard]] Matrix2 sub_matrix2_at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         Matrix2 result;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
@@ -3300,6 +3256,7 @@ public:
 
     [[nodiscard]] Matrix3 sub_matrix2(const int column, const int row, const Matrix2& matrix) const
     {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         Matrix3 result = *this;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
@@ -3427,14 +3384,6 @@ public:
     {
     }
 
-    static std::optional<Transform2> safe_from_matrix(const Matrix3& matrix)
-    {
-        if (const auto transform = Transform2(matrix); transform.valid()) {
-            return transform;
-        }
-        return std::nullopt;
-    }
-
     static Transform2 from_basis_position(const Basis2& basis, const Vector2& pos)
     {
         Matrix3 matrix;
@@ -3464,25 +3413,9 @@ public:
         return from_basis_position(Basis2::from_scale(factor), Vector2());
     }
 
-    static std::optional<Transform2> safe_from_scale(const Vector2& factor)
-    {
-        if (const auto transform = from_scale(factor); transform.valid()) {
-            return transform;
-        }
-        return std::nullopt;
-    }
-
     static Transform2 from_shear(const Vector2& vector)
     {
         return from_basis_position(Basis2::from_shear(vector), Vector2());
-    }
-
-    static std::optional<Transform2> safe_from_shear(const Vector2& vector)
-    {
-        if (const auto transform = from_shear(vector); transform.valid()) {
-            return transform;
-        }
-        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
@@ -3512,25 +3445,9 @@ public:
         return from_basis_position(basis().scale(factor), position());
     }
 
-    [[nodiscard]] std::optional<Transform2> safe_scale(const Vector2& factor) const
-    {
-        if (const auto transform = scale(factor); transform.valid()) {
-            return transform;
-        }
-        return std::nullopt;
-    }
-
     [[nodiscard]] Transform2 shear(const Vector2& vector) const
     {
         return from_basis_position(basis().shear(vector), position());
-    }
-
-    [[nodiscard]] std::optional<Transform2> safe_shear(const Vector2& vector) const
-    {
-        if (const auto transform = shear(vector); transform.valid()) {
-            return transform;
-        }
-        return std::nullopt;
     }
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
