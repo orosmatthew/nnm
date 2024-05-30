@@ -2678,6 +2678,16 @@ public:
         return Basis2(from_shear(vector).matrix * matrix);
     }
 
+    [[nodiscard]] Basis2 transform(const Basis2& by) const
+    {
+        return Basis2(matrix * by.matrix);
+    }
+
+    [[nodiscard]] Basis2 transform_local(const Basis2& by) const
+    {
+        return Basis2(by.matrix * matrix);
+    }
+
     [[nodiscard]] bool approx_equal(const Basis2& other) const
     {
         for (int c = 0; c < 2; ++c) {
