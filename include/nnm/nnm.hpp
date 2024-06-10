@@ -23,7 +23,6 @@
 #endif
 
 namespace nnm {
-
 inline float pi = 3.141592653589793238462643383279502f;
 inline float epsilon = 0.00001f;
 
@@ -231,7 +230,9 @@ class Vector4i;
 class Quaternion;
 
 enum class Axis2 { x, y };
+
 enum class Axis3 { x, y, z };
+
 enum class Axis4 { x, y, z, w };
 
 class Vector2 {
@@ -241,6 +242,7 @@ public:
             float x;
             float y;
         };
+
         std::array<float, 2> data;
     };
 
@@ -418,6 +420,8 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector2 transform(const Basis2& by) const;
+
     [[nodiscard]] bool operator!=(const Vector2& other) const
     {
         return x != other.x || y != other.y;
@@ -570,6 +574,7 @@ public:
             int x;
             int y;
         };
+
         std::array<int, 2> data;
     };
 
@@ -825,6 +830,7 @@ public:
             float y;
             float z;
         };
+
         std::array<float, 3> data;
     };
 
@@ -1176,6 +1182,7 @@ public:
             int y;
             int z;
         };
+
         int data[3] {};
     };
 
@@ -2067,6 +2074,7 @@ class Quaternion {
 public:
     union {
         Vector4 data;
+
         struct {
             float x;
             float y;
@@ -2352,6 +2360,7 @@ public:
             float c1r0;
             float c1r1;
         };
+
         std::array<Column, 2> columns;
     };
 
@@ -2774,6 +2783,7 @@ public:
             float c2r1;
             float c2r2;
         };
+
         std::array<Column, 3> columns;
     };
 
@@ -3464,6 +3474,27 @@ public:
     {
         return from_basis_position(basis(), position() + offset);
     }
+
+    [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
+    {
+        const Vector2 local_offset = offset.transform(basis());
+        return from_basis_position(basis(), position() + local_offset);
+    }
+
+    [[nodiscard]] Transform2 transform(const Transform2& by) const
+    {
+        return Transform2(matrix * by.matrix);
+    }
+
+    [[nodiscard]] Transform2 transform_local(const Transform2& by) const
+    {
+        return Transform2(by.matrix * matrix);
+    }
+
+    bool operator==(const Transform2& other) const
+    {
+        return matrix == other.matrix;
+    }
 };
 
 class Matrix4 {
@@ -4040,6 +4071,11 @@ inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
 {
+}
+
+inline Vector2 Vector2::transform(const Basis2& by) const
+{
+    return { by.at(0, 0) * x + by.at(1, 0) * y, by.at(0, 1) * x + by.at(1, 1) * y };
 }
 }
 

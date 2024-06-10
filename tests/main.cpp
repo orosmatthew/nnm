@@ -688,6 +688,17 @@ int main()
             ASSERT(nnm::Vector2(5.0f, 6.0f).clamp_length(2.0f, 5.0f).length() == 5.0f);
         }
 
+        test_section("transform");
+        {
+            nnm::Basis2 b1;
+            nnm::Vector2 v1(2.0f, -1.0f);
+            ASSERT(v1.transform(b1).approx_equal({ 2.0f, -1.0f }));
+            const auto b2 = nnm::Basis2().rotate(nnm::pi / 2.0f);
+            ASSERT(v1.transform(b2).approx_equal({ 1.0f, 2.0f }))
+            const auto b3 = nnm::Basis2().rotate(-nnm::pi / 2.0f);
+            ASSERT(v1.transform(b3).approx_equal({ -1.0f, -2.0f }))
+        }
+
         test_section("Equality and Inequality Operators");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
@@ -1978,6 +1989,42 @@ int main()
         test_section("position");
         {
             ASSERT(t1.position() == nnm::Vector2(-1.0f, 2.0f));
+        }
+
+        test_section("rotate");
+        {
+            ASSERT(
+                t1.rotate(nnm::pi / 2.0f)
+                == nnm::Transform2::from_basis_position(t1.basis().rotate(nnm::pi / 2.0f), t1.position()));
+            ASSERT(
+                t1.rotate(-nnm::pi / 4.0f)
+                == nnm::Transform2::from_basis_position(t1.basis().rotate(-nnm::pi / 4.0f), t1.position()));
+        }
+
+        test_section("scale");
+        {
+            ASSERT(
+                t1.scale({ 2.0f, -1.0f })
+                == nnm::Transform2::from_basis_position(t1.basis().scale({ 2.0f, -1.0f }), t1.position()));
+        }
+
+        test_section("shear");
+        {
+            ASSERT(
+                t1.shear({ 2.0f, -1.0f })
+                == nnm::Transform2::from_basis_position(t1.basis().shear({ 2.0f, -1.0f }), t1.position()));
+        }
+
+        test_section("translate");
+        {
+            ASSERT(
+                t1.translate({ 2.0f, -1.0f })
+                == nnm::Transform2::from_basis_position(t1.basis(), t1.position() + nnm::Vector2(2.0f, -1.0f)));
+        }
+
+        test_section("translate_local");
+        {
+            // TODO
         }
     }
     END_TESTS
