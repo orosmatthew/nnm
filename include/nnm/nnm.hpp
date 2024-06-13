@@ -2669,22 +2669,22 @@ public:
 
     [[nodiscard]] Basis2 scale(const Vector2& factor) const
     {
-        return Basis2(matrix * from_scale(factor).matrix);
+        return Basis2(from_scale(factor).matrix * matrix);
     }
 
     [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
     {
-        return Basis2(from_scale(factor).matrix * matrix);
+        return Basis2(matrix * from_scale(factor).matrix);
     }
 
     [[nodiscard]] Basis2 shear(const Vector2& vector) const
     {
-        return Basis2(matrix * from_shear(vector).matrix);
+        return Basis2(from_shear(vector).matrix * matrix);
     }
 
     [[nodiscard]] Basis2 shear_local(const Vector2& vector) const
     {
-        return Basis2(from_shear(vector).matrix * matrix);
+        return Basis2(matrix * from_shear(vector).matrix);
     }
 
     [[nodiscard]] Basis2 transform(const Basis2& by) const
@@ -3457,17 +3457,38 @@ public:
 
     [[nodiscard]] Transform2 rotate(const float angle) const
     {
-        return from_basis_position(basis().rotate(angle), position());
+        const Transform2 by = from_basis(Basis2::from_rotation(angle));
+        return Transform2(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Transform2 rotate_local(const float angle) const
+    {
+        const Transform2 by = from_basis(Basis2::from_rotation(angle));
+        return Transform2(matrix * by.matrix);
     }
 
     [[nodiscard]] Transform2 scale(const Vector2& factor) const
     {
-        return from_basis_position(basis().scale(factor), position());
+        const Transform2 by = from_basis(Basis2::from_scale(factor));
+        return Transform2(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Transform2 scale_local(const Vector2& factor) const
+    {
+        const Transform2 by = from_basis(Basis2::from_scale(factor));
+        return Transform2(matrix * by.matrix);
     }
 
     [[nodiscard]] Transform2 shear(const Vector2& vector) const
     {
-        return from_basis_position(basis().shear(vector), position());
+        const Transform2 by = from_basis(Basis2::from_shear(vector));
+        return Transform2(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Transform2 shear_local(const Vector2& vector) const
+    {
+        const Transform2 by = from_basis(Basis2::from_shear(vector));
+        return Transform2(matrix * by.matrix);
     }
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
@@ -3483,12 +3504,17 @@ public:
 
     [[nodiscard]] Transform2 transform(const Transform2& by) const
     {
-        return Transform2(matrix * by.matrix);
+        return Transform2(by.matrix * matrix);
     }
 
     [[nodiscard]] Transform2 transform_local(const Transform2& by) const
     {
-        return Transform2(by.matrix * matrix);
+        return Transform2(matrix * by.matrix);
+    }
+
+    [[nodiscard]] bool approx_equal(const Transform2& other) const
+    {
+        return matrix.approx_equal(other.matrix);
     }
 
     bool operator==(const Transform2& other) const

@@ -1936,7 +1936,7 @@ int main()
 
     test_case("Transform2");
     {
-        test_section("constructos");
+        test_section("constructors");
         {
             nnm::Transform2 default_transform;
             ASSERT(default_transform.matrix == nnm::Matrix3::identity());
@@ -1993,26 +1993,56 @@ int main()
 
         test_section("rotate");
         {
-            ASSERT(
-                t1.rotate(nnm::pi / 2.0f)
-                == nnm::Transform2::from_basis_position(t1.basis().rotate(nnm::pi / 2.0f), t1.position()));
-            ASSERT(
-                t1.rotate(-nnm::pi / 4.0f)
-                == nnm::Transform2::from_basis_position(t1.basis().rotate(-nnm::pi / 4.0f), t1.position()));
+            const auto t = nnm::Transform2::from_basis_position(nnm::Basis2(), { 1.0f, -2.0f });
+            const auto t_rotated = t.rotate(nnm::pi / 2.0f);
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi / 2.0f), { 2.0f, 1.0f });
+            ASSERT(t_rotated.approx_equal(t_expected));
         }
+
+        test_section("rotate_local");
+        {
+            const auto t = nnm::Transform2::from_basis_position(nnm::Basis2(), { 1.0f, -2.0f });
+            const auto t_rotated = t.rotate_local(nnm::pi / 2.0f);
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi / 2.0f), { 1.0f, -2.0f });
+            ASSERT(t_rotated.approx_equal(t_expected));
+        }
+
+        const auto t2
+            = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi / 2.0f), { 1.0f, -2.0f });
+        const auto t3 = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi), { -3.0f, 4.0f });
 
         test_section("scale");
         {
-            ASSERT(
-                t1.scale({ 2.0f, -1.0f })
-                == nnm::Transform2::from_basis_position(t1.basis().scale({ 2.0f, -1.0f }), t1.position()));
+            const auto t_scaled = t2.scale({ 2.0f, -3.0f });
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(t2.basis().scale({ 2.0f, -3.0f }), { 2.0f, 6.0f });
+            ASSERT(t_scaled.approx_equal(t_expected));
+        }
+
+        test_section("scale_local");
+        {
+            const auto t_scaled = t2.scale_local({ 2.0f, -3.0f });
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(t2.basis().scale_local({ 2.0f, -3.0f }), { 1.0f, -2.0f });
+            ASSERT(t_scaled.approx_equal(t_expected));
         }
 
         test_section("shear");
         {
-            ASSERT(
-                t1.shear({ 2.0f, -1.0f })
-                == nnm::Transform2::from_basis_position(t1.basis().shear({ 2.0f, -1.0f }), t1.position()));
+            const auto t_sheared = t2.shear({ 1.0f, -2.0f });
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(t2.basis().shear({ 1.0f, -2.0f }), { 5.0f, -1.0f });
+            ASSERT(t_sheared.approx_equal(t_expected));
+        }
+
+        test_section("shear_local");
+        {
+            const auto t_sheared = t2.shear_local({ 1.0f, -2.0f });
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(t2.basis().shear_local({ 1.0f, -2.0f }), { 1.0f, -2.0f });
+            ASSERT(t_sheared.approx_equal(t_expected));
         }
 
         test_section("translate");
@@ -2024,7 +2054,28 @@ int main()
 
         test_section("translate_local");
         {
-            // TODO
+            const auto t
+                = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi / 2.0f), { 1.0f, -2.0f });
+            const auto t_translated = t.translate_local({ 3.0f, -4.0f });
+            const auto t_expected
+                = nnm::Transform2::from_basis_position(nnm::Basis2::from_rotation(nnm::pi / 2.0f), { 5.0f, 1.0f });
+            ASSERT(t_translated.approx_equal(t_expected));
+        }
+
+        test_section("transform");
+        {
+            const auto t_transformed = t2.transform(t3);
+            const auto t_expected = nnm::Transform2::from_basis_position(
+                nnm::Basis2::from_rotation(3.0f * nnm::pi / 2.0f), { -4.0f, 6.0f });
+            ASSERT(t_transformed.approx_equal(t_expected));
+        }
+
+        test_section("transform_local");
+        {
+            const auto t_transformed = t2.transform_local(t3);
+            const auto t_expected = nnm::Transform2::from_basis_position(
+                nnm::Basis2::from_rotation(3.0f * nnm::pi / 2.0f), { -3.0f, -5.0f });
+            ASSERT(t_transformed.approx_equal(t_expected));
         }
     }
     END_TESTS
