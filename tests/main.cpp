@@ -2077,6 +2077,18 @@ int main()
                 nnm::Basis2::from_rotation(3.0f * nnm::pi / 2.0f), { -3.0f, -5.0f });
             ASSERT(t_transformed.approx_equal(t_expected));
         }
+
+        test_section("accessors");
+        {
+            ASSERT(nnm::approx_equal(t2.at(0, 0), 0.0f));
+            ASSERT(nnm::approx_equal(t2.at(1, 2), 0.0f));
+            ASSERT(nnm::approx_equal(t2.at(2, 1), -2.0f));
+            ASSERT(nnm::approx_equal(t2.at(2, 2), 1.0f));
+            ASSERT(nnm::approx_equal(t2[0][0], 0.0f));
+            ASSERT(nnm::approx_equal(t2[1][2], 0.0f));
+            ASSERT(nnm::approx_equal(t2[2][1], -2.0f));
+            ASSERT(nnm::approx_equal(t2[2][2], 1.0f));
+        }
     }
     END_TESTS
 }

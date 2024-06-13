@@ -3517,6 +3517,26 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
+    [[nodiscard]] float at(const int column, const int row) const
+    {
+        return matrix.at(column, row);
+    }
+
+    float& at(const int column, const int row)
+    {
+        return matrix.at(column, row);
+    }
+
+    [[nodiscard]] Vector3 operator[](const int column) const
+    {
+        return matrix[column];
+    }
+
+    Vector3& operator[](const int column)
+    {
+        return matrix[column];
+    }
+
     bool operator==(const Transform2& other) const
     {
         return matrix == other.matrix;
