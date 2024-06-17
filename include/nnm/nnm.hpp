@@ -207,12 +207,6 @@ class Vector4;
 class Vector4i;
 class Quaternion;
 
-enum class Axis2 { x, y };
-
-enum class Axis3 { x, y, z };
-
-enum class Axis4 { x, y, z, w };
-
 class Vector2 {
 public:
     union {
@@ -320,26 +314,26 @@ public:
         return *this * (1.0f - weight) + to * weight;
     }
 
-    [[nodiscard]] Axis2 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         if (x > y) {
-            return Axis2::x;
+            return 0;
         }
         if (y > x) {
-            return Axis2::y;
+            return 1;
         }
-        return Axis2::x;
+        return 0;
     }
 
-    [[nodiscard]] Axis2 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         if (x < y) {
-            return Axis2::x;
+            return 0;
         }
         if (y < x) {
-            return Axis2::y;
+            return 1;
         }
-        return Axis2::x;
+        return 0;
     }
 
     [[nodiscard]] bool approx_equal(const Vector2& other) const
@@ -505,30 +499,6 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] float operator[](const Axis2 axis) const
-    {
-        switch (axis) {
-        case Axis2::x:
-            return x;
-        case Axis2::y:
-            return y;
-        default:
-            return x;
-        }
-    }
-
-    [[nodiscard]] float& operator[](const Axis2 axis)
-    {
-        switch (axis) {
-        case Axis2::x:
-            return x;
-        case Axis2::y:
-            return y;
-        default:
-            return x;
-        }
-    }
-
     [[nodiscard]] Vector2 operator+() const
     {
         return { x, y };
@@ -608,26 +578,26 @@ public:
         return sqrt(static_cast<float>(length_sqrd()));
     }
 
-    [[nodiscard]] Axis2 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         if (x > y) {
-            return Axis2::x;
+            return 0;
         }
         if (y > x) {
-            return Axis2::y;
+            return 1;
         }
-        return Axis2::x;
+        return 0;
     }
 
-    [[nodiscard]] Axis2 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         if (x < y) {
-            return Axis2::x;
+            return 0;
         }
         if (y < x) {
-            return Axis2::y;
+            return 1;
         }
-        return Axis2::x;
+        return 0;
     }
 
     [[nodiscard]] bool operator!=(const Vector2i& other) const
@@ -760,30 +730,6 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] int operator[](const Axis2 axis) const
-    {
-        switch (axis) {
-        case Axis2::x:
-            return x;
-        case Axis2::y:
-            return y;
-        default:
-            return x;
-        }
-    }
-
-    [[nodiscard]] int& operator[](const Axis2 axis)
-    {
-        switch (axis) {
-        case Axis2::x:
-            return x;
-        case Axis2::y:
-            return y;
-        default:
-            return x;
-        }
-    }
-
     [[nodiscard]] Vector2i operator+() const
     {
         return { x, y };
@@ -906,30 +852,30 @@ public:
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
 
-    [[nodiscard]] Axis3 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         float max_val = x;
-        auto max_axis = Axis3::x;
+        auto max_axis = 0;
         if (y > max_val) {
             max_val = y;
-            max_axis = Axis3::y;
+            max_axis = 1;
         }
         if (z > max_val) {
-            max_axis = Axis3::z;
+            max_axis = 2;
         }
         return max_axis;
     }
 
-    [[nodiscard]] Axis3 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         float min_val = x;
-        auto min_axis = Axis3::x;
+        auto min_axis = 0;
         if (y < min_val) {
             min_val = y;
-            min_axis = Axis3::y;
+            min_axis = 1;
         }
         if (z < min_val) {
-            min_axis = Axis3::z;
+            min_axis = 2;
         }
         return min_axis;
     }
@@ -1122,20 +1068,6 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] float& operator[](const Axis3 axis)
-    {
-        switch (axis) {
-        case Axis3::x:
-            return x;
-        case Axis3::y:
-            return y;
-        case Axis3::z:
-            return z;
-        default:
-            return x;
-        }
-    }
-
     [[nodiscard]] Vector3 operator+() const
     {
         return { x, y, z };
@@ -1212,30 +1144,30 @@ public:
         return sqrt(static_cast<float>(length_sqrd()));
     }
 
-    [[nodiscard]] Axis3 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         int min_val = x;
-        auto min_axis = Axis3::x;
+        auto min_axis = 0;
         if (y < min_val) {
             min_val = y;
-            min_axis = Axis3::y;
+            min_axis = 1;
         }
         if (z < min_val) {
-            min_axis = Axis3::z;
+            min_axis = 2;
         }
         return min_axis;
     }
 
-    [[nodiscard]] Axis3 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         int max_val = x;
-        auto max_axis = Axis3::x;
+        auto max_axis = 0;
         if (y > max_val) {
             max_val = y;
-            max_axis = Axis3::y;
+            max_axis = 1;
         }
         if (z > max_val) {
-            max_axis = Axis3::z;
+            max_axis = 2;
         }
         return max_axis;
     }
@@ -1381,20 +1313,6 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] int& operator[](const Axis3 axis)
-    {
-        switch (axis) {
-        case Axis3::x:
-            return x;
-        case Axis3::y:
-            return y;
-        case Axis3::z:
-            return z;
-        default:
-            return x;
-        }
-    }
-
     [[nodiscard]] Vector3i operator+() const
     {
         return { x, y, z };
@@ -1505,38 +1423,38 @@ public:
                  nnm::lerp(w, to.w, weight) };
     }
 
-    [[nodiscard]] Axis4 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         float min_val = x;
-        auto min_axis = Axis4::x;
+        auto min_axis = 0;
         if (y < min_val) {
             min_val = y;
-            min_axis = Axis4::y;
+            min_axis = 1;
         }
         if (z < min_val) {
             min_val = z;
-            min_axis = Axis4::z;
+            min_axis = 2;
         }
         if (w < min_val) {
-            min_axis = Axis4::w;
+            min_axis = 3;
         }
         return min_axis;
     }
 
-    [[nodiscard]] Axis4 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         float max_val = x;
-        auto max_axis = Axis4::x;
+        auto max_axis = 0;
         if (y > max_val) {
             max_val = y;
-            max_axis = Axis4::y;
+            max_axis = 1;
         }
         if (z > max_val) {
             max_val = z;
-            max_axis = Axis4::z;
+            max_axis = 2;
         }
         if (w > max_val) {
-            max_axis = Axis4::w;
+            max_axis = 3;
         }
         return max_axis;
     }
@@ -1725,22 +1643,6 @@ public:
         }
     }
 
-    [[nodiscard]] float& operator[](const Axis4 axis)
-    {
-        switch (axis) {
-        case Axis4::x:
-            return x;
-        case Axis4::y:
-            return y;
-        case Axis4::z:
-            return z;
-        case Axis4::w:
-            return w;
-        default:
-            return x;
-        }
-    }
-
     [[nodiscard]] Vector4 operator+() const
     {
         return { x, y, z, w };
@@ -1820,38 +1722,38 @@ public:
         return sqrt(static_cast<float>(length_sqrd()));
     }
 
-    [[nodiscard]] Axis4 max_axis() const
+    [[nodiscard]] int max_index() const
     {
         int max_val = x;
-        auto max_axis = Axis4::x;
+        auto max_axis = 0;
         if (y > max_val) {
             max_val = y;
-            max_axis = Axis4::y;
+            max_axis = 1;
         }
         if (z > max_val) {
             max_val = z;
-            max_axis = Axis4::z;
+            max_axis = 2;
         }
         if (w > max_val) {
-            max_axis = Axis4::w;
+            max_axis = 3;
         }
         return max_axis;
     }
 
-    [[nodiscard]] Axis4 min_axis() const
+    [[nodiscard]] int min_index() const
     {
         int min_val = x;
-        auto min_axis = Axis4::x;
+        auto min_axis = 0;
         if (y < min_val) {
             min_val = y;
-            min_axis = Axis4::y;
+            min_axis = 1;
         }
         if (z < min_val) {
             min_val = z;
-            min_axis = Axis4::z;
+            min_axis = 2;
         }
         if (w < min_val) {
-            min_axis = Axis4::w;
+            min_axis = 3;
         }
         return min_axis;
     }
@@ -2005,22 +1907,6 @@ public:
         case 2:
             return z;
         case 3:
-            return w;
-        default:
-            return x;
-        }
-    }
-
-    [[nodiscard]] int& operator[](const Axis4 axis)
-    {
-        switch (axis) {
-        case Axis4::x:
-            return x;
-        case Axis4::y:
-            return y;
-        case Axis4::z:
-            return z;
-        case Axis4::w:
             return w;
         default:
             return x;

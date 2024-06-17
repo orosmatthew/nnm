@@ -43,14 +43,6 @@ int min(int a, int b);
 float log2(float value);
 ```
 
-## Enums
-
-```c++
-enum class Axis2 { x, y };
-enum class Axis3 { x, y, z };
-enum class Axis4 { x, y, z, w };
-```
-
 ## Vector2
 
 ### Members
@@ -91,8 +83,8 @@ Vector2 floor() const;
 float length_sqrd() const;
 float length() const;
 Vector2 lerp(const Vector2& to, float weight) const;
-Axis2 max_axis() const;
-Axis2 min_axis() const;
+int max_index() const;
+int min_index() const;
 bool approx_equal(const Vector2& other) const;
 bool approx_zero() const;
 float dot(const Vector2& other) const;
@@ -124,8 +116,6 @@ bool operator<(const Vector2& other) const;
 bool operator==(const Vector2& other) const;
 float operator[](int index) const;
 float& operator[](int index);
-float operator[](Axis2 axis) const;
-float& operator[](Axis2 axis);
 Vector2 operator+() const;
 Vector2 operator-() const;
 operator bool() const;
@@ -163,8 +153,8 @@ float aspect_ratio() const;
 Vector2i clamp(const Vector2i& min, const Vector2i& max) const;
 int length_sqrd() const;
 float length() const;
-Axis2 max_axis() const;
-Axis2 min_axis() const;
+int max_index() const;
+int min_index() const;
 ```
 
 ### Operators
@@ -191,8 +181,6 @@ bool operator<(const Vector2i& other) const;
 bool operator==(const Vector2i& other) const;
 int operator[](int index) const;
 int& operator[](int index);
-int operator[](Axis2 axis) const;
-int& operator[](Axis2 axis);
 Vector2i operator+() const;
 Vector2i operator-() const;
 operator bool() const;
@@ -238,8 +226,8 @@ Vector3 floor() const;
 float length_sqrd() const;
 float length() const;
 Vector3 lerp(const Vector3& to, float weight) const;
-Axis3 max_axis() const;
-Axis3 min_axis() const;
+int max_index() const;
+int min_index() const;
 bool approx_equal(const Vector3& other) const;
 bool approx_zero() const;
 float dot(const Vector3& other) const;
@@ -274,7 +262,6 @@ bool operator<(const Vector3& other) const;
 bool operator==(const Vector3& other) const;
 float& operator[](int index);
 const float& operator[](int index) const;
-float& operator[](Axis3 axis);
 Vector3 operator+() const;
 Vector3 operator-() const;
 operator bool() const;
@@ -311,9 +298,8 @@ Vector3i abs() const
 Vector3i clamp(const Vector3i& min, const Vector3i& max) const
 int length_sqrd() const
 float length() const
-
-Axis3 min_axis() const
-Axis3 max_axis() const
+int min_index() const
+int max_index() const
 ```
 
 ### Operators
@@ -340,7 +326,6 @@ bool operator<(const Vector3i& other) const;
 bool operator==(const Vector3i& other) const;
 int operator[](int index) const;
 int& operator[](int index);
-int& operator[](Axis3 axis);
 Vector3i operator+() const;
 Vector3i operator-() const;
 operator bool() const;
@@ -383,8 +368,8 @@ Vector4 floor() const
 float length_sqrd() const
 float length() const
 Vector4 lerp(const Vector4& to, float weight) const
-Axis4 min_axis() const
-Axis4 max_axis() const
+int min_index() const
+int max_index() const
 float dot(const Vector4& other) const
 Vector4 inverse() const
 Vector4 clamp_length(float min, float max) const
@@ -411,7 +396,6 @@ bool operator<(const Vector4& other) const
 bool operator==(const Vector4& other) const
 float& operator[](int index)
 const float& operator[](int index) const
-float& operator[](Axis4 axis)
 Vector4 operator+() const
 Vector4 operator-() const
 operator bool() const
@@ -450,8 +434,8 @@ Vector4i abs() const;
 Vector4i clamped(const Vector4i& min, const Vector4i& max) const;
 int length_sqrd() const;
 float length() const;
-Axis4 max_axis() const;
-Axis4 min_axis() const;
+int max_index() const;
+int min_index() const;
 bool operator!=(const Vector4i& other) const;
 Vector4i operator%(const Vector4i& other) const;
 Vector4i& operator%=(const Vector4i& other);
@@ -472,7 +456,6 @@ Vector4i& operator/=(int value);
 bool operator<(const Vector4i& other) const;
 bool operator==(const Vector4i& other) const;
 int& operator[](int index);
-int& operator[](Axis4 axis);
 Vector4i operator+() const;
 Vector4i operator-() const;
 operator bool() const;

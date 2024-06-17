@@ -580,19 +580,19 @@ int main()
             ASSERT(from.lerp(to, 0.75f) == nnm::Vector2(2.5f, 4.0f));
         }
 
-        test_section("min/max_axis");
+        test_section("min/max_index");
         {
             nnm::Vector2 v1(3.0f, 4.0f);
-            ASSERT(v1.max_axis() == nnm::Axis2::y);
-            ASSERT(v1.min_axis() == nnm::Axis2::x);
+            ASSERT(v1.max_index() == 1);
+            ASSERT(v1.min_index() == 0);
 
             nnm::Vector2 v2(2.0f, 5.0f);
-            ASSERT(v2.max_axis() == nnm::Axis2::y);
-            ASSERT(v2.min_axis() == nnm::Axis2::x);
+            ASSERT(v2.max_index() == 1);
+            ASSERT(v2.min_index() == 0);
 
             nnm::Vector2 v3(0.0f, 0.0f);
-            ASSERT(v3.max_axis() == nnm::Axis2::x);
-            ASSERT(v3.min_axis() == nnm::Axis2::x);
+            ASSERT(v3.max_index() == 0);
+            ASSERT(v3.min_index() == 0);
         }
 
         test_section("approx_equal");
@@ -745,9 +745,6 @@ int main()
             const nnm::Vector2 v1(1.0f, 2.0f);
             ASSERT(v1[0] == 1.0f);
             ASSERT(v1[1] == 2.0f);
-
-            ASSERT(v1[nnm::Axis2::x] == 1.0f);
-            ASSERT(v1[nnm::Axis2::y] == 2.0f);
         }
 
         test_section("Conversion Operators");
@@ -821,16 +818,16 @@ int main()
         test_section("min/max_axis");
         {
             nnm::Vector2i v1(3, 4);
-            ASSERT(v1.max_axis() == nnm::Axis2::y);
-            ASSERT(v1.min_axis() == nnm::Axis2::x);
+            ASSERT(v1.max_index() == 1);
+            ASSERT(v1.min_index() == 0);
 
             nnm::Vector2i v2(2, 5);
-            ASSERT(v2.max_axis() == nnm::Axis2::y);
-            ASSERT(v2.min_axis() == nnm::Axis2::x);
+            ASSERT(v2.max_index() == 1);
+            ASSERT(v2.min_index() == 0);
 
             nnm::Vector2i v3(0, 0);
-            ASSERT(v3.max_axis() == nnm::Axis2::x);
-            ASSERT(v3.min_axis() == nnm::Axis2::x);
+            ASSERT(v3.max_index() == 0);
+            ASSERT(v3.min_index() == 0);
         }
 
         test_section("Equality and Inequality Operators");
@@ -902,9 +899,6 @@ int main()
             const nnm::Vector2i v1(1, 2);
             ASSERT(v1[0] == 1);
             ASSERT(v1[1] == 2);
-
-            ASSERT(v1[nnm::Axis2::x] == 1);
-            ASSERT(v1[nnm::Axis2::y] == 2);
         }
 
         test_section("Conversion Operators");
@@ -1094,16 +1088,16 @@ int main()
         test_section("min/max_axis");
         {
             nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
-            ASSERT(v1.max_axis() == nnm::Axis3::y);
-            ASSERT(v1.min_axis() == nnm::Axis3::z);
+            ASSERT(v1.max_index() == 1);
+            ASSERT(v1.min_index() == 2);
 
             nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
-            ASSERT(v2.max_axis() == nnm::Axis3::z);
-            ASSERT(v2.min_axis() == nnm::Axis3::x);
+            ASSERT(v2.max_index() == 2);
+            ASSERT(v2.min_index() == 0);
 
             nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
-            ASSERT(v3.max_axis() == nnm::Axis3::x);
-            ASSERT(v3.min_axis() == nnm::Axis3::x);
+            ASSERT(v3.max_index() == 0);
+            ASSERT(v3.min_index() == 0);
         }
 
         test_section("approx_equal");
@@ -1269,10 +1263,6 @@ int main()
             ASSERT(v1[0] == 1.0f);
             ASSERT(v1[1] == 2.0f);
             ASSERT(v1[2] == 3.0f);
-
-            ASSERT(v1[nnm::Axis3::x] == 1.0f);
-            ASSERT(v1[nnm::Axis3::y] == 2.0f);
-            ASSERT(v1[nnm::Axis3::z] == 3.0f);
         }
 
         test_section("Conversion Operators");
@@ -1341,11 +1331,11 @@ int main()
         test_section("min/max axis");
         {
             nnm::Vector3i v1(1, -2, 3);
-            ASSERT(v1.min_axis() == nnm::Axis3::y);
-            ASSERT(v1.max_axis() == nnm::Axis3::z);
+            ASSERT(v1.min_index() == 1);
+            ASSERT(v1.max_index() == 2);
             nnm::Vector3i v2(-1, 2, -3);
-            ASSERT(v2.min_axis() == nnm::Axis3::z);
-            ASSERT(v2.max_axis() == nnm::Axis3::y);
+            ASSERT(v2.min_index() == 2);
+            ASSERT(v2.max_index() == 1);
         }
 
         nnm::Vector3i v1(1, 2, -3);
@@ -1414,10 +1404,6 @@ int main()
             ASSERT(v1[0] == 1);
             ASSERT(v1[1] == 2);
             ASSERT(v1[2] == -3);
-
-            ASSERT(v1[nnm::Axis3::x] == 1);
-            ASSERT(v1[nnm::Axis3::y] == 2);
-            ASSERT(v1[nnm::Axis3::z] == -3);
         }
 
         test_section("Conversion Operators");
