@@ -690,8 +690,8 @@ Matrix3 matrix;
 ```c++
 Transform2();
 Transform2(const Matrix3& matrix);
-static Transform2 from_basis_position(const Basis2& basis, const Vector2& pos);
-static Transform2 from_position(const Vector2& pos);
+static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos);
+static Transform2 from_translation(const Vector2& pos);
 static Transform2 from_basis(const Basis2& basis);
 static Transform2 from_rotation(float angle);
 static Transform2 from_scale(const Vector2& factor);
@@ -702,7 +702,7 @@ static Transform2 from_shear(const Vector2& vector);
 ```c++
 bool valid() const;
 Basis2 basis() const;
-Vector2 position() const;
+Vector2 translation() const;
 Transform2 rotate(float angle) const;
 Transform2 rotate_local(float angle) const;
 Transform2 scale(const Vector2& factor) const;

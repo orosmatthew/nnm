@@ -3399,7 +3399,7 @@ public:
     {
     }
 
-    static Transform2 from_basis_position(const Basis2& basis, const Vector2& pos)
+    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos)
     {
         Matrix3 matrix;
         matrix = matrix.sub_matrix2(0, 0, basis.matrix);
@@ -3408,29 +3408,29 @@ public:
         return Transform2(matrix);
     }
 
-    static Transform2 from_position(const Vector2& pos)
+    static Transform2 from_translation(const Vector2& pos)
     {
-        return from_basis_position(Basis2(), pos);
+        return from_basis_translation(Basis2(), pos);
     }
 
     static Transform2 from_basis(const Basis2& basis)
     {
-        return from_basis_position(basis, Vector2::zero());
+        return from_basis_translation(basis, Vector2::zero());
     }
 
     static Transform2 from_rotation(const float angle)
     {
-        return from_basis_position(Basis2::from_rotation(angle), Vector2());
+        return from_basis_translation(Basis2::from_rotation(angle), Vector2());
     }
 
     static Transform2 from_scale(const Vector2& factor)
     {
-        return from_basis_position(Basis2::from_scale(factor), Vector2());
+        return from_basis_translation(Basis2::from_scale(factor), Vector2());
     }
 
     static Transform2 from_shear(const Vector2& vector)
     {
-        return from_basis_position(Basis2::from_shear(vector), Vector2());
+        return from_basis_translation(Basis2::from_shear(vector), Vector2());
     }
 
     [[nodiscard]] bool valid() const
@@ -3445,7 +3445,7 @@ public:
         return Basis2(matrix.sub_matrix2_at(0, 0));
     }
 
-    [[nodiscard]] Vector2 position() const
+    [[nodiscard]] Vector2 translation() const
     {
         return { matrix[2][0], matrix[2][1] };
     }
@@ -3488,13 +3488,13 @@ public:
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
     {
-        return from_basis_position(basis(), position() + offset);
+        return from_basis_translation(basis(), translation() + offset);
     }
 
     [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
     {
         const Vector2 local_offset = offset.transform(basis());
-        return from_basis_position(basis(), position() + local_offset);
+        return from_basis_translation(basis(), translation() + local_offset);
     }
 
     [[nodiscard]] Transform2 transform(const Transform2& by) const
