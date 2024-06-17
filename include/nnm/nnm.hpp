@@ -311,7 +311,12 @@ public:
 
     [[nodiscard]] Vector2 lerp(const Vector2& to, const float weight) const
     {
-        return *this * (1.0f - weight) + to * weight;
+        return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
+    }
+
+    [[nodiscard]] Vector2 clamped_lerp(const Vector2& to, const float weight) const
+    {
+        return { nnm::clamped_lerp(x, to.x, weight), nnm::clamped_lerp(y, to.y, weight) };
     }
 
     [[nodiscard]] int max_index() const
@@ -487,6 +492,18 @@ public:
         return x == other.x && y == other.y;
     }
 
+    [[nodiscard]] float at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        return data[index];
+    }
+
     [[nodiscard]] float operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
@@ -522,7 +539,6 @@ public:
             int x;
             int y;
         };
-
         std::array<int, 2> data;
     };
 
@@ -718,13 +734,25 @@ public:
         return x == other.x && y == other.y;
     }
 
+    [[nodiscard]] int at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    int& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
-    [[nodiscard]] int& operator[](const int index)
+    int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
         return data[index];
@@ -754,7 +782,6 @@ public:
             float y;
             float z;
         };
-
         std::array<float, 3> data;
     };
 
@@ -852,6 +879,13 @@ public:
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
 
+    [[nodiscard]] Vector3 clamped_lerp(const Vector3& to, const float weight) const
+    {
+        return { nnm::clamped_lerp(x, to.x, weight),
+                 nnm::clamped_lerp(y, to.y, weight),
+                 nnm::clamped_lerp(z, to.z, weight) };
+    }
+
     [[nodiscard]] int max_index() const
     {
         float max_val = x;
@@ -945,10 +979,6 @@ public:
         // Rodrigues rotation formula
         return *this * cos(angle) + axis.cross(*this) * sin(angle) + axis * (1.0f - cos(angle)) * axis.dot(*this);
     }
-
-    [[nodiscard]] Vector3 rotate(const Matrix3& matrix) const;
-
-    [[nodiscard]] Vector3 transform(const Matrix4& matrix) const;
 
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
@@ -1056,13 +1086,25 @@ public:
         return x == other.x && y == other.y && z == other.z;
     }
 
-    [[nodiscard]] float& operator[](const int index)
+    [[nodiscard]] float at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] float operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    float& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
         return data[index];
@@ -1301,7 +1343,19 @@ public:
         return x == other.x && y == other.y && z == other.z;
     }
 
-    int operator[](const int index) const
+    [[nodiscard]] int at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    int& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
         return data[index];
@@ -3939,17 +3993,6 @@ inline Quaternion Quaternion::from_matrix(const Matrix3& matrix)
     }
 
     return result;
-}
-
-inline Vector3 Vector3::rotate(const Matrix3& matrix) const
-{
-    return matrix * *this;
-}
-
-inline Vector3 Vector3::transform(const Matrix4& matrix) const
-{
-    Vector4 result_4d = matrix * Vector4(x, y, z, 1.0f);
-    return { result_4d.x, result_4d.y, result_4d.z };
 }
 
 // inline Matrix3 Quaternion::matrix() const

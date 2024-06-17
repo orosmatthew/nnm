@@ -392,28 +392,20 @@ int main()
 
     test_case("Vector2");
     {
-        test_section("Default constructor");
+        test_section("constructors");
         {
-            const nnm::Vector2 v;
-            ASSERT(v.x == 0.0f);
-            ASSERT(v.y == 0.0f);
+            const nnm::Vector2 v1;
+            ASSERT(v1.x == 0.0f);
+            ASSERT(v1.y == 0.0f);
+            const nnm::Vector2 v2(nnm::Vector2i(1, 2));
+            ASSERT(v2.x == 1.0f);
+            ASSERT(v2.y == 2.0f);
+            const nnm::Vector2 v3(1.0f, 2.0f);
+            ASSERT(v3.x == 1.0f);
+            ASSERT(v3.y == 2.0f);
         }
 
-        test_section("From Vector2i constructor");
-        {
-            const nnm::Vector2 v(nnm::Vector2i(1, 2));
-            ASSERT(v.x == 1.0f);
-            ASSERT(v.y == 2.0f);
-        }
-
-        test_section("Constructor with params");
-        {
-            const nnm::Vector2 v(1.0f, 2.0f);
-            ASSERT(v.x == 1.0f);
-            ASSERT(v.y == 2.0f);
-        }
-
-        test_section("Static methods");
+        test_section("static methods");
         {
             const auto all_threes = nnm::Vector2::all(3.0f);
             ASSERT(all_threes.x == 3.0f);
@@ -580,6 +572,19 @@ int main()
             ASSERT(from.lerp(to, 0.75f) == nnm::Vector2(2.5f, 4.0f));
         }
 
+        test_section("clamped_lerp");
+        {
+            const nnm::Vector2 from(1.0f, 1.0f);
+            const nnm::Vector2 to(3.0f, 5.0f);
+            ASSERT(from.clamped_lerp(to, 0.0f) == nnm::Vector2(1.0f, 1.0f));
+            ASSERT(from.clamped_lerp(to, 1.0f) == nnm::Vector2(3.0f, 5.0f));
+            ASSERT(from.clamped_lerp(to, 0.5f) == nnm::Vector2(2.0f, 3.0f));
+            ASSERT(from.clamped_lerp(to, 0.25f) == nnm::Vector2(1.5f, 2.0f));
+            ASSERT(from.clamped_lerp(to, 0.75f) == nnm::Vector2(2.5f, 4.0f));
+            ASSERT(from.clamped_lerp(to, 5.0f) == nnm::Vector2(3.0f, 5.0f));
+            ASSERT(from.clamped_lerp(to, -5.0f) == nnm::Vector2(1.0f, 1.0f));
+        }
+
         test_section("min/max_index");
         {
             nnm::Vector2 v1(3.0f, 4.0f);
@@ -678,7 +683,7 @@ int main()
             ASSERT(v1.transform(b3).approx_equal({ -1.0f, -2.0f }))
         }
 
-        test_section("Equality and Inequality Operators");
+        test_section("equality operators");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
             const nnm::Vector2 v2(3.0f, 4.0f);
@@ -689,7 +694,7 @@ int main()
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("Arithmetic Operators");
+        test_section("arithmetic operators");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
             const nnm::Vector2 v2(3.0f, 4.0f);
@@ -703,7 +708,7 @@ int main()
             ASSERT(-v1 == nnm::Vector2(-1.0f, -2.0f));
         }
 
-        test_section("Compound Assignment Operators");
+        test_section("compound assignment operators");
         {
             nnm::Vector2 v1(1.0f, 2.0f);
             nnm::Vector2 v2(3.0f, 4.0f);
@@ -733,21 +738,23 @@ int main()
             v2 = v_copy;
         }
 
-        test_section("Comparison Operator");
+        test_section("comparison operator");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
             const nnm::Vector2 v2(3.0f, 4.0f);
             ASSERT(v1 < v2);
         }
 
-        test_section("Indexing Operators");
+        test_section("indexing operators");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
             ASSERT(v1[0] == 1.0f);
             ASSERT(v1[1] == 2.0f);
+            ASSERT(v1.at(0) == 1.0f);
+            ASSERT(v1.at(1) == 2.0f);
         }
 
-        test_section("Conversion Operators");
+        test_section("conversion operators");
         {
             const nnm::Vector2 v1(1.0f, 2.0f);
             ASSERT(static_cast<bool>(v1));
@@ -757,21 +764,18 @@ int main()
 
     test_case("Vector2i");
     {
-        test_section("Default constructor");
+        test_section("constructors");
         {
-            const nnm::Vector2i v;
-            ASSERT(v.x == 0);
-            ASSERT(v.y == 0);
+            const nnm::Vector2i v1;
+            ASSERT(v1.x == 0);
+            ASSERT(v1.y == 0);
+
+            const nnm::Vector2i v2(1, 2);
+            ASSERT(v2.x == 1);
+            ASSERT(v2.y == 2);
         }
 
-        test_section("Constructor with params");
-        {
-            const nnm::Vector2i v(1, 2);
-            ASSERT(v.x == 1);
-            ASSERT(v.y == 2);
-        }
-
-        test_section("Static methods");
+        test_section("static methods");
         {
             const auto all_threes = nnm::Vector2i::all(3);
             ASSERT(all_threes.x == 3);
@@ -815,7 +819,7 @@ int main()
             ASSERT(nnm::approx_equal(nnm::Vector2i(0, 0).length(), 0.0f));
         }
 
-        test_section("min/max_axis");
+        test_section("min/max_index");
         {
             nnm::Vector2i v1(3, 4);
             ASSERT(v1.max_index() == 1);
@@ -830,7 +834,7 @@ int main()
             ASSERT(v3.min_index() == 0);
         }
 
-        test_section("Equality and Inequality Operators");
+        test_section("equality operators");
         {
             const nnm::Vector2i v1(1, 2);
             const nnm::Vector2i v2(3, 4);
@@ -841,7 +845,7 @@ int main()
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("Arithmetic Operators");
+        test_section("arithmetic operators");
         {
             const nnm::Vector2i v1(1, 2);
             const nnm::Vector2i v2(3, 4);
@@ -857,7 +861,7 @@ int main()
             ASSERT(-v1 == nnm::Vector2i(-1, -2));
         }
 
-        test_section("Compound Assignment Operators");
+        test_section("compound assignment operators");
         {
             nnm::Vector2i v1(1, 2);
             nnm::Vector2i v2(3, 4);
@@ -887,21 +891,23 @@ int main()
             v2 = v_copy;
         }
 
-        test_section("Comparison Operator");
+        test_section("comparison operator");
         {
             const nnm::Vector2i v1(1, 2);
             const nnm::Vector2i v2(3, 4);
             ASSERT(v1 < v2);
         }
 
-        test_section("Indexing Operators");
+        test_section("indexing operators");
         {
             const nnm::Vector2i v1(1, 2);
             ASSERT(v1[0] == 1);
             ASSERT(v1[1] == 2);
+            ASSERT(v1.at(0) == 1);
+            ASSERT(v1.at(1) == 2);
         }
 
-        test_section("Conversion Operators");
+        test_section("conversion operators");
         {
             const nnm::Vector2i v1(1, 2);
             ASSERT(static_cast<bool>(v1));
@@ -911,7 +917,7 @@ int main()
 
     test_case("Vector3");
     {
-        test_section("Constructors");
+        test_section("constructors");
         {
             const nnm::Vector3 v1;
             ASSERT(v1.x == 0.0f);
@@ -928,7 +934,7 @@ int main()
             ASSERT(v3.z == 3.0f);
         }
 
-        test_section("Static methods");
+        test_section("static methods");
         {
             const auto v1 = nnm::Vector3::all(3.0f);
             ASSERT(v1.x == 3.0f);
@@ -1085,7 +1091,20 @@ int main()
             ASSERT(from.lerp(to, 0.75f) == nnm::Vector3(2.5f, 4.0f, -1.25f));
         }
 
-        test_section("min/max_axis");
+        test_section("clamped_lerp");
+        {
+            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            nnm::Vector3 to(3.0f, 5.0f, -2.0f);
+            ASSERT(from.clamped_lerp(to, 0.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            ASSERT(from.clamped_lerp(to, 1.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
+            ASSERT(from.clamped_lerp(to, 0.5f) == nnm::Vector3(2.0f, 3.0f, -0.5f));
+            ASSERT(from.clamped_lerp(to, 0.25f) == nnm::Vector3(1.5f, 2.0f, 0.25f));
+            ASSERT(from.clamped_lerp(to, 0.75f) == nnm::Vector3(2.5f, 4.0f, -1.25f));
+            ASSERT(from.clamped_lerp(to, -5.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            ASSERT(from.clamped_lerp(to, 5.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
+        }
+
+        test_section("min/max_index");
         {
             nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
             ASSERT(v1.max_index() == 1);
@@ -1190,20 +1209,11 @@ int main()
             ASSERT(v.rotate(axis, 0.0f).approx_equal(v));
         }
 
-        test_section("rotate by matrix");
-        {
-            // TODO
-        }
-
-        test_section("transform by matrix");
-        {
-        }
-
         nnm::Vector3 v1(1.0f, 2.0f, 3.0f);
         nnm::Vector3 v2(3.0f, 4.0f, -2.0f);
         nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
 
-        test_section("Equality and Inequality Operators");
+        test_section("equality operators");
         {
             ASSERT(v1 == v3);
             ASSERT_FALSE(v1 != v3);
@@ -1211,7 +1221,7 @@ int main()
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("Arithmetic Operators");
+        test_section("arithmetic operators");
         {
             ASSERT(v1 * v2 == nnm::Vector3(3.0f, 8.0f, -6.0f));
             ASSERT(v1 * 2.0 == nnm::Vector3(2.0f, 4.0f, 6.0f));
@@ -1223,7 +1233,7 @@ int main()
             ASSERT(-v1 == nnm::Vector3(-1.0f, -2.0f, -3.0f));
         }
 
-        test_section("Compound Assignment Operators");
+        test_section("compound assignment operators");
         {
             nnm::Vector3 v1_copy(v1);
             nnm::Vector3 v2_copy(v2);
@@ -1253,19 +1263,23 @@ int main()
             v2 = v2_copy;
         }
 
-        test_section("Comparison Operator");
+        test_section("comparison operator");
         {
             ASSERT(v1 < v2);
+            ASSERT_FALSE(v2 < v1);
         }
 
-        test_section("Indexing Operators");
+        test_section("indexing operators");
         {
             ASSERT(v1[0] == 1.0f);
             ASSERT(v1[1] == 2.0f);
             ASSERT(v1[2] == 3.0f);
+            ASSERT(v1.at(0) == 1.0f);
+            ASSERT(v1.at(1) == 2.0f);
+            ASSERT(v1.at(2) == 3.0f);
         }
 
-        test_section("Conversion Operators");
+        test_section("conversion operators");
         {
             ASSERT(static_cast<bool>(v1));
             ASSERT_FALSE(static_cast<bool>(nnm::Vector3(0.0f, 0.0f, 0.0f)));
@@ -1274,7 +1288,7 @@ int main()
 
     test_case("Vector3i");
     {
-        test_section("Constructors");
+        test_section("constructors");
         {
             const nnm::Vector3i v_default;
             ASSERT(v_default.x == 0);
@@ -1286,7 +1300,7 @@ int main()
             ASSERT(v_with_params.z == 3);
         }
 
-        test_section("Static methods");
+        test_section("static methods");
         {
             const auto v_all_threes = nnm::Vector3i::all(3);
             ASSERT(v_all_threes.x == 3);
@@ -1328,7 +1342,7 @@ int main()
             ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(14.0f)));
         }
 
-        test_section("min/max axis");
+        test_section("min/max_index");
         {
             nnm::Vector3i v1(1, -2, 3);
             ASSERT(v1.min_index() == 1);
@@ -1342,7 +1356,7 @@ int main()
         nnm::Vector3i v2(-3, 4, 100);
         nnm::Vector3i v3(1, 2, -3);
 
-        test_section("Equality and Inequality Operators");
+        test_section("equality operators");
         {
             ASSERT(v1 == v3);
             ASSERT_FALSE(v1 != v3);
@@ -1350,7 +1364,7 @@ int main()
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("Arithmetic Operators");
+        test_section("arithmetic operators");
         {
             ASSERT(v1 % v2 == nnm::Vector3i(1, 2, -3));
             ASSERT(v1 % 2 == nnm::Vector3i(1, 0, -1));
@@ -1364,7 +1378,7 @@ int main()
             ASSERT(-v1 == nnm::Vector3i(-1, -2, 3));
         }
 
-        test_section("Compound Assignment Operators");
+        test_section("compound assignment operators");
         {
             nnm::Vector3i v1_copy(v1);
             nnm::Vector3i v2_copy(v2);
@@ -1394,19 +1408,23 @@ int main()
             v2 = v2_copy;
         }
 
-        test_section("Comparison Operator");
+        test_section("comparison operator");
         {
             ASSERT(v2 < v1);
+            ASSERT_FALSE(v1 < v2);
         }
 
-        test_section("Indexing Operators");
+        test_section("indexing operators");
         {
             ASSERT(v1[0] == 1);
             ASSERT(v1[1] == 2);
             ASSERT(v1[2] == -3);
+            ASSERT(v1.at(0) == 1);
+            ASSERT(v1.at(1) == 2);
+            ASSERT(v1.at(2) == -3);
         }
 
-        test_section("Conversion Operators");
+        test_section("conversion operators");
         {
             ASSERT(static_cast<bool>(v1));
             ASSERT_FALSE(static_cast<bool>(nnm::Vector3i(0, 0, 0)));
