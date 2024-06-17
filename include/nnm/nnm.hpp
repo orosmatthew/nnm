@@ -56,7 +56,7 @@ inline int max(const int a, const int b)
     return std::max(a, b);
 }
 
-inline bool approx_zero(const float value, const float epsilon = nnm::epsilon)
+inline bool approx_zero(const float value)
 {
     float tolerance = epsilon * abs(value);
     tolerance = max(tolerance, epsilon);
@@ -182,12 +182,12 @@ inline float atan2(const float a, const float b)
     return std::atan2(a, b);
 }
 
-inline float radians(const float degrees, const float pi = nnm::pi)
+inline float radians(const float degrees)
 {
     return pi / 180.0f * degrees;
 }
 
-inline float degrees(const float radians, const float pi = nnm::pi)
+inline float degrees(const float radians)
 {
     return 180.0f / pi * radians;
 }
@@ -364,14 +364,14 @@ public:
         return Axis2::x;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector2& other, const float epsilon = nnm::epsilon) const
+    [[nodiscard]] bool approx_equal(const Vector2& other) const
     {
         return nnm::approx_equal(x, other.x, epsilon) && nnm::approx_equal(y, other.y, epsilon);
     }
 
-    [[nodiscard]] bool approx_zero(const float epsilon = nnm::epsilon) const
+    [[nodiscard]] bool approx_zero() const
     {
-        return nnm::approx_zero(x, epsilon) && nnm::approx_zero(y, epsilon);
+        return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
     [[nodiscard]] float dot(const Vector2& other) const
@@ -875,7 +875,7 @@ public:
         return { nnm::ceil(x), nnm::ceil(y), nnm::ceil(z) };
     }
 
-    [[nodiscard]] Vector3 clamp(const Vector3 min, const Vector3 max) const
+    [[nodiscard]] Vector3 clamp(const Vector3& min, const Vector3& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
@@ -890,12 +890,12 @@ public:
         return result;
     }
 
-    [[nodiscard]] Vector3 direction_to(const Vector3 to) const
+    [[nodiscard]] Vector3 direction_to(const Vector3& to) const
     {
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] float distance_sqrd_to(const Vector3 to) const
+    [[nodiscard]] float distance_sqrd_to(const Vector3& to) const
     {
         const float diff_x = to.x - x;
         const float diff_y = to.y - y;
@@ -923,7 +923,7 @@ public:
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Vector3 lerp(const Vector3 to, const float weight) const
+    [[nodiscard]] Vector3 lerp(const Vector3& to, const float weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
@@ -956,7 +956,7 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector3 other) const
+    [[nodiscard]] bool approx_equal(const Vector3& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z);
     }
@@ -966,17 +966,17 @@ public:
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z);
     }
 
-    [[nodiscard]] float dot(const Vector3 other) const
+    [[nodiscard]] float dot(const Vector3& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
 
-    [[nodiscard]] Vector3 cross(const Vector3 other) const
+    [[nodiscard]] Vector3 cross(const Vector3& other) const
     {
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
     }
 
-    [[nodiscard]] Vector3 reflect(const Vector3 normal) const
+    [[nodiscard]] Vector3 reflect(const Vector3& normal) const
     {
         Vector3 result;
         const float dot = x * normal.x + y * normal.y + z * normal.z;
@@ -1010,7 +1010,7 @@ public:
         return { nnm::round(x), nnm::round(y), nnm::round(z) };
     }
 
-    [[nodiscard]] float angle(const Vector3 other) const
+    [[nodiscard]] float angle(const Vector3& other) const
     {
         return atan2(this->cross(other).length(), this->dot(other));
     }
@@ -1026,17 +1026,17 @@ public:
 
     [[nodiscard]] Vector3 transform(const Matrix4& matrix) const;
 
-    [[nodiscard]] bool operator!=(const Vector3 other) const
+    [[nodiscard]] bool operator!=(const Vector3& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
-    [[nodiscard]] Vector3 operator*(const Vector3 other) const
+    [[nodiscard]] Vector3 operator*(const Vector3& other) const
     {
         return { x * other.x, y * other.y, z * other.z };
     }
 
-    Vector3& operator*=(const Vector3 other)
+    Vector3& operator*=(const Vector3& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1057,12 +1057,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator+(const Vector3 other) const
+    [[nodiscard]] Vector3 operator+(const Vector3& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
     }
 
-    Vector3& operator+=(const Vector3 other)
+    Vector3& operator+=(const Vector3& other)
     {
         x += other.x;
         y += other.y;
@@ -1085,12 +1085,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator/(const Vector3 other) const
+    [[nodiscard]] Vector3 operator/(const Vector3& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
     }
 
-    Vector3& operator/=(const Vector3 other)
+    Vector3& operator/=(const Vector3& other)
     {
         x /= other.x;
         y /= other.y;
@@ -1113,7 +1113,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool operator<(const Vector3 other) const
+    [[nodiscard]] bool operator<(const Vector3& other) const
     {
         if (x != other.x) {
             return x < other.x;
@@ -1127,7 +1127,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool operator==(const Vector3 other) const
+    [[nodiscard]] bool operator==(const Vector3& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
@@ -1182,8 +1182,7 @@ public:
             int y;
             int z;
         };
-
-        int data[3] {};
+        std::array<int, 3> data {};
     };
 
     Vector3i()
@@ -1220,7 +1219,7 @@ public:
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
     }
 
-    [[nodiscard]] Vector3i clamp(const Vector3i min, const Vector3i max) const
+    [[nodiscard]] Vector3i clamp(const Vector3i& min, const Vector3i& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
@@ -1263,17 +1262,17 @@ public:
         return max_axis;
     }
 
-    [[nodiscard]] bool operator!=(const Vector3i other) const
+    [[nodiscard]] bool operator!=(const Vector3i& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
-    [[nodiscard]] Vector3i operator%(const Vector3i other) const
+    [[nodiscard]] Vector3i operator%(const Vector3i& other) const
     {
         return { x % other.x, y % other.y, z % other.z };
     }
 
-    Vector3i& operator%=(const Vector3i other)
+    Vector3i& operator%=(const Vector3i& other)
     {
         x %= other.x;
         y %= other.y;
@@ -1294,12 +1293,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator*(const Vector3i other) const
+    [[nodiscard]] Vector3i operator*(const Vector3i& other) const
     {
         return { x * other.x, y * other.y, z * other.z };
     }
 
-    Vector3i& operator*=(const Vector3i other)
+    Vector3i& operator*=(const Vector3i& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1334,12 +1333,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator-(const Vector3i other) const
+    [[nodiscard]] Vector3i operator-(const Vector3i& other) const
     {
         return { x - other.x, y - other.y, z - other.z };
     }
 
-    Vector3i& operator-=(const Vector3i other)
+    Vector3i& operator-=(const Vector3i& other)
     {
         x -= other.x;
         y -= other.y;
@@ -1347,12 +1346,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator/(const Vector3i other) const
+    [[nodiscard]] Vector3i operator/(const Vector3i& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
     }
 
-    Vector3i& operator/=(const Vector3i other)
+    Vector3i& operator/=(const Vector3i& other)
     {
         x /= other.x;
         y /= other.y;
@@ -1373,7 +1372,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool operator<(const Vector3i other) const
+    [[nodiscard]] bool operator<(const Vector3i& other) const
     {
         if (x != other.x) {
             return x < other.x;
@@ -1387,7 +1386,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool operator==(const Vector3i other) const
+    [[nodiscard]] bool operator==(const Vector3i& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
@@ -1436,10 +1435,15 @@ public:
 
 class Vector4 {
 public:
-    float x;
-    float y;
-    float z;
-    float w;
+    union {
+        struct {
+            float x;
+            float y;
+            float z;
+            float w;
+        };
+        std::array<float, 4> data {};
+    };
 
     Vector4()
         : x(0.0f)
@@ -1449,17 +1453,17 @@ public:
     {
     }
 
-    static Vector4 all(const float value)
-    {
-        return { value, value, value, value };
-    }
-
     Vector4(const float x, const float y, const float z, const float w)
         : x(x)
         , y(y)
         , z(z)
         , w(w)
     {
+    }
+
+    static Vector4 all(const float value)
+    {
+        return { value, value, value, value };
     }
 
     static Vector4 zero()
@@ -1482,7 +1486,7 @@ public:
         return { nnm::ceil(x), nnm::ceil(y), nnm::ceil(z), nnm::ceil(w) };
     }
 
-    [[nodiscard]] Vector4 clamp(const Vector4 min, const Vector4 max) const
+    [[nodiscard]] Vector4 clamp(const Vector4& min, const Vector4& max) const
     {
         return { nnm::clamp(x, min.x, max.x),
                  nnm::clamp(y, min.y, max.y),
@@ -1500,25 +1504,6 @@ public:
         return result;
     }
 
-    [[nodiscard]] Vector4 direction_to(const Vector4 to) const
-    {
-        return (to - *this).normalize();
-    }
-
-    [[nodiscard]] float distance_sqrd_to(const Vector4 to) const
-    {
-        const float diff_x = to.x - x;
-        const float diff_y = to.y - y;
-        const float diff_z = to.z - z;
-        const float diff_w = to.w - w;
-        return sqrd(diff_x) + sqrd(diff_y) + sqrd(diff_z) + sqrd(diff_w);
-    }
-
-    [[nodiscard]] float distance_to(const Vector4 to) const
-    {
-        return sqrt(distance_sqrd_to(to));
-    }
-
     [[nodiscard]] Vector4 floor() const
     {
         return { nnm::floor(x), nnm::floor(y), nnm::floor(z), nnm::floor(w) };
@@ -1534,7 +1519,7 @@ public:
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Vector4 lerp(const Vector4 to, const float weight) const
+    [[nodiscard]] Vector4 lerp(const Vector4& to, const float weight) const
     {
         return { nnm::lerp(x, to.x, weight),
                  nnm::lerp(y, to.y, weight),
@@ -1589,7 +1574,7 @@ public:
     //     return approx_zero(x) && approx_zero(y) && approx_zero(z) && approx_zero(w);
     // }
 
-    [[nodiscard]] float dot(const Vector4 other) const
+    [[nodiscard]] float dot(const Vector4& other) const
     {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
@@ -1599,7 +1584,7 @@ public:
         return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
     }
 
-    [[nodiscard]] Vector4 length_clamped(const float min, const float max) const
+    [[nodiscard]] Vector4 clamp_length(const float min, const float max) const
     {
         auto result = *this;
         if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
@@ -1619,17 +1604,17 @@ public:
         return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
     }
 
-    [[nodiscard]] bool operator!=(const Vector4 other) const
+    [[nodiscard]] bool operator!=(const Vector4& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
-    [[nodiscard]] Vector4 operator*(const Vector4 other) const
+    [[nodiscard]] Vector4 operator*(const Vector4& other) const
     {
         return { x * other.x, y * other.y, z * other.z, w * other.w };
     }
 
-    Vector4& operator*=(const Vector4 other)
+    Vector4& operator*=(const Vector4& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1652,12 +1637,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator+(const Vector4 other) const
+    [[nodiscard]] Vector4 operator+(const Vector4& other) const
     {
         return { x + other.x, y + other.y, z + other.z, w + other.w };
     }
 
-    Vector4& operator+=(const Vector4 other)
+    Vector4& operator+=(const Vector4& other)
     {
         x += other.x;
         y += other.y;
@@ -1666,12 +1651,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator-(const Vector4 other) const
+    [[nodiscard]] Vector4 operator-(const Vector4& other) const
     {
         return { x - other.x, y - other.y, z - other.z, w - other.w };
     }
 
-    Vector4& operator-=(const Vector4 other)
+    Vector4& operator-=(const Vector4& other)
     {
         x -= other.x;
         y -= other.y;
@@ -1680,12 +1665,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator/(const Vector4 other) const
+    [[nodiscard]] Vector4 operator/(const Vector4& other) const
     {
         return { x / other.x, y / other.y, z / other.z, w / other.w };
     }
 
-    Vector4& operator/=(const Vector4 other)
+    Vector4& operator/=(const Vector4& other)
     {
         x /= other.x;
         y /= other.y;
@@ -1708,7 +1693,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool operator<(const Vector4 other) const
+    [[nodiscard]] bool operator<(const Vector4& other) const
     {
         if (x != other.x) {
             return x < other.x;
@@ -1725,7 +1710,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool operator==(const Vector4 other) const
+    [[nodiscard]] bool operator==(const Vector4& other) const
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
@@ -1787,14 +1772,24 @@ public:
     {
         return { -x, -y, -z, -w };
     }
+
+    [[nodiscard]] explicit operator bool() const
+    {
+        return x != 0.0f || y != 0.0f || z != 0.0f || w != 0.0f;
+    }
 };
 
 class Vector4i {
 public:
-    int x;
-    int y;
-    int z;
-    int w;
+    union {
+        struct {
+            int x;
+            int y;
+            int z;
+            int w;
+        };
+        std::array<int, 4> data {};
+    };
 
     Vector4i()
         : x(0)
@@ -1832,7 +1827,7 @@ public:
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z), nnm::abs(w) };
     }
 
-    [[nodiscard]] Vector4i clamped(const Vector4i min, const Vector4i max) const
+    [[nodiscard]] Vector4i clamped(const Vector4i& min, const Vector4i& max) const
     {
         return { clamp(x, min.x, max.x), clamp(y, min.y, max.y), clamp(z, min.z, max.z), clamp(w, min.w, max.w) };
     }
@@ -1883,17 +1878,17 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] bool operator!=(const Vector4i other) const
+    [[nodiscard]] bool operator!=(const Vector4i& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
-    [[nodiscard]] Vector4i operator%(const Vector4i other) const
+    [[nodiscard]] Vector4i operator%(const Vector4i& other) const
     {
         return { x % other.x, y & other.y, z % other.z, w % other.w };
     }
 
-    Vector4i& operator%=(const Vector4i other)
+    Vector4i& operator%=(const Vector4i& other)
     {
         x %= other.x;
         y %= other.y;
@@ -1916,12 +1911,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4i operator*(const Vector4i other) const
+    [[nodiscard]] Vector4i operator*(const Vector4i& other) const
     {
         return { x * other.x, y * other.y, z * other.z, w * other.w };
     }
 
-    Vector4i& operator*=(const Vector4i other)
+    Vector4i& operator*=(const Vector4i& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1944,12 +1939,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4i operator+(const Vector4i other) const
+    [[nodiscard]] Vector4i operator+(const Vector4i& other) const
     {
         return { x + other.x, y + other.y, z + other.z, w + other.w };
     }
 
-    Vector4i& operator+=(const Vector4i other)
+    Vector4i& operator+=(const Vector4i& other)
     {
         x += other.x;
         y += other.y;
@@ -1958,12 +1953,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4i operator-(const Vector4i other) const
+    [[nodiscard]] Vector4i operator-(const Vector4i& other) const
     {
         return { x - other.x, y - other.y, z - other.z, w - other.w };
     }
 
-    Vector4i& operator-=(const Vector4i other)
+    Vector4i& operator-=(const Vector4i& other)
     {
         x -= other.x;
         y -= other.y;
@@ -1972,12 +1967,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4i operator/(const Vector4i other) const
+    [[nodiscard]] Vector4i operator/(const Vector4i& other) const
     {
         return { x / other.x, y / other.y, z / other.z, w / other.w };
     }
 
-    Vector4i& operator/=(const Vector4i other)
+    Vector4i& operator/=(const Vector4i& other)
     {
         x /= other.x;
         y /= other.y;
@@ -2000,7 +1995,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool operator<(const Vector4i other) const
+    [[nodiscard]] bool operator<(const Vector4i& other) const
     {
         if (x != other.x) {
             return x < other.x;
@@ -2017,7 +2012,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool operator==(const Vector4i other) const
+    [[nodiscard]] bool operator==(const Vector4i& other) const
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
@@ -2207,9 +2202,9 @@ public:
             && approx_equal(z, other.z, epsilon) && approx_equal(w, other.w, epsilon);
     }
 
-    [[nodiscard]] bool is_zero_approx(const float epsilon) const
+    [[nodiscard]] bool is_zero_approx() const
     {
-        return approx_zero(x, epsilon) && approx_zero(y, epsilon) && approx_zero(z, epsilon) && approx_zero(w, epsilon);
+        return approx_zero(x) && approx_zero(y) && approx_zero(z) && approx_zero(w);
     }
 
     [[nodiscard]] float length() const

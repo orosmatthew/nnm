@@ -29,17 +29,17 @@ int main()
 
     test_case("approx zero");
     {
-        ASSERT(nnm::approx_zero(0.0f, 0.01f));
-        ASSERT(nnm::approx_zero(0.005f, 0.01f));
-        ASSERT(nnm::approx_zero(0.01f, 0.01f));
-        ASSERT(nnm::approx_zero(-0.005f, 0.01f));
-        ASSERT(nnm::approx_zero(-0.01f, 0.01f));
-        ASSERT(nnm::approx_zero(1e-15f, 1e-14f));
-        ASSERT_FALSE(nnm::approx_zero(1e-14f, 1e-15f));
-        ASSERT(nnm::approx_zero(-1e-15f, 1e-14f));
-        ASSERT_FALSE(nnm::approx_zero(-1e-14f, 1e-15f));
-        ASSERT_FALSE(nnm::approx_zero(1.0f, 0.0f));
-        ASSERT(nnm::approx_zero(0.0f, 0.0f));
+        ASSERT(nnm::approx_zero(0.0f));
+        ASSERT_FALSE(nnm::approx_zero(0.005f));
+        ASSERT_FALSE(nnm::approx_zero(0.01f));
+        ASSERT_FALSE(nnm::approx_zero(-0.005f));
+        ASSERT_FALSE(nnm::approx_zero(-0.01f));
+        ASSERT(nnm::approx_zero(1e-15f));
+        ASSERT(nnm::approx_zero(1e-14f));
+        ASSERT(nnm::approx_zero(-1e-15f));
+        ASSERT(nnm::approx_zero(-1e-14f));
+        ASSERT_FALSE(nnm::approx_zero(1.0f));
+        ASSERT(nnm::approx_zero(0.0f));
     }
 
     test_case("max");
@@ -346,7 +346,7 @@ int main()
         ASSERT(nnm::approx_equal(nnm::radians(720.0f), 4.0f * nnm::pi));
         ASSERT(nnm::approx_equal(nnm::radians(1080.0f), 6.0f * nnm::pi));
 
-        ASSERT(nnm::approx_equal(nnm::radians(180.0f, 3.14159f), 3.14159f));
+        ASSERT(nnm::approx_equal(nnm::radians(180.0f), 3.14159f));
     }
 
     test_case("degrees");
@@ -365,7 +365,7 @@ int main()
         ASSERT(nnm::approx_equal(nnm::degrees(4.0f * nnm::pi), 720.0f));
         ASSERT(nnm::approx_equal(nnm::degrees(6.0f * nnm::pi), 1080.0f));
 
-        ASSERT(nnm::approx_equal(nnm::degrees(3.14159f, 3.14159f), 180.0f));
+        ASSERT(nnm::approx_equal(nnm::degrees(3.14159f), 180.0f));
     }
 
     test_case("asin");
