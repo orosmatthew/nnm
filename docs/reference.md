@@ -678,3 +678,45 @@ Matrix3 operator/(float value) const
 Matrix3& operator/=(float value)
 operator bool() const
 ```
+
+## Transform2
+
+### Members
+```c++
+Matrix3 matrix;
+```
+
+### Constructors
+```c++
+Transform2();
+Transform2(const Matrix3& matrix);
+static Transform2 from_basis_position(const Basis2& basis, const Vector2& pos);
+static Transform2 from_position(const Vector2& pos);
+static Transform2 from_basis(const Basis2& basis);
+static Transform2 from_rotation(float angle);
+static Transform2 from_scale(const Vector2& factor);
+static Transform2 from_shear(const Vector2& vector);
+```
+
+### Methods
+```c++
+bool valid() const;
+Basis2 basis() const;
+Vector2 position() const;
+Transform2 rotate(float angle) const;
+Transform2 rotate_local(float angle) const;
+Transform2 scale(const Vector2& factor) const;
+Transform2 scale_local(const Vector2& factor) const;
+Transform2 shear(const Vector2& vector) const;
+Transform2 shear_local(const Vector2& vector) const;
+Transform2 translate(const Vector2& offset) const;
+Transform2 translate_local(const Vector2& offset) const;
+Transform2 transform(const Transform2& by) const;
+Transform2 transform_local(const Transform2& by) const;
+bool approx_equal(const Transform2& other) const;
+float at(int column, int row) const;
+float& at(int column, int row);
+const Vector3& operator[](int column) const;
+Vector3& operator[](int column);
+bool operator==(const Transform2& other) const;
+```

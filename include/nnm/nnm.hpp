@@ -3522,7 +3522,7 @@ public:
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] Vector3 operator[](const int column) const
+    [[nodiscard]] const Vector3& operator[](const int column) const
     {
         return matrix[column];
     }
