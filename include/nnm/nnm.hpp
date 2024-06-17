@@ -1436,6 +1436,11 @@ public:
         return { nnm::ceil(x), nnm::ceil(y), nnm::ceil(z), nnm::ceil(w) };
     }
 
+    [[nodiscard]] Vector4 floor() const
+    {
+        return { nnm::floor(x), nnm::floor(y), nnm::floor(z), nnm::floor(w) };
+    }
+
     [[nodiscard]] Vector4 clamp(const Vector4& min, const Vector4& max) const
     {
         return { nnm::clamp(x, min.x, max.x),
@@ -1454,11 +1459,6 @@ public:
         return result;
     }
 
-    [[nodiscard]] Vector4 floor() const
-    {
-        return { nnm::floor(x), nnm::floor(y), nnm::floor(z), nnm::floor(w) };
-    }
-
     [[nodiscard]] float length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
@@ -1475,6 +1475,14 @@ public:
                  nnm::lerp(y, to.y, weight),
                  nnm::lerp(z, to.z, weight),
                  nnm::lerp(w, to.w, weight) };
+    }
+
+    [[nodiscard]] Vector4 clamped_lerp(const Vector4& to, const float weight) const
+    {
+        return { nnm::clamped_lerp(x, to.x, weight),
+                 nnm::clamped_lerp(y, to.y, weight),
+                 nnm::clamped_lerp(z, to.z, weight),
+                 nnm::clamped_lerp(w, to.w, weight) };
     }
 
     [[nodiscard]] int min_index() const
@@ -1513,16 +1521,16 @@ public:
         return max_axis;
     }
 
-    // [[nodiscard]] bool approx_equal(const Vector4 other) const
-    // {
-    //     return approx_equal(x, other.x) && approx_equal(y, other.y) && approx_equal(z, other.z)
-    //         && approx_equal(w, other.w);
-    // }
-    //
-    // [[nodiscard]] bool approx_zero() const
-    // {
-    //     return approx_zero(x) && approx_zero(y) && approx_zero(z) && approx_zero(w);
-    // }
+    [[nodiscard]] bool approx_equal(const Vector4& other) const
+    {
+        return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z)
+            && nnm::approx_equal(w, other.w);
+    }
+
+    [[nodiscard]] bool approx_zero() const
+    {
+        return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z) && nnm::approx_zero(w);
+    }
 
     [[nodiscard]] float dot(const Vector4& other) const
     {
@@ -1536,17 +1544,16 @@ public:
 
     [[nodiscard]] Vector4 clamp_length(const float min, const float max) const
     {
-        auto result = *this;
         if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
-            result = normalize();
+            const auto norm = normalize();
             if (const float length = sqrt(length_sqr); length < min) {
-                return result * min;
+                return norm * min;
             }
             else if (length > max) {
-                return result * max;
+                return norm * max;
             }
         }
-        return result;
+        return *this;
     }
 
     [[nodiscard]] Vector4 round() const

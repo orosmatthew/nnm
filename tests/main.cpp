@@ -1431,6 +1431,157 @@ int main()
         }
     }
 
+    test_case("Vector4");
+    {
+        test_section("constructors");
+        {
+            const nnm::Vector4 v1;
+            ASSERT(v1.x == 0.0f);
+            ASSERT(v1.y == 0.0f);
+            ASSERT(v1.z == 0.0f);
+            ASSERT(v1.w == 0.0f);
+
+            const nnm::Vector4 v2(-1.0f, 2.0f, -3.0f, 4.0f);
+            ASSERT(v2.x == -1.0f);
+            ASSERT(v2.y == 2.0f);
+            ASSERT(v2.z == -3.0f);
+            ASSERT(v2.w == 4.0f);
+        }
+
+        test_section("static methods");
+        {
+            const auto v1 = nnm::Vector4::all(3.0f);
+            ASSERT(v1.x == 3.0f);
+            ASSERT(v1.y == 3.0f);
+            ASSERT(v1.z == 3.0f);
+            ASSERT(v1.w == 3.0f);
+
+            const auto v2 = nnm::Vector4::zero();
+            ASSERT(v2.x == 0.0f);
+            ASSERT(v2.y == 0.0f);
+            ASSERT(v2.z == 0.0f);
+            ASSERT(v2.w == 0.0f);
+
+            const auto v3 = nnm::Vector4::one();
+            ASSERT(v3.x == 1.0f);
+            ASSERT(v3.y == 1.0f);
+            ASSERT(v3.z == 1.0f);
+            ASSERT(v3.w == 1.0f);
+        }
+
+        test_section("abs");
+        {
+            const nnm::Vector4 v1(-1.0f, 2.0f, -3.0, 4.0f);
+            const nnm::Vector4 v_expected(1.0f, 2.0f, 3.0f, 4.0f);
+            ASSERT(v1.abs() == v_expected);
+        }
+
+        test_section("ceil");
+        {
+            const nnm::Vector4 v1(-1.9f, 0.001f, 0.0f, 1.6f);
+            const nnm::Vector4 v_expected(-1.0f, 1.0f, 0.0f, 2.0f);
+            ASSERT(v1.ceil() == v_expected);
+        }
+
+        test_section("floor");
+        {
+            const nnm::Vector4 v1(-1.9f, 0.001f, 0.0f, 1.6f);
+            const nnm::Vector4 v_expected(-2.0f, 0.0f, 0.0f, 1.0f);
+            ASSERT(v1.floor() == v_expected);
+        }
+
+        test_section("clamp");
+        {
+            const nnm::Vector4 v1(-1.0f, 2.0f, 3.0f, -4.0f);
+            const nnm::Vector4 v2(2.0f, -3.0f, -2.0f, -3.0f);
+            const nnm::Vector4 v3(4.0f, 1.0f, 4.0f, 1.0f);
+            ASSERT(v1.clamp(v2, v3) == nnm::Vector4(2.0f, 1.0f, 3.0f, -3.0f));
+        }
+
+        test_section("normalize");
+        {
+            ASSERT(nnm::Vector4().normalize() == nnm::Vector4());
+            const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
+            const nnm::Vector4 v_expected(-0.182574, 0.365148, -0.547723, 0.730297);
+            ASSERT(v1.normalize().approx_equal(v_expected));
+        }
+
+        test_section("length_sqrd");
+        {
+            const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
+            ASSERT(nnm::approx_equal(v1.length_sqrd(), 30.0f));
+        }
+
+        test_section("length");
+        {
+            const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
+            ASSERT(nnm::approx_equal(v1.length(), nnm::sqrt(30.0f)));
+        }
+
+        const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
+        const nnm::Vector4 v2(4.0f, 5.0f, -2.0f, 1.5f);
+
+        test_section("lerp");
+        {
+            ASSERT(v1.lerp(v2, 0.0f) == v1);
+            ASSERT(v1.lerp(v2, 1.0f) == v2);
+            ASSERT(v1.lerp(v2, 0.5f).approx_equal({ 1.5f, 3.5f, -2.5f, 2.75f }));
+        }
+
+        test_section("clamped_lerp");
+        {
+            ASSERT(v1.clamped_lerp(v2, 0.0f) == v1);
+            ASSERT(v1.clamped_lerp(v2, 1.0f) == v2);
+            ASSERT(v1.clamped_lerp(v2, 0.5f).approx_equal({ 1.5f, 3.5f, -2.5f, 2.75f }));
+            ASSERT(v1.clamped_lerp(v2, -5.0f) == v1);
+            ASSERT(v1.clamped_lerp(v2, 5.0f) == v2);
+        }
+
+        test_section("min/max_index");
+        {
+            ASSERT(v1.min_index() == 2);
+            ASSERT(v1.max_index() == 3);
+            ASSERT(v2.min_index() == 2);
+            ASSERT(v2.max_index() == 1);
+        }
+
+        test_section("approx_equal");
+        {
+            const nnm::Vector4 v1_almost(-0.99999999, 2.0f, -3.00000001, 3.99999f);
+            ASSERT(v1.approx_equal(v1_almost));
+            ASSERT_FALSE(v1.approx_equal(v2));
+        }
+
+        test_section("approx_zero");
+        {
+            const nnm::Vector4 almost_zero(0.00001, -0.000001, 0.0f, 0.00000001);
+            ASSERT(almost_zero.approx_zero());
+        }
+
+        test_section("dot");
+        {
+            ASSERT(nnm::approx_equal(v1.dot(v2), 18.0f));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Vector4 v_expected(-1.0f, 0.5f, -0.33333333, 0.25f);
+            ASSERT(v1.inverse().approx_equal(v_expected));
+        }
+
+        test_section("clamp_length");
+        {
+            ASSERT(v1.clamp_length(0.0f, 1.0f).approx_equal(v1.normalize()));
+            ASSERT(v1.clamp_length(2.0f, 3.0f).approx_equal(v1.normalize() * 3.0f));
+            ASSERT(v1.clamp_length(10.0f, 50.0f).approx_equal(v1.normalize() * 10.0f));
+        }
+
+        test_section("round");
+        {
+            // TODO
+        }
+    }
+
     test_case("Matrix2");
     {
         test_section("Constructors");
