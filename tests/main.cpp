@@ -19,27 +19,12 @@ int main()
 
     test_case("abs");
     {
-        ASSERT(nnm::abs(0) == 0);
-        ASSERT(nnm::abs(1) == 1);
-        ASSERT(nnm::abs(-1) == 1);
         ASSERT(nnm::abs(0.0f) == 0.0f);
         ASSERT(nnm::abs(1.0f) == 1.0f);
         ASSERT(nnm::abs(-1.0f) == 1.0f);
-    }
-
-    test_case("approx zero");
-    {
-        ASSERT(nnm::approx_zero(0.0f));
-        ASSERT_FALSE(nnm::approx_zero(0.005f));
-        ASSERT_FALSE(nnm::approx_zero(0.01f));
-        ASSERT_FALSE(nnm::approx_zero(-0.005f));
-        ASSERT_FALSE(nnm::approx_zero(-0.01f));
-        ASSERT(nnm::approx_zero(1e-15f));
-        ASSERT(nnm::approx_zero(1e-14f));
-        ASSERT(nnm::approx_zero(-1e-15f));
-        ASSERT(nnm::approx_zero(-1e-14f));
-        ASSERT_FALSE(nnm::approx_zero(1.0f));
-        ASSERT(nnm::approx_zero(0.0f));
+        ASSERT(nnm::abs(0) == 0);
+        ASSERT(nnm::abs(1) == 1);
+        ASSERT(nnm::abs(-1) == 1);
     }
 
     test_case("max");
@@ -59,43 +44,34 @@ int main()
         ASSERT(nnm::max(-3.14159f, -2.71828f) == -2.71828f);
     }
 
-    test_case("approx_lte");
+    test_case("approx_zero");
     {
-        ASSERT(nnm::approx_lte(1.0f, 1.0f, 0.01f));
-        ASSERT(nnm::approx_lte(1.0f, 1.005f, 0.01f));
-        ASSERT(nnm::approx_lte(1.0f, 1.01f, 0.01f));
-        ASSERT(nnm::approx_lte(1.0f, 1.02f, 0.01f));
-        ASSERT(nnm::approx_lte(-1.0f, -1.005f, 0.01f));
-        ASSERT(nnm::approx_lte(1.0f, 1.0f, -0.01f));
-        ASSERT(nnm::approx_lte(1e-15f, 1e-16f, 1e-14f));
-        ASSERT_FALSE(nnm::approx_lte(4.0f, 2.0f, 1e-10f));
+        ASSERT(nnm::approx_zero(0.0f));
+        ASSERT_FALSE(nnm::approx_zero(0.005f));
+        ASSERT_FALSE(nnm::approx_zero(0.01f));
+        ASSERT_FALSE(nnm::approx_zero(-0.005f));
+        ASSERT_FALSE(nnm::approx_zero(-0.01f));
+        ASSERT(nnm::approx_zero(1e-15f));
+        ASSERT(nnm::approx_zero(1e-14f));
+        ASSERT(nnm::approx_zero(-1e-15f));
+        ASSERT(nnm::approx_zero(-1e-14f));
+        ASSERT_FALSE(nnm::approx_zero(1.0f));
+        ASSERT(nnm::approx_zero(0.0f));
     }
 
-    test_case("is_equal_approx");
+    test_case("approx_equal");
     {
-        ASSERT(nnm::approx_equal(1.0f, 1.0f, 0.01f));
-        ASSERT(nnm::approx_equal(1.0f, 1.005f, 0.01f));
-        ASSERT(nnm::approx_equal(1.0f, 1.01f, 0.01f));
-        ASSERT_FALSE(nnm::approx_equal(1.0f, 1.02f, 0.01f));
-        ASSERT(nnm::approx_equal(-1.0f, -1.005f, 0.01f));
-        ASSERT(nnm::approx_equal(0.0f, 0.0f, 0.01f));
-        ASSERT(nnm::approx_equal(0.0f, 0.005f, 0.01f));
-        ASSERT(nnm::approx_equal(0.005f, 0.0f, 0.01f));
-        ASSERT(nnm::approx_equal(0.0f, 0.0f, 0.0f));
-        ASSERT(nnm::approx_equal(1.0f, 1.005f, -0.01f));
-        ASSERT(nnm::approx_equal(1.0e20f, 1.000000000001e20f, 1e-10f));
-    }
-
-    test_case("approx_gte");
-    {
-        ASSERT(nnm::approx_gte(1.0f, 1.0f, 0.01f));
-        ASSERT(nnm::approx_gte(1.0f, 0.995f, 0.01f));
-        ASSERT(nnm::approx_gte(1.0f, 0.99f, 0.01f));
-        ASSERT(nnm::approx_gte(1.0f, 0.98f, 0.01f));
-        ASSERT(nnm::approx_gte(-1.0f, -1.005f, 0.01f));
-        ASSERT(nnm::approx_gte(1.0f, 1.0f, -0.01f));
-        ASSERT(nnm::approx_gte(1e-15f, 1e-16f, 1e-14f));
-        ASSERT_FALSE(nnm::approx_gte(2.0f, 4.0f, 1e-14f));
+        ASSERT(nnm::approx_equal(1.0f, 1.0f));
+        ASSERT_FALSE(nnm::approx_equal(1.0f, 1.005f));
+        ASSERT_FALSE(nnm::approx_equal(1.0f, 1.01f));
+        ASSERT_FALSE(nnm::approx_equal(1.0f, 1.02f));
+        ASSERT_FALSE(nnm::approx_equal(-1.0f, -1.005f));
+        ASSERT(nnm::approx_equal(0.0f, 0.0f));
+        ASSERT_FALSE(nnm::approx_equal(0.0f, 0.005f));
+        ASSERT_FALSE(nnm::approx_equal(0.005f, 0.0f));
+        ASSERT(nnm::approx_equal(0.0f, 0.0f));
+        ASSERT_FALSE(nnm::approx_equal(1.0f, 1.005f));
+        ASSERT(nnm::approx_equal(1.0e20f, 1.000000000001e20f));
     }
 
     test_case("ceil");
@@ -221,11 +197,14 @@ int main()
         ASSERT(nnm::lerp(5.0f, 10.0f, 1.0f) == 10.0f);
         ASSERT(nnm::lerp(5.0f, 10.0f, 1.0f) == 10.0f);
 
-        ASSERT(nnm::lerp(5.0f, 10.0f, 10.0f) == 10.0f);
-        ASSERT(nnm::lerp(5.0f, 10.0f, -10.0f) == 5.0f);
+        ASSERT(nnm::lerp(5.0f, 10.0f, 10.0f) == 55.0f);
+        ASSERT(nnm::lerp(5.0f, 10.0f, -10.0f) == -45.0f);
+    }
 
-        ASSERT(nnm::unclamped_lerp(5.0f, 10.0f, 10.0f) == 55.0f);
-        ASSERT(nnm::unclamped_lerp(5.0f, 10.0f, -10.0f) == -45.0f);
+    test_case("clamped_lerp");
+    {
+        ASSERT(nnm::clamped_lerp(5.0f, 10.0f, 20.0f) == 10.0f);
+        ASSERT(nnm::clamped_lerp(5.0f, 10.0f, -20.0f) == 5.0f);
     }
 
     test_case("sin");

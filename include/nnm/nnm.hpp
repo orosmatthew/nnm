@@ -63,31 +63,9 @@ inline bool approx_zero(const float value)
     return abs(value) <= tolerance;
 }
 
-inline bool approx_lte(const float a, const float b, float epsilon)
-{
-    if (a <= b) {
-        return true;
-    }
-    epsilon = abs(epsilon);
-    float tolerance = epsilon * max(abs(a), abs(b));
-    tolerance = max(tolerance, epsilon);
-    return abs(a - b) <= tolerance;
-}
-
-inline bool approx_equal(const float a, const float b, float epsilon = nnm::epsilon)
+inline bool approx_equal(const float a, const float b)
 {
     if (a == b) {
-        return true;
-    }
-    epsilon = abs(epsilon);
-    float tolerance = epsilon * max(abs(a), abs(b));
-    tolerance = max(tolerance, epsilon);
-    return abs(a - b) <= tolerance;
-}
-
-inline bool approx_gte(const float a, const float b, float epsilon)
-{
-    if (a >= b) {
         return true;
     }
     epsilon = abs(epsilon);
@@ -136,12 +114,12 @@ inline float floor(const float value)
     return std::floor(value);
 }
 
-inline float unclamped_lerp(const float from, const float to, const float weight)
+inline float lerp(const float from, const float to, const float weight)
 {
     return from + weight * (to - from);
 }
 
-inline float lerp(const float from, const float to, const float weight)
+inline float clamped_lerp(const float from, const float to, const float weight)
 {
     if (weight >= 1.0f) {
         return to;
@@ -149,7 +127,7 @@ inline float lerp(const float from, const float to, const float weight)
     if (weight <= 0.0f) {
         return from;
     }
-    return unclamped_lerp(from, to, weight);
+    return lerp(from, to, weight);
 }
 
 inline float sin(const float value)
@@ -366,7 +344,7 @@ public:
 
     [[nodiscard]] bool approx_equal(const Vector2& other) const
     {
-        return nnm::approx_equal(x, other.x, epsilon) && nnm::approx_equal(y, other.y, epsilon);
+        return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
     }
 
     [[nodiscard]] bool approx_zero() const
@@ -2196,10 +2174,10 @@ public:
         return { -x, -y, -z, w };
     }
 
-    [[nodiscard]] bool is_equal_approx(const Quaternion& other, const float epsilon) const
+    [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
     {
-        return approx_equal(x, other.x, epsilon) && approx_equal(y, other.y, epsilon)
-            && approx_equal(z, other.z, epsilon) && approx_equal(w, other.w, epsilon);
+        return approx_equal(x, other.x) && approx_equal(y, other.y) && approx_equal(z, other.z)
+            && approx_equal(w, other.w);
     }
 
     [[nodiscard]] bool is_zero_approx() const
