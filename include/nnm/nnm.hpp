@@ -1674,34 +1674,14 @@ public:
 
     [[nodiscard]] float& operator[](const int index)
     {
-        switch (index) {
-        case 0:
-            return x;
-        case 1:
-            return y;
-        case 2:
-            return z;
-        case 3:
-            return w;
-        default:
-            return x;
-        }
+        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        return data[index];
     }
 
     [[nodiscard]] const float& operator[](const int index) const
     {
-        switch (index) {
-        case 0:
-            return x;
-        case 1:
-            return y;
-        case 2:
-            return z;
-        case 3:
-            return w;
-        default:
-            return x;
-        }
+        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        return data[index];
     }
 
     [[nodiscard]] Vector4 operator+() const
@@ -2824,6 +2804,23 @@ public:
         return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
+    [[nodiscard]] float determinant() const
+    {
+        // TODO
+    }
+
+    [[nodiscard]] float at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return columns[column][row];
+    }
+
+    float& at(const int column, const int row)
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return columns[column][row];
+    }
+
     // TODO: move
     // [[nodiscard]] static Matrix3 from_quaternion(const Quaternion<Number>& quaternion)
     // {
@@ -3467,33 +3464,84 @@ class Matrix4 {
 public:
     using Column = Vector4;
 
-    Column col0;
-    Column col1;
-    Column col2;
-    Column col3;
+    union {
+        struct {
+            float c0r0;
+            float c0r1;
+            float c0r2;
+            float c0r3;
+            float c1r0;
+            float c1r1;
+            float c1r2;
+            float c1r3;
+            float c2r0;
+            float c2r1;
+            float c2r2;
+            float c2r3;
+            float c3r0;
+            float c3r1;
+            float c3r2;
+            float c3r3;
+        };
+        std::array<Column, 4> columns;
+    };
 
     Matrix4()
-        : col0({ 1.0f, 0.0f, 0.0f, 0.0f })
-        , col1({ 0.0f, 1.0f, 0.0f, 0.0f })
-        , col2({ 0.0f, 0.0f, 1.0f, 0.0f })
-        , col3({ 0.0f, 0.0f, 0.0f, 1.0f })
+        : c0r0(1.0f)
+        , c0r1(0.0f)
+        , c0r2(0.0f)
+        , c0r3(0.0f)
+        , c1r0(0.0f)
+        , c1r1(1.0f)
+        , c1r2(0.0f)
+        , c1r3(0.0f)
+        , c2r0(0.0f)
+        , c2r1(0.0f)
+        , c2r2(1.0f)
+        , c2r3(0.0f)
+        , c3r0(0.0f)
+        , c3r1(0.0f)
+        , c3r2(0.0f)
+        , c3r3(1.0f)
     {
     }
 
-    Matrix4(const Column& col0, const Column& col1, const Column& col2, const Column& col3)
-        : col0(col0)
-        , col1(col1)
-        , col2(col2)
-        , col3(col3)
+    Matrix4(const Column& column_1, const Column& column_2, const Column& column_3, const Column& column_4)
+        : c0r0(column_1[0])
+        , c0r1(column_1[1])
+        , c0r2(column_1[2])
+        , c0r3(column_1[3])
+        , c1r0(column_2[0])
+        , c1r1(column_2[1])
+        , c1r2(column_2[2])
+        , c1r3(column_2[3])
+        , c2r0(column_3[0])
+        , c2r1(column_3[1])
+        , c2r2(column_3[2])
+        , c2r3(column_3[3])
+        , c3r0(column_4[0])
+        , c3r1(column_4[1])
+        , c3r2(column_4[2])
+        , c3r3(column_4[3])
     {
+    }
+
+    [[nodiscard]] static Matrix4 all(float value)
+    {
+        return { { value, value, value, value },
+                 { value, value, value, value },
+                 { value, value, value, value },
+                 { value, value, value, value } };
     }
 
     [[nodiscard]] static Matrix4 zero()
     {
-        return { { 0.0f, 0.0f, 0.0f, 0.0f },
-                 { 0.0f, 0.0f, 0.0f, 0.0f },
-                 { 0.0f, 0.0f, 0.0f, 0.0f },
-                 { 0.0f, 0.0f, 0.0f, 0.0f } };
+        return all(0.0f);
+    }
+
+    [[nodiscard]] static Matrix4 one()
+    {
+        return all(1.0f);
     }
 
     [[nodiscard]] static Matrix4 identity()
@@ -3502,6 +3550,11 @@ public:
                  { 0.0f, 1.0f, 0.0f, 0.0f },
                  { 0.0f, 0.0f, 1.0f, 0.0f },
                  { 0.0f, 0.0f, 0.0f, 1.0f } };
+    }
+
+    float trace() const
+    {
+        return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
     }
 
     [[nodiscard]] static Matrix4 from_rotation_translation(

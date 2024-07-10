@@ -622,6 +622,11 @@ static Matrix3 all(float value);
 static Matrix3 zero();
 static Matrix3 one()
 static Matrix3 identity()
+```
+
+### Methods
+
+```c++
 float trace() const
 float determinant() const
 float minor_at(int column, int row) const
