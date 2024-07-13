@@ -23,8 +23,8 @@
 #endif
 
 namespace nnm {
-inline float pi = 3.141592653589793238462643383279502f;
-inline float epsilon = 0.00001f;
+constexpr float pi = 3.141592653589793238462643383279502f;
+constexpr float epsilon = 0.00001f;
 
 inline float sign(const float value)
 {
@@ -68,7 +68,6 @@ inline bool approx_equal(const float a, const float b)
     if (a == b) {
         return true;
     }
-    epsilon = abs(epsilon);
     float tolerance = epsilon * max(abs(a), abs(b));
     tolerance = max(tolerance, epsilon);
     return abs(a - b) <= tolerance;
@@ -2806,163 +2805,14 @@ public:
 
     [[nodiscard]] float determinant() const
     {
-        // TODO
-    }
-
-    [[nodiscard]] float at(const int column, const int row) const
-    {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return columns[column][row];
-    }
-
-    float& at(const int column, const int row)
-    {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return columns[column][row];
-    }
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_quaternion(const Quaternion<Number>& quaternion)
-    // {
-    //     Matrix3 result;
-    //     result[0][0] = 2 * (quaternion.x * quaternion.x + quaternion.y * quaternion.y) - 1;
-    //     result[0][1] = 2 * (quaternion.y * quaternion.z - quaternion.x * quaternion.w);
-    //     result[0][2] = 2 * (quaternion.y * quaternion.w + quaternion.x * quaternion.z);
-    //
-    //     result[1][0] = 2 * (quaternion.y * quaternion.z + quaternion.x * quaternion.w);
-    //     result[1][1] = 2 * (quaternion.x * quaternion.x + quaternion.z * quaternion.z) - 1;
-    //     result[1][2] = 2 * (quaternion.z * quaternion.w - quaternion.x * quaternion.y);
-    //
-    //     result[2][0] = 2 * (quaternion.y * quaternion.w - quaternion.x * quaternion.z);
-    //     result[2][1] = 2 * (quaternion.z * quaternion.w + quaternion.x * quaternion.y);
-    //     result[2][2] = 2 * (quaternion.x * quaternion.x + quaternion.w * quaternion.w) - 1;
-    //
-    //     return result;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_quaternion_scale(
-    //     const Quaternion<Number>& quaternion, const Vector3<Number>& scale)
-    // {
-    //     Matrix3 result;
-    //
-    //     result[0][0] = scale.x;
-    //     result[1][1] = scale.y;
-    //     result[2][2] = scale.z;
-    //
-    //     result = result.rotate(quaternion);
-    //     return result;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_scale(const Vector3<Number>& scale)
-    // {
-    //     return identity().scale(scale);
-    // }
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 look_at(const Vector3<Number>& target, const Vector3<Number>& up)
-    // {
-    //     Matrix3 result;
-    //
-    //     const Vector3 vz = normalize(-target);
-    //     const Vector3 vx = normalize(up.cross(vz));
-    //     const Vector3 vy = vz.cross(vx);
-    //
-    //     result[0][0] = vx.x;
-    //     result[0][1] = vy.x;
-    //     result[0][2] = vz.x;
-    //     result[1][0] = vx.y;
-    //     result[1][1] = vy.y;
-    //     result[1][2] = vz.y;
-    //     result[2][0] = vx.z;
-    //     result[2][1] = vy.z;
-    //     result[2][2] = vz.z;
-    //
-    //     return result;
-    // }
-
-    // TODO: idk about this?
-    //[[nodiscard]] static Matrix3 from_matrix(const Matrix4<Number>& matrix);
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_direction(const Vector3<Number>& dir, const Vector3<Number>& up)
-    // {
-    //     const Vector3 axis_x = up.cross(dir).normalize();
-    //     const Vector3 axis_y = dir.cross(axis_x).normalize();
-    //
-    //     Matrix3 result;
-    //
-    //     result[0][0] = axis_x.x;
-    //     result[0][1] = axis_y.x;
-    //     result[0][2] = dir.x;
-    //     result[1][0] = axis_x.y;
-    //     result[1][1] = axis_y.y;
-    //     result[1][2] = dir.y;
-    //     result[2][0] = axis_x.z;
-    //     result[2][1] = axis_y.z;
-    //     result[2][2] = dir.z;
-    //
-    //     return result;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] Vector3<Number> euler() const
-    // {
-    //     Vector3<Number> euler;
-    //     if (const float sy = (*this)[2][0]; sy < 1.0f) {
-    //         if (sy > -1.0f) {
-    //             if ((*this)[0][1] == 0.0f && (*this)[1][0] == 0.0f && (*this)[2][1] == 0.0f && (*this)[1][2] == 0.0f
-    //                 && (*this)[1][1] == 1.0f) {
-    //                 euler.x = 0.0f;
-    //                 euler.y = atan2((*this)[2][0], (*this)[0][0]);
-    //                 euler.z = 0.0f;
-    //             }
-    //             else {
-    //                 euler.x = atan2(-(*this)[2][1], (*this)[2][2]);
-    //                 euler.y = asin(sy);
-    //                 euler.z = atan2(-(*this)[1][0], (*this)[0][0]);
-    //             }
-    //         }
-    //         else {
-    //             euler.x = atan2((*this)[1][2], (*this)[1][1]);
-    //             euler.y = -pi / 2.0f;
-    //             euler.z = 0.0f;
-    //         }
-    //     }
-    //     else {
-    //         euler.x = atan2((*this)[1][2], (*this)[1][1]);
-    //         euler.y = pi / 2.0f;
-    //         euler.z = 0.0f;
-    //     }
-    //     return euler;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] Vector3<Number> scale() const
-    // {
-    //     const Vector3 scale_abs = Vector3(
-    //         Vector3((*this)[0][0], (*this)[0][1], (*this)[0][2]).length(),
-    //         Vector3((*this)[1][0], (*this)[1][1], (*this)[1][2]).length(),
-    //         Vector3((*this)[2][0], (*this)[2][1], (*this)[2][2]).length());
-    //
-    //     if (determinant() > 0) {
-    //         return scale_abs;
-    //     }
-    //     return -scale_abs;
-    // }
-
-    [[nodiscard]] float determinant() const
-    {
         const float det_bottom_right = at(1, 1) * at(2, 2) - at(2, 1) * at(1, 2);
         const float det_bottom_split = at(0, 1) * at(2, 2) - at(2, 1) * at(0, 2);
         const float det_bottom_left = at(0, 1) * at(1, 2) - at(1, 1) * at(0, 2);
         return at(0, 0) * det_bottom_right - at(1, 0) * det_bottom_split + at(2, 0) * det_bottom_left;
     }
 
-    [[nodiscard]] float minor_at(const int column, const int row) const
+    [[nodiscard]] Matrix2 minor_matrix_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         Matrix2 minor_matrix;
         int minor_col = 0;
         for (int c = 0; c < 3; ++c) {
@@ -2979,7 +2829,13 @@ public:
             }
             ++minor_col;
         }
-        return minor_matrix.determinant();
+        return minor_matrix;
+    }
+
+    [[nodiscard]] float minor_at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        return minor_matrix_at(column, row).determinant();
     }
 
     [[nodiscard]] Matrix3 minor() const
@@ -3033,91 +2889,6 @@ public:
         }
         return adjugate() / det;
     }
-
-    // [[nodiscard]] Matrix3 spherical_linear_interpolate(const Matrix3& to, float weight) const
-    // {
-    //     const Quaternion from_quat = quaternion();
-    //     const Quaternion to_quat = to.quaternion();
-    //
-    //     Matrix3 matrix = from_quat.spherical_linear_interpolate(to_quat, weight).matrix();
-    //     matrix[0] *= lerp((*this)[0].length(), to[0].length(), weight);
-    //     matrix[1] *= lerp((*this)[1].length(), to[1].length(), weight);
-    //     matrix[2] *= lerp((*this)[2].length(), to[2].length(), weight);
-    //
-    //     return matrix;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] Matrix3 rotate(const Vector3<Number>& axis, const float angle) const
-    // {
-    //     return Matrix3::from_axis_angle(axis, angle) * *this;
-    // }
-
-    // [[nodiscard]] Matrix3 rotate(const Quaternion& quaternion) const
-    // {
-    //     return quaternion.matrix() * *this;
-    // }
-
-    // [[nodiscard]] Matrix3 scale(const Vector3& scale) const
-    // {
-    //     Matrix3 result = *this;
-    //     result[0][0] *= scale.x;
-    //     result[1][0] *= scale.x;
-    //     result[2][0] *= scale.x;
-    //     result[0][1] *= scale.y;
-    //     result[1][1] *= scale.y;
-    //     result[2][1] *= scale.y;
-    //     result[0][2] *= scale.z;
-    //     result[1][2] *= scale.z;
-    //     result[2][2] *= scale.z;
-    //
-    //     return result;
-    // }
-    //
-    // [[nodiscard]] Matrix3 orthonormalize() const
-    // {
-    //     Column x = columns[0];
-    //     Column y = columns[1];
-    //     Column z = columns[2];
-    //
-    //     x = x.normalize();
-    //     y = y - x * x.dot(y);
-    //     y = y.normalize();
-    //     z = z - x * x.dot(z) - y * y.dot(z);
-    //     z = z.normalize();
-    //
-    //     return { x, y, z };
-    // }
-
-    // [[nodiscard]] bool is_equal_approx(const Matrix3& other) const
-    // {
-    //     for (int c = 0; c < 3; c++) {
-    //         if (!is_equal_approx((*this)[c], other[c])) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-    //
-    // [[nodiscard]] bool is_zero_approx() const
-    // {
-    //     for (int c = 0; c < 3; c++) {
-    //         if (!is_zero_approx((*this)[c])) {
-    //             return false;
-    //         }
-    //     }
-    //     return true;
-    // }
-
-    // [[nodiscard]] Quaternion quaternion() const
-    // {
-    //     return Quaternion::from_matrix(*this);
-    // }
-
-    // [[nodiscard]] Matrix4 with_translation(Vector3 translation) const
-    // {
-    //     return Matrix4::from_basis_translation(*this, translation);
-    // }
 
     [[nodiscard]] bool approx_equal(const Matrix3& other) const
     {
@@ -3205,26 +2976,12 @@ public:
 
     [[nodiscard]] bool operator==(const Matrix3& other) const
     {
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return columns == other.columns;
     }
 
     bool operator!=(const Matrix3& other) const
     {
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return columns != other.columns;
     }
 
     [[nodiscard]] bool operator<(const Matrix3& other) const
@@ -3552,9 +3309,233 @@ public:
                  { 0.0f, 0.0f, 0.0f, 1.0f } };
     }
 
-    float trace() const
+    [[nodiscard]] float trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
+    }
+
+    [[nodiscard]] Matrix3 minor_matrix_at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        Matrix3 minor_matrix;
+        int minor_col = 0;
+        for (int c = 0; c < 4; ++c) {
+            if (c == column) {
+                continue;
+            }
+            int minor_row = 0;
+            for (int r = 0; r < 4; ++r) {
+                if (r == row) {
+                    continue;
+                }
+                minor_matrix[minor_col][minor_row] = at(c, r);
+                ++minor_row;
+            }
+            ++minor_col;
+        }
+        return minor_matrix;
+    }
+
+    [[nodiscard]] float minor_at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return minor_matrix_at(column, row).determinant();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        float det = 0.0f;
+        for (int c = 0; c < 4; ++c) {
+            const float det_minor = minor_at(c, 0);
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(0, c) * det_minor;
+        }
+        return det;
+    }
+
+    [[nodiscard]] float cofactor_at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
+    }
+
+    [[nodiscard]] Matrix4 cofactor() const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 4; ++c) {
+            for (int r = 0; r < 4; ++r) {
+                result[c][r] = cofactor_at(c, r);
+            }
+        }
+        return result;
+    }
+
+    [[nodiscard]] Matrix4 transpose() const
+    {
+        return { { at(0, 0), at(1, 0), at(2, 0), at(3, 0) },
+                 { at(0, 1), at(1, 1), at(2, 1), at(3, 1) },
+                 { at(0, 2), at(1, 2), at(2, 2), at(3, 2) },
+                 { at(0, 3), at(1, 3), at(2, 3), at(3, 3) } };
+    }
+
+    [[nodiscard]] Matrix4 adjugate() const
+    {
+        return cofactor().transpose();
+    }
+
+    [[nodiscard]] Matrix4 unchecked_inverse() const
+    {
+        return adjugate() / determinant();
+    }
+
+    [[nodiscard]] std::optional<Matrix4> inverse() const
+    {
+        const float det = determinant();
+        if (det == 0.0f) {
+            return std::nullopt;
+        }
+        return adjugate() / det;
+    }
+
+    [[nodiscard]] bool approx_equal(const Matrix4& other) const
+    {
+        for (int c = 0; c < 4; ++c) {
+            if (!at(c).approx_equal(other.at(c))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    [[nodiscard]] bool approx_zero() const
+    {
+        for (int c = 0; c < 4; ++c) {
+            if (!at(c).approx_zero()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    [[nodiscard]] const Column& at(const int column) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
+        return columns[column];
+    }
+
+    Column& at(const int column)
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
+        return columns[column];
+    }
+
+    [[nodiscard]] float at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return columns[column][row];
+    }
+
+    [[nodiscard]] float& at(const int column, const int row)
+    {
+        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return columns[column][row];
+    }
+
+    const Column& operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
+        return columns[index];
+    }
+
+    Column& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
+        return columns[index];
+    }
+
+    [[nodiscard]] bool operator==(const Matrix4& other) const
+    {
+        return columns == other.columns;
+    }
+
+    bool operator!=(const Matrix4& other) const
+    {
+        return columns != other.columns;
+    }
+
+    bool operator<(const Matrix4& other) const
+    {
+        return columns < other.columns;
+    }
+
+    Matrix4 operator*(const Matrix4& other) const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 4; ++c) {
+            for (int r = 0; r < 4; ++r) {
+                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1) + at(2, r) * other.at(c, 2)
+                    + at(3, r) * other.at(c, 3);
+            }
+        }
+        return result;
+    }
+
+    Matrix4& operator*=(const Matrix4& other)
+    {
+        *this = *this * other;
+        return *this;
+    }
+
+    Vector4 operator*(const Vector4& vector) const
+    {
+        Vector4 result;
+        for (int r = 0; r < 4; ++r) {
+            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1] + at(2, r) * vector[2] + at(3, r) * vector[3];
+        }
+        return result;
+    }
+
+    Matrix4 operator*(const float value) const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 4; ++c) {
+            result.at(c) = at(c) * value;
+        }
+        return result;
+    }
+
+    Matrix4& operator*=(const float value)
+    {
+        for (int c = 0; c < 4; ++c) {
+            at(c) *= value;
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Matrix4 operator/(const float value) const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 4; ++c) {
+            result.at(c) = at(c) / value;
+        }
+        return result;
+    }
+
+    Matrix4 operator/(const float value)
+    {
+        for (int c = 0; c < 4; ++c) {
+            at(c) /= value;
+        }
+        return *this;
+    }
+
+    explicit operator bool() const
+    {
+        for (int c = 0; c < 4; ++c) {
+            if (!static_cast<bool>(at(c))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     [[nodiscard]] static Matrix4 from_rotation_translation(
@@ -3662,145 +3643,6 @@ public:
         return result;
     }
 
-    [[nodiscard]] float determinant() const
-    {
-        const float a00 = (*this)[0][0];
-        const float a01 = (*this)[1][0];
-        const float a02 = (*this)[2][0];
-        const float a03 = (*this)[3][0];
-        const float a10 = (*this)[0][1];
-        const float a11 = (*this)[1][1];
-        const float a12 = (*this)[2][1];
-        const float a13 = (*this)[3][1];
-        const float a20 = (*this)[0][2];
-        const float a21 = (*this)[1][2];
-        const float a22 = (*this)[2][2];
-        const float a23 = (*this)[3][2];
-        const float a30 = (*this)[0][3];
-        const float a31 = (*this)[1][3];
-        const float a32 = (*this)[2][3];
-        const float a33 = (*this)[3][3];
-
-        return a30 * a21 * a12 * a03 - a20 * a31 * a12 * a03 - a30 * a11 * a22 * a03 + a10 * a31 * a22 * a03
-            + a20 * a11 * a32 * a03 - a10 * a21 * a32 * a03 - a30 * a21 * a02 * a13 + a20 * a31 * a02 * a13
-            + a30 * a01 * a22 * a13 - a00 * a31 * a22 * a13 - a20 * a01 * a32 * a13 + a00 * a21 * a32 * a13
-            + a30 * a11 * a02 * a23 - a10 * a31 * a02 * a23 - a30 * a01 * a12 * a23 + a00 * a31 * a12 * a23
-            + a10 * a01 * a32 * a23 - a00 * a11 * a32 * a23 - a20 * a11 * a02 * a33 + a10 * a21 * a02 * a33
-            + a20 * a01 * a12 * a33 - a00 * a21 * a12 * a33 - a10 * a01 * a22 * a33 + a00 * a11 * a22 * a33;
-    }
-
-    [[nodiscard]] float trace() const
-    {
-        return (*this)[0][0] + (*this)[1][1] + (*this)[2][2] + (*this)[3][3];
-    }
-
-    [[nodiscard]] Matrix4 transpose() const
-    {
-        Matrix4 result;
-        result[0][0] = (*this)[0][0];
-        result[0][1] = (*this)[1][0];
-        result[0][2] = (*this)[2][0];
-        result[0][3] = (*this)[3][0];
-        result[1][0] = (*this)[0][1];
-        result[1][1] = (*this)[1][1];
-        result[1][2] = (*this)[2][1];
-        result[1][3] = (*this)[3][1];
-        result[2][0] = (*this)[0][2];
-        result[2][1] = (*this)[1][2];
-        result[2][2] = (*this)[2][2];
-        result[2][3] = (*this)[3][2];
-        result[3][0] = (*this)[0][3];
-        result[3][1] = (*this)[1][3];
-        result[3][2] = (*this)[2][3];
-        result[3][3] = (*this)[3][3];
-        return result;
-    }
-
-    [[nodiscard]] Matrix4 inverse() const
-    {
-        Matrix4 result;
-
-        result[0][0] = (*this)[1][1] * (*this)[2][2] * (*this)[3][3] - (*this)[1][1] * (*this)[2][3] * (*this)[3][2]
-            - (*this)[2][1] * (*this)[1][2] * (*this)[3][3] + (*this)[2][1] * (*this)[1][3] * (*this)[3][2]
-            + (*this)[3][1] * (*this)[1][2] * (*this)[2][3] - (*this)[3][1] * (*this)[1][3] * (*this)[2][2];
-
-        result[1][0] = -(*this)[1][0] * (*this)[2][2] * (*this)[3][3] + (*this)[1][0] * (*this)[2][3] * (*this)[3][2]
-            + (*this)[2][0] * (*this)[1][2] * (*this)[3][3] - (*this)[2][0] * (*this)[1][3] * (*this)[3][2]
-            - (*this)[3][0] * (*this)[1][2] * (*this)[2][3] + (*this)[3][0] * (*this)[1][3] * (*this)[2][2];
-
-        result[2][0] = (*this)[1][0] * (*this)[2][1] * (*this)[3][3] - (*this)[1][0] * (*this)[2][3] * (*this)[3][1]
-            - (*this)[2][0] * (*this)[1][1] * (*this)[3][3] + (*this)[2][0] * (*this)[1][3] * (*this)[3][1]
-            + (*this)[3][0] * (*this)[1][1] * (*this)[2][3] - (*this)[3][0] * (*this)[1][3] * (*this)[2][1];
-
-        result[3][0] = -(*this)[1][0] * (*this)[2][1] * (*this)[3][2] + (*this)[1][0] * (*this)[2][2] * (*this)[3][1]
-            + (*this)[2][0] * (*this)[1][1] * (*this)[3][2] - (*this)[2][0] * (*this)[1][2] * (*this)[3][1]
-            - (*this)[3][0] * (*this)[1][1] * (*this)[2][2] + (*this)[3][0] * (*this)[1][2] * (*this)[2][1];
-
-        result[0][1] = -(*this)[0][1] * (*this)[2][2] * (*this)[3][3] + (*this)[0][1] * (*this)[2][3] * (*this)[3][2]
-            + (*this)[2][1] * (*this)[0][2] * (*this)[3][3] - (*this)[2][1] * (*this)[0][3] * (*this)[3][2]
-            - (*this)[3][1] * (*this)[0][2] * (*this)[2][3] + (*this)[3][1] * (*this)[0][3] * (*this)[2][2];
-
-        result[1][1] = (*this)[0][0] * (*this)[2][2] * (*this)[3][3] - (*this)[0][0] * (*this)[2][3] * (*this)[3][2]
-            - (*this)[2][0] * (*this)[0][2] * (*this)[3][3] + (*this)[2][0] * (*this)[0][3] * (*this)[3][2]
-            + (*this)[3][0] * (*this)[0][2] * (*this)[2][3] - (*this)[3][0] * (*this)[0][3] * (*this)[2][2];
-
-        result[2][1] = -(*this)[0][0] * (*this)[2][1] * (*this)[3][3] + (*this)[0][0] * (*this)[2][3] * (*this)[3][1]
-            + (*this)[2][0] * (*this)[0][1] * (*this)[3][3] - (*this)[2][0] * (*this)[0][3] * (*this)[3][1]
-            - (*this)[3][0] * (*this)[0][1] * (*this)[2][3] + (*this)[3][0] * (*this)[0][3] * (*this)[2][1];
-
-        result[3][1] = (*this)[0][0] * (*this)[2][1] * (*this)[3][2] - (*this)[0][0] * (*this)[2][2] * (*this)[3][1]
-            - (*this)[2][0] * (*this)[0][1] * (*this)[3][2] + (*this)[2][0] * (*this)[0][2] * (*this)[3][1]
-            + (*this)[3][0] * (*this)[0][1] * (*this)[2][2] - (*this)[3][0] * (*this)[0][2] * (*this)[2][1];
-
-        result[0][2] = (*this)[0][1] * (*this)[1][2] * (*this)[3][3] - (*this)[0][1] * (*this)[1][3] * (*this)[3][2]
-            - (*this)[1][1] * (*this)[0][2] * (*this)[3][3] + (*this)[1][1] * (*this)[0][3] * (*this)[3][2]
-            + (*this)[3][1] * (*this)[0][2] * (*this)[1][3] - (*this)[3][1] * (*this)[0][3] * (*this)[1][2];
-
-        result[1][2] = -(*this)[0][0] * (*this)[1][2] * (*this)[3][3] + (*this)[0][0] * (*this)[1][3] * (*this)[3][2]
-            + (*this)[1][0] * (*this)[0][2] * (*this)[3][3] - (*this)[1][0] * (*this)[0][3] * (*this)[3][2]
-            - (*this)[3][0] * (*this)[0][2] * (*this)[1][3] + (*this)[3][0] * (*this)[0][3] * (*this)[1][2];
-
-        result[2][2] = (*this)[0][0] * (*this)[1][1] * (*this)[3][3] - (*this)[0][0] * (*this)[1][3] * (*this)[3][1]
-            - (*this)[1][0] * (*this)[0][1] * (*this)[3][3] + (*this)[1][0] * (*this)[0][3] * (*this)[3][1]
-            + (*this)[3][0] * (*this)[0][1] * (*this)[1][3] - (*this)[3][0] * (*this)[0][3] * (*this)[1][1];
-
-        result[3][2] = -(*this)[0][0] * (*this)[1][1] * (*this)[3][2] + (*this)[0][0] * (*this)[1][2] * (*this)[3][1]
-            + (*this)[1][0] * (*this)[0][1] * (*this)[3][2] - (*this)[1][0] * (*this)[0][2] * (*this)[3][1]
-            - (*this)[3][0] * (*this)[0][1] * (*this)[1][2] + (*this)[3][0] * (*this)[0][2] * (*this)[1][1];
-
-        result[0][3] = -(*this)[0][1] * (*this)[1][2] * (*this)[2][3] + (*this)[0][1] * (*this)[1][3] * (*this)[2][2]
-            + (*this)[1][1] * (*this)[0][2] * (*this)[2][3] - (*this)[1][1] * (*this)[0][3] * (*this)[2][2]
-            - (*this)[2][1] * (*this)[0][2] * (*this)[1][3] + (*this)[2][1] * (*this)[0][3] * (*this)[1][2];
-
-        result[1][3] = (*this)[0][0] * (*this)[1][2] * (*this)[2][3] - (*this)[0][0] * (*this)[1][3] * (*this)[2][2]
-            - (*this)[1][0] * (*this)[0][2] * (*this)[2][3] + (*this)[1][0] * (*this)[0][3] * (*this)[2][2]
-            + (*this)[2][0] * (*this)[0][2] * (*this)[1][3] - (*this)[2][0] * (*this)[0][3] * (*this)[1][2];
-
-        result[2][3] = -(*this)[0][0] * (*this)[1][1] * (*this)[2][3] + (*this)[0][0] * (*this)[1][3] * (*this)[2][1]
-            + (*this)[1][0] * (*this)[0][1] * (*this)[2][3] - (*this)[1][0] * (*this)[0][3] * (*this)[2][1]
-            - (*this)[2][0] * (*this)[0][1] * (*this)[1][3] + (*this)[2][0] * (*this)[0][3] * (*this)[1][1];
-
-        result[3][3] = (*this)[0][0] * (*this)[1][1] * (*this)[2][2] - (*this)[0][0] * (*this)[1][2] * (*this)[2][1]
-            - (*this)[1][0] * (*this)[0][1] * (*this)[2][2] + ((*this))[1][0] * (*this)[0][2] * (*this)[2][1]
-            + (*this)[2][0] * (*this)[0][1] * (*this)[1][2] - (*this)[2][0] * (*this)[0][2] * (*this)[1][1];
-
-        float det = (*this)[0][0] * result[0][0] + (*this)[0][1] * result[1][0] + (*this)[0][2] * result[2][0]
-            + (*this)[0][3] * result[3][0];
-
-        if (det == 0.0f)
-            return identity();
-
-        det = 1.0f / det;
-
-        for (int c = 0; c < 4; c++) {
-            for (int r = 0; r < 4; r++) {
-                result[c][r] *= det;
-            }
-        }
-
-        return result.transpose();
-    }
-
     // [[nodiscard]] Matrix4 interpolate(const Matrix4& to, float weight) const
     // {
     //     const Vector3 from_scale = scale();
@@ -3897,118 +3739,6 @@ public:
     // {
     //     return basis().euler();
     // }
-
-    Column& operator[](const int index)
-    {
-        switch (index) {
-        case 0:
-            return col0;
-        case 1:
-            return col1;
-        case 2:
-            return col2;
-        case 3:
-            return col3;
-        default:
-            return col0;
-        }
-    }
-
-    const Column& operator[](const int index) const
-    {
-        switch (index) {
-        case 0:
-            return col0;
-        case 1:
-            return col1;
-        case 2:
-            return col2;
-        case 3:
-            return col3;
-        default:
-            return col0;
-        }
-    }
-
-    [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
-    {
-        return { col0 + other.col0, col1 + other.col1, col2 + other.col2, col3 + other.col3 };
-    }
-
-    void operator+=(const Matrix4& other)
-    {
-        col0 += other.col0;
-        col1 += other.col1;
-        col2 += other.col2;
-        col3 += other.col3;
-    }
-
-    [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
-    {
-        return { col0 - other.col0, col1 - other.col1, col2 - other.col2, col3 - other.col3 };
-    }
-
-    void operator-=(const Matrix4& other)
-    {
-        col0 -= other.col0;
-        col1 -= other.col1;
-        col2 -= other.col2;
-        col3 -= other.col3;
-    }
-
-    [[nodiscard]] Matrix4 operator*(const Matrix4& other) const
-    {
-        Matrix4 result;
-
-        result[0][0] = (*this)[0][0] * other[0][0] + (*this)[0][1] * other[1][0] + (*this)[0][2] * other[2][0]
-            + (*this)[0][3] * other[3][0];
-        result[0][1] = (*this)[0][0] * other[0][1] + (*this)[0][1] * other[1][1] + (*this)[0][2] * other[2][1]
-            + (*this)[0][3] * other[3][1];
-        result[0][2] = (*this)[0][0] * other[0][2] + (*this)[0][1] * other[1][2] + (*this)[0][2] * other[2][2]
-            + (*this)[0][3] * other[3][2];
-        result[0][3] = (*this)[0][0] * other[0][3] + (*this)[0][1] * other[1][3] + (*this)[0][2] * other[2][3]
-            + (*this)[0][3] * other[3][3];
-        result[1][0] = (*this)[1][0] * other[0][0] + (*this)[1][1] * other[1][0] + (*this)[1][2] * other[2][0]
-            + (*this)[1][3] * other[3][0];
-        result[1][1] = (*this)[1][0] * other[0][1] + (*this)[1][1] * other[1][1] + (*this)[1][2] * other[2][1]
-            + (*this)[1][3] * other[3][1];
-        result[1][2] = (*this)[1][0] * other[0][2] + (*this)[1][1] * other[1][2] + (*this)[1][2] * other[2][2]
-            + (*this)[1][3] * other[3][2];
-        result[1][3] = (*this)[1][0] * other[0][3] + (*this)[1][1] * other[1][3] + (*this)[1][2] * other[2][3]
-            + (*this)[1][3] * other[3][3];
-        result[2][0] = (*this)[2][0] * other[0][0] + (*this)[2][1] * other[1][0] + (*this)[2][2] * other[2][0]
-            + (*this)[2][3] * other[3][0];
-        result[2][1] = (*this)[2][0] * other[0][1] + (*this)[2][1] * other[1][1] + (*this)[2][2] * other[2][1]
-            + (*this)[2][3] * other[3][1];
-        result[2][2] = (*this)[2][0] * other[0][2] + (*this)[2][1] * other[1][2] + (*this)[2][2] * other[2][2]
-            + (*this)[2][3] * other[3][2];
-        result[2][3] = (*this)[2][0] * other[0][3] + (*this)[2][1] * other[1][3] + (*this)[2][2] * other[2][3]
-            + (*this)[2][3] * other[3][3];
-        result[3][0] = (*this)[3][0] * other[0][0] + (*this)[3][1] * other[1][0] + (*this)[3][2] * other[2][0]
-            + (*this)[3][3] * other[3][0];
-        result[3][1] = (*this)[3][0] * other[0][1] + (*this)[3][1] * other[1][1] + (*this)[3][2] * other[2][1]
-            + (*this)[3][3] * other[3][1];
-        result[3][2] = (*this)[3][0] * other[0][2] + (*this)[3][1] * other[1][2] + (*this)[3][2] * other[2][2]
-            + (*this)[3][3] * other[3][2];
-        result[3][3] = (*this)[3][0] * other[0][3] + (*this)[3][1] * other[1][3] + (*this)[3][2] * other[2][3]
-            + (*this)[3][3] * other[3][3];
-
-        return result;
-    }
-
-    void operator*=(const Matrix4& other)
-    {
-        *this = *this * other;
-    }
-
-    [[nodiscard]] Vector4 operator*(const Vector4& vector) const
-    {
-        const Matrix4& m = *this;
-        return { vector.x * m[0][0] + vector.y * m[1][0] + vector.z * m[2][0] + vector.w * m[3][0],
-                 vector.x * m[0][1] + vector.y * m[1][1] + vector.z * m[2][1] + vector.w * m[3][1],
-                 vector.x * m[0][2] + vector.y * m[1][2] + vector.z * m[2][2] + vector.w * m[3][2],
-                 vector.x * m[0][3] + vector.y * m[1][3] + vector.z * m[2][3] + vector.w * m[3][3] };
-    }
 };
 
 inline Vector3::Vector3(const Vector3i vector) // NOLINT(*-pro-type-member-init)
