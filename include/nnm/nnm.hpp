@@ -477,13 +477,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector2& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector2& other) const
@@ -719,13 +713,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector2i& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector2i& other) const
@@ -1068,16 +1056,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        if (z != other.z) {
-            return z < other.z;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector3& other) const
@@ -1325,16 +1304,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        if (z != other.z) {
-            return z < other.z;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector3i& other) const
@@ -1651,19 +1621,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        if (z != other.z) {
-            return z < other.z;
-        }
-        if (w != other.w) {
-            return w < other.w;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector4& other) const
@@ -1917,19 +1875,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector4i& other) const
     {
-        if (x != other.x) {
-            return x < other.x;
-        }
-        if (y != other.y) {
-            return y < other.y;
-        }
-        if (z != other.z) {
-            return z < other.z;
-        }
-        if (w != other.w) {
-            return w < other.w;
-        }
-        return false;
+        return data < other.data;
     }
 
     [[nodiscard]] bool operator==(const Vector4i& other) const
@@ -2446,17 +2392,7 @@ public:
 
     bool operator<(const Matrix2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) < other.at(c, r)) {
-                    return true;
-                }
-                if (at(c, r) > other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return columns < other.columns;
     }
 
     [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
@@ -2652,17 +2588,7 @@ public:
 
     bool operator<(const Basis2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) < other.at(c, r)) {
-                    return true;
-                }
-                if (at(c, r) > other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return matrix < other.matrix;
     }
 };
 
@@ -2988,17 +2914,7 @@ public:
 
     [[nodiscard]] bool operator<(const Matrix3& other) const
     {
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
-                if (at(c, r) < other.at(c, r)) {
-                    return true;
-                }
-                if (at(c, r) > other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return false;
+        return columns < other.columns;
     }
 
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
