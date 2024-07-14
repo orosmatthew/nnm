@@ -2630,51 +2630,7 @@ public:
     {
     }
 
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_axis_angle(const Vector3<Number>& axis, const float angle)
-    // {
-    //     Matrix3 result;
-    //
-    //     const Vector3 axis_norm = axis.normalize();
-    //
-    //     const float sin_angle = sin(angle);
-    //     const float cos_angle = cos(angle);
-    //     const float t = 1.0f - cos_angle;
-    //
-    //     result[0][0] = axis_norm.x * axis_norm.x * t + cos_angle;
-    //     result[0][1] = axis_norm.y * axis_norm.x * t + axis_norm.z * sin_angle;
-    //     result[0][2] = axis_norm.z * axis_norm.x * t - axis_norm.y * sin_angle;
-    //
-    //     result[1][0] = axis_norm.x * axis_norm.y * t - axis_norm.z * sin_angle;
-    //     result[1][1] = axis_norm.y * axis_norm.y * t + cos_angle;
-    //     result[1][2] = axis_norm.z * axis_norm.y * t + axis_norm.x * sin_angle;
-    //
-    //     result[2][0] = axis_norm.x * axis_norm.z * t + axis_norm.y * sin_angle;
-    //     result[2][1] = axis_norm.y * axis_norm.z * t - axis_norm.x * sin_angle;
-    //     result[2][2] = axis_norm.z * axis_norm.z * t + cos_angle;
-    //
-    //     return result;
-    // }
-
-    // TODO: move
-    // [[nodiscard]] static Matrix3 from_euler(const Vector3<Number>& euler)
-    // {
-    //     float c = nnm::cos(euler.x);
-    //     float s = nnm::sin(euler.x);
-    //     const Matrix3 x { 1.0f, 0.0f, 0.0f, 0.0f, c, -s, 0.0f, s, c };
-    //
-    //     c = nnm::cos(euler.y);
-    //     s = nnm::sin(euler.y);
-    //     const Matrix3 y { c, 0.0f, s, 0.0f, 1.0f, 0.0f, -s, 0.0f, c };
-    //
-    //     c = nnm::cos(euler.z);
-    //     s = nnm::sin(euler.z);
-    //     const Matrix3 z { c, -s, 0.0f, s, c, 0.0f, 0.0f, 0.0f, 1.0f };
-    //
-    //     return x * (y * z);
-    // }
-
-    [[nodiscard]] static Matrix3 all(float value)
+    [[nodiscard]] static Matrix3 all(const float value)
     {
         return { { value, value, value }, { value, value, value }, { value, value, value } };
     }
@@ -2697,16 +2653,6 @@ public:
     [[nodiscard]] float trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2);
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        float det = 0.0f;
-        for (int c = 0; c < 3; ++c) {
-            const float det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
-        }
-        return det;
     }
 
     [[nodiscard]] Matrix2 minor_matrix_at(const int column, const int row) const
@@ -2745,6 +2691,16 @@ public:
             }
         }
         return result;
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        float det = 0.0f;
+        for (int c = 0; c < 3; ++c) {
+            const float det_minor = minor_at(c, 0);
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+        }
+        return det;
     }
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
@@ -2812,7 +2768,7 @@ public:
         return true;
     }
 
-    [[nodiscard]] Column at(const int column) const
+    [[nodiscard]] const Column& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
@@ -2846,30 +2802,6 @@ public:
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
-    }
-
-    [[nodiscard]] Matrix2 sub_matrix2_at(const int column, const int row) const
-    {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        Matrix2 result;
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                result[c][r] = at(column + c, row + r);
-            }
-        }
-        return result;
-    }
-
-    [[nodiscard]] Matrix3 sub_matrix2(const int column, const int row, const Matrix2& matrix) const
-    {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        Matrix3 result = *this;
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                result[column + c][row + r] = matrix.at(c, r);
-            }
-        }
-        return result;
     }
 
     [[nodiscard]] bool operator==(const Matrix3& other) const
@@ -2942,13 +2874,11 @@ public:
     explicit operator bool() const
     {
         for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
-                if (at(c, r) != 0) {
-                    return true;
-                }
+            if (!static_cast<bool>(columns[c])) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 };
 
@@ -2969,7 +2899,11 @@ public:
     static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos)
     {
         Matrix3 matrix;
-        matrix = matrix.sub_matrix2(0, 0, basis.matrix);
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                matrix[c][r] = basis.matrix[c][r];
+            }
+        }
         matrix[2][0] = pos.x;
         matrix[2][1] = pos.y;
         return Transform2(matrix);
@@ -3002,14 +2936,20 @@ public:
 
     [[nodiscard]] bool valid() const
     {
-        const bool basis_valid = matrix.sub_matrix2_at(0, 0).determinant() != 0.0;
+        const bool basis_valid = matrix.minor_matrix_at(2, 2).determinant() != 0.0;
         const bool last_row_valid = matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
         return basis_valid && last_row_valid;
     }
 
     [[nodiscard]] Basis2 basis() const
     {
-        return Basis2(matrix.sub_matrix2_at(0, 0));
+        Matrix2 basis_matrix;
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                basis_matrix[c][r] = matrix[c][r];
+            }
+        }
+        return Basis2(basis_matrix);
     }
 
     [[nodiscard]] Vector2 translation() const
@@ -3264,6 +3204,17 @@ public:
     {
         NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return minor_matrix_at(column, row).determinant();
+    }
+
+    [[nodiscard]] Matrix4 minor() const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 4; ++c) {
+            for (int r = 0; r < 4; ++r) {
+                result[c][r] = minor_at(c, r);
+            }
+        }
+        return result;
     }
 
     [[nodiscard]] float determinant() const
@@ -3630,7 +3581,7 @@ public:
     // [[nodiscard]] bool is_equal_approx(const Matrix4& other) const
     // {
     //     return (*this)[0].approx_equal(other[0]) && (*this)[1].approx_equal(other[1])
-    //         && (*this)[2].approx_equal(other[2]) && (*this)[3].approx_equal(other[3]);
+    //         && (*this)[2].approx_equal(othre[2]) && (*this)[3].approx_equal(other[3]);
     // }
     //
     // [[nodiscard]] bool is_zero_approx() const

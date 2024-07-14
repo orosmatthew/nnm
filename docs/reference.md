@@ -702,10 +702,17 @@ Transform2 transform_local(const Transform2& by) const;
 bool approx_equal(const Transform2& other) const;
 float at(int column, int row) const;
 float& at(int column, int row);
+```
+
+### Operators
+
+```cpp
 const Vector3& operator[](int column) const;
 Vector3& operator[](int column);
 bool operator==(const Transform2& other) const;
 ```
+
+
 
 ## Matrix4
 
@@ -776,6 +783,7 @@ static Matrix4 identity();
 float trace() const;
 Matrix3 minor_matrix_at(int column, int row) const;
 float minor_at(int column, int row) const;
+Matrix4 minor() const
 float determinant() const;
 float cofactor_at(int column, int row) const;
 Matrix4 cofactor() const;
