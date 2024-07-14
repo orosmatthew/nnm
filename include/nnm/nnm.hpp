@@ -400,7 +400,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector2& other) const
     {
-        return x != other.x || y != other.y;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector2 operator*(const Vector2& other) const
@@ -482,7 +482,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector2& other) const
     {
-        return x == other.x && y == other.y;
+        return data == other.data;
     }
 
     [[nodiscard]] float at(const int index) const
@@ -611,7 +611,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector2i& other) const
     {
-        return x != other.x || y != other.y;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector2i operator%(const Vector2i& other) const
@@ -718,7 +718,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector2i& other) const
     {
-        return x == other.x && y == other.y;
+        return data == other.data;
     }
 
     [[nodiscard]] int at(const int index) const
@@ -969,7 +969,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
-        return x != other.x || y != other.y || z != other.z;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector3 operator*(const Vector3& other) const
@@ -1061,7 +1061,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector3& other) const
     {
-        return x == other.x && y == other.y && z == other.z;
+        return data == other.data;
     }
 
     [[nodiscard]] float at(const int index) const
@@ -1194,7 +1194,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector3i& other) const
     {
-        return x != other.x || y != other.y || z != other.z;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector3i operator%(const Vector3i& other) const
@@ -1309,7 +1309,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector3i& other) const
     {
-        return x == other.x && y == other.y && z == other.z;
+        return data == other.data;
     }
 
     [[nodiscard]] int at(const int index) const
@@ -1532,7 +1532,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector4& other) const
     {
-        return x != other.x || y != other.y || z != other.z || w != other.w;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector4 operator*(const Vector4& other) const
@@ -1626,7 +1626,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector4& other) const
     {
-        return x == other.x && y == other.y && z == other.z && w == other.w;
+        return data == other.data;
     }
 
     [[nodiscard]] float& operator[](const int index)
@@ -1758,7 +1758,7 @@ public:
 
     [[nodiscard]] bool operator!=(const Vector4i& other) const
     {
-        return x != other.x || y != other.y || z != other.z || w != other.w;
+        return data != other.data;
     }
 
     [[nodiscard]] Vector4i operator%(const Vector4i& other) const
@@ -1880,7 +1880,7 @@ public:
 
     [[nodiscard]] bool operator==(const Vector4i& other) const
     {
-        return x == other.x && y == other.y && z == other.z && w == other.w;
+        return data == other.data;
     }
 
     [[nodiscard]] int& operator[](const int index)
@@ -2368,26 +2368,12 @@ public:
 
     bool operator==(const Matrix2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return columns == other.columns;
     }
 
     bool operator!=(const Matrix2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return columns != other.columns;
     }
 
     bool operator<(const Matrix2& other) const
@@ -2564,26 +2550,12 @@ public:
 
     bool operator==(const Basis2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        return matrix == other.matrix;
     }
 
     bool operator!=(const Basis2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (at(c, r) != other.at(c, r)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return matrix != other.matrix;
     }
 
     bool operator<(const Basis2& other) const
