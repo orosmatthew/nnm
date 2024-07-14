@@ -3616,6 +3616,49 @@ public:
     // }
 };
 
+class Basis3 {
+public:
+    Matrix3 matrix;
+
+    Basis3() = default;
+
+    explicit Basis3(const Matrix3& matrix)
+        : matrix(matrix)
+    {
+    }
+
+    // TODO
+    static Basis3 from_rotation_euler(Vector3 angles);
+
+    // TODO
+    static Basis3 from_rotation_quaternion(Quaternion quaternion);
+
+    static Basis3 from_shear_x(float y, float z)
+    {
+        return Basis3({ { 1.0f, y, z }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+    }
+
+    static Basis3 from_shear_y(float x, float z)
+    {
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { x, 1.0f, z }, { 0.0f, 0.0f, 1.0f } });
+    }
+
+    static Basis3 from_shear_z(float x, float y)
+    {
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { x, y, 1.0f } });
+    }
+
+    static Basis3 from_scale(const Vector3& factor)
+    {
+        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
+    }
+
+    static Basis3 from_shear(const Vector3& vector)
+    {
+        return Basis3({ { 1.0f, vector.x, vector.y }, { 0.0f, 1.0f, vector.z }, { 0.0f, 0.0f, 1.0f } });
+    }
+};
+
 inline Vector3::Vector3(const Vector3i vector) // NOLINT(*-pro-type-member-init)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
