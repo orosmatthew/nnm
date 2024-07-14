@@ -2417,6 +2417,103 @@ int main()
 
             ASSERT_FALSE(nnm::Matrix4::zero().inverse().has_value());
         }
+
+        test_section("approx_equal");
+        {
+            const nnm::Matrix4 m2 { { 1.000001f, 2.0f, 3.0f, 4.000001f },
+                                    { -0.999999f, -3.0f, -2.0f, -4.0f },
+                                    { 3.0f, 1.999999f, -1.0f, -4.0f },
+                                    { -4.0f, 1.0f, -2.999999f, 0.0f } };
+            ASSERT(m1.approx_equal(m2));
+        }
+
+        test_section("approx_zero");
+        {
+            const nnm::Matrix4 m2 { { 0.000001f, 0.0f, 0.0f, 0.0f },
+                                    { -0.000001f, -0.0f, -0.0f, 0.0f },
+                                    { 0.0f, 0.000001f, 0.0f, 0.0f },
+                                    { 0.0f, 0.0f, 0.0f, 0.0f } };
+            ASSERT(m2.approx_zero());
+        }
+
+        // const nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
+        //                         { -1.0f, -3.0f, -2.0f, -4.0f },
+        //                         { 3.0f, 2.0f, -1.0f, -4.0f },
+        //                         { -4.0f, 1.0f, -3.0f, 0.0f } };
+
+        test_section("accessors");
+        {
+            ASSERT(m1[0][0] == 1.0f);
+            ASSERT(m1.at(0, 0) == 1.0f);
+            ASSERT(m1[1][2] == -2.0f);
+            ASSERT(m1.at(1, 2) == -2.0f);
+            ASSERT(m1[3][3] == 0.0f);
+            ASSERT(m1.at(3, 3) == 0.0f);
+            ASSERT(m1.at(0) == nnm::Vector4(1.0f, 2.0f, 3.0f, 4.0f))
+            ASSERT(m1.at(2) == nnm::Vector4(3.0f, 2.0f, -1.0f, -4.0f))
+        }
+
+        const nnm::Matrix4 m2 { { 1.5f, 3.0f, -3.0f, 4.0f },
+                                { -1.0f, 100.0f, -2.0f, -4.0f },
+                                { 0.0f, 29.0f, -129.0f, -4293.0f },
+                                { -4.0f, 100.3f, -3.0f, 0.0f } };
+
+        test_section("equality");
+        {
+            ASSERT(m1 == m1);
+            ASSERT_FALSE(m1 != m1);
+            ASSERT(m1 != m2);
+            ASSERT_FALSE(m1 == m2);
+            ASSERT(m2 == m2);
+            ASSERT_FALSE(m2 != m2);
+        }
+
+        test_section("comparison");
+        {
+            ASSERT(m1 < m2);
+            ASSERT_FALSE(m2 < m1);
+        }
+
+        test_section("multiplication");
+        {
+            const nnm::Matrix4 expected1 { { -26.5f, -8.0f, -10.5f, 6.0f },
+                                           { -91.0f, -310.0f, -189.0f, -396.0f },
+                                           { 16756.0f, -4638.0f, 12950.0f, 400.0f },
+                                           { -113.3f, -314.9f, -209.6f, -405.2f } };
+            ASSERT((m1 * m2).approx_equal(expected1));
+            auto m1_copy = m1;
+            ASSERT((m1_copy *= m2).approx_equal(expected1))
+
+            const nnm::Vector4 v1 { 1.0f, -2.0f, 3.0f, -4.0f };
+            const nnm::Vector4 expected2 { 28.0f, 10.0f, 16.0f, 0.0f };
+            ASSERT((m1 * v1).approx_equal(expected2));
+
+            const nnm::Matrix4 expected3 { { -2.0, -4.0f, -6.0f, -8.0f },
+                                           { 2.0f, 6.0f, 4.0f, 8.0f },
+                                           { -6.0f, -4.0f, 2.0f, 8.0f },
+                                           { 8.0f, -2.0f, 6.0f, 0.0f } };
+            ASSERT((m1 * -2.0f).approx_equal(expected3));
+            m1_copy = m1;
+            ASSERT((m1_copy *= -2.0f).approx_equal(expected3));
+        }
+
+        test_section("division");
+        {
+            const nnm::Matrix4 expected1 { { -0.25, -0.5f, -0.75f, -1.0f },
+                                           { 0.25f, 0.75f, 0.5f, 1.0f },
+                                           { -0.75f, -0.5f, 0.25f, 1.0f },
+                                           { 1.0f, -0.25f, 0.75f, 0.0f } };
+            ASSERT((m1 / -4.0f).approx_equal(expected1));
+            auto m1_copy = m1;
+            ASSERT((m1_copy /= -4.0f).approx_equal(expected1));
+        }
+
+        test_section("bool conversion");
+        {
+            ASSERT_FALSE(static_cast<bool>(nnm::Matrix4::zero()));
+            ASSERT(static_cast<bool>(nnm::Matrix4::identity()));
+            ASSERT(static_cast<bool>(m1));
+        }
     }
     END_TESTS
 }

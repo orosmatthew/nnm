@@ -3410,7 +3410,7 @@ public:
         return result;
     }
 
-    Matrix4 operator/(const float value)
+    Matrix4& operator/=(const float value)
     {
         for (int c = 0; c < 4; ++c) {
             at(c) /= value;
