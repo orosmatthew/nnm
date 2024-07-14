@@ -3151,6 +3151,42 @@ public:
     {
     }
 
+    Matrix4(
+        const float col0_row0,
+        const float col0_row1,
+        const float col0_row2,
+        const float col0_row3,
+        const float col1_row0,
+        const float col1_row1,
+        const float col1_row2,
+        const float col1_row3,
+        const float col2_row0,
+        const float col2_row1,
+        const float col2_row2,
+        const float col2_row3,
+        const float col3_row0,
+        const float col3_row1,
+        const float col3_row2,
+        const float col3_row3)
+        : col0_row0(col0_row0)
+        , col0_row1(col0_row1)
+        , col0_row2(col0_row2)
+        , col0_row3(col0_row3)
+        , col1_row0(col1_row0)
+        , col1_row1(col1_row1)
+        , col1_row2(col1_row2)
+        , col1_row3(col1_row3)
+        , col2_row0(col2_row0)
+        , col2_row1(col2_row1)
+        , col2_row2(col2_row2)
+        , col2_row3(col2_row3)
+        , col3_row0(col3_row0)
+        , col3_row1(col3_row1)
+        , col3_row2(col3_row2)
+        , col3_row3(col3_row3)
+    {
+    }
+
     Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4)
         : col0_row0(column1[0])
         , col0_row1(column1[1])

@@ -2246,10 +2246,8 @@ int main()
             ASSERT(m1.col3_row1 == 0.0f);
             ASSERT(m1.col3_row2 == 0.0f);
             ASSERT(m1.col3_row3 == 1.0f);
-            const nnm::Matrix4 m2 { { 1.0f, 2.0f, 3.0f, 4.0f },
-                                    { -1.0f, -2.0f, -3.0f, -4.0f },
-                                    { 4.0f, 3.0f, 2.0f, 1.0f },
-                                    { -4.0f, -3.0f, -2.0f, -1.0f } };
+            const nnm::Matrix4 m2 { 1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f,
+                                    4.0f, 3.0f, 2.0f, 1.0f, -4.0f, -3.0f, -2.0f, -1.0f };
             ASSERT(m2.col0_row0 == 1.0f);
             ASSERT(m2.col0_row1 == 2.0f);
             ASSERT(m2.col0_row2 == 3.0f);
@@ -2266,6 +2264,26 @@ int main()
             ASSERT(m2.col3_row1 == -3.0f);
             ASSERT(m2.col3_row2 == -2.0f);
             ASSERT(m2.col3_row3 == -1.0f);
+            const nnm::Matrix4 m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                    { -1.0f, -2.0f, -3.0f, -4.0f },
+                                    { 4.0f, 3.0f, 2.0f, 1.0f },
+                                    { -4.0f, -3.0f, -2.0f, -1.0f } };
+            ASSERT(m3.col0_row0 == 1.0f);
+            ASSERT(m3.col0_row1 == 2.0f);
+            ASSERT(m3.col0_row2 == 3.0f);
+            ASSERT(m3.col0_row3 == 4.0f);
+            ASSERT(m3.col1_row0 == -1.0f);
+            ASSERT(m3.col1_row1 == -2.0f);
+            ASSERT(m3.col1_row2 == -3.0f);
+            ASSERT(m3.col1_row3 == -4.0f);
+            ASSERT(m3.col2_row0 == 4.0f);
+            ASSERT(m3.col2_row1 == 3.0f);
+            ASSERT(m3.col2_row2 == 2.0f);
+            ASSERT(m3.col2_row3 == 1.0f);
+            ASSERT(m3.col3_row0 == -4.0f);
+            ASSERT(m3.col3_row1 == -3.0f);
+            ASSERT(m3.col3_row2 == -2.0f);
+            ASSERT(m3.col3_row3 == -1.0f);
         }
 
         test_section("static methods");

@@ -609,15 +609,15 @@ union {
 Matrix3();
 Matrix3(const Column& column1, const Column& column2, const Column& column3)
 Matrix3(
-    const float col0_row0,
-    const float col0_row1,
-    const float col0_row2,
-    const float col1_row0,
-    const float col1_row1,
-    const float col1_row2,
-    const float col2_row0,
-    const float col2_row1,
-    const float col2_row2);
+    float col0_row0,
+    float col0_row1,
+    float col0_row2,
+    float col1_row0,
+    float col1_row1,
+    float col1_row2,
+    float col2_row0,
+    float col2_row1,
+    float col2_row2);
 static Matrix3 all(float value);
 static Matrix3 zero();
 static Matrix3 one()
@@ -745,7 +745,25 @@ union {
 
 ```cpp
 Matrix4();
+
 Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4);
+Matrix4(
+    float col0_row0,
+    float col0_row1,
+    float col0_row2,
+    float col0_row3,
+    float col1_row0,
+    float col1_row1,
+    float col1_row2,
+    float col1_row3,
+    float col2_row0,
+    float col2_row1,
+    float col2_row2,
+    float col2_row3,
+    float col3_row0,
+    float col3_row1,
+    float col3_row2,
+    float col3_row3);
 static Matrix4 all(float value);
 static Matrix4 zero();
 static Matrix4 one();
