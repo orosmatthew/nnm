@@ -1201,7 +1201,7 @@ int main()
         {
             const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
             const nnm::Vector3 axis(0.0f, 0.0f, 1.0f);
-            const float angle = nnm::pi / 2.0f;
+            constexpr float angle = nnm::pi / 2.0f;
 
             ASSERT(v.rotate(axis, angle).approx_equal(nnm::Vector3(-2.0f, 1.0f, 3.0f)));
             ASSERT(v.rotate(axis, 2.0f * angle).approx_equal(nnm::Vector3(-1.0f, -2.0f, 3.0f)));
@@ -1502,7 +1502,7 @@ int main()
         {
             ASSERT(nnm::Vector4().normalize() == nnm::Vector4());
             const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
-            const nnm::Vector4 v_expected(-0.182574, 0.365148, -0.547723, 0.730297);
+            const nnm::Vector4 v_expected(-0.182574f, 0.365148f, -0.547723f, 0.730297f);
             ASSERT(v1.normalize().approx_equal(v_expected));
         }
 
@@ -1547,14 +1547,14 @@ int main()
 
         test_section("approx_equal");
         {
-            const nnm::Vector4 v1_almost(-0.99999999, 2.0f, -3.00000001, 3.99999f);
+            const nnm::Vector4 v1_almost(-0.99999999f, 2.0f, -3.00000001f, 3.99999f);
             ASSERT(v1.approx_equal(v1_almost));
             ASSERT_FALSE(v1.approx_equal(v2));
         }
 
         test_section("approx_zero");
         {
-            const nnm::Vector4 almost_zero(0.00001, -0.000001, 0.0f, 0.00000001);
+            const nnm::Vector4 almost_zero(0.00001f, -0.000001f, 0.0f, 0.00000001f);
             ASSERT(almost_zero.approx_zero());
         }
 
@@ -1565,7 +1565,7 @@ int main()
 
         test_section("inverse");
         {
-            const nnm::Vector4 v_expected(-1.0f, 0.5f, -0.33333333, 0.25f);
+            const nnm::Vector4 v_expected(-1.0f, 0.5f, -0.33333333f, 0.25f);
             ASSERT(v1.inverse().approx_equal(v_expected));
         }
 
@@ -2222,6 +2222,200 @@ int main()
             ASSERT(nnm::approx_equal(t2[1][2], 0.0f));
             ASSERT(nnm::approx_equal(t2[2][1], -2.0f));
             ASSERT(nnm::approx_equal(t2[2][2], 1.0f));
+        }
+    }
+
+    test_case("Matrix4");
+    {
+        test_section("constructors");
+        {
+            const nnm::Matrix4 m1;
+            ASSERT(m1.c0r0 == 1.0f);
+            ASSERT(m1.c0r1 == 0.0f);
+            ASSERT(m1.c0r2 == 0.0f);
+            ASSERT(m1.c0r3 == 0.0f);
+            ASSERT(m1.c1r0 == 0.0f);
+            ASSERT(m1.c1r1 == 1.0f);
+            ASSERT(m1.c1r2 == 0.0f);
+            ASSERT(m1.c1r3 == 0.0f);
+            ASSERT(m1.c2r0 == 0.0f);
+            ASSERT(m1.c2r1 == 0.0f);
+            ASSERT(m1.c2r2 == 1.0f);
+            ASSERT(m1.c2r3 == 0.0f);
+            ASSERT(m1.c3r0 == 0.0f);
+            ASSERT(m1.c3r1 == 0.0f);
+            ASSERT(m1.c3r2 == 0.0f);
+            ASSERT(m1.c3r3 == 1.0f);
+            const nnm::Matrix4 m2 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                    { -1.0f, -2.0f, -3.0f, -4.0f },
+                                    { 4.0f, 3.0f, 2.0f, 1.0f },
+                                    { -4.0f, -3.0f, -2.0f, -1.0f } };
+            ASSERT(m2.c0r0 == 1.0f);
+            ASSERT(m2.c0r1 == 2.0f);
+            ASSERT(m2.c0r2 == 3.0f);
+            ASSERT(m2.c0r3 == 4.0f);
+            ASSERT(m2.c1r0 == -1.0f);
+            ASSERT(m2.c1r1 == -2.0f);
+            ASSERT(m2.c1r2 == -3.0f);
+            ASSERT(m2.c1r3 == -4.0f);
+            ASSERT(m2.c2r0 == 4.0f);
+            ASSERT(m2.c2r1 == 3.0f);
+            ASSERT(m2.c2r2 == 2.0f);
+            ASSERT(m2.c2r3 == 1.0f);
+            ASSERT(m2.c3r0 == -4.0f);
+            ASSERT(m2.c3r1 == -3.0f);
+            ASSERT(m2.c3r2 == -2.0f);
+            ASSERT(m2.c3r3 == -1.0f);
+        }
+
+        test_section("static methods");
+        {
+            const auto m1 = nnm::Matrix4::all(3.0f);
+            ASSERT(m1.c0r0 == 3.0f);
+            ASSERT(m1.c0r1 == 3.0f);
+            ASSERT(m1.c0r2 == 3.0f);
+            ASSERT(m1.c0r3 == 3.0f);
+            ASSERT(m1.c1r0 == 3.0f);
+            ASSERT(m1.c1r1 == 3.0f);
+            ASSERT(m1.c1r2 == 3.0f);
+            ASSERT(m1.c1r3 == 3.0f);
+            ASSERT(m1.c2r0 == 3.0f);
+            ASSERT(m1.c2r1 == 3.0f);
+            ASSERT(m1.c2r2 == 3.0f);
+            ASSERT(m1.c2r3 == 3.0f);
+            ASSERT(m1.c3r0 == 3.0f);
+            ASSERT(m1.c3r1 == 3.0f);
+            ASSERT(m1.c3r2 == 3.0f);
+            ASSERT(m1.c3r3 == 3.0f);
+
+            const auto m2 = nnm::Matrix4::zero();
+            ASSERT(m2.c0r0 == 0.0f);
+            ASSERT(m2.c0r1 == 0.0f);
+            ASSERT(m2.c0r2 == 0.0f);
+            ASSERT(m2.c0r3 == 0.0f);
+            ASSERT(m2.c1r0 == 0.0f);
+            ASSERT(m2.c1r1 == 0.0f);
+            ASSERT(m2.c1r2 == 0.0f);
+            ASSERT(m2.c1r3 == 0.0f);
+            ASSERT(m2.c2r0 == 0.0f);
+            ASSERT(m2.c2r1 == 0.0f);
+            ASSERT(m2.c2r2 == 0.0f);
+            ASSERT(m2.c2r3 == 0.0f);
+            ASSERT(m2.c3r0 == 0.0f);
+            ASSERT(m2.c3r1 == 0.0f);
+            ASSERT(m2.c3r2 == 0.0f);
+            ASSERT(m2.c3r3 == 0.0f);
+
+            const auto m3 = nnm::Matrix4::one();
+            ASSERT(m3.c0r0 == 1.0f);
+            ASSERT(m3.c0r1 == 1.0f);
+            ASSERT(m3.c0r2 == 1.0f);
+            ASSERT(m3.c0r3 == 1.0f);
+            ASSERT(m3.c1r0 == 1.0f);
+            ASSERT(m3.c1r1 == 1.0f);
+            ASSERT(m3.c1r2 == 1.0f);
+            ASSERT(m3.c1r3 == 1.0f);
+            ASSERT(m3.c2r0 == 1.0f);
+            ASSERT(m3.c2r1 == 1.0f);
+            ASSERT(m3.c2r2 == 1.0f);
+            ASSERT(m3.c2r3 == 1.0f);
+            ASSERT(m3.c3r0 == 1.0f);
+            ASSERT(m3.c3r1 == 1.0f);
+            ASSERT(m3.c3r2 == 1.0f);
+            ASSERT(m3.c3r3 == 1.0f);
+
+            const auto m4 = nnm::Matrix4::identity();
+            ASSERT(m4.c0r0 == 1.0f);
+            ASSERT(m4.c0r1 == 0.0f);
+            ASSERT(m4.c0r2 == 0.0f);
+            ASSERT(m4.c0r3 == 0.0f);
+            ASSERT(m4.c1r0 == 0.0f);
+            ASSERT(m4.c1r1 == 1.0f);
+            ASSERT(m4.c1r2 == 0.0f);
+            ASSERT(m4.c1r3 == 0.0f);
+            ASSERT(m4.c2r0 == 0.0f);
+            ASSERT(m4.c2r1 == 0.0f);
+            ASSERT(m4.c2r2 == 1.0f);
+            ASSERT(m4.c2r3 == 0.0f);
+            ASSERT(m4.c3r0 == 0.0f);
+            ASSERT(m4.c3r1 == 0.0f);
+            ASSERT(m4.c3r2 == 0.0f);
+            ASSERT(m4.c3r3 == 1.0f);
+        }
+
+        const nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                { -1.0f, -3.0f, -2.0f, -4.0f },
+                                { 3.0f, 2.0f, -1.0f, -4.0f },
+                                { -4.0f, 1.0f, -3.0f, 0.0f } };
+
+        test_section("trace");
+        {
+            ASSERT(m1.trace() == -3.0f);
+        }
+
+        test_section("minor_matrix_at");
+        {
+            const nnm::Matrix3 m2 = m1.minor_matrix_at(0, 0);
+            ASSERT(m2 == nnm::Matrix3({ -3.0f, -2.0f, -4.0f }, { 2.0f, -1.0f, -4.0f }, { 1.0f, -3.0f, 0.0f }));
+
+            const nnm::Matrix3 m3 = m1.minor_matrix_at(1, 2);
+            ASSERT(m3 == nnm::Matrix3({ 1.0f, 2.0f, 4.0f }, { 3.0f, 2.0f, -4.0f }, { -4.0f, 1.0f, 0.0f }));
+        }
+
+        test_section("minor_at");
+        {
+            ASSERT(nnm::approx_equal(m1.minor_at(0, 0), 64.0f));
+            ASSERT(nnm::approx_equal(m1.minor_at(1, 2), 80.0f));
+        }
+
+        test_section("determinant");
+        {
+            ASSERT(nnm::approx_equal(m1.determinant(), -64.0f));
+        }
+
+        test_section("cofactor_at");
+        {
+            ASSERT(nnm::approx_equal(m1.cofactor_at(0, 0), 64.0f));
+            ASSERT(nnm::approx_equal(m1.cofactor_at(2, 1), -16.0f));
+        }
+
+        test_section("cofactor");
+        {
+            const nnm::Matrix4 expected { { 64.0f, -32.0f, -96.0f, 56.0f },
+                                          { 56.0f, -16.0f, -80.0f, 54.0f },
+                                          { 8.0f, -16.0f, -16.0f, 18.0f },
+                                          { 24.0f, -16.0f, -16.0f, 14.0f } };
+            ASSERT(m1.cofactor().approx_equal(expected))
+        }
+
+        test_section("transpose");
+        {
+            const nnm::Matrix4 expected { { 1.0f, -1.0f, 3.0f, -4.0f },
+                                          { 2.0f, -3.0f, 2.0f, 1.0f },
+                                          { 3.0f, -2.0f, -1.0f, -3.0f },
+                                          { 4.0f, -4.0f, -4.0f, 0.0f } };
+            ASSERT(m1.transpose() == expected);
+        }
+
+        test_section("adjugate");
+        {
+            const nnm::Matrix4 expected { { 64.0f, 56.0f, 8.0f, 24.0f },
+                                          { -32.0f, -16.0f, -16.0f, -16.0f },
+                                          { -96.0f, -80.0f, -16.0f, -16.0f },
+                                          { 56.0f, 54.0f, 18.0f, 14.0f } };
+            ASSERT(m1.adjugate().approx_equal(expected));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Matrix4 expected { { -1.0f, -0.875f, -0.125f, -0.375f },
+                                          { 0.5f, 0.25f, 0.25f, 0.25f },
+                                          { 1.5f, 1.25f, 0.25f, 0.25f },
+                                          { -0.875f, -0.84375f, -0.28125f, -0.21875f } };
+            ASSERT(m1.inverse().has_value() && m1.inverse().value().approx_equal(expected));
+            ASSERT(m1.unchecked_inverse().approx_equal(expected));
+
+            ASSERT_FALSE(nnm::Matrix4::zero().inverse().has_value());
         }
     }
     END_TESTS

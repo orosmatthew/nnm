@@ -2805,10 +2805,12 @@ public:
 
     [[nodiscard]] float determinant() const
     {
-        const float det_bottom_right = at(1, 1) * at(2, 2) - at(2, 1) * at(1, 2);
-        const float det_bottom_split = at(0, 1) * at(2, 2) - at(2, 1) * at(0, 2);
-        const float det_bottom_left = at(0, 1) * at(1, 2) - at(1, 1) * at(0, 2);
-        return at(0, 0) * det_bottom_right - at(1, 0) * det_bottom_split + at(2, 0) * det_bottom_left;
+        float det = 0.0f;
+        for (int c = 0; c < 3; ++c) {
+            const float det_minor = minor_at(c, 0);
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+        }
+        return det;
     }
 
     [[nodiscard]] Matrix2 minor_matrix_at(const int column, const int row) const
@@ -3347,7 +3349,7 @@ public:
         float det = 0.0f;
         for (int c = 0; c < 4; ++c) {
             const float det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(0, c) * det_minor;
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
         }
         return det;
     }
