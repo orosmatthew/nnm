@@ -2200,40 +2200,39 @@ public:
 
     union {
         struct {
-            float c0r0;
-            float c0r1;
-            float c1r0;
-            float c1r1;
+            float col0_row0;
+            float col0_row1;
+            float col1_row0;
+            float col1_row1;
         };
-
         std::array<Column, 2> columns;
     };
 
     Matrix2()
-        : c0r0(1.0f)
-        , c0r1(0.0f)
-        , c1r0(0.0f)
-        , c1r1(1.0f)
+        : col0_row0(1.0f)
+        , col0_row1(0.0f)
+        , col1_row0(0.0f)
+        , col1_row1(1.0f)
     {
     }
 
-    Matrix2(const Column& column_0, const Column& column_1)
-        : c0r0(column_0[0])
-        , c0r1(column_0[1])
-        , c1r0(column_1[0])
-        , c1r1(column_1[1])
+    Matrix2(const Column& column0, const Column& column1)
+        : col0_row0(column0[0])
+        , col0_row1(column0[1])
+        , col1_row0(column1[0])
+        , col1_row1(column1[1])
     {
     }
 
-    Matrix2(const float c0r0, const float c0r1, const float c1r0, const float c1r1)
-        : c0r0(c0r0)
-        , c0r1(c0r1)
-        , c1r0(c1r0)
-        , c1r1(c1r1)
+    Matrix2(const float col0_row0, const float col0_row1, const float col1_row0, const float col1_row1)
+        : col0_row0(col0_row0)
+        , col0_row1(col0_row1)
+        , col1_row0(col1_row0)
+        , col1_row1(col1_row1)
     {
     }
 
-    [[nodiscard]] static Matrix2 all(float value)
+    [[nodiscard]] static Matrix2 all(const float value)
     {
         return { { value, value }, { value, value } };
     }
@@ -2570,65 +2569,64 @@ public:
 
     union {
         struct {
-            float c0r0;
-            float c0r1;
-            float c0r2;
-            float c1r0;
-            float c1r1;
-            float c1r2;
-            float c2r0;
-            float c2r1;
-            float c2r2;
+            float col0_row0;
+            float col0_row1;
+            float col0_row2;
+            float col1_row0;
+            float col1_row1;
+            float col1_row2;
+            float col2_row0;
+            float col2_row1;
+            float col2_row2;
         };
-
         std::array<Column, 3> columns;
     };
 
     Matrix3()
-        : c0r0(1.0f)
-        , c0r1(0.0f)
-        , c0r2(0.0f)
-        , c1r0(0.0f)
-        , c1r1(1.0f)
-        , c1r2(0.0f)
-        , c2r0(0.0f)
-        , c2r1(0.0f)
-        , c2r2(1.0f)
+        : col0_row0(1.0f)
+        , col0_row1(0.0f)
+        , col0_row2(0.0f)
+        , col1_row0(0.0f)
+        , col1_row1(1.0f)
+        , col1_row2(0.0f)
+        , col2_row0(0.0f)
+        , col2_row1(0.0f)
+        , col2_row2(1.0f)
     {
     }
 
-    Matrix3(const Column& column_1, const Column& column_2, const Column& column_3)
-        : c0r0(column_1[0])
-        , c0r1(column_1[1])
-        , c0r2(column_1[2])
-        , c1r0(column_2[0])
-        , c1r1(column_2[1])
-        , c1r2(column_2[2])
-        , c2r0(column_3[0])
-        , c2r1(column_3[1])
-        , c2r2(column_3[2])
+    Matrix3(const Column& column1, const Column& column2, const Column& column3)
+        : col0_row0(column1[0])
+        , col0_row1(column1[1])
+        , col0_row2(column1[2])
+        , col1_row0(column2[0])
+        , col1_row1(column2[1])
+        , col1_row2(column2[2])
+        , col2_row0(column3[0])
+        , col2_row1(column3[1])
+        , col2_row2(column3[2])
     {
     }
 
     Matrix3(
-        const float c0r0,
-        const float c0r1,
-        const float c0r2,
-        const float c1r0,
-        const float c1r1,
-        const float c1r2,
-        const float c2r0,
-        const float c2r1,
-        const float c2r2)
-        : c0r0(c0r0)
-        , c0r1(c0r1)
-        , c0r2(c0r2)
-        , c1r0(c1r0)
-        , c1r1(c1r1)
-        , c1r2(c1r2)
-        , c2r0(c2r0)
-        , c2r1(c2r1)
-        , c2r2(c2r2)
+        const float col0_row0,
+        const float col0_row1,
+        const float col0_row2,
+        const float col1_row0,
+        const float col1_row1,
+        const float col1_row2,
+        const float col2_row0,
+        const float col2_row1,
+        const float col2_row2)
+        : col0_row0(col0_row0)
+        , col0_row1(col0_row1)
+        , col0_row2(col0_row2)
+        , col1_row0(col1_row0)
+        , col1_row1(col1_row1)
+        , col1_row2(col1_row2)
+        , col2_row0(col2_row0)
+        , col2_row1(col2_row1)
+        , col2_row2(col2_row2)
     {
     }
 
@@ -3113,67 +3111,67 @@ public:
 
     union {
         struct {
-            float c0r0;
-            float c0r1;
-            float c0r2;
-            float c0r3;
-            float c1r0;
-            float c1r1;
-            float c1r2;
-            float c1r3;
-            float c2r0;
-            float c2r1;
-            float c2r2;
-            float c2r3;
-            float c3r0;
-            float c3r1;
-            float c3r2;
-            float c3r3;
+            float col0_row0;
+            float col0_row1;
+            float col0_row2;
+            float col0_row3;
+            float col1_row0;
+            float col1_row1;
+            float col1_row2;
+            float col1_row3;
+            float col2_row0;
+            float col2_row1;
+            float col2_row2;
+            float col2_row3;
+            float col3_row0;
+            float col3_row1;
+            float col3_row2;
+            float col3_row3;
         };
         std::array<Column, 4> columns;
     };
 
     Matrix4()
-        : c0r0(1.0f)
-        , c0r1(0.0f)
-        , c0r2(0.0f)
-        , c0r3(0.0f)
-        , c1r0(0.0f)
-        , c1r1(1.0f)
-        , c1r2(0.0f)
-        , c1r3(0.0f)
-        , c2r0(0.0f)
-        , c2r1(0.0f)
-        , c2r2(1.0f)
-        , c2r3(0.0f)
-        , c3r0(0.0f)
-        , c3r1(0.0f)
-        , c3r2(0.0f)
-        , c3r3(1.0f)
+        : col0_row0(1.0f)
+        , col0_row1(0.0f)
+        , col0_row2(0.0f)
+        , col0_row3(0.0f)
+        , col1_row0(0.0f)
+        , col1_row1(1.0f)
+        , col1_row2(0.0f)
+        , col1_row3(0.0f)
+        , col2_row0(0.0f)
+        , col2_row1(0.0f)
+        , col2_row2(1.0f)
+        , col2_row3(0.0f)
+        , col3_row0(0.0f)
+        , col3_row1(0.0f)
+        , col3_row2(0.0f)
+        , col3_row3(1.0f)
     {
     }
 
-    Matrix4(const Column& column_1, const Column& column_2, const Column& column_3, const Column& column_4)
-        : c0r0(column_1[0])
-        , c0r1(column_1[1])
-        , c0r2(column_1[2])
-        , c0r3(column_1[3])
-        , c1r0(column_2[0])
-        , c1r1(column_2[1])
-        , c1r2(column_2[2])
-        , c1r3(column_2[3])
-        , c2r0(column_3[0])
-        , c2r1(column_3[1])
-        , c2r2(column_3[2])
-        , c2r3(column_3[3])
-        , c3r0(column_4[0])
-        , c3r1(column_4[1])
-        , c3r2(column_4[2])
-        , c3r3(column_4[3])
+    Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4)
+        : col0_row0(column1[0])
+        , col0_row1(column1[1])
+        , col0_row2(column1[2])
+        , col0_row3(column1[3])
+        , col1_row0(column2[0])
+        , col1_row1(column2[1])
+        , col1_row2(column2[2])
+        , col1_row3(column2[3])
+        , col2_row0(column3[0])
+        , col2_row1(column3[1])
+        , col2_row2(column3[2])
+        , col2_row3(column3[3])
+        , col3_row0(column4[0])
+        , col3_row1(column4[1])
+        , col3_row2(column4[2])
+        , col3_row3(column4[3])
     {
     }
 
-    [[nodiscard]] static Matrix4 all(float value)
+    [[nodiscard]] static Matrix4 all(const float value)
     {
         return { { value, value, value, value },
                  { value, value, value, value },

@@ -478,10 +478,10 @@ using Column = Vector2;
 ```c++
 union {
     struct {
-        float c0r0;
-        float c0r1;
-        float c1r0;
-        float c1r1;
+        float col0_row0;
+        float col0_row1;
+        float col1_row0;
+        float col1_row1;
     };
     std::array<Column, 2> columns;
 };
@@ -491,8 +491,8 @@ union {
 
 ```c++
 Matrix2();
-Matrix2(const Column& column_0, const Column& column_1);
-Matrix2(float c0r0, float c0r1, float c1r0, float c1r1);
+Matrix2(const Column& column0, const Column& column1);
+Matrix2(float col0_row0, float col0_row1, float col1_row0, float col1_row1);
 static Matrix2 all(float value);
 static Matrix2 zero();
 static Matrix2 one();
@@ -589,16 +589,16 @@ using Column = Vector3;
 ```c++
 union {
     struct {
-        float c0r0;
-        float c0r1;
-        float c0r2;
-        float c1r0;
-        float c1r1;
-        float c1r2;
-        float c2r0;
-        float c2r1;
-        float c2r2;
-    }
+        float col0_row0;
+        float col0_row1;
+        float col0_row2;
+        float col1_row0;
+        float col1_row1;
+        float col1_row2;
+        float col2_row0;
+        float col2_row1;
+        float col2_row2;
+    };
     std::array<Column, 3> columns;
 };
 ```
@@ -607,17 +607,17 @@ union {
 
 ```c++
 Matrix3();
-Matrix3(const Column& column_1, const Column& column_2, const Column& column_3);
+Matrix3(const Column& column1, const Column& column2, const Column& column3)
 Matrix3(
-    float c0r0,
-    float c0r1,
-    float c0r2,
-    float c1r0,
-    float c1r1,
-    float c1r2,
-    float c2r0,
-    float c2r1,
-    float c2r2);
+    const float col0_row0,
+    const float col0_row1,
+    const float col0_row2,
+    const float col1_row0,
+    const float col1_row1,
+    const float col1_row2,
+    const float col2_row0,
+    const float col2_row1,
+    const float col2_row2);
 static Matrix3 all(float value);
 static Matrix3 zero();
 static Matrix3 one()
@@ -706,3 +706,88 @@ const Vector3& operator[](int column) const;
 Vector3& operator[](int column);
 bool operator==(const Transform2& other) const;
 ```
+
+## Matrix4
+
+### Types
+
+```cpp
+using Column = Vector4;
+```
+
+### Members
+
+```cpp
+union {
+    struct {
+        float col0_row0;
+        float col0_row1;
+        float col0_row2;
+        float col0_row3;
+        float col1_row0;
+        float col1_row1;
+        float col1_row2;
+        float col1_row3;
+        float col2_row0;
+        float col2_row1;
+        float col2_row2;
+        float col2_row3;
+        float col3_row0;
+        float col3_row1;
+        float col3_row2;
+        float col3_row3;
+    };
+    std::array<Column, 4> columns;
+};
+```
+
+### Constructors
+
+```cpp
+Matrix4();
+Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4);
+static Matrix4 all(float value);
+static Matrix4 zero();
+static Matrix4 one();
+static Matrix4 identity();
+```
+
+### Methods
+
+```cpp
+float trace() const;
+Matrix3 minor_matrix_at(int column, int row) const;
+float minor_at(int column, int row) const;
+float determinant() const;
+float cofactor_at(int column, int row) const;
+Matrix4 cofactor() const;
+Matrix4 transpose() const;
+Matrix4 adjugate() const;
+Matrix4 unchecked_inverse() const;
+std::optional<Matrix4> inverse() const;
+bool approx_equal(const Matrix4& other) const;
+bool approx_zero() const;
+const Column& at(int column) const;
+Column& at(int column);
+float at(int column, int row) const;
+float& at(int column, int row);
+```
+
+### Operators
+
+```cpp
+const Column& operator[](int index) const;
+Column& operator[](int index);
+bool operator==(const Matrix4& other) const;
+bool operator!=(const Matrix4& other) const;
+bool operator<(const Matrix4& other) const;
+Matrix4 operator*(const Matrix4& other) const;
+Matrix4& operator*=(const Matrix4& other);
+Vector4 operator*(const Vector4& vector) const;
+Matrix4 operator*(float value) const;
+Matrix4& operator*=(float value);
+Matrix4 operator/(float value) const;
+Matrix4& operator/=(float value);
+explicit operator bool() const;
+```
+
