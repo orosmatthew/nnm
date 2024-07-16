@@ -916,6 +916,8 @@ public:
         return x * other.x + y * other.y + z * other.z;
     }
 
+    [[nodiscard]] Matrix3 outer(const Vector3& other) const;
+
     [[nodiscard]] Vector3 cross(const Vector3& other) const
     {
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
@@ -2380,6 +2382,40 @@ public:
         return columns < other.columns;
     }
 
+    [[nodiscard]] Matrix2 operator+(const Matrix2& other) const
+    {
+        Matrix2 result;
+        for (int c = 0; c < 2; ++c) {
+            result[c] = columns[c] + other[c];
+        }
+        return result;
+    }
+
+    Matrix2& operator+=(const Matrix2& other)
+    {
+        for (int c = 0; c < 2; ++c) {
+            columns[c] += other[c];
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Matrix2 operator-(const Matrix2& other) const
+    {
+        Matrix2 result;
+        for (int c = 0; c < 2; ++c) {
+            result[c] = columns[c] - other[c];
+        }
+        return result;
+    }
+
+    Matrix2& operator-=(const Matrix2& other)
+    {
+        for (int c = 0; c < 2; ++c) {
+            columns[c] += other[c];
+        }
+        return *this;
+    }
+
     [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
     {
         Matrix2 result;
@@ -2819,6 +2855,40 @@ public:
         return columns < other.columns;
     }
 
+    [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
+    {
+        Matrix3 result;
+        for (int c = 0; c < 3; ++c) {
+            result[c] = columns[c] + other[c];
+        }
+        return result;
+    }
+
+    Matrix3& operator+=(const Matrix3& other)
+    {
+        for (int c = 0; c < 3; ++c) {
+            columns[c] += other[c];
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
+    {
+        Matrix3 result;
+        for (int c = 0; c < 3; ++c) {
+            result[c] = columns[c] - other[c];
+        }
+        return result;
+    }
+
+    Matrix3& operator-=(const Matrix3& other)
+    {
+        for (int c = 0; c < 3; ++c) {
+            columns[c] -= other[c];
+        }
+        return *this;
+    }
+
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
     {
         Matrix3 result;
@@ -2881,6 +2951,11 @@ public:
         return true;
     }
 };
+
+inline Matrix3 operator*(const float value, const Matrix3& matrix)
+{
+    return matrix * value;
+}
 
 class Transform2 {
 public:
@@ -3627,8 +3702,14 @@ public:
     {
     }
 
-    // TODO
-    static Basis3 from_rotation_euler(Vector3 angles);
+    static Basis3 from_rotation_axis_angle(const Vector3& axis, const float angle)
+    {
+        const Vector3 norm = axis.normalize();
+        // Rodrigues' formula
+        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
+        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
+        return Basis3(r_matrix);
+    }
 
     // TODO
     static Basis3 from_rotation_quaternion(Quaternion quaternion);
@@ -3653,9 +3734,109 @@ public:
         return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
     }
 
-    static Basis3 from_shear(const Vector3& vector)
+    [[nodiscard]] bool valid() const
     {
-        return Basis3({ { 1.0f, vector.x, vector.y }, { 0.0f, 1.0f, vector.z }, { 0.0f, 0.0f, 1.0f } });
+        return matrix.determinant() != 0.0f;
+    }
+
+    [[nodiscard]] Basis3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    {
+        return Basis3(matrix * from_rotation_axis_angle(axis, angle).matrix);
+    }
+
+    [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
+    {
+        return Basis3(from_rotation_axis_angle(axis, angle).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 scale(const Vector3& factor) const
+    {
+        return Basis3(matrix * from_scale(factor).matrix);
+    }
+
+    [[nodiscard]] Basis3 scale_local(const Vector3& factor) const
+    {
+        return Basis3(from_scale(factor).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_x(const float y, const float z) const
+    {
+        return Basis3(matrix * from_shear_x(y, z).matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_x_local(const float y, const float z) const
+    {
+        return Basis3(from_shear_x(y, z).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_y(const float x, const float z) const
+    {
+        return Basis3(matrix * from_shear_y(x, z).matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_y_local(const float x, const float z) const
+    {
+        return Basis3(from_shear_y(x, z).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_z(const float x, const float y) const
+    {
+        return Basis3(matrix * from_shear_z(x, y).matrix);
+    }
+
+    [[nodiscard]] Basis3 shear_z_local(const float x, const float y) const
+    {
+        return Basis3(from_shear_z(x, y).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 transform(const Basis3& by) const
+    {
+        return Basis3(matrix * by.matrix);
+    }
+
+    [[nodiscard]] Basis3 transform_local(const Basis3& by) const
+    {
+        return Basis3(by.matrix * matrix);
+    }
+
+    [[nodiscard]] bool approx_equal(const Basis3& other) const
+    {
+        return matrix.approx_equal(other.matrix);
+    }
+
+    [[nodiscard]] float at(const int column, const int row) const
+    {
+        return matrix.at(column, row);
+    }
+
+    float& at(const int column, const int row)
+    {
+        return matrix.at(column, row);
+    }
+
+    [[nodiscard]] const Matrix3::Column& operator[](const int index) const
+    {
+        return matrix[index];
+    }
+
+    Matrix3::Column& operator[](const int index)
+    {
+        return matrix[index];
+    }
+
+    [[nodiscard]] bool operator==(const Basis3& other) const
+    {
+        return matrix == other.matrix;
+    }
+
+    [[nodiscard]] bool operator!=(const Basis3& other) const
+    {
+        return matrix != other.matrix;
+    }
+
+    [[nodiscard]] bool operator<(const Basis3& other) const
+    {
+        return matrix < other.matrix;
     }
 };
 
@@ -3664,6 +3845,13 @@ inline Vector3::Vector3(const Vector3i vector) // NOLINT(*-pro-type-member-init)
     , y(static_cast<float>(vector.y))
     , z(static_cast<float>(vector.z))
 {
+}
+
+inline Matrix3 Vector3::outer(const Vector3& other) const
+{
+    return { { x * other.x, x * other.y, x * other.z },
+             { y * other.x, y * other.y, y * other.z },
+             { z * other.x, z * other.y, z * other.z } };
 }
 
 inline Quaternion Quaternion::from_matrix(const Matrix3& matrix)

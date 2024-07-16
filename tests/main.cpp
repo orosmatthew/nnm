@@ -1148,6 +1148,14 @@ int main()
             ASSERT(v1.dot(v2) == -28.0f);
         }
 
+        test_section("outer");
+        {
+            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            const nnm::Matrix3 expected { { -2.0f, 4.0f, -6.0f }, { 4.0f, -8.0f, 12.0f }, { -6.0f, 12.0f, -18.0f } };
+            ASSERT(v1.outer(v2).approx_equal(expected));
+        }
+
         test_section("cross");
         {
             const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
