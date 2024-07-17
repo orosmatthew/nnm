@@ -3716,12 +3716,12 @@ public:
 
     static Basis3 from_shear_x(float y, float z)
     {
-        return Basis3({ { 1.0f, y, z }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { y, 1.0f, 0.0f }, { z, 0.0f, 1.0f } });
     }
 
     static Basis3 from_shear_y(float x, float z)
     {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { x, 1.0f, z }, { 0.0f, 0.0f, 1.0f } });
+        return Basis3({ { 1.0f, x, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, z, 1.0f } });
     }
 
     static Basis3 from_shear_z(float x, float y)
