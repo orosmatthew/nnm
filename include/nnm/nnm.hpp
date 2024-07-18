@@ -2498,14 +2498,19 @@ public:
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
+    static Basis2 from_shear_x(const float angle_y)
+    {
+        return Basis2({ { 1.0f, 0.0f }, { tan(angle_y), 1.0f } });
+    }
+
+    static Basis2 from_shear_y(const float angle_x)
+    {
+        return Basis2({ { 1.0f, tan(angle_x) }, { 0.0f, 1.0f } });
+    }
+
     static Basis2 from_scale(const Vector2& factor)
     {
         return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
-    }
-
-    static Basis2 from_shear(const Vector2& vector)
-    {
-        return Basis2({ { 1.0f, vector.x }, { vector.y, 1.0f } });
     }
 
     [[nodiscard]] bool valid() const
@@ -2515,12 +2520,32 @@ public:
 
     [[nodiscard]] Basis2 rotate(const float angle) const
     {
-        return Basis2(matrix * from_rotation(angle).matrix);
+        return Basis2(from_rotation(angle).matrix * matrix);
     }
 
     [[nodiscard]] Basis2 rotate_local(const float angle) const
     {
-        return Basis2(from_rotation(angle).matrix * matrix);
+        return Basis2(matrix * from_rotation(angle).matrix);
+    }
+
+    [[nodiscard]] Basis2 shear_x(const float angle_y) const
+    {
+        return Basis2(from_shear_x(angle_y).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis2 shear_x_local(const float angle_y) const
+    {
+        return Basis2(matrix * from_shear_x(angle_y).matrix);
+    }
+
+    [[nodiscard]] Basis2 shear_y(const float angle_x) const
+    {
+        return Basis2(from_shear_y(angle_x).matrix * matrix);
+    }
+
+    [[nodiscard]] Basis2 shear_y_local(const float angle_x) const
+    {
+        return Basis2(matrix * from_shear_y(angle_x).matrix);
     }
 
     [[nodiscard]] Basis2 scale(const Vector2& factor) const
@@ -2533,36 +2558,59 @@ public:
         return Basis2(matrix * from_scale(factor).matrix);
     }
 
-    [[nodiscard]] Basis2 shear(const Vector2& vector) const
-    {
-        return Basis2(from_shear(vector).matrix * matrix);
-    }
-
-    [[nodiscard]] Basis2 shear_local(const Vector2& vector) const
-    {
-        return Basis2(matrix * from_shear(vector).matrix);
-    }
-
     [[nodiscard]] Basis2 transform(const Basis2& by) const
     {
-        return Basis2(matrix * by.matrix);
+        return Basis2(by.matrix * matrix);
     }
 
     [[nodiscard]] Basis2 transform_local(const Basis2& by) const
     {
-        return Basis2(by.matrix * matrix);
+        return Basis2(matrix * by.matrix);
+    }
+
+    [[nodiscard]] Basis2 unchecked_inverse() const
+    {
+        return Basis2(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Basis2> inverse() const
+    {
+        if (valid()) {
+            return Basis2(matrix.unchecked_inverse());
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] float trace() const
+    {
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
     }
 
     [[nodiscard]] bool approx_equal(const Basis2& other) const
     {
         for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                if (!nnm::approx_equal(at(c, r), other.at(c, r))) {
-                    return false;
-                }
+            if (!at(c).approx_equal(other.at(c))) {
+                return false;
             }
         }
         return true;
+    }
+
+    [[nodiscard]] const Matrix2::Column& at(const int column) const
+    {
+        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
+        return matrix[column];
+    }
+
+    Matrix2::Column& at(const int column)
+    {
+        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
+        return matrix[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
@@ -3004,9 +3052,14 @@ public:
         return from_basis_translation(Basis2::from_scale(factor), Vector2());
     }
 
-    static Transform2 from_shear(const Vector2& vector)
+    static Transform2 from_shear_x(const float angle_y)
     {
-        return from_basis_translation(Basis2::from_shear(vector), Vector2());
+        return from_basis_translation(Basis2::from_shear_x(angle_y), Vector2());
+    }
+
+    static Transform2 from_shear_y(const float angle_x)
+    {
+        return from_basis_translation(Basis2::from_shear_y(angle_x), Vector2());
     }
 
     [[nodiscard]] bool valid() const
@@ -3056,15 +3109,15 @@ public:
         return Transform2(matrix * by.matrix);
     }
 
-    [[nodiscard]] Transform2 shear(const Vector2& vector) const
+    [[nodiscard]] Transform2 shear_x(const float angle_y) const
     {
-        const Transform2 by = from_basis(Basis2::from_shear(vector));
+        const Transform2 by = from_basis(Basis2::from_shear_x(angle_y));
         return Transform2(by.matrix * matrix);
     }
 
-    [[nodiscard]] Transform2 shear_local(const Vector2& vector) const
+    [[nodiscard]] Transform2 shear_x_local(const float angle_y) const
     {
-        const Transform2 by = from_basis(Basis2::from_shear(vector));
+        const Transform2 by = from_basis(Basis2::from_shear_y(angle_y));
         return Transform2(matrix * by.matrix);
     }
 
