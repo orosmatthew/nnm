@@ -3759,14 +3759,14 @@ public:
         return Basis3(from_scale(factor).matrix * matrix);
     }
 
-    [[nodiscard]] Basis3 shear_x(const float y, const float z) const
+    [[nodiscard]] Basis3 shear_x(const float angle_y, const float angle_z) const
     {
-        return Basis3(matrix * from_shear_x(y, z).matrix);
+        return Basis3(matrix * from_shear_x(angle_y, angle_z).matrix);
     }
 
-    [[nodiscard]] Basis3 shear_x_local(const float y, const float z) const
+    [[nodiscard]] Basis3 shear_x_local(const float angle_y, const float angle_z) const
     {
-        return Basis3(from_shear_x(y, z).matrix * matrix);
+        return Basis3(from_shear_x(angle_y, angle_z).matrix * matrix);
     }
 
     [[nodiscard]] Basis3 shear_y(const float x, const float z) const
@@ -3797,6 +3797,29 @@ public:
     [[nodiscard]] Basis3 transform_local(const Basis3& by) const
     {
         return Basis3(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 unchecked_inverse() const
+    {
+        return Basis3(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Basis3> inverse() const
+    {
+        if (valid()) {
+            return Basis3(matrix.unchecked_inverse());
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] float trace() const
+    {
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
     }
 
     [[nodiscard]] bool approx_equal(const Basis3& other) const
