@@ -3714,19 +3714,19 @@ public:
     // TODO
     static Basis3 from_rotation_quaternion(Quaternion quaternion);
 
-    static Basis3 from_shear_x(float y, float z)
+    static Basis3 from_shear_x(const float angle_y, const float angle_z)
     {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { y, 1.0f, 0.0f }, { z, 0.0f, 1.0f } });
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
     }
 
-    static Basis3 from_shear_y(float x, float z)
+    static Basis3 from_shear_y(const float angle_x, const float angle_z)
     {
-        return Basis3({ { 1.0f, x, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, z, 1.0f } });
+        return Basis3({ { 1.0f, tan(angle_x), 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, tan(angle_z), 1.0f } });
     }
 
-    static Basis3 from_shear_z(float x, float y)
+    static Basis3 from_shear_z(const float angle_x, const float angle_y)
     {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { x, y, 1.0f } });
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
     }
 
     static Basis3 from_scale(const Vector3& factor)

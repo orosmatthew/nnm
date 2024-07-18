@@ -2553,19 +2553,22 @@ int main()
         test_section("from_shear_x");
         {
             auto b1 = nnm::Basis3::from_shear_x(0.5f, -0.1f);
-            ASSERT(b1.matrix.approx_equal({ { 1.0f, 0.0f, 0.0f }, { 0.5f, 1.0f, 0.0f }, { -0.1f, 0.0f, 1.0f } }));
+            ASSERT(b1.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721, 0.0f, 1.0f } }));
         }
 
         test_section("from_shear_y");
         {
-            auto b1 = nnm::Basis3::from_shear_y(-2.0f, 3.0f);
-            ASSERT(b1.matrix.approx_equal({ { 1.0f, -2.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 3.0f, 1.0f } }));
+            auto b1 = nnm::Basis3::from_shear_y(-1.5f, 0.8f);
+            ASSERT(b1.matrix.approx_equal(
+                { { 1.0f, -14.1014199472f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0296385571f, 1.0f } }));
         }
 
         test_section("from_shear_z");
         {
             auto b1 = nnm::Basis3::from_shear_z(-0.2f, 0.3f);
-            ASSERT(b1.matrix.approx_equal({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { -0.2f, 0.3f, 1.0f } }))
+            ASSERT(b1.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { -0.2027100355f, 0.3093362496f, 1.0f } }))
         }
 
         test_section("from_scale");
