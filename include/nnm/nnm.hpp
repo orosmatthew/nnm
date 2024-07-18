@@ -3827,23 +3827,39 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
+    [[nodiscard]] const Matrix3::Column& at(const int column) const
+    {
+        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
+    Matrix3::Column& at(const int column)
+    {
+        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
     [[nodiscard]] float at(const int column, const int row) const
     {
+        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     float& at(const int column, const int row)
     {
+        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     [[nodiscard]] const Matrix3::Column& operator[](const int index) const
     {
+        NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 
     Matrix3::Column& operator[](const int index)
     {
+        NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 

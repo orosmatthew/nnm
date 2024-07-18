@@ -2696,6 +2696,36 @@ int main()
             nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 0.2f } });
             ASSERT(nnm::approx_equal(b1.determinant(), 12.4f))
         }
+
+        test_section("approx_equal");
+        {
+            nnm::Basis3 b1({ { 1.000001f, -0.00001f, 0.0f }, { 0.0f, 0.99999999f, 0.000001 }, { 0.0f, 0.0f, 1.0f } });
+            ASSERT(b1.approx_equal(nnm::Basis3()));
+        }
+
+        const nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
+        const nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
+
+        test_section("accessors");
+        {
+            ASSERT(b1.at(1, 2) == 0.1f);
+            ASSERT(b1[1] == nnm::Vector3(2.0f, -3.0f, 0.1f));
+            ASSERT(b1.at(1) == nnm::Vector3(2.0f, -3.0f, 0.1f));
+        }
+
+        test_section("equality");
+        {
+            ASSERT(b1 == b1);
+            ASSERT_FALSE(b1 != b1);
+            ASSERT_FALSE(b1 == b2);
+            ASSERT(b1 != b2);
+        }
+
+        test_section("comparison");
+        {
+            ASSERT(b1 < b2);
+            ASSERT_FALSE(b2 < b1);
+        }
     }
     END_TESTS
 }
