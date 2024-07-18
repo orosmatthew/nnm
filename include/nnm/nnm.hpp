@@ -3712,7 +3712,7 @@ public:
     }
 
     // TODO
-    static Basis3 from_rotation_quaternion(Quaternion quaternion);
+    static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
 
     static Basis3 from_shear_x(const float angle_y, const float angle_z)
     {
@@ -3769,24 +3769,24 @@ public:
         return Basis3(from_shear_x(angle_y, angle_z).matrix * matrix);
     }
 
-    [[nodiscard]] Basis3 shear_y(const float x, const float z) const
+    [[nodiscard]] Basis3 shear_y(const float angle_x, const float angle_z) const
     {
-        return Basis3(matrix * from_shear_y(x, z).matrix);
+        return Basis3(matrix * from_shear_y(angle_x, angle_z).matrix);
     }
 
-    [[nodiscard]] Basis3 shear_y_local(const float x, const float z) const
+    [[nodiscard]] Basis3 shear_y_local(const float angle_x, const float angle_z) const
     {
-        return Basis3(from_shear_y(x, z).matrix * matrix);
+        return Basis3(from_shear_y(angle_x, angle_z).matrix * matrix);
     }
 
-    [[nodiscard]] Basis3 shear_z(const float x, const float y) const
+    [[nodiscard]] Basis3 shear_z(const float angle_x, const float angle_y) const
     {
-        return Basis3(matrix * from_shear_z(x, y).matrix);
+        return Basis3(matrix * from_shear_z(angle_x, angle_y).matrix);
     }
 
-    [[nodiscard]] Basis3 shear_z_local(const float x, const float y) const
+    [[nodiscard]] Basis3 shear_z_local(const float angle_x, const float angle_y) const
     {
-        return Basis3(from_shear_z(x, y).matrix * matrix);
+        return Basis3(from_shear_z(angle_x, angle_y).matrix * matrix);
     }
 
     [[nodiscard]] Basis3 transform(const Basis3& by) const

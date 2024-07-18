@@ -817,3 +817,57 @@ Matrix4& operator/=(float value);
 explicit operator bool() const;
 ```
 
+## Basis3
+
+### Constructors
+
+```cpp
+Basis3();
+explicit Basis3(const Matrix3& matrix);
+static Basis3 from_rotation_axis_angle(const Vector3& axis, float angle);
+static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
+static Basis3 from_shear_x(float angle_y, float angle_z);
+static Basis3 from_shear_y(float angle_x, float angle_z);
+static Basis3 from_shear_z(float angle_x, float angle_y);
+static Basis3 from_scale(const Vector3& factor)
+```
+
+### Methods
+
+```cpp
+bool valid() const;
+Basis3 rotate_axis_angle(const Vector3& axis, float angle) const;
+Basis3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
+Basis3 scale(const Vector3& factor) const;
+Basis3 scale_local(const Vector3& factor) const;
+Basis3 shear_x(float angle_y, float angle_z) const;
+Basis3 shear_x_local(float angle_y, float angle_z) const;
+Basis3 shear_y(float angle_x, float angle_z) const;
+Basis3 shear_y_local(float angle_x, float angle_z) const;
+Basis3 shear_z(float angle_x, float angle_y) const;
+Basis3 shear_z_local(float angle_x, float angle_y) const;
+Basis3 transform(const Basis3& by) const;
+Basis3 transform_local(const Basis3& by) const;
+Basis3 unchecked_inverse() const;
+std::optional<Basis3> inverse() const;
+float trace() const;
+float determinant() const;
+bool approx_equal(const Basis3& other) const;
+const Matrix3::Column& at(int column) const;
+Matrix3::Column& at(const int column);
+float at(int column, int row) const;
+float& at(const int column, const int row);
+```
+
+### Operators
+
+```cpp
+const Matrix3::Column& operator[](int index) const;
+Matrix3::Column& operator[](int index);
+bool operator==(const Basis3& other) const;
+bool operator!=(const Basis3& other) const;
+bool operator<(const Basis3& other) const;
+```
+
+
+
