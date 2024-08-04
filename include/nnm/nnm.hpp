@@ -204,6 +204,7 @@ class Matrix3;
 class Matrix4;
 class Vector4;
 class Vector4i;
+class Basis3;
 class Quaternion;
 
 class Vector2 {
@@ -968,6 +969,8 @@ public:
         // Rodrigues rotation formula
         return *this * cos(angle) + axis.cross(*this) * sin(angle) + axis * (1.0f - cos(angle)) * axis.dot(*this);
     }
+
+    [[nodiscard]] Vector3 transform(const Basis3& by) const;
 
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
@@ -3932,6 +3935,201 @@ public:
     }
 };
 
+class Transform3 {
+public:
+    Matrix4 matrix;
+
+    Transform3() = default;
+
+    explicit Transform3(const Matrix4& matrix)
+        : matrix(matrix)
+    {
+    }
+
+    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation)
+    {
+        Matrix4 matrix;
+        for (int c = 0; c < 3; ++c) {
+            for (int r = 0; r < 3; ++r) {
+                matrix[c][r] = basis.matrix[c][r];
+            }
+        }
+        matrix[3][0] = translation.x;
+        matrix[3][1] = translation.y;
+        matrix[3][2] = translation.y;
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_translation(const Vector3& translation)
+    {
+        return from_basis_translation(Basis3(), translation);
+    }
+
+    static Transform3 from_basis(const Basis3& basis)
+    {
+        return from_basis_translation(basis, Vector3::zero());
+    }
+
+    // TODO
+    static Transform3 from_rotation_quaternion();
+
+    static Transform3 from_rotation_axis_angle(const Vector3& axis, const float angle)
+    {
+        const Vector3 norm = axis.normalize();
+        // Rodrigues' formula
+        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
+        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
+        return from_basis(Basis3(r_matrix));
+    }
+
+    static Transform3 from_scale(const Vector3& factor)
+    {
+        return from_basis(Basis3::from_scale(factor));
+    }
+
+    static Transform3 from_shear_x(const float angle_y, const float angle_z)
+    {
+        return from_basis(Basis3::from_shear_x(angle_y, angle_z));
+    }
+
+    static Transform3 from_shear_y(const float angle_x, const float angle_z)
+    {
+        return from_basis(Basis3::from_shear_y(angle_x, angle_z));
+    }
+
+    static Transform3 from_shear_z(const float angle_x, const float angle_y)
+    {
+        return from_basis(Basis3::from_shear_z(angle_x, angle_y));
+    }
+
+    [[nodiscard]] Basis3 basis() const
+    {
+        return Basis3(matrix.minor_matrix_at(3, 3));
+    }
+
+    [[nodiscard]] bool valid() const
+    {
+        return basis().valid();
+    }
+
+    [[nodiscard]] bool affine() const
+    {
+        return valid() && matrix[0][3] == 0.0f && matrix[1][3] == 0.0f && matrix[2][3] == 0.0f && matrix[3][3] == 1.0f;
+    }
+
+    [[nodiscard]] Vector3 translation() const
+    {
+        return { matrix[3][0], matrix[3][1], matrix[3][2] };
+    }
+
+    // TODO: rotate by quaternion
+
+    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    {
+        return transform(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Transform3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
+    {
+        return transform_local(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Transform3 scale(const Vector3& factor) const
+    {
+        return transform(from_scale(factor));
+    }
+
+    [[nodiscard]] Transform3 scale_local(const Vector3& factor) const
+    {
+        return transform_local(from_scale(factor));
+    }
+
+    [[nodiscard]] Transform3 shear_x(const float angle_y, const float angle_z) const
+    {
+        return transform(from_shear_x(angle_y, angle_z));
+    }
+
+    [[nodiscard]] Transform3 shear_x_local(const float angle_y, const float angle_z) const
+    {
+        return transform_local(from_shear_x(angle_y, angle_z));
+    }
+
+    [[nodiscard]] Transform3 shear_y(const float angle_x, const float angle_z) const
+    {
+        return transform(from_shear_y(angle_x, angle_z));
+    }
+
+    [[nodiscard]] Transform3 shear_y_local(const float angle_x, const float angle_z) const
+    {
+        return transform_local(from_shear_y(angle_x, angle_z));
+    }
+
+    [[nodiscard]] Transform3 shear_z(const float angle_x, const float angle_y) const
+    {
+        return transform(from_shear_z(angle_x, angle_y));
+    }
+
+    [[nodiscard]] Transform3 shear_z_local(const float angle_x, const float angle_y) const
+    {
+        return transform_local(from_shear_z(angle_x, angle_y));
+    }
+
+    [[nodiscard]] Transform3 translate(const Vector3& offset) const
+    {
+        return from_basis_translation(basis(), translation() + offset);
+    }
+
+    [[nodiscard]] Transform3 translate_local(const Vector3& offset) const
+    {
+        const Vector3 local_offset = offset.transform(basis());
+        return from_basis_translation(basis(), translation() + local_offset);
+    }
+
+    [[nodiscard]] Transform3 transform(const Transform3& by) const
+    {
+        return Transform3(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Transform3 transform_local(const Transform3& by) const
+    {
+        return Transform3(matrix * by.matrix);
+    }
+
+    [[nodiscard]] bool approx_equal(const Transform3& other) const
+    {
+        return matrix.approx_equal(other.matrix);
+    }
+
+    [[nodiscard]] float at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return matrix.at(column, row);
+    }
+
+    float& at(const int column, const int row)
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return matrix.at(column, row);
+    }
+
+    [[nodiscard]] const Matrix4::Column& operator[](const int column) const
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        return matrix[column];
+    }
+
+    Matrix4::Column& operator[](const int column)
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        return matrix[column];
+    }
+
+    [[nodiscard]] bool operator==(const Transform3& other) const
+    {
+        return matrix == other.matrix;
+    }
+};
+
 inline Vector3::Vector3(const Vector3i vector) // NOLINT(*-pro-type-member-init)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
@@ -4012,6 +4210,13 @@ inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init
 inline Vector2 Vector2::transform(const Basis2& by) const
 {
     return { by.at(0, 0) * x + by.at(1, 0) * y, by.at(0, 1) * x + by.at(1, 1) * y };
+}
+
+inline Vector3 Vector3::transform(const Basis3& by) const
+{
+    return { by.at(0, 0) * x + by.at(1, 0) * y + by.at(2, 0) * z,
+             by.at(0, 1) * x + by.at(1, 1) * y + by.at(2, 1) * z,
+             by.at(0, 2) * x + by.at(1, 2) * y + by.at(2, 2) * z };
 }
 }
 
