@@ -2523,42 +2523,42 @@ public:
 
     [[nodiscard]] Basis2 rotate(const float angle) const
     {
-        return Basis2(from_rotation(angle).matrix * matrix);
+        return transform(from_rotation(angle));
     }
 
     [[nodiscard]] Basis2 rotate_local(const float angle) const
     {
-        return Basis2(matrix * from_rotation(angle).matrix);
+        return transform_local(from_rotation(angle));
     }
 
     [[nodiscard]] Basis2 shear_x(const float angle_y) const
     {
-        return Basis2(from_shear_x(angle_y).matrix * matrix);
+        return transform(from_shear_x(angle_y));
     }
 
     [[nodiscard]] Basis2 shear_x_local(const float angle_y) const
     {
-        return Basis2(matrix * from_shear_x(angle_y).matrix);
+        return transform_local(from_shear_x(angle_y));
     }
 
     [[nodiscard]] Basis2 shear_y(const float angle_x) const
     {
-        return Basis2(from_shear_y(angle_x).matrix * matrix);
+        return transform(from_shear_y(angle_x));
     }
 
     [[nodiscard]] Basis2 shear_y_local(const float angle_x) const
     {
-        return Basis2(matrix * from_shear_y(angle_x).matrix);
+        return transform_local(from_shear_y(angle_x));
     }
 
     [[nodiscard]] Basis2 scale(const Vector2& factor) const
     {
-        return Basis2(from_scale(factor).matrix * matrix);
+        return transform(from_scale(factor));
     }
 
     [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
     {
-        return Basis2(matrix * from_scale(factor).matrix);
+        return transform_local(from_scale(factor));
     }
 
     [[nodiscard]] Basis2 transform(const Basis2& by) const
@@ -3065,6 +3065,7 @@ public:
         return from_basis_translation(Basis2::from_shear_y(angle_x), Vector2());
     }
 
+    // TODO: refactor into valid() and affine()
     [[nodiscard]] bool valid() const
     {
         const bool basis_valid = matrix.minor_matrix_at(2, 2).determinant() != 0.0;
@@ -3090,38 +3091,32 @@ public:
 
     [[nodiscard]] Transform2 rotate(const float angle) const
     {
-        const Transform2 by = from_basis(Basis2::from_rotation(angle));
-        return Transform2(by.matrix * matrix);
+        return transform(from_rotation(angle));
     }
 
     [[nodiscard]] Transform2 rotate_local(const float angle) const
     {
-        const Transform2 by = from_basis(Basis2::from_rotation(angle));
-        return Transform2(matrix * by.matrix);
+        return transform_local(from_rotation(angle));
     }
 
     [[nodiscard]] Transform2 scale(const Vector2& factor) const
     {
-        const Transform2 by = from_basis(Basis2::from_scale(factor));
-        return Transform2(by.matrix * matrix);
+        return transform(from_scale(factor));
     }
 
     [[nodiscard]] Transform2 scale_local(const Vector2& factor) const
     {
-        const Transform2 by = from_basis(Basis2::from_scale(factor));
-        return Transform2(matrix * by.matrix);
+        return transform_local(from_scale(factor));
     }
 
     [[nodiscard]] Transform2 shear_x(const float angle_y) const
     {
-        const Transform2 by = from_basis(Basis2::from_shear_x(angle_y));
-        return Transform2(by.matrix * matrix);
+        return transform(from_shear_x(angle_y));
     }
 
     [[nodiscard]] Transform2 shear_x_local(const float angle_y) const
     {
-        const Transform2 by = from_basis(Basis2::from_shear_y(angle_y));
-        return Transform2(matrix * by.matrix);
+        return transform_local(from_shear_x(angle_y));
     }
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
@@ -3797,62 +3792,62 @@ public:
 
     [[nodiscard]] Basis3 rotate_axis_angle(const Vector3& axis, const float angle) const
     {
-        return Basis3(matrix * from_rotation_axis_angle(axis, angle).matrix);
+        return transform(from_rotation_axis_angle(axis, angle));
     }
 
     [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
     {
-        return Basis3(from_rotation_axis_angle(axis, angle).matrix * matrix);
+        return transform_local(from_rotation_axis_angle(axis, angle));
     }
 
     [[nodiscard]] Basis3 scale(const Vector3& factor) const
     {
-        return Basis3(matrix * from_scale(factor).matrix);
+        return transform(from_scale(factor));
     }
 
     [[nodiscard]] Basis3 scale_local(const Vector3& factor) const
     {
-        return Basis3(from_scale(factor).matrix * matrix);
+        return transform_local(from_scale(factor));
     }
 
     [[nodiscard]] Basis3 shear_x(const float angle_y, const float angle_z) const
     {
-        return Basis3(matrix * from_shear_x(angle_y, angle_z).matrix);
+        return transform(from_shear_x(angle_y, angle_z));
     }
 
     [[nodiscard]] Basis3 shear_x_local(const float angle_y, const float angle_z) const
     {
-        return Basis3(from_shear_x(angle_y, angle_z).matrix * matrix);
+        return transform_local(from_shear_x(angle_y, angle_z));
     }
 
     [[nodiscard]] Basis3 shear_y(const float angle_x, const float angle_z) const
     {
-        return Basis3(matrix * from_shear_y(angle_x, angle_z).matrix);
+        return transform(from_shear_y(angle_x, angle_z));
     }
 
     [[nodiscard]] Basis3 shear_y_local(const float angle_x, const float angle_z) const
     {
-        return Basis3(from_shear_y(angle_x, angle_z).matrix * matrix);
+        return transform_local(from_shear_y(angle_x, angle_z));
     }
 
     [[nodiscard]] Basis3 shear_z(const float angle_x, const float angle_y) const
     {
-        return Basis3(matrix * from_shear_z(angle_x, angle_y).matrix);
+        return transform(from_shear_z(angle_x, angle_y));
     }
 
     [[nodiscard]] Basis3 shear_z_local(const float angle_x, const float angle_y) const
     {
-        return Basis3(from_shear_z(angle_x, angle_y).matrix * matrix);
+        return transform_local(from_shear_z(angle_x, angle_y));
     }
 
     [[nodiscard]] Basis3 transform(const Basis3& by) const
     {
-        return Basis3(matrix * by.matrix);
+        return Basis3(by.matrix * matrix);
     }
 
     [[nodiscard]] Basis3 transform_local(const Basis3& by) const
     {
-        return Basis3(by.matrix * matrix);
+        return Basis3(matrix * by.matrix);
     }
 
     [[nodiscard]] Basis3 unchecked_inverse() const
