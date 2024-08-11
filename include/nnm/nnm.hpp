@@ -3953,7 +3953,7 @@ public:
         }
         matrix[3][0] = translation.x;
         matrix[3][1] = translation.y;
-        matrix[3][2] = translation.y;
+        matrix[3][2] = translation.z;
         return Transform3(matrix);
     }
 

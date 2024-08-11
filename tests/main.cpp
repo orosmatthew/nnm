@@ -2737,5 +2737,53 @@ int main()
             ASSERT_FALSE(b2 < b1);
         }
     }
+
+    test_case("Transform3");
+    {
+        test_section("constructors");
+        {
+            nnm::Transform3 t1;
+            ASSERT(t1.matrix == nnm::Matrix4::identity());
+
+            nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                              { 5.0f, 6.0f, 7.0f, 8.0f },
+                              { 9.0f, 10.0f, 11.0f, 12.0f },
+                              { 13.0f, 14.0f, 15.0f, 16.0f } };
+            nnm::Transform3 t2(m1);
+            ASSERT(t2.matrix == m1);
+        }
+
+        test_section("static methods");
+        {
+            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { -4.0f, -1.0f, 3.5f }, { 1.0f, 0.0f, 1.0f } });
+            auto t1 = nnm::Transform3::from_basis_translation(b1, { 1.0f, -2.0f, 3.0f });
+            nnm::Matrix4 expected1 { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                     { -4.0f, -1.0f, 3.5f, 0.0f },
+                                     { 1.0f, 0.0f, 1.0f, 0.0f },
+                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
+            ASSERT(t1.matrix == expected1);
+
+            auto t2 = nnm::Transform3::from_translation({ 1.0f, -2.0f, 3.0f });
+            nnm::Matrix4 expected2 { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                     { 0.0f, 1.0f, 0.0f, 0.0f },
+                                     { 0.0f, 0.0f, 1.0f, 0.0f },
+                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
+            ASSERT(t2.matrix == expected2);
+
+            auto t3 = nnm::Transform3::from_basis(b1);
+            nnm::Matrix4 expected3 { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                     { -4.0f, -1.0f, 3.5f, 0.0f },
+                                     { 1.0f, 0.0f, 1.0f, 0.0f },
+                                     { 0.0f, 0.0f, 0.0f, 1.0f } };
+            ASSERT(t3.matrix == expected3);
+        }
+
+        test_section("from_rotation_axis_angle");
+        {
+            auto t1 = nnm::Transform3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi / 2.0f);
+            nnm::Matrix4 expected1 { {}, {}, {}, {} };
+        }
+    }
+
     END_TESTS
 }
