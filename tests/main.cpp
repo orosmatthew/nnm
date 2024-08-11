@@ -2111,6 +2111,12 @@ int main()
             ASSERT_FALSE(nnm::Transform2(nnm::Matrix3::zero()).valid());
         }
 
+        test_section("affine");
+        {
+            ASSERT(nnm::Transform2(nnm::Matrix3::identity()).affine());
+            ASSERT_FALSE(nnm::Transform2(nnm::Matrix3::zero()).affine());
+        }
+
         const nnm::Transform2 t1({ { 1.0f, -2.0f, 0.0f }, { -3.0f, 4.0f, 0.0f }, { -1.0f, 2.0f, 1.0f } });
 
         test_section("basis");

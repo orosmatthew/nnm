@@ -3065,12 +3065,14 @@ public:
         return from_basis_translation(Basis2::from_shear_y(angle_x), Vector2());
     }
 
-    // TODO: refactor into valid() and affine()
     [[nodiscard]] bool valid() const
     {
-        const bool basis_valid = matrix.minor_matrix_at(2, 2).determinant() != 0.0;
-        const bool last_row_valid = matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
-        return basis_valid && last_row_valid;
+        return basis().valid();
+    }
+
+    [[nodiscard]] bool affine() const
+    {
+        return valid() && matrix[0][2] == 0.0f && matrix[1][2] == 0.0f && matrix[2][2] == 1.0f;
     }
 
     [[nodiscard]] Basis2 basis() const
