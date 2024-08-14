@@ -203,8 +203,8 @@ int main()
 
     test_case("clamped_lerp");
     {
-        ASSERT(nnm::clamped_lerp(5.0f, 10.0f, 20.0f) == 10.0f);
-        ASSERT(nnm::clamped_lerp(5.0f, 10.0f, -20.0f) == 5.0f);
+        ASSERT(nnm::lerp_clamped(5.0f, 10.0f, 20.0f) == 10.0f);
+        ASSERT(nnm::lerp_clamped(5.0f, 10.0f, -20.0f) == 5.0f);
     }
 
     test_case("sin");
@@ -576,13 +576,13 @@ int main()
         {
             const nnm::Vector2 from(1.0f, 1.0f);
             const nnm::Vector2 to(3.0f, 5.0f);
-            ASSERT(from.clamped_lerp(to, 0.0f) == nnm::Vector2(1.0f, 1.0f));
-            ASSERT(from.clamped_lerp(to, 1.0f) == nnm::Vector2(3.0f, 5.0f));
-            ASSERT(from.clamped_lerp(to, 0.5f) == nnm::Vector2(2.0f, 3.0f));
-            ASSERT(from.clamped_lerp(to, 0.25f) == nnm::Vector2(1.5f, 2.0f));
-            ASSERT(from.clamped_lerp(to, 0.75f) == nnm::Vector2(2.5f, 4.0f));
-            ASSERT(from.clamped_lerp(to, 5.0f) == nnm::Vector2(3.0f, 5.0f));
-            ASSERT(from.clamped_lerp(to, -5.0f) == nnm::Vector2(1.0f, 1.0f));
+            ASSERT(from.lerp_clamped(to, 0.0f) == nnm::Vector2(1.0f, 1.0f));
+            ASSERT(from.lerp_clamped(to, 1.0f) == nnm::Vector2(3.0f, 5.0f));
+            ASSERT(from.lerp_clamped(to, 0.5f) == nnm::Vector2(2.0f, 3.0f));
+            ASSERT(from.lerp_clamped(to, 0.25f) == nnm::Vector2(1.5f, 2.0f));
+            ASSERT(from.lerp_clamped(to, 0.75f) == nnm::Vector2(2.5f, 4.0f));
+            ASSERT(from.lerp_clamped(to, 5.0f) == nnm::Vector2(3.0f, 5.0f));
+            ASSERT(from.lerp_clamped(to, -5.0f) == nnm::Vector2(1.0f, 1.0f));
         }
 
         test_section("min/max_index");
@@ -1095,13 +1095,13 @@ int main()
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
             nnm::Vector3 to(3.0f, 5.0f, -2.0f);
-            ASSERT(from.clamped_lerp(to, 0.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
-            ASSERT(from.clamped_lerp(to, 1.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
-            ASSERT(from.clamped_lerp(to, 0.5f) == nnm::Vector3(2.0f, 3.0f, -0.5f));
-            ASSERT(from.clamped_lerp(to, 0.25f) == nnm::Vector3(1.5f, 2.0f, 0.25f));
-            ASSERT(from.clamped_lerp(to, 0.75f) == nnm::Vector3(2.5f, 4.0f, -1.25f));
-            ASSERT(from.clamped_lerp(to, -5.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
-            ASSERT(from.clamped_lerp(to, 5.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
+            ASSERT(from.lerp_clamped(to, 0.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            ASSERT(from.lerp_clamped(to, 1.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
+            ASSERT(from.lerp_clamped(to, 0.5f) == nnm::Vector3(2.0f, 3.0f, -0.5f));
+            ASSERT(from.lerp_clamped(to, 0.25f) == nnm::Vector3(1.5f, 2.0f, 0.25f));
+            ASSERT(from.lerp_clamped(to, 0.75f) == nnm::Vector3(2.5f, 4.0f, -1.25f));
+            ASSERT(from.lerp_clamped(to, -5.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            ASSERT(from.lerp_clamped(to, 5.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
         }
 
         test_section("min/max_index");
@@ -1538,11 +1538,11 @@ int main()
 
         test_section("clamped_lerp");
         {
-            ASSERT(v1.clamped_lerp(v2, 0.0f) == v1);
-            ASSERT(v1.clamped_lerp(v2, 1.0f) == v2);
-            ASSERT(v1.clamped_lerp(v2, 0.5f).approx_equal({ 1.5f, 3.5f, -2.5f, 2.75f }));
-            ASSERT(v1.clamped_lerp(v2, -5.0f) == v1);
-            ASSERT(v1.clamped_lerp(v2, 5.0f) == v2);
+            ASSERT(v1.lerp_clamped(v2, 0.0f) == v1);
+            ASSERT(v1.lerp_clamped(v2, 1.0f) == v2);
+            ASSERT(v1.lerp_clamped(v2, 0.5f).approx_equal({ 1.5f, 3.5f, -2.5f, 2.75f }));
+            ASSERT(v1.lerp_clamped(v2, -5.0f) == v1);
+            ASSERT(v1.lerp_clamped(v2, 5.0f) == v2);
         }
 
         test_section("min/max_index");
@@ -2964,6 +2964,83 @@ int main()
                                     { -3.2511f, -5.05303f, -5.57954f, 0.0f },
                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("translate");
+        {
+            auto t3 = t1.translate({ 3.0f, -1.5f, 1.0f });
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -0.5f, 2.0f, 3.0f, 0.0f },
+                                    { 0.0f, 0.0f, 2.0f, 0.0f },
+                                    { 4.0f, -3.5f, 4.0f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("translate_local");
+        {
+            auto t3 = t1.translate_local({ 3.0f, -1.5f, 1.0f });
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -0.5f, 2.0f, 3.0f, 0.0f },
+                                    { 0.0f, 0.0f, 2.0f, 0.0f },
+                                    { 4.75f, 1.0f, 9.5f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("transform");
+        {
+            auto t3 = t1.transform(nnm::Transform3(
+                { { 4.0f, 3.0f, 4.0f, 0.0f },
+                  { 2.0f, -1.0f, -2.0f, 0.0f },
+                  { 0.0f, 2.0f, -3.5f, 0.0f },
+                  { 10.0f, -5.5f, 25.0f, 1.0f } }));
+            nnm::Matrix4 expected { { 8.0f, 7.0f, -10.5f, 0.0f },
+                                    { 2.0f, 2.5f, -16.5f, 0.0f },
+                                    { 0.0f, 4.0f, -7.0f, 0.0f },
+                                    { 10.0f, 5.5f, 22.5f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("transform_local");
+        {
+            auto t3 = t1.transform_local(nnm::Transform3(
+                { { 4.0f, 3.0f, 4.0f, 0.0f },
+                  { 2.0f, -1.0f, -2.0f, 0.0f },
+                  { 0.0f, 2.0f, -3.5f, 0.0f },
+                  { 10.0f, -5.5f, 25.0f, 1.0f } }));
+            nnm::Matrix4 expected { { 2.5f, 14.0f, 29.0f, 0.0f },
+                                    { 2.5f, 2.0f, -1.0f, 0.0f },
+                                    { -1.0f, 4.0f, -1.0f, 0.0f },
+                                    { 13.75f, 7.0f, 66.5f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("approx_equal");
+        {
+            auto t3 = nnm::Transform3({ { 1.0000001f, 2.0f, 3.0000001f, 0.0f },
+                                        { -0.5f, 1.999999f, 3.0f, -0.0000001f },
+                                        { 0.0f, 0.0f, 2.0f, 0.0f },
+                                        { 1.0f, -1.999999f, 3.0f, 0.999999f } });
+            ASSERT(t1.approx_equal(t3));
+        }
+
+        test_section("accessors");
+        {
+            ASSERT(t1.at(1, 2) == 3.0f);
+            ASSERT(t1.at(1) == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
+            ASSERT(t1.row_at(1) == nnm::Vector4(2.0f, 2.0f, 0.0f, -2.0f));
+            ASSERT(t1[1] == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
+        }
+
+        test_section("equality");
+        {
+            ASSERT(t1 == t1);
+            ASSERT(t1 != t2);
+        }
+
+        test_section("comparison");
+        {
+            ASSERT(t1 < t2);
+            ASSERT_FALSE(t2 < t1);
         }
     }
 

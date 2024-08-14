@@ -118,7 +118,7 @@ inline float lerp(const float from, const float to, const float weight)
     return from + weight * (to - from);
 }
 
-inline float clamped_lerp(const float from, const float to, const float weight)
+inline float lerp_clamped(const float from, const float to, const float weight)
 {
     if (weight >= 1.0f) {
         return to;
@@ -314,9 +314,9 @@ public:
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
-    [[nodiscard]] Vector2 clamped_lerp(const Vector2& to, const float weight) const
+    [[nodiscard]] Vector2 lerp_clamped(const Vector2& to, const float weight) const
     {
-        return { nnm::clamped_lerp(x, to.x, weight), nnm::clamped_lerp(y, to.y, weight) };
+        return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
     [[nodiscard]] int max_index() const
@@ -867,11 +867,11 @@ public:
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
 
-    [[nodiscard]] Vector3 clamped_lerp(const Vector3& to, const float weight) const
+    [[nodiscard]] Vector3 lerp_clamped(const Vector3& to, const float weight) const
     {
-        return { nnm::clamped_lerp(x, to.x, weight),
-                 nnm::clamped_lerp(y, to.y, weight),
-                 nnm::clamped_lerp(z, to.z, weight) };
+        return { nnm::lerp_clamped(x, to.x, weight),
+                 nnm::lerp_clamped(y, to.y, weight),
+                 nnm::lerp_clamped(z, to.z, weight) };
     }
 
     [[nodiscard]] int max_index() const
@@ -1451,12 +1451,12 @@ public:
                  nnm::lerp(w, to.w, weight) };
     }
 
-    [[nodiscard]] Vector4 clamped_lerp(const Vector4& to, const float weight) const
+    [[nodiscard]] Vector4 lerp_clamped(const Vector4& to, const float weight) const
     {
-        return { nnm::clamped_lerp(x, to.x, weight),
-                 nnm::clamped_lerp(y, to.y, weight),
-                 nnm::clamped_lerp(z, to.z, weight),
-                 nnm::clamped_lerp(w, to.w, weight) };
+        return { nnm::lerp_clamped(x, to.x, weight),
+                 nnm::lerp_clamped(y, to.y, weight),
+                 nnm::lerp_clamped(z, to.z, weight),
+                 nnm::lerp_clamped(w, to.w, weight) };
     }
 
     [[nodiscard]] int min_index() const
@@ -2009,12 +2009,12 @@ public:
         float length = sqrtf(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
         if (length == 0.0f)
             length = 1.0f;
-        const float ilength = 1.0f / length;
+        const float i_length = 1.0f / length;
 
-        result.x = q.x * ilength;
-        result.y = q.y * ilength;
-        result.z = q.z * ilength;
-        result.w = q.w * ilength;
+        result.x = q.x * i_length;
+        result.y = q.y * i_length;
+        result.z = q.z * i_length;
+        result.w = q.w * i_length;
 
         return result;
     }
@@ -2201,8 +2201,6 @@ public:
 
 class Matrix2 {
 public:
-    using Column = Vector2;
-
     union {
         struct {
             float col0_row0;
@@ -2210,7 +2208,7 @@ public:
             float col1_row0;
             float col1_row1;
         };
-        std::array<Column, 2> columns;
+        std::array<Vector2, 2> columns;
     };
 
     Matrix2()
@@ -2221,7 +2219,7 @@ public:
     {
     }
 
-    Matrix2(const Column& column0, const Column& column1)
+    Matrix2(const Vector2& column0, const Vector2& column1)
         : col0_row0(column0[0])
         , col0_row1(column0[1])
         , col1_row0(column1[0])
@@ -2334,13 +2332,13 @@ public:
         return true;
     }
 
-    [[nodiscard]] Column at(const int column) const
+    [[nodiscard]] const Vector2& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
-    Column& at(const int column)
+    Vector2& at(const int column)
     {
         NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -2358,13 +2356,13 @@ public:
         return columns[column][row];
     }
 
-    const Column& operator[](const int column) const
+    const Vector2& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
-    Column& operator[](const int column)
+    Vector2& operator[](const int column)
     {
         NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -2604,13 +2602,13 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Matrix2::Column& at(const int column) const
+    [[nodiscard]] const Vector2& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
         return matrix[column];
     }
 
-    Matrix2::Column& at(const int column)
+    Vector2& at(const int column)
     {
         NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
         return matrix[column];
@@ -2628,7 +2626,7 @@ public:
         return matrix[column][row];
     }
 
-    const Matrix2::Column& operator[](const int index) const
+    const Vector2& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Basis2", index >= 0 && index <= 1);
         return matrix[index];
@@ -2652,8 +2650,6 @@ public:
 
 class Matrix3 {
 public:
-    using Column = Vector3;
-
     union {
         struct {
             float col0_row0;
@@ -2666,7 +2662,7 @@ public:
             float col2_row1;
             float col2_row2;
         };
-        std::array<Column, 3> columns;
+        std::array<Vector3, 3> columns;
     };
 
     Matrix3()
@@ -2682,7 +2678,7 @@ public:
     {
     }
 
-    Matrix3(const Column& column1, const Column& column2, const Column& column3)
+    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
@@ -2855,13 +2851,13 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Column& at(const int column) const
+    [[nodiscard]] const Vector3& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
-    Column& at(const int column)
+    Vector3& at(const int column)
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
@@ -2879,13 +2875,13 @@ public:
         return columns[column][row];
     }
 
-    const Column& operator[](const int column) const
+    const Vector3& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
-    Column& operator[](const int column)
+    Vector3& operator[](const int column)
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
         return columns[column];
@@ -3123,13 +3119,12 @@ public:
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
     {
-        return from_basis_translation(basis(), translation() + offset);
+        return transform(from_translation(offset));
     }
 
     [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
     {
-        const Vector2 local_offset = offset.transform(basis());
-        return from_basis_translation(basis(), translation() + local_offset);
+        return transform_local(from_translation(offset));
     }
 
     [[nodiscard]] Transform2 transform(const Transform2& by) const
@@ -3175,8 +3170,6 @@ public:
 
 class Matrix4 {
 public:
-    using Column = Vector4;
-
     union {
         struct {
             float col0_row0;
@@ -3196,7 +3189,7 @@ public:
             float col3_row2;
             float col3_row3;
         };
-        std::array<Column, 4> columns;
+        std::array<Vector4, 4> columns;
     };
 
     Matrix4()
@@ -3255,7 +3248,7 @@ public:
     {
     }
 
-    Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4)
+    Matrix4(const Vector4& column1, const Vector4& column2, const Vector4& column3, const Vector4& column4)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
@@ -3419,13 +3412,13 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Column& at(const int column) const
+    [[nodiscard]] const Vector4& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
         return columns[column];
     }
 
-    Column& at(const int column)
+    Vector4& at(const int column)
     {
         NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
         return columns[column];
@@ -3443,13 +3436,13 @@ public:
         return columns[column][row];
     }
 
-    const Column& operator[](const int index) const
+    const Vector4& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
         return columns[index];
     }
 
-    Column& operator[](const int index)
+    Vector4& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
         return columns[index];
@@ -3880,13 +3873,13 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Matrix3::Column& at(const int column) const
+    [[nodiscard]] const Vector3& at(const int column) const
     {
         NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
-    Matrix3::Column& at(const int column)
+    Vector3& at(const int column)
     {
         NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
@@ -3904,13 +3897,13 @@ public:
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Matrix3::Column& operator[](const int index) const
+    [[nodiscard]] const Vector3& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 
-    Matrix3::Column& operator[](const int index)
+    Vector3& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
         return matrix[index];
@@ -4073,13 +4066,12 @@ public:
 
     [[nodiscard]] Transform3 translate(const Vector3& offset) const
     {
-        return from_basis_translation(basis(), translation() + offset);
+        return transform(from_translation(offset));
     }
 
     [[nodiscard]] Transform3 translate_local(const Vector3& offset) const
     {
-        const Vector3 local_offset = offset.transform(basis());
-        return from_basis_translation(basis(), translation() + local_offset);
+        return transform_local(from_translation(offset));
     }
 
     [[nodiscard]] Transform3 transform(const Transform3& by) const
@@ -4097,6 +4089,24 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
+    [[nodiscard]] const Vector4& at(const int column) const
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
+    Vector4& at(const int column)
+    {
+        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
+    [[nodiscard]] Vector4 row_at(const int row) const
+    {
+        NNM_BOUNDS_CHECK("Transform3", row >= 0 && row <= 3);
+        return { at(0, row), at(1, row), at(2, row), at(3, row) };
+    }
+
     [[nodiscard]] float at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
@@ -4109,13 +4119,13 @@ public:
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Matrix4::Column& operator[](const int column) const
+    [[nodiscard]] const Vector4& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
         return matrix[column];
     }
 
-    Matrix4::Column& operator[](const int column)
+    Vector4& operator[](const int column)
     {
         NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
         return matrix[column];
@@ -4124,6 +4134,16 @@ public:
     [[nodiscard]] bool operator==(const Transform3& other) const
     {
         return matrix == other.matrix;
+    }
+
+    [[nodiscard]] bool operator!=(const Transform3& other) const
+    {
+        return matrix != other.matrix;
+    }
+
+    [[nodiscard]] bool operator<(const Transform3& other) const
+    {
+        return matrix < other.matrix;
     }
 };
 
