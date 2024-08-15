@@ -2117,6 +2117,21 @@ public:
     }
 };
 
+inline Vector4i operator%(const int value, const Vector4i& vector)
+{
+    return { value % vector.x, value % vector.y, value % vector.z, value % vector.w };
+}
+
+inline Vector4i operator*(const int value, const Vector4i& vector)
+{
+    return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
+}
+
+inline Vector4i operator/(const int value, const Vector4i& vector)
+{
+    return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
+}
+
 class Quaternion {
 public:
     union {
