@@ -409,6 +409,26 @@ public:
         return *this;
     }
 
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     [[nodiscard]] bool operator!=(const Vector2& other) const
     {
         return data != other.data;
@@ -628,6 +648,36 @@ public:
             return 1;
         }
         return 0;
+    }
+
+    [[nodiscard]] const int* ptr() const
+    {
+        return data.data();
+    }
+
+    int* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] const int* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const int* end() const
+    {
+        return data.end();
+    }
+
+    int* begin()
+    {
+        return data.begin();
+    }
+
+    int* end()
+    {
+        return data.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector2i& other) const
@@ -1038,6 +1088,26 @@ public:
         return data.data();
     }
 
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
         return data != other.data;
@@ -1293,6 +1363,26 @@ public:
     int* ptr()
     {
         return data.data();
+    }
+
+    [[nodiscard]] const int* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const int* end() const
+    {
+        return data.end();
+    }
+
+    int* begin()
+    {
+        return data.begin();
+    }
+
+    int* end()
+    {
+        return data.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector3i& other) const
@@ -1686,6 +1776,26 @@ public:
         return data.data();
     }
 
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     [[nodiscard]] bool operator!=(const Vector4& other) const
     {
         return data != other.data;
@@ -1956,6 +2066,26 @@ public:
     int* ptr()
     {
         return data.data();
+    }
+
+    [[nodiscard]] const int* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const int* end() const
+    {
+        return data.end();
+    }
+
+    int* begin()
+    {
+        return data.begin();
+    }
+
+    int* end()
+    {
+        return data.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector4i& other) const
@@ -2421,9 +2551,10 @@ public:
             float col1_row1;
         };
         std::array<Vector2, 2> columns;
+        std::array<float, 4> data;
     };
 
-    Matrix2()
+    Matrix2() // NOLINT(*-pro-type-member-init)
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col1_row0(0.0f)
@@ -2431,7 +2562,7 @@ public:
     {
     }
 
-    Matrix2(const Vector2& column0, const Vector2& column1)
+    Matrix2(const Vector2& column0, const Vector2& column1) // NOLINT(*-pro-type-member-init)
         : col0_row0(column0[0])
         , col0_row1(column0[1])
         , col1_row0(column1[0])
@@ -2439,7 +2570,11 @@ public:
     {
     }
 
-    Matrix2(const float col0_row0, const float col0_row1, const float col1_row0, const float col1_row1)
+    Matrix2( // NOLINT(*-pro-type-member-init)
+        const float col0_row0,
+        const float col0_row1,
+        const float col1_row0,
+        const float col1_row1)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col1_row0(col1_row0)
@@ -2568,6 +2703,36 @@ public:
         return columns[column][row];
     }
 
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     const Vector2& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
@@ -2691,6 +2856,28 @@ public:
         return false;
     }
 };
+
+inline Matrix2 operator*(const float value, const Matrix2& matrix)
+{
+    Matrix2 result;
+    for (int c = 0; c < 2; ++c) {
+        for (int r = 0; r < 2; ++r) {
+            result.at(c, r) = value * matrix.at(c, r);
+        }
+    }
+    return result;
+}
+
+inline Matrix2 operator/(const float value, const Matrix2& matrix)
+{
+    Matrix2 result;
+    for (int c = 0; c < 2; ++c) {
+        for (int r = 0; r < 2; ++r) {
+            result.at(c, r) = value / matrix.at(c, r);
+        }
+    }
+    return result;
+}
 
 class Basis2 {
 public:
@@ -2875,9 +3062,10 @@ public:
             float col2_row2;
         };
         std::array<Vector3, 3> columns;
+        std::array<float, 9> data;
     };
 
-    Matrix3()
+    Matrix3() // NOLINT(*-pro-type-member-init)
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col0_row2(0.0f)
@@ -2890,7 +3078,7 @@ public:
     {
     }
 
-    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3)
+    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3) // NOLINT(*-pro-type-member-init)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
@@ -2903,7 +3091,7 @@ public:
     {
     }
 
-    Matrix3(
+    Matrix3( // NOLINT(*-pro-type-member-init)
         const float col0_row0,
         const float col0_row1,
         const float col0_row2,
@@ -3087,6 +3275,36 @@ public:
         return columns[column][row];
     }
 
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     const Vector3& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
@@ -3213,7 +3431,24 @@ public:
 
 inline Matrix3 operator*(const float value, const Matrix3& matrix)
 {
-    return matrix * value;
+    Matrix3 result;
+    for (int c = 0; c < 3; ++c) {
+        for (int r = 0; r < 3; ++r) {
+            result.at(c, r) = value * matrix.at(c, r);
+        }
+    }
+    return result;
+}
+
+inline Matrix3 operator/(const float value, const Matrix3& matrix)
+{
+    Matrix3 result;
+    for (int c = 0; c < 3; ++c) {
+        for (int r = 0; r < 3; ++r) {
+            result.at(c, r) = value / matrix.at(c, r);
+        }
+    }
+    return result;
 }
 
 class Transform2 {
@@ -3402,9 +3637,10 @@ public:
             float col3_row3;
         };
         std::array<Vector4, 4> columns;
+        std::array<float, 16> data;
     };
 
-    Matrix4()
+    Matrix4() // NOLINT(*-pro-type-member-init)
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col0_row2(0.0f)
@@ -3424,7 +3660,7 @@ public:
     {
     }
 
-    Matrix4(
+    Matrix4( // NOLINT(*-pro-type-member-init)
         const float col0_row0,
         const float col0_row1,
         const float col0_row2,
@@ -3460,7 +3696,11 @@ public:
     {
     }
 
-    Matrix4(const Vector4& column1, const Vector4& column2, const Vector4& column3, const Vector4& column4)
+    Matrix4( // NOLINT(*-pro-type-member-init)
+        const Vector4& column1,
+        const Vector4& column2,
+        const Vector4& column3,
+        const Vector4& column4)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
@@ -3648,6 +3888,36 @@ public:
         return columns[column][row];
     }
 
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] const float* begin() const
+    {
+        return data.begin();
+    }
+
+    [[nodiscard]] const float* end() const
+    {
+        return data.end();
+    }
+
+    float* begin()
+    {
+        return data.begin();
+    }
+
+    float* end()
+    {
+        return data.end();
+    }
+
     const Vector4& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
@@ -3702,7 +3972,7 @@ public:
         return result;
     }
 
-    Matrix4 operator*(const float value) const
+    [[nodiscard]] Matrix4 operator*(const float value) const
     {
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
@@ -3744,35 +4014,6 @@ public:
             }
         }
         return true;
-    }
-
-    [[nodiscard]] static Matrix4 from_rotation_translation(
-        const Vector3& rotation_x, const Vector3& rotation_y, const Vector3& rotation_z, const Vector3& translation)
-    {
-        Matrix4 result;
-        result[0] = Vector4(rotation_x.x, rotation_x.y, rotation_x.z, 0.0f);
-        result[1] = Vector4(rotation_y.x, rotation_y.y, rotation_y.z, 0.0f);
-        result[2] = Vector4(rotation_z.x, rotation_z.y, rotation_z.z, 0.0f);
-        result[3] = Vector4(translation.x, translation.y, translation.z, 1.0f);
-        return result;
-    }
-
-    [[nodiscard]] static Matrix4 from_basis_translation(const Matrix3& basis, const Vector3& translation)
-    {
-        Matrix4 result;
-        result[0][0] = basis[0][0];
-        result[0][1] = basis[0][1];
-        result[0][2] = basis[0][2];
-        result[1][0] = basis[1][0];
-        result[1][1] = basis[1][1];
-        result[1][2] = basis[1][2];
-        result[2][0] = basis[2][0];
-        result[2][1] = basis[2][1];
-        result[2][2] = basis[2][2];
-        result[3][0] = translation[0];
-        result[3][1] = translation[1];
-        result[3][2] = translation[2];
-        return result;
     }
 
     static Matrix4 from_perspective(const float fov_y, const float aspect, const float front, const float back)
@@ -3868,86 +4109,29 @@ public:
     //
     //     return Matrix4::from_basis_translation(result_basis, result_translation);
     // }
-
-    // [[nodiscard]] Matrix4 rotate(const Vector3& axis, float angle) const
-    // {
-    //     const auto rotation_basis = Matrix3::from_axis_angle(axis, angle);
-    //     return Matrix4::from_basis_translation(this->basis() * rotation_basis, translation());
-    // }
-
-    // [[nodiscard]] Matrix4 rotate(const Matrix3& basis) const
-    // {
-    //     return Matrix4::from_basis_translation(this->basis() * basis, this->translation());
-    // }
-
-    // [[nodiscard]] Matrix4 rotate_local(const Vector3& axis, float angle) const
-    // {
-    //     const auto rotation_basis = Matrix3::from_axis_angle(axis, angle);
-    //     return Matrix4::from_basis_translation(rotation_basis * basis(), translation());
-    // }
-
-    // [[nodiscard]] Matrix4 rotate_local(const Matrix3& basis) const
-    // {
-    //     return Matrix4::from_basis_translation(basis * this->basis(), translation());
-    // }
-    //
-    // [[nodiscard]] Matrix4 scale(const Vector3& scale) const
-    // {
-    //     const Matrix3 basis = this->basis().scale(scale);
-    //     const Vector3 translation = this->translation() * scale;
-    //     return Matrix4::from_basis_translation(basis, translation);
-    // }
-    //
-    // [[nodiscard]] Matrix4 translate(const Vector3& offset) const
-    // {
-    //     return Matrix4::from_basis_translation(basis(), translation() + offset);
-    // }
-    //
-    // [[nodiscard]] Matrix4 translate_local(const Vector3& offset) const
-    // {
-    //     const auto basis = this->basis();
-    //     const auto basis_t = basis.transpose();
-    //     const Vector3 rotated_offset { basis_t.col0.dot(offset), basis_t.col1.dot(offset), basis_t.col2.dot(offset)
-    //     }; return Matrix4::from_basis_translation(basis, translation() + rotated_offset);
-    // }
-
-    // [[nodiscard]] bool is_equal_approx(const Matrix4& other) const
-    // {
-    //     return (*this)[0].approx_equal(other[0]) && (*this)[1].approx_equal(other[1])
-    //         && (*this)[2].approx_equal(othre[2]) && (*this)[3].approx_equal(other[3]);
-    // }
-    //
-    // [[nodiscard]] bool is_zero_approx() const
-    // {
-    //     return (*this)[0].approx_zero() && (*this)[1].approx_zero() && (*this)[2].approx_zero()
-    //         && (*this)[3].approx_zero();
-    // }
-
-    // [[nodiscard]] Matrix3 basis() const
-    // {
-    //     return Matrix3::from_matrix(*this);
-    // }
-
-    [[nodiscard]] Vector3 translation() const
-    {
-        return { (*this)[3][0], (*this)[3][1], (*this)[3][2] };
-    }
-
-    // [[nodiscard]] Quaternion quaternion() const
-    // {
-    //     return Quaternion::from_matrix(basis());
-    // }
-    //
-    // [[nodiscard]] Vector3 scale() const
-    // {
-    //     return basis().scale();
-    // }
-    //
-    // [[nodiscard]] Vector3 euler() const
-    // {
-    //     return basis().euler();
-    // }
 };
+
+inline Matrix4 operator*(const float value, const Matrix4& matrix)
+{
+    Matrix4 result;
+    for (int c = 0; c < 4; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            result.at(c, r) = value * matrix.at(c, r);
+        }
+    }
+    return result;
+}
+
+inline Matrix4 operator/(const float value, const Matrix4& matrix)
+{
+    Matrix4 result;
+    for (int c = 0; c < 4; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            result.at(c, r) = value / matrix.at(c, r);
+        }
+    }
+    return result;
+}
 
 class Basis3 {
 public:
