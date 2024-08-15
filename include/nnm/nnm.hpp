@@ -2265,132 +2265,111 @@ inline Vector4i operator/(const int value, const Vector4i& vector)
 class Quaternion {
 public:
     union {
-        Vector4 data;
-
         struct {
             float x;
             float y;
             float z;
             float w;
         };
+        Vector4 vector;
+        std::array<float, 4> data;
     };
 
     Quaternion() // NOLINT(*-pro-type-member-init)
-        : data(0.0f, 0.0f, 0.0f, 0.0f)
+        : x(0.0f)
+        , y(0.0f)
+        , z(0.0f)
+        , w(1.0f)
     {
     }
 
     explicit Quaternion(const Vector4& vector) // NOLINT(*-pro-type-member-init)
-        : data(vector)
+        : vector(vector)
     {
     }
 
     Quaternion(const float x, const float y, const float z, const float w) // NOLINT(*-pro-type-member-init)
-        : data(x, y, z, w)
+        : x(x)
+        , y(y)
+        , z(z)
+        , w(w)
     {
     }
 
     [[nodiscard]] static Quaternion from_axis_angle(const Vector3& axis, const float angle)
     {
-        Vector4 data;
-        if (const float axis_length = axis.length(); axis_length == 0) {
-            data.x = 0.0f;
-            data.y = 0.0f;
-            data.z = 0.0f;
-            data.w = 0.0f;
-        }
-        else {
-            const float angle_sin = sin(angle * 0.5f);
-            const float angle_cos = cos(angle * 0.5f);
-            const float s = angle_sin / axis_length;
-            data.x = axis.x * s;
-            data.y = axis.y * s;
-            data.z = axis.z * s;
-            data.w = angle_cos;
-        }
-
-        return Quaternion(data);
-    }
-
-    [[nodiscard]] static Quaternion from_euler(const Vector3& euler)
-    {
-        const Vector3 half = euler / 2.0f;
-
-        const float cos_x = cos(half.x);
-        const float sin_x = sin(half.x);
-        const float cos_y = cos(half.y);
-        const float sin_y = sin(half.y);
-        const float cos_z = cos(half.z);
-        const float sin_z = sin(half.z);
-
-        return { sin_x * cos_y * sin_z + cos_x * sin_y * cos_z,
-                 sin_x * cos_y * cos_z - cos_x * sin_y * sin_z,
-                 -sin_x * sin_y * cos_z + cos_x * cos_y * sin_z,
-                 sin_x * sin_y * sin_z + cos_x * cos_y * cos_z };
-    }
-
-    [[nodiscard]] static Quaternion from_matrix(const Matrix3& matrix);
-
-    [[nodiscard]] static Quaternion from_vector3_to_vector3(const Vector3& from, const Vector3& to)
-    {
+        const Vector3 norm = axis.normalize();
+        const float half_sin = sin(angle / 2.0f);
         Quaternion result;
-
-        const float cos_2_theta = from.x * to.x + from.y * to.y + from.z * to.z; // Vector3DotProduct(from, to)
-        const Vector3 cross = {
-            from.y * to.z - from.z * to.y, from.z * to.x - from.x * to.z, from.x * to.y - from.y * to.x
-        }; // Vector3CrossProduct(from, to)
-
-        result.x = cross.x;
-        result.y = cross.y;
-        result.z = cross.z;
-        result.w = 1.0f + cos_2_theta;
-
-        // QuaternionNormalize(q);
-        // NOTE: Normalize to essentially nlerp the original and identity to 0.5
-        const Quaternion q = result;
-        float length = sqrtf(q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w);
-        if (length == 0.0f)
-            length = 1.0f;
-        const float i_length = 1.0f / length;
-
-        result.x = q.x * i_length;
-        result.y = q.y * i_length;
-        result.z = q.z * i_length;
-        result.w = q.w * i_length;
-
-        return result;
-    }
-
-    [[nodiscard]] static Quaternion from_direction(const Vector3& dir, const Vector3& up)
-    {
-        Quaternion result;
-        const float angle = atan2(dir.x, dir.z);
-        result.x = up.x;
-        result.y = up.y * sin(angle / 2.0f);
-        result.z = up.z;
+        result.x = norm.x * half_sin;
+        result.y = norm.y * half_sin;
+        result.z = norm.z * half_sin;
         result.w = cos(angle / 2.0f);
         return result;
     }
 
-    [[nodiscard]] float angle_to(const Quaternion& to) const
+    [[nodiscard]] static Quaternion from_vector_to_vector(const Vector3& from, const Vector3& to)
     {
-        const float dot = this->dot(to);
-        return acos(clamp(sqrd(dot) * 2.0f - 1.0f, -1.0f, 1.0f));
+        const Vector3 from_norm = from.normalize();
+        const Vector3 to_norm = to.normalize();
+        const Vector3 axis = from_norm.cross(to_norm);
+        const float angle = acos(from_norm.dot(to_norm));
+        return from_axis_angle(axis, angle);
     }
 
-    [[nodiscard]] float dot(const Quaternion& other) const
+    [[nodiscard]] Quaternion normalize() const
     {
-        return data.dot(other.data);
+        return Quaternion(vector.normalize());
     }
 
-    // [[nodiscard]] Vector3 euler() const
-    // {
-    //     return matrix().euler();
-    // }
+    [[nodiscard]] float angle(const Quaternion& to) const
+    {
+        return 2 * acos(vector.dot(to.vector));
+    }
+
+    [[nodiscard]] float angle() const
+    {
+        return 2 * acos(w);
+    }
+
+    [[nodiscard]] Vector3 axis() const
+    {
+        const float sin_half_angle = sqrt(1 - sqrd(w));
+        if (sin_half_angle == 0.0f) {
+            return vector.xyz();
+        }
+        return vector.xyz() / sin_half_angle;
+    }
+
+    [[nodiscard]] Quaternion conjugate() const
+    {
+        return { -x, -y, -z, w };
+    }
 
     [[nodiscard]] Quaternion inverse() const
     {
-        return { -x, -y, -z, w };
+        return conjugate();
+    }
+
+    [[nodiscard]] float magnitude_sqrd() const
+    {
+        return vector.length_sqrd();
+    }
+
+    [[nodiscard]] float magnitude() const
+    {
+        return sqrt(magnitude_sqrd());
+    }
+
+    [[nodiscard]] Quaternion slerp(const Quaternion& to, const float weight) const
+    {
+        const float dot = clamp(vector.dot(to.vector), -1.0f, 1.0f);
+        const float theta = acos(dot);
+        const float sin_theta = sin(theta);
+        if (sin_theta == 0.0f) {
+            return Quaternion(vector.lerp(to.vector, weight));
+        }
+        return Quaternion((vector * sin((1.0f - weight) * theta) + to.vector * sin(weight * theta)) / sin_theta);
     }
 
     [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
@@ -2404,52 +2383,7 @@ public:
         return approx_zero(x) && approx_zero(y) && approx_zero(z) && approx_zero(w);
     }
 
-    [[nodiscard]] float length() const
-    {
-        return data.length();
-    }
-
-    [[nodiscard]] float length_sqrd() const
-    {
-        return data.length_sqrd();
-    }
-
-    [[nodiscard]] Quaternion spherical_linear_interpolate(
-        const Quaternion& to, const float weight, const float epsilon) const
-    {
-        float dot = this->dot(to);
-
-        Quaternion to_new;
-        if (dot < 0.0f) {
-            dot = -dot;
-            to_new = -to;
-        }
-        else {
-            to_new = to;
-        }
-
-        float scale0;
-        float scale1;
-        if (1.0f - dot > epsilon) {
-            const float omega = acos(dot);
-            const float omega_sin = sin(omega);
-            scale0 = sin((1.0f - weight) * omega) / omega_sin;
-            scale1 = sin(weight * omega) / omega_sin;
-        }
-        else {
-            scale0 = 1.0f - weight;
-            scale1 = weight;
-        }
-
-        return { scale0 * x + scale1 * to_new.x,
-                 scale0 * y + scale1 * to_new.y,
-                 scale0 * z + scale1 * to_new.z,
-                 scale0 * w + scale1 * to_new.w };
-    }
-
     [[nodiscard]] Matrix3 matrix() const;
-
-    [[nodiscard]] Quaternion normalize() const;
 
     [[nodiscard]] bool operator!=(const Quaternion& other) const
     {
@@ -4562,52 +4496,10 @@ inline Vector4 Vector4::transform(const Transform3& by) const
     return by.matrix * *this;
 }
 
-inline Quaternion Quaternion::from_matrix(const Matrix3& matrix)
-{
-    const float trace = matrix.trace();
-    Quaternion result;
-
-    if (trace > 0.0f) {
-        float s = sqrt(trace + 1.0f);
-        result.w = s * 0.5f;
-        s = 0.5f / s;
-
-        result.x = (matrix[1][2] - matrix[2][1]) * s;
-        result.y = (matrix[2][0] - matrix[0][2]) * s;
-        result.z = (matrix[0][1] - matrix[1][0]) * s;
-    }
-    else {
-        int i;
-        if (matrix[0][0] < matrix[1][1]) {
-            i = matrix[1][1] < matrix[2][2] ? 2 : 1;
-        }
-        else {
-            i = matrix[0][0] < matrix[2][2] ? 2 : 0;
-        }
-        const int j = (i + 1) % 3;
-        const int k = (i + 2) % 3;
-
-        float s = sqrt(matrix[i][i] - matrix[j][j] - matrix[k][k] + 1.0f);
-        result[i] = s * 0.5f;
-        s = 0.5f / s;
-
-        result.w = (matrix[j][k] - matrix[k][j]) * s;
-        result[j] = (matrix[i][j] + matrix[j][i]) * s;
-        result[k] = (matrix[i][k] + matrix[k][i]) * s;
-    }
-
-    return result;
-}
-
 // inline Matrix3 Quaternion::matrix() const
 // {
 //     return Matrix3::from_quaternion(*this);
 // }
-
-inline Quaternion Quaternion::normalize() const
-{
-    return *this / this->length();
-}
 
 // template <typename Number>
 // Matrix3<Number> Matrix3<Number>::from_matrix(const Matrix4<Number>& matrix)
