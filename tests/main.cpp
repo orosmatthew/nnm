@@ -1205,16 +1205,16 @@ int main()
             ASSERT(nnm::approx_zero(v3.angle(v3)));
         }
 
-        test_section("rotate");
+        test_section("rotate_axis_angle");
         {
             const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
             const nnm::Vector3 axis(0.0f, 0.0f, 1.0f);
             constexpr float angle = nnm::pi / 2.0f;
 
-            ASSERT(v.rotate(axis, angle).approx_equal(nnm::Vector3(-2.0f, 1.0f, 3.0f)));
-            ASSERT(v.rotate(axis, 2.0f * angle).approx_equal(nnm::Vector3(-1.0f, -2.0f, 3.0f)));
-            ASSERT(v.rotate(axis, 4.0f * angle).approx_equal(v));
-            ASSERT(v.rotate(axis, 0.0f).approx_equal(v));
+            ASSERT(v.rotate_axis_angle(axis, angle).approx_equal(nnm::Vector3(-2.0f, 1.0f, 3.0f)));
+            ASSERT(v.rotate_axis_angle(axis, 2.0f * angle).approx_equal(nnm::Vector3(-1.0f, -2.0f, 3.0f)));
+            ASSERT(v.rotate_axis_angle(axis, 4.0f * angle).approx_equal(v));
+            ASSERT(v.rotate_axis_angle(axis, 0.0f).approx_equal(v));
         }
 
         nnm::Vector3 v1(1.0f, 2.0f, 3.0f);

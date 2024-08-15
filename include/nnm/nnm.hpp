@@ -194,18 +194,17 @@ inline float log2(const float value)
     return std::log2(value);
 }
 
+class Vector3;
 class Vector2;
 class Vector2i;
-class Vector3;
 class Vector3i;
-class Matrix2;
 class Basis2;
 class Matrix3;
-class Matrix4;
-class Vector4;
-class Vector4i;
 class Basis3;
-class Quaternion;
+class Transform2;
+class Transform3;
+
+inline Vector2 operator/(float value, const Vector2& vector);
 
 class Vector2 {
 public:
@@ -214,7 +213,6 @@ public:
             float x;
             float y;
         };
-
         std::array<float, 2> data;
     };
 
@@ -245,6 +243,16 @@ public:
     static Vector2 one()
     {
         return { 1.0f, 1.0f };
+    }
+
+    static Vector2 axis_x()
+    {
+        return { 1.0f, 0.0f };
+    }
+
+    static Vector2 axis_y()
+    {
+        return { 0.0f, 1.0f };
     }
 
     [[nodiscard]] Vector2 abs() const
@@ -370,17 +378,21 @@ public:
         return onto * (dot(onto) / onto.length_sqrd());
     }
 
-    [[nodiscard]] Vector2 rotate(const float angle) const
-    {
-        Vector2 result;
-        result.x = x * cos(angle) - y * sin(angle);
-        result.y = x * sin(angle) + y * cos(angle);
-        return result;
-    }
+    [[nodiscard]] Vector2 rotate(float angle) const;
+
+    [[nodiscard]] Vector2 scale(const Vector2& factor) const;
+
+    [[nodiscard]] Vector2 shear_x(float angle_y) const;
+
+    [[nodiscard]] Vector2 shear_y(float angle_x) const;
+
+    [[nodiscard]] Vector2 transform(const Basis2& by) const;
+
+    [[nodiscard]] Vector2 transform(const Transform2& by, float z = 1.0f) const;
 
     [[nodiscard]] Vector2 inverse() const
     {
-        return { 1.0f / x, 1.0f / y };
+        return 1.0f / *this;
     }
 
     [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
@@ -396,8 +408,6 @@ public:
         }
         return *this;
     }
-
-    [[nodiscard]] Vector2 transform(const Basis2& by) const;
 
     [[nodiscard]] bool operator!=(const Vector2& other) const
     {
@@ -525,6 +535,16 @@ public:
         return x != 0.0 || y != 0.0;
     }
 };
+
+inline Vector2 operator*(const float value, const Vector2& vector)
+{
+    return { value * vector.x, value * vector.y };
+}
+
+inline Vector2 operator/(const float value, const Vector2& vector)
+{
+    return { value / vector.x, value / vector.y };
+}
 
 class Vector2i {
 public:
@@ -762,6 +782,23 @@ public:
     }
 };
 
+inline Vector2i operator%(const int value, const Vector2i& vector)
+{
+    return { value % vector.x, value % vector.y };
+}
+
+inline Vector2i operator*(const int value, const Vector2i& vector)
+{
+    return { value * vector.x, value * vector.y };
+}
+
+inline Vector2i operator/(const int value, const Vector2i& vector)
+{
+    return { value / vector.x, value / vector.y };
+}
+
+inline Vector3 operator/(float value, const Vector3& vector);
+
 class Vector3 {
 public:
     union {
@@ -781,6 +818,13 @@ public:
     }
 
     explicit Vector3(Vector3i vector);
+
+    Vector3(const Vector2& vector, const float z) // NOLINT(*-pro-type-member-init)
+        : x(vector.x)
+        , y(vector.y)
+        , z(z)
+    {
+    }
 
     Vector3(const float x, const float y, const float z) // NOLINT(*-pro-type-member-init)
         : x(x)
@@ -936,7 +980,7 @@ public:
 
     [[nodiscard]] Vector3 inverse() const
     {
-        return { 1.0f / x, 1.0f / y, 1.0f / z };
+        return 1.0f / *this;
     }
 
     [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
@@ -963,14 +1007,36 @@ public:
         return atan2(this->cross(other).length(), this->dot(other));
     }
 
-    [[nodiscard]] Vector3 rotate(Vector3 axis, const float angle) const
-    {
-        axis = axis.normalize();
-        // Rodrigues rotation formula
-        return *this * cos(angle) + axis.cross(*this) * sin(angle) + axis * (1.0f - cos(angle)) * axis.dot(*this);
-    }
+    [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+
+    [[nodiscard]] Vector3 scale(const Vector3& factor) const;
+
+    [[nodiscard]] Vector3 shear_x(float angle_y, float angle_z) const;
+
+    [[nodiscard]] Vector3 shear_y(float angle_x, float angle_z) const;
+
+    [[nodiscard]] Vector3 shear_z(float angle_x, float angle_y) const;
 
     [[nodiscard]] Vector3 transform(const Basis3& by) const;
+
+    [[nodiscard]] Vector3 transform(const Transform2& by) const;
+
+    [[nodiscard]] Vector3 transform(const Transform3& by, float w = 1.0f) const;
+
+    [[nodiscard]] Vector2 xy() const
+    {
+        return { x, y };
+    }
+
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
 
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
@@ -990,16 +1056,16 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator*(const float val) const
+    [[nodiscard]] Vector3 operator*(const float value) const
     {
-        return { x * val, y * val, z * val };
+        return { x * value, y * value, z * value };
     }
 
-    Vector3& operator*=(const float val)
+    Vector3& operator*=(const float value)
     {
-        x *= val;
-        y *= val;
-        z *= val;
+        x *= value;
+        y *= value;
+        z *= value;
         return *this;
     }
 
@@ -1045,9 +1111,9 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator/(const float val) const
+    [[nodiscard]] Vector3 operator/(const float value) const
     {
-        return { x / val, y / val, z / val };
+        return { x / value, y / value, z / value };
     }
 
     Vector3& operator/=(const float val)
@@ -1109,6 +1175,16 @@ public:
     }
 };
 
+inline Vector3 operator*(const float value, const Vector3& vector)
+{
+    return { value * vector.x, value * vector.y, value * vector.z };
+}
+
+inline Vector3 operator/(const float value, const Vector3& vector)
+{
+    return { value / vector.x, value / vector.y, value / vector.z };
+}
+
 class Vector3i {
 public:
     union {
@@ -1124,6 +1200,13 @@ public:
         : x(0)
         , y(0)
         , z(0)
+    {
+    }
+
+    Vector3i(const Vector2i& vector, const int z)
+        : x(vector.x)
+        , y(vector.y)
+        , z(z)
     {
     }
 
@@ -1197,6 +1280,21 @@ public:
         return max_axis;
     }
 
+    [[nodiscard]] Vector2i xy() const
+    {
+        return { x, y };
+    }
+
+    [[nodiscard]] const int* ptr() const
+    {
+        return data.data();
+    }
+
+    int* ptr()
+    {
+        return data.data();
+    }
+
     [[nodiscard]] bool operator!=(const Vector3i& other) const
     {
         return data != other.data;
@@ -1215,16 +1313,16 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator%(const int val) const
+    [[nodiscard]] Vector3i operator%(const int value) const
     {
-        return { x % val, y % val, z % val };
+        return { x % value, y % value, z % value };
     }
 
-    Vector3i& operator%=(const int val)
+    Vector3i& operator%=(const int value)
     {
-        x %= val;
-        y %= val;
-        z %= val;
+        x %= value;
+        y %= value;
+        z %= value;
         return *this;
     }
 
@@ -1357,6 +1455,21 @@ public:
     }
 };
 
+inline Vector3i operator%(const int value, const Vector3i& vector)
+{
+    return { value % vector.x, value % vector.y, value % vector.z };
+}
+
+inline Vector3i operator*(const int value, const Vector3i& vector)
+{
+    return { value * vector.x, value * vector.y, value * vector.z };
+}
+
+inline Vector3i operator/(const int value, const Vector3i& vector)
+{
+    return { value / vector.x, value / vector.y, value / vector.z };
+}
+
 class Vector4 {
 public:
     union {
@@ -1374,6 +1487,22 @@ public:
         , y(0.0f)
         , z(0.0f)
         , w(0.0f)
+    {
+    }
+
+    Vector4(const Vector2& vector, const float z, const float w)
+        : x(vector.x)
+        , y(vector.y)
+        , z(z)
+        , w(w)
+    {
+    }
+
+    Vector4(const Vector3& vector, const float w)
+        : x(vector.x)
+        , y(vector.y)
+        , z(vector.z)
+        , w(w)
     {
     }
 
@@ -1535,6 +1664,28 @@ public:
         return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
     }
 
+    [[nodiscard]] Vector4 transform(const Transform3& by) const;
+
+    [[nodiscard]] Vector2 xy() const
+    {
+        return { x, y };
+    }
+
+    [[nodiscard]] Vector3 xyz() const
+    {
+        return { x, y, z };
+    }
+
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
+
     [[nodiscard]] bool operator!=(const Vector4& other) const
     {
         return data != other.data;
@@ -1662,6 +1813,16 @@ public:
     }
 };
 
+inline Vector4 operator*(const float value, const Vector4& vector)
+{
+    return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
+}
+
+inline Vector4 operator/(const float value, const Vector4& vector)
+{
+    return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
+}
+
 class Vector4i {
 public:
     union {
@@ -1679,6 +1840,22 @@ public:
         , y(0)
         , z(0)
         , w(0)
+    {
+    }
+
+    Vector4i(const Vector2i& vector, const int z, const int w)
+        : x(vector.x)
+        , y(vector.y)
+        , z(z)
+        , w(w)
+    {
+    }
+
+    Vector4i(const Vector3i& vector, const int w)
+        : x(vector.x)
+        , y(vector.y)
+        , z(vector.z)
+        , w(w)
     {
     }
 
@@ -1759,6 +1936,26 @@ public:
             min_axis = 3;
         }
         return min_axis;
+    }
+
+    [[nodiscard]] Vector2i xy() const
+    {
+        return { x, y };
+    }
+
+    [[nodiscard]] Vector3i xyz() const
+    {
+        return { x, y, z };
+    }
+
+    [[nodiscard]] const int* ptr() const
+    {
+        return data.data();
+    }
+
+    int* ptr()
+    {
+        return data.data();
     }
 
     [[nodiscard]] bool operator!=(const Vector4i& other) const
@@ -4161,6 +4358,11 @@ inline Matrix3 Vector3::outer(const Vector3& other) const
              { z * other.x, z * other.y, z * other.z } };
 }
 
+inline Vector4 Vector4::transform(const Transform3& by) const
+{
+    return by.matrix * *this;
+}
+
 inline Quaternion Quaternion::from_matrix(const Matrix3& matrix)
 {
     const float trace = matrix.trace();
@@ -4224,17 +4426,85 @@ inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init
 {
 }
 
+inline Vector2 Vector2::rotate(const float angle) const
+{
+    const auto basis = Basis2::from_rotation(angle);
+    return transform(basis);
+}
+
+inline Vector2 Vector2::scale(const Vector2& factor) const
+{
+    const auto basis = Basis2::from_scale(factor);
+    return transform(basis);
+}
+
+inline Vector2 Vector2::shear_x(const float angle_y) const
+{
+    const auto basis = Basis2::from_shear_x(angle_y);
+    return transform(basis);
+}
+
+inline Vector2 Vector2::shear_y(const float angle_x) const
+{
+    const auto basis = Basis2::from_shear_y(angle_x);
+    return transform(basis);
+}
+
 inline Vector2 Vector2::transform(const Basis2& by) const
 {
-    return { by.at(0, 0) * x + by.at(1, 0) * y, by.at(0, 1) * x + by.at(1, 1) * y };
+    return by.matrix * *this;
+}
+
+inline Vector2 Vector2::transform(const Transform2& by, const float z) const
+{
+    return Vector3(*this, z).transform(by).xy();
+}
+
+inline Vector3 Vector3::rotate_axis_angle(const Vector3& axis, const float angle) const
+{
+    const auto basis = Basis3::from_rotation_axis_angle(axis, angle);
+    return transform(basis);
+}
+
+inline Vector3 Vector3::scale(const Vector3& factor) const
+{
+    const auto basis = Basis3::from_scale(factor);
+    return transform(basis);
+}
+
+inline Vector3 Vector3::shear_x(const float angle_y, const float angle_z) const
+{
+    const auto basis = Basis3::from_shear_x(angle_y, angle_z);
+    return transform(basis);
+}
+
+inline Vector3 Vector3::shear_y(const float angle_x, const float angle_z) const
+{
+    const auto basis = Basis3::from_shear_y(angle_x, angle_z);
+    return transform(basis);
+}
+
+inline Vector3 Vector3::shear_z(const float angle_x, const float angle_y) const
+{
+    const auto basis = Basis3::from_shear_z(angle_x, angle_y);
+    return transform(basis);
 }
 
 inline Vector3 Vector3::transform(const Basis3& by) const
 {
-    return { by.at(0, 0) * x + by.at(1, 0) * y + by.at(2, 0) * z,
-             by.at(0, 1) * x + by.at(1, 1) * y + by.at(2, 1) * z,
-             by.at(0, 2) * x + by.at(1, 2) * y + by.at(2, 2) * z };
+    return by.matrix * *this;
 }
+
+inline Vector3 Vector3::transform(const Transform2& by) const
+{
+    return by.matrix * *this;
+}
+
+inline Vector3 Vector3::transform(const Transform3& by, const float w) const
+{
+    return Vector4(*this, w).transform(by).xyz();
+}
+
 }
 
 template <>
