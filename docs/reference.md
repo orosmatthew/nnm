@@ -103,8 +103,6 @@ Vector2 lerp(const Vector2& to, float weight) const;
 Vector2 lerp_clamped(const Vector2& to, float weight) const;
 int max_index() const;
 int min_index() const;
-bool approx_equal(const Vector2& other) const;
-bool approx_zero() const;
 float dot(const Vector2& other) const;
 float cross(const Vector2& other) const;
 Vector2 reflect(const Vector2& normal) const;
@@ -117,6 +115,8 @@ Vector2 transform(const Basis2& by) const;
 Vector2 transform(const Transform2& by, float z = 1.0f) const;
 Vector2 inverse() const;
 Vector2 clamp_length(float min, float max) const;
+bool approx_equal(const Vector2& other) const;
+bool approx_zero() const;
 const float* begin() const;
 const float* end() const;
 float* begin();
@@ -176,46 +176,59 @@ Vector2i(int x, int y);
 static Vector2i all(int value);
 static Vector2i zero();
 static Vector2i one();
+static Vector2i axis_x();
+static Vector2i axis_y();
 ```
 
 ### Methods
 
 ```c++
 Vector2i abs() const;
-float aspect_ratio() const;
 Vector2i clamp(const Vector2i& min, const Vector2i& max) const;
+int manhattan_distance(const Vector2i& to) const;
 int length_sqrd() const;
 float length() const;
 int max_index() const;
 int min_index() const;
+const int* begin() const;
+const int* end() const;
+int* begin();
+int* end();
+const int* ptr() const;
+int* ptr();
+int at(const int index) const;
+int& at(const int index);
 ```
 
 ### Operators
 
 ```c++
+int operator[](int index) const;
+int& operator[](int index);
+bool operator==(const Vector2i& other) const;
 bool operator!=(const Vector2i& other) const;
-Vector2i operator%(const Vector2i& other) const;
-Vector2i& operator%=(const Vector2i& other);
-Vector2i operator%(int value) const;
-Vector2i& operator%=(int value);
-Vector2i operator*(const Vector2i& other) const;
-Vector2i& operator*=(const Vector2i& other);
-Vector2i operator*(int value) const;
-Vector2i& operator*=(int value);
 Vector2i operator+(const Vector2i& other) const;
 Vector2i& operator+=(const Vector2i& other);
 Vector2i operator-(const Vector2i& other) const;
 Vector2i& operator-=(const Vector2i& other);
+Vector2i operator*(const Vector2i& other) const;
+Vector2i& operator*=(const Vector2i& other);
+Vector2i operator*(int value) const;
+Vector2i operator*(int value, const Vector2i& vector);
+Vector2i& operator*=(int value);
 Vector2i operator/(const Vector2i& other) const;
 Vector2i& operator/=(const Vector2i& other);
 Vector2i operator/(int value) const;
+Vector2i operator/(int value, const Vector2i& vector);
 Vector2i& operator/=(int value);
-bool operator<(const Vector2i& other) const;
-bool operator==(const Vector2i& other) const;
-int operator[](int index) const;
-int& operator[](int index);
+Vector2i operator%(const Vector2i& other) const;
+Vector2i& operator%=(const Vector2i& other);
+Vector2i operator%(int value) const;
+Vector2i operator&(int value, const Vector2i& vector);
+Vector2i& operator%=(int value);
 Vector2i operator+() const;
 Vector2i operator-() const;
+bool operator<(const Vector2i& other) const;
 operator bool() const;
 ```
 

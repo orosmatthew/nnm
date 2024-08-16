@@ -358,16 +358,6 @@ public:
         return 0;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector2& other) const
-    {
-        return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
-    }
-
-    [[nodiscard]] bool approx_zero() const
-    {
-        return nnm::approx_zero(x) && nnm::approx_zero(y);
-    }
-
     [[nodiscard]] float dot(const Vector2& other) const
     {
         return x * other.x + y * other.y;
@@ -421,6 +411,16 @@ public:
             }
         }
         return *this;
+    }
+
+    [[nodiscard]] bool approx_equal(const Vector2& other) const
+    {
+        return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
+    }
+
+    [[nodiscard]] bool approx_zero() const
+    {
+        return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
     [[nodiscard]] const float* begin() const
@@ -612,16 +612,6 @@ public:
     {
     }
 
-    static Vector2i axis_x()
-    {
-        return { 1, 0 };
-    }
-
-    static Vector2i axis_y()
-    {
-        return { 0, 1 };
-    }
-
     static Vector2i all(int value)
     {
         return { value, value };
@@ -637,14 +627,19 @@ public:
         return { 1, 1 };
     }
 
+    static Vector2i axis_x()
+    {
+        return { 1, 0 };
+    }
+
+    static Vector2i axis_y()
+    {
+        return { 0, 1 };
+    }
+
     [[nodiscard]] Vector2i abs() const
     {
         return { nnm::abs(x), nnm::abs(y) };
-    }
-
-    [[nodiscard]] float aspect_ratio() const
-    {
-        return static_cast<float>(x) / static_cast<float>(y);
     }
 
     [[nodiscard]] Vector2i clamp(const Vector2i& min, const Vector2i& max) const
@@ -652,14 +647,14 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
-    [[nodiscard]] int magnitude_sqrd() const
+    [[nodiscard]] int manhattan_distance(const Vector2i& to) const
     {
-        return sqrd(x) + sqrd(y);
+        return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    [[nodiscard]] float magnitude() const
+    [[nodiscard]] int length_sqrd() const
     {
-        return sqrt(static_cast<float>(magnitude_sqrd()));
+        return sqrd(x) + sqrd(y);
     }
 
     [[nodiscard]] int max_index() const
@@ -684,16 +679,6 @@ public:
         return 0;
     }
 
-    [[nodiscard]] const int* ptr() const
-    {
-        return data.data();
-    }
-
-    int* ptr()
-    {
-        return data.data();
-    }
-
     [[nodiscard]] const int* begin() const
     {
         return data.begin();
@@ -714,57 +699,48 @@ public:
         return data.end();
     }
 
+    [[nodiscard]] const int* ptr() const
+    {
+        return data.data();
+    }
+
+    int* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] int at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    int& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    [[nodiscard]] int operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    int& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        return data[index];
+    }
+
+    [[nodiscard]] bool operator==(const Vector2i& other) const
+    {
+        return data == other.data;
+    }
+
     [[nodiscard]] bool operator!=(const Vector2i& other) const
     {
         return data != other.data;
-    }
-
-    [[nodiscard]] Vector2i operator%(const Vector2i& other) const
-    {
-        return { x % other.x, y % other.y };
-    }
-
-    Vector2i& operator%=(const Vector2i& other)
-    {
-        x %= other.x;
-        y %= other.y;
-        return *this;
-    }
-
-    [[nodiscard]] Vector2i operator%(const int value) const
-    {
-        return { x % value, y % value };
-    }
-
-    Vector2i& operator%=(const int value)
-    {
-        x %= value;
-        y %= value;
-        return *this;
-    }
-
-    [[nodiscard]] Vector2i operator*(const Vector2i& other) const
-    {
-        return { x * other.x, y * other.y };
-    }
-
-    Vector2i& operator*=(const Vector2i& other)
-    {
-        x *= other.x;
-        y *= other.y;
-        return *this;
-    }
-
-    [[nodiscard]] Vector2i operator*(const int value) const
-    {
-        return { x * value, y * value };
-    }
-
-    Vector2i& operator*=(const int value)
-    {
-        x *= value;
-        y *= value;
-        return *this;
     }
 
     [[nodiscard]] Vector2i operator+(const Vector2i& other) const
@@ -792,6 +768,30 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector2i operator*(const Vector2i& other) const
+    {
+        return { x * other.x, y * other.y };
+    }
+
+    Vector2i& operator*=(const Vector2i& other)
+    {
+        x *= other.x;
+        y *= other.y;
+        return *this;
+    }
+
+    [[nodiscard]] Vector2i operator*(const int value) const
+    {
+        return { x * value, y * value };
+    }
+
+    Vector2i& operator*=(const int value)
+    {
+        x *= value;
+        y *= value;
+        return *this;
+    }
+
     [[nodiscard]] Vector2i operator/(const Vector2i& other) const
     {
         return { x / other.x, y / other.y };
@@ -816,38 +816,28 @@ public:
         return *this;
     }
 
-    [[nodiscard]] bool operator<(const Vector2i& other) const
+    [[nodiscard]] Vector2i operator%(const Vector2i& other) const
     {
-        return data < other.data;
+        return { x % other.x, y % other.y };
     }
 
-    [[nodiscard]] bool operator==(const Vector2i& other) const
+    Vector2i& operator%=(const Vector2i& other)
     {
-        return data == other.data;
+        x %= other.x;
+        y %= other.y;
+        return *this;
     }
 
-    [[nodiscard]] int at(const int index) const
+    [[nodiscard]] Vector2i operator%(const int value) const
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return { x % value, y % value };
     }
 
-    int& at(const int index)
+    Vector2i& operator%=(const int value)
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
-    }
-
-    [[nodiscard]] int operator[](const int index) const
-    {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
-    }
-
-    int& operator[](const int index)
-    {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        x %= value;
+        y %= value;
+        return *this;
     }
 
     [[nodiscard]] Vector2i operator+() const
@@ -860,16 +850,16 @@ public:
         return { -x, -y };
     }
 
+    [[nodiscard]] bool operator<(const Vector2i& other) const
+    {
+        return data < other.data;
+    }
+
     [[nodiscard]] explicit operator bool() const
     {
         return x != 0 || y != 0;
     }
 };
-
-inline Vector2i operator%(const int value, const Vector2i& vector)
-{
-    return { value % vector.x, value % vector.y };
-}
 
 inline Vector2i operator*(const int value, const Vector2i& vector)
 {
@@ -879,6 +869,11 @@ inline Vector2i operator*(const int value, const Vector2i& vector)
 inline Vector2i operator/(const int value, const Vector2i& vector)
 {
     return { value / vector.x, value / vector.y };
+}
+
+inline Vector2i operator%(const int value, const Vector2i& vector)
+{
+    return { value % vector.x, value % vector.y };
 }
 
 inline Vector3 operator/(float value, const Vector3& vector);

@@ -807,16 +807,16 @@ int main()
 
         test_section("length_sqrd");
         {
-            ASSERT(nnm::Vector2i(3, 4).magnitude_sqrd() == 25);
-            ASSERT(nnm::Vector2i(-2, 5).magnitude_sqrd() == 29);
-            ASSERT(nnm::Vector2i(0, 0).magnitude_sqrd() == 0);
+            ASSERT(nnm::Vector2i(3, 4).length_sqrd() == 25);
+            ASSERT(nnm::Vector2i(-2, 5).length_sqrd() == 29);
+            ASSERT(nnm::Vector2i(0, 0).length_sqrd() == 0);
         }
 
         test_section("length");
         {
-            ASSERT(nnm::approx_equal(nnm::Vector2i(3, 4).magnitude(), 5.0f));
-            ASSERT(nnm::approx_equal(nnm::Vector2i(-2, 5).magnitude(), nnm::sqrt(29.0f)));
-            ASSERT(nnm::approx_equal(nnm::Vector2i(0, 0).magnitude(), 0.0f));
+            ASSERT(nnm::approx_equal(nnm::Vector2i(3, 4).length(), 5.0f));
+            ASSERT(nnm::approx_equal(nnm::Vector2i(-2, 5).length(), nnm::sqrt(29.0f)));
+            ASSERT(nnm::approx_equal(nnm::Vector2i(0, 0).length(), 0.0f));
         }
 
         test_section("min/max_index");
