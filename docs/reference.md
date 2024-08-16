@@ -67,7 +67,7 @@ union {
         float x;
         float y;
     };
-    std::array<float, 2> data;
+    std::array<float, 2> array;
 };
 ```
 
@@ -124,8 +124,8 @@ const float* begin() const;
 const float* end() const;
 float* begin();
 float* end();
-const float* ptr() const;
-float* ptr();
+const float* data() const;
+float* data();
 float at(const int index) const;
 float& at(const int index);
 ```
@@ -167,7 +167,7 @@ union {
         int x;
         int y;
     };
-    std::array<int, 2> data;
+    std::array<int, 2> array;
 };
 ```
 
@@ -198,8 +198,8 @@ const int* begin() const;
 const int* end() const;
 int* begin();
 int* end();
-const int* ptr() const;
-int* ptr();
+const int* data() const;
+int* data();
 int at(const int index) const;
 int& at(const int index);
 ```
@@ -309,8 +309,8 @@ const float* begin() const;
 const float* end() const;
 float* begin();
 float* end();
-const float* ptr() const;
-float* ptr();
+const float* data() const;
+float* data();
 float at(int index) const;
 float& at(int index);
 ```
@@ -353,7 +353,7 @@ union {
         int y;
         int z;
     };
-    std::array<int, 3> data {};
+    std::array<int, 3> array {};
 };
 ```
 
@@ -418,7 +418,7 @@ union {
         float z;
         float w;
     };
-    std::array<float, 4> data {};
+    std::array<float, 4> array {};
 };
 ```
 

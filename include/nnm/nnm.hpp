@@ -215,10 +215,10 @@ public:
             float x;
             float y;
         };
-        std::array<float, 2> data;
+        std::array<float, 2> array {};
     };
 
-    Vector2() // NOLINT(*-pro-type-member-init)
+    Vector2()
         : x(0.0f)
         , y(0.0f)
     {
@@ -226,7 +226,7 @@ public:
 
     explicit Vector2(const Vector2i& vector);
 
-    Vector2(const float x, const float y) // NOLINT(*-pro-type-member-init)
+    Vector2(const float x, const float y)
         : x(x)
         , y(y)
     {
@@ -445,66 +445,66 @@ public:
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] float at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     float& at(const int index)
     {
         NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     float& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] bool operator==(const Vector2& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] bool operator!=(const Vector2& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector2 operator+(const Vector2& other) const
@@ -591,7 +591,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector2& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] explicit operator bool() const
@@ -617,22 +617,22 @@ public:
             int x;
             int y;
         };
-        std::array<int, 2> data;
+        std::array<int, 2> array {};
     };
 
-    Vector2i() // NOLINT(*-pro-type-member-init)
+    Vector2i()
         : x(0)
         , y(0)
     {
     }
 
-    explicit Vector2i(const Vector2& vector) // NOLINT(*-pro-type-member-init)
+    explicit Vector2i(const Vector2& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
     {
     }
 
-    Vector2i(const int x, const int y) // NOLINT(*-pro-type-member-init)
+    Vector2i(const int x, const int y)
         : x(x)
         , y(y)
     {
@@ -707,66 +707,66 @@ public:
 
     [[nodiscard]] const int* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     int* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     int* end()
     {
-        return data.end();
+        return array.end();
     }
 
-    [[nodiscard]] const int* ptr() const
+    [[nodiscard]] const int* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    int* ptr()
+    int* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] bool operator==(const Vector2i& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] bool operator!=(const Vector2i& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector2i operator+(const Vector2i& other) const
@@ -878,7 +878,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector2i& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] explicit operator bool() const
@@ -912,10 +912,10 @@ public:
             float y;
             float z;
         };
-        std::array<float, 3> data;
+        std::array<float, 3> array {};
     };
 
-    Vector3() // NOLINT(*-pro-type-member-init)
+    Vector3()
         : x(0.0f)
         , y(0.0f)
         , z(0.0f)
@@ -924,14 +924,14 @@ public:
 
     explicit Vector3(Vector3i vector);
 
-    Vector3(const Vector2& vector, const float z) // NOLINT(*-pro-type-member-init)
+    Vector3(const Vector2& vector, const float z)
         : x(vector.x)
         , y(vector.y)
         , z(z)
     {
     }
 
-    Vector3(const float x, const float y, const float z) // NOLINT(*-pro-type-member-init)
+    Vector3(const float x, const float y, const float z)
         : x(x)
         , y(y)
         , z(z)
@@ -1167,66 +1167,66 @@ public:
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] float at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     float& at(const int index)
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     float& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] bool operator==(const Vector3& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector3 operator+(const Vector3& other) const
@@ -1321,7 +1321,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] explicit operator bool() const
@@ -1348,7 +1348,7 @@ public:
             int y;
             int z;
         };
-        std::array<int, 3> data {};
+        std::array<int, 3> array {};
     };
 
     Vector3i()
@@ -1455,39 +1455,39 @@ public:
         return { x, y };
     }
 
-    [[nodiscard]] const int* ptr() const
+    [[nodiscard]] const int* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    int* ptr()
+    int* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const int* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     int* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     int* end()
     {
-        return data.end();
+        return array.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector3i& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector3i operator%(const Vector3i& other) const
@@ -1597,36 +1597,36 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] bool operator==(const Vector3i& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] Vector3i operator+() const
@@ -1669,7 +1669,7 @@ public:
             float z;
             float w;
         };
-        std::array<float, 4> data {};
+        std::array<float, 4> array {};
     };
 
     Vector4()
@@ -1885,39 +1885,39 @@ public:
         return { x, y, z };
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector4& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector4 operator*(const Vector4& other) const
@@ -2006,36 +2006,36 @@ public:
 
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] bool operator==(const Vector4& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] float at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return array[index];
     }
 
     float& at(const int index)
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return array[index];
     }
 
     float& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return array[index];
     }
 
     [[nodiscard]] Vector4 operator+() const
@@ -2073,7 +2073,7 @@ public:
             int z;
             int w;
         };
-        std::array<int, 4> data {};
+        std::array<int, 4> array {};
     };
 
     Vector4i()
@@ -2209,39 +2209,39 @@ public:
         return { x, y, z };
     }
 
-    [[nodiscard]] const int* ptr() const
+    [[nodiscard]] const int* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    int* ptr()
+    int* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const int* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     int* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     int* end()
     {
-        return data.end();
+        return array.end();
     }
 
     [[nodiscard]] bool operator!=(const Vector4i& other) const
     {
-        return data != other.data;
+        return array != other.array;
     }
 
     [[nodiscard]] Vector4i operator%(const Vector4i& other) const
@@ -2358,12 +2358,12 @@ public:
 
     [[nodiscard]] bool operator<(const Vector4i& other) const
     {
-        return data < other.data;
+        return array < other.array;
     }
 
     [[nodiscard]] bool operator==(const Vector4i& other) const
     {
-        return data == other.data;
+        return array == other.array;
     }
 
     [[nodiscard]] int& operator[](const int index)
@@ -2423,10 +2423,10 @@ public:
             float w;
         };
         Vector4 vector;
-        std::array<float, 4> data;
+        std::array<float, 4> array {};
     };
 
-    Quaternion() // NOLINT(*-pro-type-member-init)
+    Quaternion()
         : x(0.0f)
         , y(0.0f)
         , z(0.0f)
@@ -2434,12 +2434,12 @@ public:
     {
     }
 
-    explicit Quaternion(const Vector4& vector) // NOLINT(*-pro-type-member-init)
+    explicit Quaternion(const Vector4& vector)
         : vector(vector)
     {
     }
 
-    Quaternion(const float x, const float y, const float z, const float w) // NOLINT(*-pro-type-member-init)
+    Quaternion(const float x, const float y, const float z, const float w)
         : x(x)
         , y(y)
         , z(z)
@@ -2578,10 +2578,10 @@ public:
             float col1_row1;
         };
         std::array<Vector2, 2> columns;
-        std::array<float, 4> data;
+        std::array<float, 4> array {};
     };
 
-    Matrix2() // NOLINT(*-pro-type-member-init)
+    Matrix2()
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col1_row0(0.0f)
@@ -2589,7 +2589,7 @@ public:
     {
     }
 
-    Matrix2(const Vector2& column0, const Vector2& column1) // NOLINT(*-pro-type-member-init)
+    Matrix2(const Vector2& column0, const Vector2& column1)
         : col0_row0(column0[0])
         , col0_row1(column0[1])
         , col1_row0(column1[0])
@@ -2597,11 +2597,7 @@ public:
     {
     }
 
-    Matrix2( // NOLINT(*-pro-type-member-init)
-        const float col0_row0,
-        const float col0_row1,
-        const float col1_row0,
-        const float col1_row1)
+    Matrix2(const float col0_row0, const float col0_row1, const float col1_row0, const float col1_row1)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col1_row0(col1_row0)
@@ -2730,34 +2726,34 @@ public:
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
     const Vector2& operator[](const int column) const
@@ -3089,10 +3085,10 @@ public:
             float col2_row2;
         };
         std::array<Vector3, 3> columns;
-        std::array<float, 9> data;
+        std::array<float, 9> array {};
     };
 
-    Matrix3() // NOLINT(*-pro-type-member-init)
+    Matrix3()
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col0_row2(0.0f)
@@ -3105,7 +3101,7 @@ public:
     {
     }
 
-    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3) // NOLINT(*-pro-type-member-init)
+    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
@@ -3118,7 +3114,7 @@ public:
     {
     }
 
-    Matrix3( // NOLINT(*-pro-type-member-init)
+    Matrix3(
         const float col0_row0,
         const float col0_row1,
         const float col0_row2,
@@ -3302,34 +3298,34 @@ public:
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
     const Vector3& operator[](const int column) const
@@ -3664,10 +3660,10 @@ public:
             float col3_row3;
         };
         std::array<Vector4, 4> columns;
-        std::array<float, 16> data;
+        std::array<float, 16> array {};
     };
 
-    Matrix4() // NOLINT(*-pro-type-member-init)
+    Matrix4()
         : col0_row0(1.0f)
         , col0_row1(0.0f)
         , col0_row2(0.0f)
@@ -3687,7 +3683,7 @@ public:
     {
     }
 
-    Matrix4( // NOLINT(*-pro-type-member-init)
+    Matrix4(
         const float col0_row0,
         const float col0_row1,
         const float col0_row2,
@@ -3723,7 +3719,7 @@ public:
     {
     }
 
-    Matrix4( // NOLINT(*-pro-type-member-init)
+    Matrix4(
         const Vector4& column1,
         const Vector4& column2,
         const Vector4& column3,
@@ -3915,34 +3911,34 @@ public:
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* ptr() const
+    [[nodiscard]] const float* data() const
     {
-        return data.data();
+        return array.data();
     }
 
-    float* ptr()
+    float* data()
     {
-        return data.data();
+        return array.data();
     }
 
     [[nodiscard]] const float* begin() const
     {
-        return data.begin();
+        return array.begin();
     }
 
     [[nodiscard]] const float* end() const
     {
-        return data.end();
+        return array.end();
     }
 
     float* begin()
     {
-        return data.begin();
+        return array.begin();
     }
 
     float* end()
     {
-        return data.end();
+        return array.end();
     }
 
     const Vector4& operator[](const int index) const
@@ -4558,7 +4554,7 @@ public:
     }
 };
 
-inline Vector3::Vector3(const Vector3i vector) // NOLINT(*-pro-type-member-init)
+inline Vector3::Vector3(const Vector3i vector)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
     , z(static_cast<float>(vector.z))
@@ -4577,7 +4573,7 @@ inline Vector4 Vector4::transform(const Transform3& by) const
     return by.matrix * *this;
 }
 
-inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init)
+inline Vector2::Vector2(const Vector2i& vector)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
 {
