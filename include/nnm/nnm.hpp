@@ -199,6 +199,7 @@ class Vector2i;
 class Vector3;
 class Vector3i;
 class Quaternion;
+class Matrix2;
 class Basis2;
 class Matrix3;
 class Transform2;
@@ -261,27 +262,29 @@ public:
         return { nnm::abs(x), nnm::abs(y) };
     }
 
-    [[nodiscard]] float aspect_ratio() const
-    {
-        return x / y;
-    }
-
     [[nodiscard]] Vector2 ceil() const
     {
         return { nnm::ceil(x), nnm::ceil(y) };
     }
 
+    [[nodiscard]] Vector2 floor() const
+    {
+        return { nnm::floor(x), nnm::floor(y) };
+    }
+
+    [[nodiscard]] Vector2 round() const
+    {
+        return { nnm::round(x), nnm::round(y) };
+    }
+
+    [[nodiscard]] float aspect_ratio() const
+    {
+        return x / y;
+    }
+
     [[nodiscard]] Vector2 clamp(const Vector2& min, const Vector2& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
-    }
-
-    [[nodiscard]] Vector2 normalize() const
-    {
-        if (const float length = this->length(); length > 0.0f) {
-            return *this / length;
-        }
-        return zero();
     }
 
     [[nodiscard]] Vector2 direction(const Vector2& to) const
@@ -301,19 +304,9 @@ public:
         return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] float angle(const Vector2& to) const
+    [[nodiscard]] float manhattan_distance(const Vector2& to) const
     {
-        const float lengths = length() * to.length();
-        if (lengths == 0) {
-            return 0.0f;
-        }
-        const float cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
-        return acos(cos_angle);
-    }
-
-    [[nodiscard]] Vector2 floor() const
-    {
-        return { nnm::floor(x), nnm::floor(y) };
+        return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
     [[nodiscard]] float length_sqrd() const
@@ -326,6 +319,28 @@ public:
         return sqrt(length_sqrd());
     }
 
+    [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
+    {
+        if (const float length_sqrd = this->length_sqrd(); length_sqrd > 0.0f) {
+            const auto norm = normalize();
+            if (const float length = sqrt(length_sqrd); length < min) {
+                return norm * min;
+            }
+            else if (length > max) {
+                return norm * max;
+            }
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Vector2 normalize() const
+    {
+        if (const float length = this->length(); length > 0.0f) {
+            return *this / length;
+        }
+        return zero();
+    }
+
     [[nodiscard]] Vector2 lerp(const Vector2& to, const float weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
@@ -335,6 +350,64 @@ public:
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
+
+    [[nodiscard]] float dot(const Vector2& other) const
+    {
+        return x * other.x + y * other.y;
+    }
+
+    [[nodiscard]] float cross(const Vector2& other) const
+    {
+        return x * other.y - y * other.x;
+    }
+
+    [[nodiscard]] Matrix2 outer(const Vector2& other) const;
+
+    [[nodiscard]] Vector2 reflect(const Vector2& normal) const
+    {
+        const float dot = this->dot(normal);
+        Vector2 result;
+        result.x = x - 2.0f * normal.x * dot;
+        result.y = y - 2.0f * normal.y * dot;
+        return result;
+    }
+
+    [[nodiscard]] Vector2 project(const Vector2& onto) const
+    {
+        const float onto_length_sqrd = onto.length_sqrd();
+        if (onto_length_sqrd == 0.0f) {
+            return zero();
+        }
+        const float scale = dot(onto) / onto_length_sqrd;
+        return onto * scale;
+    }
+
+    [[nodiscard]] Vector2 inverse() const
+    {
+        return 1.0f / *this;
+    }
+
+    [[nodiscard]] float angle(const Vector2& to) const
+    {
+        const float lengths = length() * to.length();
+        if (lengths == 0) {
+            return 0.0f;
+        }
+        const float cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
+        return acos(cos_angle);
+    }
+
+    [[nodiscard]] Vector2 rotate(float angle) const;
+
+    [[nodiscard]] Vector2 scale(const Vector2& factor) const;
+
+    [[nodiscard]] Vector2 shear_x(float angle_y) const;
+
+    [[nodiscard]] Vector2 shear_y(float angle_x) const;
+
+    [[nodiscard]] Vector2 transform(const Basis2& by) const;
+
+    [[nodiscard]] Vector2 transform(const Transform2& by, float z = 1.0f) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -356,61 +429,6 @@ public:
             return 1;
         }
         return 0;
-    }
-
-    [[nodiscard]] float dot(const Vector2& other) const
-    {
-        return x * other.x + y * other.y;
-    }
-
-    [[nodiscard]] float cross(const Vector2& other) const
-    {
-        return x * other.y - y * other.x;
-    }
-
-    [[nodiscard]] Vector2 reflect(const Vector2& normal) const
-    {
-        const float dot = this->dot(normal);
-        Vector2 result;
-        result.x = x - 2.0f * normal.x * dot;
-        result.y = y - 2.0f * normal.y * dot;
-        return result;
-    }
-
-    [[nodiscard]] Vector2 project(const Vector2& onto) const
-    {
-        return onto * (dot(onto) / onto.length_sqrd());
-    }
-
-    [[nodiscard]] Vector2 rotate(float angle) const;
-
-    [[nodiscard]] Vector2 scale(const Vector2& factor) const;
-
-    [[nodiscard]] Vector2 shear_x(float angle_y) const;
-
-    [[nodiscard]] Vector2 shear_y(float angle_x) const;
-
-    [[nodiscard]] Vector2 transform(const Basis2& by) const;
-
-    [[nodiscard]] Vector2 transform(const Transform2& by, float z = 1.0f) const;
-
-    [[nodiscard]] Vector2 inverse() const
-    {
-        return 1.0f / *this;
-    }
-
-    [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
-    {
-        if (const float length_sqrd = this->length_sqrd(); length_sqrd > 0.0f) {
-            const auto norm = normalize();
-            if (const float length = sqrt(length_sqrd); length < min) {
-                return norm * min;
-            }
-            else if (length > max) {
-                return norm * max;
-            }
-        }
-        return *this;
     }
 
     [[nodiscard]] bool approx_equal(const Vector2& other) const
@@ -603,6 +621,12 @@ public:
     Vector2i() // NOLINT(*-pro-type-member-init)
         : x(0)
         , y(0)
+    {
+    }
+
+    explicit Vector2i(const Vector2& vector) // NOLINT(*-pro-type-member-init)
+        : x(static_cast<int>(vector.x))
+        , y(static_cast<int>(vector.y))
     {
     }
 
@@ -912,21 +936,6 @@ public:
     {
     }
 
-    static Vector3 axis_x()
-    {
-        return { 1.0f, 0.0f, 0.0f };
-    }
-
-    static Vector3 axis_y()
-    {
-        return { 0.0f, 1.0f, 0.0f };
-    }
-
-    static Vector3 axis_z()
-    {
-        return { 0.0f, 0.0f, 1.0f };
-    }
-
     static Vector3 all(float value)
     {
         return { value, value, value };
@@ -942,6 +951,21 @@ public:
         return { 1.0f, 1.0f, 1.0f };
     }
 
+    static Vector3 axis_x()
+    {
+        return { 1.0f, 0.0f, 0.0f };
+    }
+
+    static Vector3 axis_y()
+    {
+        return { 0.0f, 1.0f, 0.0f };
+    }
+
+    static Vector3 axis_z()
+    {
+        return { 0.0f, 0.0f, 1.0f };
+    }
+
     [[nodiscard]] Vector3 abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
@@ -952,26 +976,27 @@ public:
         return { nnm::ceil(x), nnm::ceil(y), nnm::ceil(z) };
     }
 
+    [[nodiscard]] Vector3 floor() const
+    {
+        return { nnm::floor(x), nnm::floor(y), nnm::floor(z) };
+    }
+
+    [[nodiscard]] Vector3 round() const
+    {
+        return { nnm::round(x), nnm::round(y), nnm::round(z) };
+    }
+
     [[nodiscard]] Vector3 clamp(const Vector3& min, const Vector3& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
-    [[nodiscard]] Vector3 normalize() const
-    {
-        Vector3 result;
-        if (const auto mag = this->magnitude(); mag > 0.0f) {
-            result = *this / mag;
-        }
-        return result;
-    }
-
-    [[nodiscard]] Vector3 direction_to(const Vector3& to) const
+    [[nodiscard]] Vector3 direction(const Vector3& to) const
     {
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] float distance_sqrd_to(const Vector3& to) const
+    [[nodiscard]] float distance_sqrd(const Vector3& to) const
     {
         const float diff_x = to.x - x;
         const float diff_y = to.y - y;
@@ -979,24 +1004,46 @@ public:
         return sqrd(diff_x) + sqrd(diff_y) + sqrd(diff_z);
     }
 
-    [[nodiscard]] float distance_to(const Vector3 to) const
+    [[nodiscard]] float distance(const Vector3& to) const
     {
-        return sqrt(this->distance_sqrd_to(to));
+        return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] Vector3 floor() const
+    [[nodiscard]] float manhattan_distance(const Vector3& to) const
     {
-        return { nnm::floor(x), nnm::floor(y), nnm::floor(z) };
+        return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
-    [[nodiscard]] float magnitude_sqrd() const
+    [[nodiscard]] float length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] float magnitude() const
+    [[nodiscard]] float length() const
     {
-        return sqrt(magnitude_sqrd());
+        return sqrt(length_sqrd());
+    }
+
+    [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
+    {
+        if (const float length_sqrd = this->length_sqrd(); length_sqrd > 0.0f) {
+            const auto norm = normalize();
+            if (const float length = sqrt(length_sqrd); length < min) {
+                return norm * min;
+            }
+            else if (length > max) {
+                return norm * max;
+            }
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Vector3 normalize() const
+    {
+        if (const auto length = this->length(); length > 0.0f) {
+            return *this / length;
+        }
+        return zero();
     }
 
     [[nodiscard]] Vector3 lerp(const Vector3& to, const float weight) const
@@ -1010,6 +1057,66 @@ public:
                  nnm::lerp_clamped(y, to.y, weight),
                  nnm::lerp_clamped(z, to.z, weight) };
     }
+
+    [[nodiscard]] float dot(const Vector3& other) const
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    [[nodiscard]] Vector3 cross(const Vector3& other) const
+    {
+        return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+    }
+
+    [[nodiscard]] Matrix3 outer(const Vector3& other) const;
+
+    [[nodiscard]] Vector3 reflect(const Vector3& normal) const
+    {
+        Vector3 result;
+        const float dot = this->dot(normal);
+        result.x = x - 2.0f * normal.x * dot;
+        result.y = y - 2.0f * normal.y * dot;
+        result.z = z - 2.0f * normal.z * dot;
+        return result;
+    }
+
+    [[nodiscard]] Vector3 project(const Vector3& onto) const
+    {
+        const float onto_length_sqrd = onto.length_sqrd();
+        if (onto_length_sqrd == 0.0f) {
+            return zero();
+        }
+        const float scale = dot(onto) / onto_length_sqrd;
+        return onto * scale;
+    }
+
+    [[nodiscard]] Vector3 inverse() const
+    {
+        return 1.0f / *this;
+    }
+
+    [[nodiscard]] float angle(const Vector3& to) const
+    {
+        return atan2(this->cross(to).length(), this->dot(to));
+    }
+
+    [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+
+    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion& quaternion) const;
+
+    [[nodiscard]] Vector3 scale(const Vector3& factor) const;
+
+    [[nodiscard]] Vector3 shear_x(float angle_y, float angle_z) const;
+
+    [[nodiscard]] Vector3 shear_y(float angle_x, float angle_z) const;
+
+    [[nodiscard]] Vector3 shear_z(float angle_x, float angle_y) const;
+
+    [[nodiscard]] Vector3 transform(const Basis3& by) const;
+
+    [[nodiscard]] Vector3 transform(const Transform2& by) const;
+
+    [[nodiscard]] Vector3 transform(const Transform3& by, float w = 1.0f) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -1049,88 +1156,9 @@ public:
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z);
     }
 
-    [[nodiscard]] float dot(const Vector3& other) const
-    {
-        return x * other.x + y * other.y + z * other.z;
-    }
-
-    [[nodiscard]] Matrix3 outer(const Vector3& other) const;
-
-    [[nodiscard]] Vector3 cross(const Vector3& other) const
-    {
-        return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
-    }
-
-    [[nodiscard]] Vector3 reflect(const Vector3& normal) const
-    {
-        Vector3 result;
-        const float dot = x * normal.x + y * normal.y + z * normal.z;
-        result.x = x - 2.0f * normal.x * dot;
-        result.y = y - 2.0f * normal.y * dot;
-        result.z = z - 2.0f * normal.z * dot;
-        return result;
-    }
-
-    [[nodiscard]] Vector3 inverse() const
-    {
-        return 1.0f / *this;
-    }
-
-    [[nodiscard]] Vector3 clamp_magnitude(const float min, const float max) const
-    {
-        if (const float mag_sqrd = magnitude_sqrd(); mag_sqrd > 0.0f) {
-            const auto norm = normalize();
-            if (const float mag = sqrt(mag_sqrd); mag < min) {
-                return norm * min;
-            }
-            else if (mag > max) {
-                return norm * max;
-            }
-        }
-        return *this;
-    }
-
-    [[nodiscard]] Vector3 round() const
-    {
-        return { nnm::round(x), nnm::round(y), nnm::round(z) };
-    }
-
-    [[nodiscard]] float angle(const Vector3& other) const
-    {
-        return atan2(this->cross(other).magnitude(), this->dot(other));
-    }
-
-    [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
-
-    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion& quaternion) const;
-
-    [[nodiscard]] Vector3 scale(const Vector3& factor) const;
-
-    [[nodiscard]] Vector3 shear_x(float angle_y, float angle_z) const;
-
-    [[nodiscard]] Vector3 shear_y(float angle_x, float angle_z) const;
-
-    [[nodiscard]] Vector3 shear_z(float angle_x, float angle_y) const;
-
-    [[nodiscard]] Vector3 transform(const Basis3& by) const;
-
-    [[nodiscard]] Vector3 transform(const Transform2& by) const;
-
-    [[nodiscard]] Vector3 transform(const Transform3& by, float w = 1.0f) const;
-
     [[nodiscard]] Vector2 xy() const
     {
         return { x, y };
-    }
-
-    [[nodiscard]] const float* ptr() const
-    {
-        return data.data();
-    }
-
-    float* ptr()
-    {
-        return data.data();
     }
 
     [[nodiscard]] const float* begin() const
@@ -1153,9 +1181,75 @@ public:
         return data.end();
     }
 
+    [[nodiscard]] const float* ptr() const
+    {
+        return data.data();
+    }
+
+    float* ptr()
+    {
+        return data.data();
+    }
+
+    [[nodiscard]] float at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] float operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    float& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] bool operator==(const Vector3& other) const
+    {
+        return data == other.data;
+    }
+
     [[nodiscard]] bool operator!=(const Vector3& other) const
     {
         return data != other.data;
+    }
+
+    [[nodiscard]] Vector3 operator+(const Vector3& other) const
+    {
+        return { x + other.x, y + other.y, z + other.z };
+    }
+
+    Vector3& operator+=(const Vector3& other)
+    {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+
+        return *this;
+    }
+
+    [[nodiscard]] Vector3 operator-(const Vector3& other) const
+    {
+        return { x - other.x, y - other.y, z - other.z };
+    }
+
+    Vector3& operator-=(const Vector3& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+        return *this;
     }
 
     [[nodiscard]] Vector3 operator*(const Vector3& other) const
@@ -1184,34 +1278,6 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator+(const Vector3& other) const
-    {
-        return { x + other.x, y + other.y, z + other.z };
-    }
-
-    Vector3& operator+=(const Vector3& other)
-    {
-        x += other.x;
-        y += other.y;
-        z += other.z;
-
-        return *this;
-    }
-
-    [[nodiscard]] Vector3 operator-(const Vector3& other) const
-    {
-        return { x - other.x, y - other.y, z - other.z };
-    }
-
-    Vector3& operator-=(const Vector3& other)
-    {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
-
-        return *this;
-    }
-
     [[nodiscard]] Vector3 operator/(const Vector3& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
@@ -1231,47 +1297,12 @@ public:
         return { x / value, y / value, z / value };
     }
 
-    Vector3& operator/=(const float val)
+    Vector3& operator/=(const float value)
     {
-        x /= val;
-        y /= val;
-        z /= val;
-
+        x /= value;
+        y /= value;
+        z /= value;
         return *this;
-    }
-
-    [[nodiscard]] bool operator<(const Vector3& other) const
-    {
-        return data < other.data;
-    }
-
-    [[nodiscard]] bool operator==(const Vector3& other) const
-    {
-        return data == other.data;
-    }
-
-    [[nodiscard]] float at(const int index) const
-    {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    float& at(const int index)
-    {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    [[nodiscard]] float operator[](const int index) const
-    {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    float& operator[](const int index)
-    {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
-        return data[index];
     }
 
     [[nodiscard]] Vector3 operator+() const
@@ -1284,9 +1315,14 @@ public:
         return { -x, -y, -z };
     }
 
+    [[nodiscard]] bool operator<(const Vector3& other) const
+    {
+        return data < other.data;
+    }
+
     [[nodiscard]] explicit operator bool() const
     {
-        return x != 0.0 || y != 0.0 || z != 0.0;
+        return x != 0.0f || y != 0.0f || z != 0.0f;
     }
 };
 
@@ -4541,6 +4577,19 @@ inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
 {
+}
+
+inline Matrix2 Vector2::outer(const Vector2& other) const
+{
+
+    return { {
+                 x * other.x,
+                 x * other.y,
+             },
+             {
+                 y * other.x,
+                 y * other.y,
+             } };
 }
 
 inline Vector2 Vector2::rotate(const float angle) const

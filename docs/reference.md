@@ -88,33 +88,36 @@ static Vector2 axis_y();
 
 ```c++
 Vector2 abs() const;
-float aspect_ratio() const;
 Vector2 ceil() const;
+Vector2 floor() const;
+Vector2 round() const;
+float aspect_ratio() const;
 Vector2 clamp(const Vector2& min, const Vector2& max) const;
-Vector2 normalize() const;
 Vector2 direction(const Vector2& to) const;
 float distance_sqrd(const Vector2& to) const;
 float distance(const Vector2& to) const;
-float angle(const Vector2& to) const;
-Vector2 floor() const;
+float manhattan_distance(const Vector2& to) const
 float length_sqrd() const;
 float length() const;
+Vector2 clamp_length(float min, float max) const;
+Vector2 normalize() const;
 Vector2 lerp(const Vector2& to, float weight) const;
 Vector2 lerp_clamped(const Vector2& to, float weight) const;
-int max_index() const;
-int min_index() const;
 float dot(const Vector2& other) const;
 float cross(const Vector2& other) const;
+Matrix2 outer(const Vector2& other) const;
 Vector2 reflect(const Vector2& normal) const;
 Vector2 project(const Vector2& onto) const;
+Vector2 inverse() const;
+float angle(const Vector2& to) const;
 Vector2 rotate(float angle) const;
 Vector2 scale(const Vector2& factor) const;
 Vector2 shear_x(float angle_y) const;
 Vector2 shear_y(float angle_x) const;
 Vector2 transform(const Basis2& by) const;
 Vector2 transform(const Transform2& by, float z = 1.0f) const;
-Vector2 inverse() const;
-Vector2 clamp_length(float min, float max) const;
+int max_index() const;
+int min_index() const;
 bool approx_equal(const Vector2& other) const;
 bool approx_zero() const;
 const float* begin() const;
@@ -172,6 +175,7 @@ union {
 
 ```c++
 Vector2i();
+explicit Vector2i(const Vector2& vector);
 Vector2i(int x, int y);
 static Vector2i all(int value);
 static Vector2i zero();
@@ -251,11 +255,15 @@ union {
 
 ```c++
 Vector3();
-Vector3(Vector3i vector);
+explicit Vector3(Vector3i vector);
+Vector3(const Vector2& vector, float z);
 Vector3(float x, float y, float z);
 static Vector3 all(float value);
 static Vector3 zero();
 static Vector3 one();
+static Vector3 axis_x();
+static Vector3 axis_y();
+static Vector3 axis_z();
 ```
 
 ### Methods
@@ -263,51 +271,72 @@ static Vector3 one();
 ```c++
 Vector3 abs() const;
 Vector3 ceil() const;
-Vector3 clamp(const Vector3& min, const Vector3& max) const;
-Vector3 normalize() const;
-Vector3 direction_to(const Vector3& to) const;
-float distance_sqrd_to(const Vector3& to) const;
-float distance_to(const Vector3& to) const;
 Vector3 floor() const;
+Vector3 round() const;
+Vector3 clamp(const Vector3& min, const Vector3& max) const;
+Vector3 direction(const Vector3& to) const;
+float distance_sqrd(const Vector3& to) const;
+float distance(const Vector3& to) const;
+float manhattan_distance(const Vector3& to) const;
 float length_sqrd() const;
 float length() const;
+Vector3 clamp_length(float min, float max) const;
+Vector3 normalize() const;
 Vector3 lerp(const Vector3& to, float weight) const;
+Vector3 lerp_clamped(const Vector3& to, float weight) const;
+float dot(const Vector3& other) const;
+Vector3 cross(const Vector3& other) const;
+Matrix3 outer(const Vector3& other) const;
+Vector3 reflect(const Vector3& normal) const;
+Vector3 project(const Vector3& onto) const;
+Vector3 inverse() const;
+float angle(const Vector3& other) const;
+Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+Vector3 rotate_quaternion(const Quaternion& quaternion) const;
+Vector3 scale(const Vector3& factor) const;
+Vector3 shear_x(float angle_y, float angle_z) const;
+Vector3 shear_y(float angle_x, float angle_z) const;
+Vector3 shear_z(float angle_x, float angle_y) const;
+Vector3 transform(const Basis3& by) const;
+Vector3 transform(const Transform2& by) const;
+Vector3 transform(const Transform3& by, float w = 1.0f) const;
 int max_index() const;
 int min_index() const;
 bool approx_equal(const Vector3& other) const;
 bool approx_zero() const;
-float dot(const Vector3& other) const;
-Vector3 cross(const Vector3& other) const;
-Vector3 reflect(const Vector3& normal) const;
-Vector3 inverse() const;
-Vector3 clamp_length(float min, float max) const;
-Vector3 round() const;
-float angle(const Vector3& other) const;
-Vector3 rotate(Vector3 axis, float angle) const;
-Vector3 rotate(const Matrix3& matrix) const;
-Vector3 transform(const Matrix4& matrix) const;
+Vector2 xy() const;
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
+const float* ptr() const;
+float* ptr();
+float at(int index) const;
+float& at(int index);
 ```
 
 ### Operators
 
 ```c++
+float operator[](int index) const;
+float& operator[](int index);
+bool operator==(const Vector3& other) const;
 bool operator!=(const Vector3& other) const;
-Vector3 operator*(const Vector3& other) const;
-Vector3& operator*=(const Vector3& other);
-Vector3 operator*(float val) const;
-Vector3& operator*=(float val);
 Vector3 operator+(const Vector3& other) const;
 Vector3& operator+=(const Vector3& other);
 Vector3 operator-(const Vector3& other) const;
 Vector3& operator-=(const Vector3& other);
+Vector3 operator*(const Vector3& other) const;
+Vector3& operator*=(const Vector3& other);
+Vector3 operator*(float value) const;
+Vector3 operator*(float value, const Vector3& vector);
+Vector3& operator*=(float value);
 Vector3 operator/(const Vector3& other) const;
 Vector3& operator/=(const Vector3& other);
-Vector3 operator/(float val) const;
-Vector3& operator/=(float val);
+Vector3 operator/(float value) const;
+Vector3 operator/(float value, const Vector3& vector);
+Vector3& operator/=(float value);
 bool operator<(const Vector3& other) const;
-bool operator==(const Vector3& other) const;
-float& operator[](int index);
-const float& operator[](int index) const;
 Vector3 operator+() const;
 Vector3 operator-() const;
 operator bool() const;
