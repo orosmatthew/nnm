@@ -6,18 +6,13 @@
 
 // ReSharper disable CppDFATimeOver
 
-#if defined(NNM_BOUNDS_CHECK_THROW)
+#if defined(NNM_BOUNDS_CHECK)
 #include <stdexcept>
-#define NNM_BOUNDS_CHECK(msg, expression) \
-    if (!(expression))                    \
+#define NNM_BOUNDS_CHECK_ASSERT(msg, expression) \
+    if (!(expression))                           \
         throw std::out_of_range(msg);
-#elif defined(NNM_BOUNDS_CHECK_PRINT)
-#include <iostream>
-#define NNM_BOUNDS_CHECK(msg, expression) \
-    if (!(expression))                    \
-        std::cerr << __FILE__ << ":" << __LINE__ << " Out of range: " << msg << std::endl;
 #else
-#define NNM_BOUNDS_CHECK(msg, expression)
+#define NNM_BOUNDS_CHECK_ASSERT(msg, expression)
 #endif
 
 namespace nnm {
@@ -475,25 +470,25 @@ public:
 
     [[nodiscard]] float at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
     float& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
     float& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
@@ -733,25 +728,25 @@ public:
 
     [[nodiscard]] int at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
     int& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
     int& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
         return data[index];
     }
 
@@ -1189,25 +1184,25 @@ public:
 
     [[nodiscard]] float at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
     float& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
     float& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
@@ -1605,25 +1600,25 @@ public:
 
     [[nodiscard]] int at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
         return data[index];
     }
 
     int& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
         return data[index];
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
         return data[index];
     }
 
     int& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
         return data[index];
     }
 
@@ -2012,25 +2007,25 @@ public:
 
     [[nodiscard]] float at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
     float& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
     float& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
@@ -2542,25 +2537,25 @@ public:
 
     [[nodiscard]] float at(const int index) const
     {
-        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector.at(index);
     }
 
     float& at(const int index)
     {
-        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector.at(index);
     }
 
     [[nodiscard]] float operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
     }
 
     [[nodiscard]] float& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
     }
 };
@@ -2634,7 +2629,7 @@ public:
 
     [[nodiscard]] float minor(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         const int other_column = (column + 1) % 2;
         const int other_row = (row + 1) % 2;
         return at(other_column, other_row);
@@ -2642,7 +2637,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
     }
 
@@ -2701,25 +2696,25 @@ public:
 
     [[nodiscard]] const Vector2& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
     Vector2& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
     float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
@@ -2745,13 +2740,13 @@ public:
 
     const Vector2& operator[](const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
     Vector2& operator[](const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
@@ -2827,7 +2822,9 @@ public:
         Matrix2 result;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
-                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1);
+                const float sum1 = at(0, r) * other.at(c, 0);
+                const float sum2 = at(1, r) * other.at(c, 1);
+                result.at(c, r) = sum1 + sum2;
             }
         }
         return result;
@@ -3031,31 +3028,31 @@ public:
 
     [[nodiscard]] const Vector2& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
         return matrix[column];
     }
 
     Vector2& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
         return matrix[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
     float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
     const Vector2& operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Basis2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
         return matrix[index];
     }
 
@@ -3189,7 +3186,7 @@ public:
 
     [[nodiscard]] float minor_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return minor_matrix_at(column, row).determinant();
     }
 
@@ -3216,7 +3213,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
@@ -3281,25 +3278,25 @@ public:
 
     [[nodiscard]] const Vector3& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
     Vector3& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
     float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
@@ -3325,13 +3322,13 @@ public:
 
     const Vector3& operator[](const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
     Vector3& operator[](const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
@@ -3407,7 +3404,10 @@ public:
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1) + at(2, r) * other.at(c, 2);
+                const float sum1 = at(0, r) * other.at(c, 0);
+                const float sum2 = at(1, r) * other.at(c, 1);
+                const float sum3 = at(2, r) * other.at(c, 2);
+                result.at(c, r) = sum1 + sum2 + sum3;
             }
         }
         return result;
@@ -3785,7 +3785,7 @@ public:
 
     [[nodiscard]] Matrix3 minor_matrix_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         Matrix3 minor_matrix;
         int minor_col = 0;
         for (int c = 0; c < 4; ++c) {
@@ -3807,7 +3807,7 @@ public:
 
     [[nodiscard]] float minor_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return minor_matrix_at(column, row).determinant();
     }
 
@@ -3834,7 +3834,7 @@ public:
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
@@ -3898,25 +3898,25 @@ public:
 
     [[nodiscard]] const Vector4& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
         return columns[column];
     }
 
     Vector4& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
         return columns[column];
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
     }
 
     [[nodiscard]] float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
     }
 
@@ -3942,13 +3942,13 @@ public:
 
     const Vector4& operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
         return columns[index];
     }
 
     Vector4& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Matrix4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
         return columns[index];
     }
 
@@ -3990,8 +3990,11 @@ public:
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
             for (int r = 0; r < 4; ++r) {
-                result.at(c, r) = at(0, r) * other.at(c, 0) + at(1, r) * other.at(c, 1) + at(2, r) * other.at(c, 2)
-                    + at(3, r) * other.at(c, 3);
+                const float sum1 = at(0, r) * other.at(c, 0);
+                const float sum2 = at(1, r) * other.at(c, 1);
+                const float sum3 = at(2, r) * other.at(c, 2);
+                const float sum4 = at(3, r) * other.at(c, 3);
+                result.at(c, r) = sum1 + sum2 + sum3 + sum4;
             }
         }
         return result;
@@ -4264,37 +4267,37 @@ public:
 
     [[nodiscard]] const Vector3& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
     Vector3& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     [[nodiscard]] const Vector3& operator[](const int index) const
     {
-        NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 
     Vector3& operator[](const int index)
     {
-        NNM_BOUNDS_CHECK("Basis3", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 
@@ -4515,43 +4518,43 @@ public:
 
     [[nodiscard]] const Vector4& at(const int column) const
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
     Vector4& at(const int column)
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
     [[nodiscard]] Vector4 row_at(const int row) const
     {
-        NNM_BOUNDS_CHECK("Transform3", row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", row >= 0 && row <= 3);
         return { at(0, row), at(1, row), at(2, row), at(3, row) };
     }
 
     [[nodiscard]] float at(const int column, const int row) const
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     float& at(const int column, const int row)
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
     [[nodiscard]] const Vector4& operator[](const int column) const
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix[column];
     }
 
     Vector4& operator[](const int column)
     {
-        NNM_BOUNDS_CHECK("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix[column];
     }
 

@@ -1,4 +1,4 @@
-#define NNM_BOUNDS_CHECK_THROW
+#define NNM_BOUNDS_CHECK
 #include <nnm/nnm.hpp>
 
 #include "test.hpp"

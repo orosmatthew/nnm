@@ -4,14 +4,11 @@
 
 ```c++
 // If defined, will throw std::out_of_range on invalid bounds access.
-NNM_BOUNDS_CHECK_THROW 
+NNM_BOUNDS_CHECK
 
-// If defined, will print a message to stderr on invalid bounds access.
-NNM_BOUNDS_CHECK_PRINT 
-    
-// Macro function to check bounds. Behavior dependes on macros above.
+// Macro function to check bounds. Behavior dependes on NNM_BOUNDS_CHECK being defined.
 // Default behavior is no bounds checking and thus will do nothing.
-NNM_BOUNDS_CHECK(msg, expression)
+NNM_BOUNDS_CHECK_ASSERT(msg, expression)
 ```
 
 ## Constants
@@ -488,7 +485,7 @@ union {
         int z;
         int w;
     };
-    std::array<int, 4> data {};
+    std::array<int, 4> array {};
 };
 ```
 
