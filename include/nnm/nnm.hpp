@@ -2435,7 +2435,10 @@ public:
     }
 
     explicit Quaternion(const Vector4& vector)
-        : vector(vector)
+        : x(vector.x)
+        , y(vector.y)
+        , z(vector.z)
+        , w(vector.w)
     {
     }
 
@@ -3719,11 +3722,7 @@ public:
     {
     }
 
-    Matrix4(
-        const Vector4& column1,
-        const Vector4& column2,
-        const Vector4& column3,
-        const Vector4& column4)
+    Matrix4(const Vector4& column1, const Vector4& column2, const Vector4& column3, const Vector4& column4)
         : col0_row0(column1[0])
         , col0_row1(column1[1])
         , col0_row2(column1[2])
