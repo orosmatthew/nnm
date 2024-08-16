@@ -1,5 +1,19 @@
 # Reference
 
+## Macros
+
+```c++
+// If defined, will throw std::out_of_range on invalid bounds access.
+NNM_BOUNDS_CHECK_THROW 
+
+// If defined, will print a message to stderr on invalid bounds access.
+NNM_BOUNDS_CHECK_PRINT 
+    
+// Macro function to check bounds. Behavior dependes on macros above.
+// Default behavior is no bounds checking and thus will do nothing.
+NNM_BOUNDS_CHECK(msg, expression)
+```
+
 ## Constants
 
 ```c++
@@ -26,8 +40,8 @@ float pow(float base, float power);
 float sqrd(float value);
 int sqrd(int value);
 float floor(float value);
-float unclamped_lerp(float from, float to, float weight);
 float lerp(float from, float to, float weight);
+float lerp_clamped(float from, float to, float weight);
 float sin(float value);
 float cos(float value);
 float tan(float value);
@@ -61,11 +75,13 @@ union {
 
 ```c++
 Vector2();
-Vector2(const Vector2i& vector);
+explicit Vector2(const Vector2i& vector);
 Vector2(float x, float y);
 static Vector2 all(float value);
 static Vector2 zero();
 static Vector2 one();
+static Vector2 axis_x();
+static Vector2 axis_y();
 ```
 
 ### Methods
@@ -76,48 +92,65 @@ float aspect_ratio() const;
 Vector2 ceil() const;
 Vector2 clamp(const Vector2& min, const Vector2& max) const;
 Vector2 normalize() const;
-Vector2 direction_to(const Vector2& to) const;
-float distance_sqrd_to(const Vector2& to) const;
-float distance_to(const Vector2& to) const;
+Vector2 direction(const Vector2& to) const;
+float distance_sqrd(const Vector2& to) const;
+float distance(const Vector2& to) const;
+float angle(const Vector2& to) const;
 Vector2 floor() const;
 float length_sqrd() const;
 float length() const;
 Vector2 lerp(const Vector2& to, float weight) const;
+Vector2 lerp_clamped(const Vector2& to, float weight) const;
 int max_index() const;
 int min_index() const;
 bool approx_equal(const Vector2& other) const;
 bool approx_zero() const;
 float dot(const Vector2& other) const;
+float cross(const Vector2& other) const;
 Vector2 reflect(const Vector2& normal) const;
 Vector2 project(const Vector2& onto) const;
 Vector2 rotate(float angle) const;
+Vector2 scale(const Vector2& factor) const;
+Vector2 shear_x(float angle_y) const;
+Vector2 shear_y(float angle_x) const;
+Vector2 transform(const Basis2& by) const;
+Vector2 transform(const Transform2& by, float z = 1.0f) const;
 Vector2 inverse() const;
 Vector2 clamp_length(float min, float max) const;
-Vector2 transform(const Basis2& by) const;
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
+const float* ptr() const;
+float* ptr();
+float at(const int index) const;
+float& at(const int index);
 ```
 
 ### Operators
 
 ```c++
+float operator[](int index) const;
+float& operator[](int index);
+bool operator==(const Vector2& other) const;
 bool operator!=(const Vector2& other) const;
-Vector2 operator*(const Vector2& other) const;
-Vector2& operator*=(const Vector2& other);
-Vector2 operator*(float value) const;
-Vector2& operator*=(float value);
 Vector2 operator+(const Vector2& other) const;
 Vector2& operator+=(const Vector2& other);
 Vector2 operator-(const Vector2& other) const;
 Vector2& operator-=(const Vector2& other);
+Vector2 operator*(const Vector2& other) const;
+Vector2& operator*=(const Vector2& other);
+Vector2 operator*(float value) const;
+Vector2 operator*(float value, const Vector2& vector);
+Vector2& operator*=(float value);
 Vector2 operator/(const Vector2& other) const;
 Vector2& operator/=(const Vector2& other);
 Vector2 operator/(float value) const;
+Vector2 operator/(const float value, const Vector2& vector);
 Vector2& operator/=(float value);
-bool operator<(const Vector2& other) const;
-bool operator==(const Vector2& other) const;
-float operator[](int index) const;
-float& operator[](int index);
 Vector2 operator+() const;
 Vector2 operator-() const;
+bool operator<(const Vector2& other) const;
 operator bool() const;
 ```
 

@@ -456,31 +456,31 @@ int main()
         {
             const nnm::Vector2 from1(1.0f, 1.0f);
             const nnm::Vector2 to1(2.0f, 2.0f);
-            auto direction1 = from1.direction_to(to1);
+            auto direction1 = from1.direction(to1);
             ASSERT(nnm::approx_equal(direction1.x, 0.7071067812f));
             ASSERT(nnm::approx_equal(direction1.y, 0.7071067812f));
 
             const nnm::Vector2 from2(-1.0f, -1.0f);
             const nnm::Vector2 to2(1.0f, 1.0f);
-            auto direction2 = from2.direction_to(to2);
+            auto direction2 = from2.direction(to2);
             ASSERT(nnm::approx_equal(direction2.x, 0.7071067812f));
             ASSERT(nnm::approx_equal(direction2.y, 0.7071067812f));
 
             const nnm::Vector2 from3(0.0f, 0.0f);
             const nnm::Vector2 to3(1.0f, 0.0f);
-            auto direction3 = from3.direction_to(to3);
+            auto direction3 = from3.direction(to3);
             ASSERT(nnm::approx_equal(direction3.x, 1.0f));
             ASSERT(nnm::approx_equal(direction3.y, 0.0f));
 
             const nnm::Vector2 from4(0.0f, 0.0f);
             const nnm::Vector2 to4(0.0f, 1.0f);
-            auto direction4 = from4.direction_to(to4);
+            auto direction4 = from4.direction(to4);
             ASSERT(nnm::approx_equal(direction4.x, 0.0f));
             ASSERT(nnm::approx_equal(direction4.y, 1.0f));
 
             const nnm::Vector2 from5(1.0f, 2.0f);
             const nnm::Vector2 to5(1.0f, 2.0f);
-            auto direction5 = from5.direction_to(to5);
+            auto direction5 = from5.direction(to5);
             ASSERT(nnm::approx_equal(direction5.x, 0.0f));
             ASSERT(nnm::approx_equal(direction5.y, 0.0f));
         }
@@ -489,46 +489,46 @@ int main()
         {
             const nnm::Vector2 from1(1.0f, 1.0f);
             const nnm::Vector2 to1(2.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from1.distance_sqrd_to(to1), 2.0f));
+            ASSERT(nnm::approx_equal(from1.distance_sqrd(to1), 2.0f));
 
             const nnm::Vector2 from2(-1.0f, -1.0f);
             const nnm::Vector2 to2(1.0f, 1.0f);
-            ASSERT(nnm::approx_equal(from2.distance_sqrd_to(to2), 8.0f));
+            ASSERT(nnm::approx_equal(from2.distance_sqrd(to2), 8.0f));
 
             const nnm::Vector2 from3(0.0f, 0.0f);
             const nnm::Vector2 to3(3.0f, 0.0f);
-            ASSERT(nnm::approx_equal(from3.distance_sqrd_to(to3), 9.0f));
+            ASSERT(nnm::approx_equal(from3.distance_sqrd(to3), 9.0f));
 
             const nnm::Vector2 from4(0.0f, 0.0f);
             const nnm::Vector2 to4(0.0f, 4.0f);
-            ASSERT(nnm::approx_equal(from4.distance_sqrd_to(to4), 16.0f));
+            ASSERT(nnm::approx_equal(from4.distance_sqrd(to4), 16.0f));
 
             const nnm::Vector2 from5(1.0f, 2.0f);
             const nnm::Vector2 to5(1.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from5.distance_sqrd_to(to5), 0.0f));
+            ASSERT(nnm::approx_equal(from5.distance_sqrd(to5), 0.0f));
         }
 
         test_section("distance_to");
         {
             nnm::Vector2 from(1.0f, 1.0f);
             nnm::Vector2 to(2.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from.distance_to(to), nnm::sqrt(2.0f)));
+            ASSERT(nnm::approx_equal(from.distance(to), nnm::sqrt(2.0f)));
 
             from = nnm::Vector2(-1.0f, -1.0f);
             to = nnm::Vector2(1.0f, 1.0f);
-            ASSERT(nnm::approx_equal(from.distance_to(to), nnm::sqrt(8.0f)));
+            ASSERT(nnm::approx_equal(from.distance(to), nnm::sqrt(8.0f)));
 
             from = nnm::Vector2(0.0f, 0.0f);
             to = nnm::Vector2(3.0f, 0.0f);
-            ASSERT(nnm::approx_equal(from.distance_to(to), 3.0f));
+            ASSERT(nnm::approx_equal(from.distance(to), 3.0f));
 
             from = nnm::Vector2(0.0f, 0.0f);
             to = nnm::Vector2(0.0f, 4.0f);
-            ASSERT(nnm::approx_equal(from.distance_to(to), 4.0f));
+            ASSERT(nnm::approx_equal(from.distance(to), 4.0f));
 
             from = nnm::Vector2(1.0f, 2.0f);
             to = nnm::Vector2(1.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from.distance_to(to), 0.0f));
+            ASSERT(nnm::approx_equal(from.distance(to), 0.0f));
         }
 
         test_section("floor");
@@ -540,25 +540,25 @@ int main()
         test_section("length_sqrd");
         {
             nnm::Vector2 v(3.0f, 4.0f);
-            ASSERT(nnm::approx_equal(v.magnitude_sqrd(), 25.0f));
+            ASSERT(nnm::approx_equal(v.length_sqrd(), 25.0f));
 
             v = nnm::Vector2(-2.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v.magnitude_sqrd(), 29.0f));
+            ASSERT(nnm::approx_equal(v.length_sqrd(), 29.0f));
 
             v = nnm::Vector2(0.0f, 0.0f);
-            ASSERT(nnm::approx_equal(v.magnitude_sqrd(), 0.0f));
+            ASSERT(nnm::approx_equal(v.length_sqrd(), 0.0f));
         }
 
         test_section("length");
         {
             nnm::Vector2 v(3.0f, 4.0f);
-            ASSERT(nnm::approx_equal(v.magnitude(), 5.0f));
+            ASSERT(nnm::approx_equal(v.length(), 5.0f));
 
             v = nnm::Vector2(-2.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v.magnitude(), nnm::sqrt(29.0f)));
+            ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(29.0f)));
 
             v = nnm::Vector2(0.0f, 0.0f);
-            ASSERT(nnm::approx_equal(v.magnitude(), 0.0f));
+            ASSERT(nnm::approx_equal(v.length(), 0.0f));
         }
 
         test_section("lerp");
@@ -665,11 +665,11 @@ int main()
 
         test_section("clamp_length");
         {
-            ASSERT(nnm::Vector2(3.0f, 4.0f).clamp_magnitude(2.0f, 5.0f) == nnm::Vector2(3.0f, 4.0f));
-            ASSERT(nnm::Vector2(1.0f, 2.0f).clamp_magnitude(0.5f, 3.0f) == nnm::Vector2(1.0f, 2.0f));
-            ASSERT(nnm::Vector2(3.0f, 4.0f).clamp_magnitude(2.0f, 2.0f).approx_equal(nnm::Vector2(1.2f, 1.6f)));
-            ASSERT(nnm::approx_equal(nnm::Vector2(1.0f, 1.0f).clamp_magnitude(2.0f, 5.0f).magnitude(), 2.0f));
-            ASSERT(nnm::Vector2(5.0f, 6.0f).clamp_magnitude(2.0f, 5.0f).magnitude() == 5.0f);
+            ASSERT(nnm::Vector2(3.0f, 4.0f).clamp_length(2.0f, 5.0f) == nnm::Vector2(3.0f, 4.0f));
+            ASSERT(nnm::Vector2(1.0f, 2.0f).clamp_length(0.5f, 3.0f) == nnm::Vector2(1.0f, 2.0f));
+            ASSERT(nnm::Vector2(3.0f, 4.0f).clamp_length(2.0f, 2.0f).approx_equal(nnm::Vector2(1.2f, 1.6f)));
+            ASSERT(nnm::approx_equal(nnm::Vector2(1.0f, 1.0f).clamp_length(2.0f, 5.0f).length(), 2.0f));
+            ASSERT(nnm::Vector2(5.0f, 6.0f).clamp_length(2.0f, 5.0f).length() == 5.0f);
         }
 
         test_section("transform");
