@@ -588,6 +588,16 @@ public:
     {
     }
 
+    static Vector2i axis_x()
+    {
+        return { 1, 0 };
+    }
+
+    static Vector2i axis_y()
+    {
+        return { 0, 1 };
+    }
+
     static Vector2i all(int value)
     {
         return { value, value };
@@ -881,6 +891,21 @@ public:
         , y(y)
         , z(z)
     {
+    }
+
+    static Vector3 axis_x()
+    {
+        return { 1.0f, 0.0f, 0.0f };
+    }
+
+    static Vector3 axis_y()
+    {
+        return { 0.0f, 1.0f, 0.0f };
+    }
+
+    static Vector3 axis_z()
+    {
+        return { 0.0f, 0.0f, 1.0f };
     }
 
     static Vector3 all(float value)
@@ -1288,6 +1313,21 @@ public:
     {
     }
 
+    static Vector3i axis_x()
+    {
+        return { 1, 0, 0 };
+    }
+
+    static Vector3i axis_y()
+    {
+        return { 0, 1, 0 };
+    }
+
+    static Vector3i axis_z()
+    {
+        return { 0, 0, 1 };
+    }
+
     static Vector3i all(const int value)
     {
         return { value, value, value };
@@ -1603,6 +1643,26 @@ public:
         , z(z)
         , w(w)
     {
+    }
+
+    static Vector4 axis_x()
+    {
+        return { 1.0f, 0.0f, 0.0f, 0.0f };
+    }
+
+    static Vector4 axis_y()
+    {
+        return { 0.0f, 1.0f, 0.0f, 0.0f };
+    }
+
+    static Vector4 axis_z()
+    {
+        return { 0.0f, 0.0f, 1.0f, 0.0f };
+    }
+
+    static Vector4 axis_w()
+    {
+        return { 0.0f, 0.0f, 0.0f, 1.0f };
     }
 
     static Vector4 all(const float value)
@@ -1987,6 +2047,26 @@ public:
         , z(z)
         , w(w)
     {
+    }
+
+    static Vector4i axis_x()
+    {
+        return { 1, 0, 0, 0 };
+    }
+
+    static Vector4i axis_y()
+    {
+        return { 0, 1, 0, 0 };
+    }
+
+    static Vector4i axis_z()
+    {
+        return { 0, 0, 1, 0 };
+    }
+
+    static Vector4i axis_w()
+    {
+        return { 0, 0, 0, 1 };
     }
 
     static Vector4i all(const int value)
