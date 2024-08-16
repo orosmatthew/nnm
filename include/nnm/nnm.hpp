@@ -1895,13 +1895,25 @@ public:
         return data == other.data;
     }
 
-    [[nodiscard]] float& operator[](const int index)
+    [[nodiscard]] float at(const int index) const
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    [[nodiscard]] float operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    float& operator[](const int index)
     {
         NNM_BOUNDS_CHECK("Vector4", index >= 0 && index <= 3);
         return data[index];
@@ -2374,104 +2386,41 @@ public:
 
     [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
     {
-        return approx_equal(x, other.x) && approx_equal(y, other.y) && approx_equal(z, other.z)
-            && approx_equal(w, other.w);
-    }
-
-    [[nodiscard]] bool is_zero_approx() const
-    {
-        return approx_zero(x) && approx_zero(y) && approx_zero(z) && approx_zero(w);
-    }
-
-    [[nodiscard]] Matrix3 matrix() const;
-
-    [[nodiscard]] bool operator!=(const Quaternion& other) const
-    {
-        return data != other.data;
-    }
-
-    [[nodiscard]] Quaternion operator*(const Quaternion& other) const
-    {
-        return { w * other.x + x * other.w + y * other.z - z * other.y,
-                 w * other.y + y * other.w + z * other.x - x * other.z,
-                 w * other.z + z * other.w + x * other.y - y * other.x,
-                 w * other.w - x * other.x - y * other.y - z * other.z };
-    }
-
-    void operator*=(const Quaternion& other)
-    {
-        const float new_x = w * other.x + x * other.w + y * other.z - z * other.y;
-        const float new_y = w * other.y + y * other.w + z * other.x - x * other.z;
-        const float new_z = w * other.z + z * other.w + x * other.y - y * other.x;
-        w = w * other.w - x * other.x - y * other.y - z * other.z;
-        x = new_x;
-        y = new_y;
-        z = new_z;
-    }
-
-    [[nodiscard]] Quaternion operator*(const float value) const
-    {
-        return Quaternion(data * value);
-    }
-
-    void operator*=(const float value)
-    {
-        data *= value;
-    }
-
-    [[nodiscard]] Quaternion operator+(const Quaternion& other) const
-    {
-        return Quaternion(data + other.data);
-    }
-
-    void operator+=(const Quaternion& other)
-    {
-        data += other.data;
-    }
-
-    [[nodiscard]] Quaternion operator-(const Quaternion& other) const
-    {
-        return Quaternion(data - other.data);
-    }
-
-    void operator-=(const Quaternion& other)
-    {
-        data -= other.data;
-    }
-
-    [[nodiscard]] Quaternion operator/(const float value) const
-    {
-        return Quaternion(data * (1.0f / value));
-    }
-
-    void operator/=(const float value)
-    {
-        data *= 1.0f / value;
+        return vector.approx_equal(other.vector);
     }
 
     [[nodiscard]] bool operator==(const Quaternion& other) const
     {
-        return data == other.data;
+        return vector == other.vector;
+    }
+
+    [[nodiscard]] bool operator!=(const Quaternion& other) const
+    {
+        return vector != other.vector;
+    }
+
+    [[nodiscard]] float at(const int index) const
+    {
+        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        return vector.at(index);
+    }
+
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        return vector.at(index);
+    }
+
+    [[nodiscard]] float operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        return vector[index];
     }
 
     [[nodiscard]] float& operator[](const int index)
     {
-        return data[index];
-    }
-
-    [[nodiscard]] const float& operator[](const int index) const
-    {
-        return data[index];
-    }
-
-    [[nodiscard]] Quaternion operator+() const
-    {
-        return Quaternion(data);
-    }
-
-    [[nodiscard]] Quaternion operator-() const
-    {
-        return Quaternion(-data);
+        NNM_BOUNDS_CHECK("Quaternion", index >= 0 && index <= 3);
+        return vector[index];
     }
 };
 
