@@ -2512,12 +2512,12 @@ public:
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const float weight) const
     {
         const float dot = clamp(vector.dot(to.vector), -1.0f, 1.0f);
-        const float theta = acos(dot);
-        const float sin_theta = sin(theta);
-        if (sin_theta == 0.0f) {
+        const float angle = acos(dot);
+        const float sin_angle = sin(angle);
+        if (sin_angle == 0.0f) {
             return Quaternion(vector.lerp(to.vector, weight));
         }
-        return Quaternion((vector * sin((1.0f - weight) * theta) + to.vector * sin(weight * theta)) / sin_theta);
+        return Quaternion((vector * sin((1.0f - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
     }
 
     [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
