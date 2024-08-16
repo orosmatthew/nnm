@@ -278,9 +278,8 @@ public:
     [[nodiscard]] Vector2 normalize() const
     {
         Vector2 result;
-        if (const float length = this->length(); length > 0.0f) {
-            const float inverse_length = 1.0f / length;
-            result = *this * inverse_length;
+        if (const float magnitude = this->magnitude(); magnitude > 0.0f) {
+            result = *this / magnitude;
         }
         return result;
     }
@@ -307,14 +306,14 @@ public:
         return { nnm::floor(x), nnm::floor(y) };
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] float magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(length_sqrd());
+        return sqrt(magnitude_sqrd());
     }
 
     [[nodiscard]] Vector2 lerp(const Vector2& to, const float weight) const
@@ -375,7 +374,7 @@ public:
 
     [[nodiscard]] Vector2 project(const Vector2& onto) const
     {
-        return onto * (dot(onto) / onto.length_sqrd());
+        return onto * (dot(onto) / onto.magnitude_sqrd());
     }
 
     [[nodiscard]] Vector2 rotate(float angle) const;
@@ -395,14 +394,14 @@ public:
         return 1.0f / *this;
     }
 
-    [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector2 clamp_magnitude(const float min, const float max) const
     {
-        if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
+        if (const float mag_sqrd = magnitude_sqrd(); mag_sqrd > 0.0f) {
             const auto norm = normalize();
-            if (const float length = sqrt(length_sqr); length < min) {
+            if (const float mag = sqrt(mag_sqrd); mag < min) {
                 return norm * min;
             }
-            else if (length > max) {
+            else if (mag > max) {
                 return norm * max;
             }
         }
@@ -618,14 +617,14 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
-    [[nodiscard]] int length_sqrd() const
+    [[nodiscard]] int magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(static_cast<float>(length_sqrd()));
+        return sqrt(static_cast<float>(magnitude_sqrd()));
     }
 
     [[nodiscard]] int max_index() const
@@ -916,9 +915,8 @@ public:
     [[nodiscard]] Vector3 normalize() const
     {
         Vector3 result;
-        if (const auto length = this->length(); length > 0.0f) {
-            const float inverse_length = 1.0f / length;
-            result = *this * inverse_length;
+        if (const auto mag = this->magnitude(); mag > 0.0f) {
+            result = *this / mag;
         }
         return result;
     }
@@ -946,14 +944,14 @@ public:
         return { nnm::floor(x), nnm::floor(y), nnm::floor(z) };
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] float magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(length_sqrd());
+        return sqrt(magnitude_sqrd());
     }
 
     [[nodiscard]] Vector3 lerp(const Vector3& to, const float weight) const
@@ -1033,14 +1031,14 @@ public:
         return 1.0f / *this;
     }
 
-    [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector3 clamp_magnitude(const float min, const float max) const
     {
-        if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
+        if (const float mag_sqrd = magnitude_sqrd(); mag_sqrd > 0.0f) {
             const auto norm = normalize();
-            if (const float length = sqrt(length_sqr); length < min) {
+            if (const float mag = sqrt(mag_sqrd); mag < min) {
                 return norm * min;
             }
-            else if (length > max) {
+            else if (mag > max) {
                 return norm * max;
             }
         }
@@ -1054,7 +1052,7 @@ public:
 
     [[nodiscard]] float angle(const Vector3& other) const
     {
-        return atan2(this->cross(other).length(), this->dot(other));
+        return atan2(this->cross(other).magnitude(), this->dot(other));
     }
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
@@ -1312,14 +1310,14 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
-    [[nodiscard]] int length_sqrd() const
+    [[nodiscard]] int magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(static_cast<float>(length_sqrd()));
+        return sqrt(static_cast<float>(magnitude_sqrd()));
     }
 
     [[nodiscard]] int min_index() const
@@ -1645,21 +1643,20 @@ public:
     [[nodiscard]] Vector4 normalize() const
     {
         Vector4 result;
-        if (const float len = length(); len > 0.0f) {
-            const float inverse_length = 1.0f / len;
-            result = *this * inverse_length;
+        if (const float mag = magnitude(); mag > 0.0f) {
+            result = *this / mag;
         }
         return result;
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] float magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(length_sqrd());
+        return sqrt(magnitude_sqrd());
     }
 
     [[nodiscard]] Vector4 lerp(const Vector4& to, const float weight) const
@@ -1735,14 +1732,14 @@ public:
         return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
     }
 
-    [[nodiscard]] Vector4 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector4 clamp_magnitude(const float min, const float max) const
     {
-        if (const float length_sqr = length_sqrd(); length_sqr > 0.0f) {
+        if (const float mag_sqrd = magnitude_sqrd(); mag_sqrd > 0.0f) {
             const auto norm = normalize();
-            if (const float length = sqrt(length_sqr); length < min) {
+            if (const float mag = sqrt(mag_sqrd); mag < min) {
                 return norm * min;
             }
-            else if (length > max) {
+            else if (mag > max) {
                 return norm * max;
             }
         }
@@ -2014,14 +2011,14 @@ public:
         return { clamp(x, min.x, max.x), clamp(y, min.y, max.y), clamp(z, min.z, max.z), clamp(w, min.w, max.w) };
     }
 
-    [[nodiscard]] int length_sqrd() const
+    [[nodiscard]] int magnitude_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] float magnitude() const
     {
-        return sqrt(static_cast<float>(length_sqrd()));
+        return sqrt(static_cast<float>(magnitude_sqrd()));
     }
 
     [[nodiscard]] int max_index() const
@@ -2308,6 +2305,11 @@ public:
     {
     }
 
+    [[nodiscard]] static Quaternion identity()
+    {
+        return { 0.0f, 0.0f, 0.0f, 1.0f };
+    }
+
     [[nodiscard]] static Quaternion from_axis_angle(const Vector3& axis, const float angle)
     {
         const Vector3 norm = axis.normalize();
@@ -2365,7 +2367,7 @@ public:
 
     [[nodiscard]] float magnitude_sqrd() const
     {
-        return vector.length_sqrd();
+        return vector.magnitude_sqrd();
     }
 
     [[nodiscard]] float magnitude() const
