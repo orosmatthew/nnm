@@ -21,7 +21,7 @@ constexpr float epsilon = 0.00001f;
 
 inline float sign(const float value)
 {
-    return std::copysign(1.0f, value);
+    return std::copysignf(1.0f, value);
 }
 
 inline int sign(const int value)
