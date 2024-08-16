@@ -203,6 +203,7 @@ class Matrix3;
 class Basis3;
 class Transform2;
 class Transform3;
+class Quaternion;
 
 inline Vector2 operator/(float value, const Vector2& vector);
 
@@ -1056,6 +1057,8 @@ public:
     }
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+
+    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion& quaternion) const;
 
     [[nodiscard]] Vector3 scale(const Vector3& factor) const;
 
@@ -4038,8 +4041,21 @@ public:
         return Basis3(r_matrix);
     }
 
-    // TODO
-    static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
+    static Basis3 from_rotation_quaternion(const Quaternion& quaternion)
+    {
+        const Quaternion& q = quaternion;
+        Matrix3 matrix;
+        matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
+        matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
+        matrix.at(0, 2) = 2 * (q.x * q.z - q.y * q.w);
+        matrix.at(1, 0) = 2 * (q.x * q.y - q.z * q.w);
+        matrix.at(1, 1) = 1 - 2 * (sqrd(q.x) + sqrd(q.z));
+        matrix.at(1, 2) = 2 * (q.y * q.z + q.x * q.w);
+        matrix.at(2, 0) = 2 * (q.x * q.z + q.y * q.w);
+        matrix.at(2, 1) = 2 * (q.y * q.z - q.x * q.w);
+        matrix.at(2, 2) = 1 - 2 * (sqrd(q.x) + sqrd(q.y));
+        return Basis3(matrix);
+    }
 
     static Basis3 from_shear_x(const float angle_y, const float angle_z)
     {
@@ -4074,6 +4090,16 @@ public:
     [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion& quaternion) const
+    {
+        return transform(from_rotation_quaternion(quaternion));
+    }
+
+    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion& quaternion) const
+    {
+        return transform_local(from_rotation_quaternion(quaternion));
     }
 
     [[nodiscard]] Basis3 scale(const Vector3& factor) const
@@ -4241,16 +4267,43 @@ public:
         return from_basis_translation(basis, Vector3::zero());
     }
 
-    // TODO
-    static Transform3 from_rotation_quaternion();
+    static Transform3 from_projection_perspective(
+        const float fov, const float aspect_ratio, const float near, const float far)
+    {
+        Matrix4 matrix;
+        const float tan_half_fov = tan(fov / 2.0f);
+        matrix.at(0, 0) = 1.0f / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = 1.0f / tan_half_fov;
+        matrix.at(2, 2) = (far + near) / (near - far);
+        matrix.at(2, 3) = -1.0f;
+        matrix.at(3, 2) = 2.0f * far * near / (near - far);
+        matrix.at(3, 3) = 0.0f;
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_projection_orthographic(
+        const float left, const float right, const float bottom, const float top, const float near, const float far)
+    {
+        auto matrix = Matrix4::identity();
+        matrix.at(0, 0) = 2.0f / (right - left);
+        matrix.at(1, 1) = 2.0f / (top - bottom);
+        matrix.at(2, 2) = -2.0f / (far - near);
+        matrix.at(3, 0) = -((right + left) / (right - left));
+        matrix.at(3, 1) = -((top + bottom) / (top - bottom));
+        matrix.at(3, 2) = -((far + near) / (far - near));
+        return Transform3(matrix);
+    }
 
     static Transform3 from_rotation_axis_angle(const Vector3& axis, const float angle)
     {
-        const Vector3 norm = axis.normalize();
-        // Rodrigues' formula
-        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
-        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
-        return from_basis(Basis3(r_matrix));
+        const auto basis = Basis3::from_rotation_axis_angle(axis, angle);
+        return from_basis_translation(basis, Vector3::zero());
+    }
+
+    static Transform3 from_rotation_quaternion(const Quaternion& quaternion)
+    {
+        const auto basis = Basis3::from_rotation_quaternion(quaternion);
+        return from_basis_translation(basis, Vector3::zero());
     }
 
     static Transform3 from_scale(const Vector3& factor)
@@ -4293,8 +4346,6 @@ public:
         return { matrix[3][0], matrix[3][1], matrix[3][2] };
     }
 
-    // TODO: rotate by quaternion
-
     [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
@@ -4303,6 +4354,16 @@ public:
     [[nodiscard]] Transform3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Transform3 rotate_quaternion(const Quaternion& quaternion) const
+    {
+        return transform(from_rotation_quaternion(quaternion));
+    }
+
+    [[nodiscard]] Transform3 rotate_quaternion_local(const Quaternion& quaternion) const
+    {
+        return transform_local(from_rotation_quaternion(quaternion));
     }
 
     [[nodiscard]] Transform3 scale(const Vector3& factor) const
@@ -4447,21 +4508,6 @@ inline Vector4 Vector4::transform(const Transform3& by) const
     return by.matrix * *this;
 }
 
-// inline Matrix3 Quaternion::matrix() const
-// {
-//     return Matrix3::from_quaternion(*this);
-// }
-
-// template <typename Number>
-// Matrix3<Number> Matrix3<Number>::from_matrix(const Matrix4<Number>& matrix)
-// {
-//     Matrix3 result;
-//     result[0] = Column(matrix[0][0], matrix[0][1], matrix[0][2]);
-//     result[1] = Column(matrix[1][0], matrix[1][1], matrix[1][2]);
-//     result[2] = Column(matrix[2][0], matrix[2][1], matrix[2][2]);
-//     return result;
-// }
-
 inline Vector2::Vector2(const Vector2i& vector) // NOLINT(*-pro-type-member-init)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
@@ -4505,6 +4551,12 @@ inline Vector2 Vector2::transform(const Transform2& by, const float z) const
 inline Vector3 Vector3::rotate_axis_angle(const Vector3& axis, const float angle) const
 {
     const auto basis = Basis3::from_rotation_axis_angle(axis, angle);
+    return transform(basis);
+}
+
+inline Vector3 Vector3::rotate_quaternion(const Quaternion& quaternion) const
+{
+    const auto basis = Basis3::from_rotation_quaternion(quaternion);
     return transform(basis);
 }
 
