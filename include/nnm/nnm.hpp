@@ -919,7 +919,7 @@ public:
     {
     }
 
-    explicit Vector3(Vector3i vector);
+    explicit Vector3(const Vector3i& vector);
 
     Vector3(const Vector2& vector, const float z)
         : x(vector.x)
@@ -4576,7 +4576,7 @@ public:
     }
 };
 
-inline Vector3::Vector3(const Vector3i vector)
+inline Vector3::Vector3(const Vector3i& vector)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
     , z(static_cast<float>(vector.z))

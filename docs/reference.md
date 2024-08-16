@@ -260,7 +260,7 @@ union {
 
 ```c++
 Vector3();
-explicit Vector3(Vector3i vector);
+explicit Vector3(const Vector3i& vector);
 Vector3(const Vector2& vector, float z);
 Vector3(float x, float y, float z);
 ```
