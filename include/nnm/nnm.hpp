@@ -321,14 +321,16 @@ public:
 
     [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
     {
-        if (const float length_sqrd = this->length_sqrd(); length_sqrd > 0.0f) {
-            const auto norm = normalize();
-            if (const float length = sqrt(length_sqrd); length < min) {
-                return norm * min;
-            }
-            else if (length > max) {
-                return norm * max;
-            }
+        const float length = this->length();
+        if (length == 0.0f) {
+            return zero();
+        }
+        const auto norm = normalize();
+        if (length < min) {
+            return norm * min;
+        }
+        if (length > max) {
+            return norm * max;
         }
         return *this;
     }
@@ -1026,14 +1028,16 @@ public:
 
     [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
     {
-        if (const float length_sqrd = this->length_sqrd(); length_sqrd > 0.0f) {
-            const auto norm = normalize();
-            if (const float length = sqrt(length_sqrd); length < min) {
-                return norm * min;
-            }
-            else if (length > max) {
-                return norm * max;
-            }
+        const float length = this->length();
+        if (length == 0.0f) {
+            return zero();
+        }
+        const auto norm = normalize();
+        if (length < min) {
+            return norm * min;
+        }
+        if (length > max) {
+            return norm * max;
         }
         return *this;
     }
