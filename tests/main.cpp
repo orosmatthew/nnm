@@ -1824,7 +1824,7 @@ int main()
             ASSERT(b1.rotate(2.0f * nnm::pi).approx_equal(b1));
             const auto b2 = nnm::Basis2::from_scale({ 2.0f, 0.5f });
             const auto b2_rotated = b2.rotate(nnm::pi / 4.0f);
-            ASSERT(b2_rotated.matrix.approx_equal({ { 1.41421, 1.41421 }, { -0.353553, 0.353553 } }));
+            ASSERT(b2_rotated.matrix.approx_equal({ { 1.41421f, 1.41421f }, { -0.353553f, 0.353553f } }));
         }
 
         test_section("scale");
@@ -2552,7 +2552,7 @@ int main()
         {
             auto b1 = nnm::Basis3::from_shear_x(0.5f, -0.1f);
             ASSERT(b1.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721, 0.0f, 1.0f } }));
+                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721f, 0.0f, 1.0f } }));
         }
 
         test_section("from_scale");
@@ -2697,7 +2697,7 @@ int main()
 
         test_section("approx_equal");
         {
-            nnm::Basis3 b1({ { 1.000001f, -0.00001f, 0.0f }, { 0.0f, 0.99999999f, 0.000001 }, { 0.0f, 0.0f, 1.0f } });
+            nnm::Basis3 b1({ { 1.000001f, -0.00001f, 0.0f }, { 0.0f, 0.99999999f, 0.000001f }, { 0.0f, 0.0f, 1.0f } });
             ASSERT(b1.approx_equal(nnm::Basis3()));
         }
 
@@ -2937,7 +2937,7 @@ int main()
         test_section("shear_z");
         {
             auto t3 = t1.shear_z(-1.25f, 0.45f);
-            nnm::Matrix4 expected { { -8.02871, 3.44917f, 3.0f, 0.0f },
+            nnm::Matrix4 expected { { -8.02871f, 3.44917f, 3.0f, 0.0f },
                                     { -9.52871f, 3.44917f, 3.0f, 0.0f },
                                     { -6.01914f, 0.96611f, 2.0f, 0.0f },
                                     { -8.02871f, -0.550835f, 3.0f, 1.0f } };
