@@ -64,7 +64,7 @@ union {
         float x;
         float y;
     };
-    std::array<float, 2> array;
+    float data[2] {};
 };
 ```
 
@@ -74,6 +74,12 @@ union {
 Vector2();
 explicit Vector2(const Vector2i& vector);
 Vector2(float x, float y);
+
+```
+
+### Static Methods
+
+```c++
 static Vector2 all(float value);
 static Vector2 zero();
 static Vector2 one();
@@ -164,7 +170,7 @@ union {
         int x;
         int y;
     };
-    std::array<int, 2> array;
+    int data[2] {};
 };
 ```
 
@@ -174,6 +180,11 @@ union {
 Vector2i();
 explicit Vector2i(const Vector2& vector);
 Vector2i(int x, int y);
+```
+
+### Static Methods
+
+```c++
 static Vector2i all(int value);
 static Vector2i zero();
 static Vector2i one();
@@ -188,15 +199,12 @@ Vector2i abs() const;
 Vector2i clamp(const Vector2i& min, const Vector2i& max) const;
 int manhattan_distance(const Vector2i& to) const;
 int length_sqrd() const;
-float length() const;
 int max_index() const;
 int min_index() const;
 const int* begin() const;
 const int* end() const;
 int* begin();
 int* end();
-const int* data() const;
-int* data();
 int at(const int index) const;
 int& at(const int index);
 ```
@@ -244,7 +252,7 @@ union {
         float y;
         float z;
     };
-    std::array<float, 3> data;
+    float data[3] {};
 };
 ```
 
@@ -255,6 +263,11 @@ Vector3();
 explicit Vector3(Vector3i vector);
 Vector3(const Vector2& vector, float z);
 Vector3(float x, float y, float z);
+```
+
+### Static Methods
+
+```c++
 static Vector3 all(float value);
 static Vector3 zero();
 static Vector3 one();
@@ -350,7 +363,7 @@ union {
         int y;
         int z;
     };
-    std::array<int, 3> array {};
+    int data[3] {};
 };
 ```
 
@@ -358,48 +371,67 @@ union {
 
 ```c++
 Vector3i();
+explicit Vector3i(const Vector3& vector);
+Vector3i(const Vector2i& vector, int z);
 Vector3i(int x, int y, int z);
+```
+### Static Methods
+
+```c++
 static Vector3i all(int value);
 static Vector3i zero();
 static Vector3i one();
+static Vector3i axis_x();
+static Vector3i axis_y();
+static Vector3i axis_z();
 ```
+
 ### Methods
 
 ```c++
-Vector3i abs() const
-Vector3i clamp(const Vector3i& min, const Vector3i& max) const
-int length_sqrd() const
-float length() const
-int min_index() const
-int max_index() const
+Vector3i abs() const;
+Vector3i clamp(const Vector3i& min, const Vector3i& max) const;
+int manhattan_distance(const Vector3i& to) const;
+int length_sqrd() const;
+int max_index() const;
+int min_index() const;
+Vector2i xy() const;
+const int* begin() const;
+const int* end() const;
+int* begin();
+int* end();
+int at(int index) const;
+int& at(int index);
 ```
 
 ### Operators
 
 ```c++
+int operator[](int index) const;
+int& operator[](int index);
+bool operator==(const Vector3i& other) const;
 bool operator!=(const Vector3i& other) const;
-Vector3i operator%(const Vector3i& other) const;
-Vector3i& operator%=(const Vector3i& other);
-Vector3i operator%(int val) const;
-Vector3i& operator%=(int val);
-Vector3i operator*(const Vector3i& other) const;
-Vector3i& operator*=(const Vector3i& other);
-Vector3i operator*(int value) const;
-Vector3i& operator*=(int value);
 Vector3i operator+(const Vector3i& other) const;
 Vector3i& operator+=(const Vector3i& other);
 Vector3i operator-(const Vector3i& other) const;
 Vector3i& operator-=(const Vector3i& other);
+Vector3i operator*(const Vector3i& other) const;
+Vector3i& operator*=(const Vector3i& other);
+Vector3i operator*(int value) const;
+Vector3i operator*(int value, const Vector3i& vector);
+Vector3i& operator*=(int value);
 Vector3i operator/(const Vector3i& other) const;
 Vector3i& operator/=(const Vector3i& other);
 Vector3i operator/(int value) const;
+Vector3i operator/(int value, const Vector3i& vector);
 Vector3i& operator/=(int value);
-bool operator<(const Vector3i& other) const;
-bool operator==(const Vector3i& other) const;
-int operator[](int index) const;
-int& operator[](int index);
+Vector3i operator%(const Vector3i& other) const;
+Vector3i& operator%=(const Vector3i& other);
+Vector3i operator%(int val) const;
+Vector3i& operator%=(int val);
 Vector3i operator+() const;
 Vector3i operator-() const;
+bool operator<(const Vector3i& other) const;
 operator bool() const;
 ```
 

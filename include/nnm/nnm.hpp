@@ -1353,6 +1353,13 @@ public:
     {
     }
 
+    explicit Vector3i(const Vector3& vector)
+        : x(static_cast<int>(vector.x))
+        , y(static_cast<int>(vector.y))
+        , z(static_cast<int>(vector.z))
+    {
+    }
+
     Vector3i(const Vector2i& vector, const int z)
         : x(vector.x)
         , y(vector.y)
@@ -1365,21 +1372,6 @@ public:
         , y(y)
         , z(z)
     {
-    }
-
-    static Vector3i axis_x()
-    {
-        return { 1, 0, 0 };
-    }
-
-    static Vector3i axis_y()
-    {
-        return { 0, 1, 0 };
-    }
-
-    static Vector3i axis_z()
-    {
-        return { 0, 0, 1 };
     }
 
     static Vector3i all(const int value)
@@ -1397,6 +1389,21 @@ public:
         return { 1, 1, 1 };
     }
 
+    static Vector3i axis_x()
+    {
+        return { 1, 0, 0 };
+    }
+
+    static Vector3i axis_y()
+    {
+        return { 0, 1, 0 };
+    }
+
+    static Vector3i axis_z()
+    {
+        return { 0, 0, 1 };
+    }
+
     [[nodiscard]] Vector3i abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
@@ -1407,42 +1414,38 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
-    [[nodiscard]] int magnitude_sqrd() const
+    [[nodiscard]] int manhattan_distance(const Vector3i& to) const
+    {
+        return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z + to.z);
+    }
+
+    [[nodiscard]] int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] float magnitude() const
+    [[nodiscard]] int max_index() const
     {
-        return sqrt(static_cast<float>(magnitude_sqrd()));
+        int max_axis = 0;
+        if (y > data[max_axis]) {
+            max_axis = 1;
+        }
+        if (z > data[max_axis]) {
+            max_axis = 2;
+        }
+        return max_axis;
     }
 
     [[nodiscard]] int min_index() const
     {
-        int min_val = x;
-        auto min_axis = 0;
-        if (y < min_val) {
-            min_val = y;
+        int min_axis = 0;
+        if (y < data[min_axis]) {
             min_axis = 1;
         }
-        if (z < min_val) {
+        if (z < data[min_axis]) {
             min_axis = 2;
         }
         return min_axis;
-    }
-
-    [[nodiscard]] int max_index() const
-    {
-        int max_val = x;
-        auto max_axis = 0;
-        if (y > max_val) {
-            max_val = y;
-            max_axis = 1;
-        }
-        if (z > max_val) {
-            max_axis = 2;
-        }
-        return max_axis;
     }
 
     [[nodiscard]] Vector2i xy() const
@@ -1470,34 +1473,63 @@ public:
         return data + 3;
     }
 
+    [[nodiscard]] int at(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    int& at(const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] int operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    int& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        return data[index];
+    }
+
+    [[nodiscard]] bool operator==(const Vector3i& other) const
+    {
+        return x == other.x && y == other.y && z == other.z;
+    }
+
     [[nodiscard]] bool operator!=(const Vector3i& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
-    [[nodiscard]] Vector3i operator%(const Vector3i& other) const
+    [[nodiscard]] Vector3i operator+(const Vector3i& other) const
     {
-        return { x % other.x, y % other.y, z % other.z };
+        return { x + other.x, y + other.y, z + other.z };
     }
 
-    Vector3i& operator%=(const Vector3i& other)
+    Vector3i& operator+=(const Vector3i& other)
     {
-        x %= other.x;
-        y %= other.y;
-        z %= other.z;
+        x += other.x;
+        y += other.y;
+        z += other.z;
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator%(const int value) const
+    [[nodiscard]] Vector3i operator-(const Vector3i& other) const
     {
-        return { x % value, y % value, z % value };
+        return { x - other.x, y - other.y, z - other.z };
     }
 
-    Vector3i& operator%=(const int value)
+    Vector3i& operator-=(const Vector3i& other)
     {
-        x %= value;
-        y %= value;
-        z %= value;
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
         return *this;
     }
 
@@ -1527,33 +1559,6 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator+(const Vector3i& other) const
-    {
-        return { x + other.x, y + other.y, z + other.z };
-    }
-
-    Vector3i& operator+=(const Vector3i& other)
-    {
-        x += other.x;
-        y += other.y;
-        z += other.z;
-
-        return *this;
-    }
-
-    [[nodiscard]] Vector3i operator-(const Vector3i& other) const
-    {
-        return { x - other.x, y - other.y, z - other.z };
-    }
-
-    Vector3i& operator-=(const Vector3i& other)
-    {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
-        return *this;
-    }
-
     [[nodiscard]] Vector3i operator/(const Vector3i& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
@@ -1580,6 +1585,42 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector3i operator%(const Vector3i& other) const
+    {
+        return { x % other.x, y % other.y, z % other.z };
+    }
+
+    Vector3i& operator%=(const Vector3i& other)
+    {
+        x %= other.x;
+        y %= other.y;
+        z %= other.z;
+        return *this;
+    }
+
+    [[nodiscard]] Vector3i operator%(const int value) const
+    {
+        return { x % value, y % value, z % value };
+    }
+
+    Vector3i& operator%=(const int value)
+    {
+        x %= value;
+        y %= value;
+        z %= value;
+        return *this;
+    }
+
+    [[nodiscard]] Vector3i operator+() const
+    {
+        return { x, y, z };
+    }
+
+    [[nodiscard]] Vector3i operator-() const
+    {
+        return { -x, -y, -z };
+    }
+
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -1593,55 +1634,11 @@ public:
         return false;
     }
 
-    [[nodiscard]] bool operator==(const Vector3i& other) const
-    {
-        return x == other.x && y == other.y && z == other.z;
-    }
-
-    [[nodiscard]] int at(const int index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    int& at(const int index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    [[nodiscard]] int operator[](const int index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    int& operator[](const int index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
-    }
-
-    [[nodiscard]] Vector3i operator+() const
-    {
-        return { x, y, z };
-    }
-
-    [[nodiscard]] Vector3i operator-() const
-    {
-        return { -x, -y, -z };
-    }
-
     [[nodiscard]] explicit operator bool() const
     {
         return x != 0 || y != 0 || z != 0;
     }
 };
-
-inline Vector3i operator%(const int value, const Vector3i& vector)
-{
-    return { value % vector.x, value % vector.y, value % vector.z };
-}
 
 inline Vector3i operator*(const int value, const Vector3i& vector)
 {
@@ -1651,6 +1648,11 @@ inline Vector3i operator*(const int value, const Vector3i& vector)
 inline Vector3i operator/(const int value, const Vector3i& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
+}
+
+inline Vector3i operator%(const int value, const Vector3i& vector)
+{
+    return { value % vector.x, value % vector.y, value % vector.z };
 }
 
 class Vector4 {

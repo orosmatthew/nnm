@@ -1329,13 +1329,13 @@ int main()
         test_section("length_sqrd");
         {
             nnm::Vector3i v(1, -2, 3);
-            ASSERT(v.magnitude_sqrd() == 14);
+            ASSERT(v.length_sqrd() == 14);
         }
 
         test_section("length");
         {
             nnm::Vector3i v(1, -2, 3);
-            ASSERT(nnm::approx_equal(v.magnitude(), nnm::sqrt(14.0f)));
+            ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(14.0f)));
         }
 
         test_section("min/max_index");
