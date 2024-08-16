@@ -127,8 +127,6 @@ const float* begin() const;
 const float* end() const;
 float* begin();
 float* end();
-const float* data() const;
-float* data();
 float at(const int index) const;
 float& at(const int index);
 ```
@@ -319,8 +317,6 @@ const float* begin() const;
 const float* end() const;
 float* begin();
 float* end();
-const float* data() const;
-float* data();
 float at(int index) const;
 float& at(int index);
 ```
