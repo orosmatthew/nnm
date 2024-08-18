@@ -1499,13 +1499,13 @@ int main()
         test_section("length_sqrd");
         {
             const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
-            ASSERT(nnm::approx_equal(v1.magnitude_sqrd(), 30.0f));
+            ASSERT(nnm::approx_equal(v1.length_sqrd(), 30.0f));
         }
 
         test_section("length");
         {
             const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
-            ASSERT(nnm::approx_equal(v1.magnitude(), nnm::sqrt(30.0f)));
+            ASSERT(nnm::approx_equal(v1.length(), nnm::sqrt(30.0f)));
         }
 
         const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
@@ -1561,9 +1561,9 @@ int main()
 
         test_section("clamp_length");
         {
-            ASSERT(v1.clamp_magnitude(0.0f, 1.0f).approx_equal(v1.normalize()));
-            ASSERT(v1.clamp_magnitude(2.0f, 3.0f).approx_equal(v1.normalize() * 3.0f));
-            ASSERT(v1.clamp_magnitude(10.0f, 50.0f).approx_equal(v1.normalize() * 10.0f));
+            ASSERT(v1.clamp_length(0.0f, 1.0f).approx_equal(v1.normalize()));
+            ASSERT(v1.clamp_length(2.0f, 3.0f).approx_equal(v1.normalize() * 3.0f));
+            ASSERT(v1.clamp_length(10.0f, 50.0f).approx_equal(v1.normalize() * 10.0f));
         }
 
         test_section("round");
