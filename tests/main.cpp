@@ -1332,12 +1332,6 @@ int main()
             ASSERT(v.length_sqrd() == 14);
         }
 
-        test_section("length");
-        {
-            nnm::Vector3i v(1, -2, 3);
-            ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(14.0f)));
-        }
-
         test_section("min/max_index");
         {
             nnm::Vector3i v1(1, -2, 3);

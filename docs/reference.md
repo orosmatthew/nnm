@@ -113,6 +113,7 @@ Vector2 reflect(const Vector2& normal) const;
 Vector2 project(const Vector2& onto) const;
 Vector2 inverse() const;
 float angle(const Vector2& to) const;
+Vector2 translate(const Vector2& by, float z = 1.0f) const;
 Vector2 rotate(float angle) const;
 Vector2 scale(const Vector2& factor) const;
 Vector2 shear_x(float angle_y) const;
@@ -299,6 +300,7 @@ Vector3 reflect(const Vector3& normal) const;
 Vector3 project(const Vector3& onto) const;
 Vector3 inverse() const;
 float angle(const Vector3& other) const;
+Vector3 translate(const Vector3& by, float w = 1.0f) const;
 Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
 Vector3 rotate_quaternion(const Quaternion& quaternion) const;
 Vector3 scale(const Vector3& factor) const;
@@ -443,62 +445,96 @@ union {
         float z;
         float w;
     };
-    std::array<float, 4> array {};
+    float data[4] {};
 };
 ```
 
 ### Constructors
 
 ```c++
-Vector4()
-Vector4(float x, float y, float z, float w)
-static Vector4 all(float value)
-static Vector4 zero()
-static Vector4 one()
+Vector4();
+explicit Vector4(const Vector4i& vector);
+Vector4(const Vector2& vector, const float z, const float w);
+Vector4(const Vector3& vector, const float w);
+Vector4(float x, float y, float z, float w);
+```
+
+### Static Methods
+
+```c++
+static Vector4 all(float value);
+static Vector4 zero();
+static Vector4 one();
+static Vector4 axis_x();
+static Vector4 axis_y();
+static Vector4 axis_z();
+static Vector4 axis_w();
 ```
 
 ### Methods
 
 ```c++
-Vector4 abs() const
-Vector4 ceil() const
-Vector4 clamp(const Vector4& min, const Vector4& max) const
-Vector4 normalize() const
-Vector4 floor() const
-float length_sqrd() const
-float length() const
-Vector4 lerp(const Vector4& to, float weight) const
-int min_index() const
-int max_index() const
-float dot(const Vector4& other) const
-Vector4 inverse() const
-Vector4 clamp_length(float min, float max) const
-Vector4 round() const
+Vector4 abs() const;
+Vector4 ceil() const;
+Vector4 floor() const;
+Vector4 round() const;
+Vector4 clamp(const Vector4& min, const Vector4& max) const;
+float length_sqrd() const;
+float length() const;
+Vector4 clamp_length(float min, float max) const;
+Vector4 normalize() const;
+Vector4 lerp(const Vector4& to, float weight) const;
+Vector4 lerp_clamped(const Vector4& to, float weight) const;
+float dot(const Vector4& other) const;
+Matrix4 outer(const Vector4& other) const;
+Vector4 inverse() const;
+Vector4 translate(const Vector3& by) const;
+Vector4 rotate_axis_angle(const Vector3& axis, float angle) const;
+Vector4 rotate_quaternion(const Quaternion& quaternion) const;
+Vector4 scale(const Vector3& factor) const;
+Vector4 shear_x(float angle_y, float angle_z) const;
+Vector4 shear_y(float angle_x, float angle_z) const;
+Vector4 shear_z(float angle_x, float angle_y) const;
+Vector4 transform(const Transform& by) const;
+int max_index() const;
+int min_index() const;
+bool approx_equal(const Vector4& other) const;
+bool approx_zero() const;
+Vector2 xy() const;
+Vector3 xyz() const;
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
+float at(int index) const;
+float& at(int index);
 ```
 
 ### Operators
 
 ```c++
-bool operator!=(const Vector4& other) const
-Vector4 operator*(const Vector4& other) const
-Vector4& operator*=(const Vector4& other)
-Vector4 operator*(float value) const
-Vector4& operator*=(float value)
-Vector4 operator+(const Vector4& other) const
-Vector4& operator+=(const Vector4& other)
-Vector4 operator-(const Vector4& other) const
-Vector4& operator-=(const Vector4& other)
-Vector4 operator/(const Vector4& other) const
-Vector4& operator/=(const Vector4& other)
-Vector4 operator/(float value) const
-Vector4& operator/=(float value)
-bool operator<(const Vector4& other) const
-bool operator==(const Vector4& other) const
-float& operator[](int index)
-const float& operator[](int index) const
-Vector4 operator+() const
-Vector4 operator-() const
-operator bool() const
+float operator[](int index) const;
+float& operator[](int index);
+bool operator==(const Vector4& other) const;
+bool operator!=(const Vector4& other) const;
+Vector4 operator+(const Vector4& other) const;
+Vector4& operator+=(const Vector4& other);
+Vector4 operator-(const Vector4& other) const;
+Vector4& operator-=(const Vector4& other);
+Vector4 operator*(const Vector4& other) const;
+Vector4& operator*=(const Vector4& other);
+Vector4 operator*(float value) const;
+Vector4 operator*(float value, const Vector4& vector);
+Vector4& operator*=(float value);
+Vector4 operator/(const Vector4& other) const;
+Vector4& operator/=(const Vector4& other);
+Vector4 operator/(float value) const;
+Vector4 operator/(float value, const Vector4& vector)
+Vector4& operator/=(float value);
+bool operator<(const Vector4& other) const;
+Vector4 operator+() const;
+Vector4 operator-() const;
+explicit operator bool() const;
 ```
 
 ## Vector4i

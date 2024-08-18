@@ -203,12 +203,14 @@ class Vector2;
 class Vector2i;
 class Vector3;
 class Vector3i;
+class Vector4i;
 class Quaternion;
 class Matrix2;
 class Basis2;
 class Matrix3;
 class Transform2;
 class Basis3;
+class Matrix4;
 class Transform3;
 
 inline Vector2 operator/(float value, const Vector2& vector);
@@ -403,6 +405,8 @@ public:
         const float cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
         return acos(cos_angle);
     }
+
+    [[nodiscard]] Vector2 translate(const Vector2& by, float z = 1.0f) const;
 
     [[nodiscard]] Vector2 rotate(float angle) const;
 
@@ -1101,6 +1105,8 @@ public:
         return atan2(this->cross(to).length(), this->dot(to));
     }
 
+    [[nodiscard]] Vector3 translate(const Vector3& by, float w = 1.0f) const;
+
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
 
     [[nodiscard]] Vector3 rotate_quaternion(const Quaternion& quaternion) const;
@@ -1675,6 +1681,8 @@ public:
     {
     }
 
+    explicit Vector4(const Vector4i& vector);
+
     Vector4(const Vector2& vector, const float z, const float w)
         : x(vector.x)
         , y(vector.y)
@@ -1699,6 +1707,21 @@ public:
     {
     }
 
+    static Vector4 all(const float value)
+    {
+        return { value, value, value, value };
+    }
+
+    static Vector4 zero()
+    {
+        return { 0.0, 0.0, 0.0, 0.0 };
+    }
+
+    static Vector4 one()
+    {
+        return { 1.0, 1.0, 1.0, 1.0 };
+    }
+
     static Vector4 axis_x()
     {
         return { 1.0f, 0.0f, 0.0f, 0.0f };
@@ -1719,21 +1742,6 @@ public:
         return { 0.0f, 0.0f, 0.0f, 1.0f };
     }
 
-    static Vector4 all(const float value)
-    {
-        return { value, value, value, value };
-    }
-
-    static Vector4 zero()
-    {
-        return { 0.0, 0.0, 0.0, 0.0 };
-    }
-
-    static Vector4 one()
-    {
-        return { 1.0, 1.0, 1.0, 1.0 };
-    }
-
     [[nodiscard]] Vector4 abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z), nnm::abs(w) };
@@ -1749,6 +1757,11 @@ public:
         return { nnm::floor(x), nnm::floor(y), nnm::floor(z), nnm::floor(w) };
     }
 
+    [[nodiscard]] Vector4 round() const
+    {
+        return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
+    }
+
     [[nodiscard]] Vector4 clamp(const Vector4& min, const Vector4& max) const
     {
         return { nnm::clamp(x, min.x, max.x),
@@ -1757,23 +1770,38 @@ public:
                  nnm::clamp(w, min.w, max.w) };
     }
 
-    [[nodiscard]] Vector4 normalize() const
-    {
-        Vector4 result;
-        if (const float mag = magnitude(); mag > 0.0f) {
-            result = *this / mag;
-        }
-        return result;
-    }
-
-    [[nodiscard]] float magnitude_sqrd() const
+    [[nodiscard]] float length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
-    [[nodiscard]] float magnitude() const
+    [[nodiscard]] float length() const
     {
-        return sqrt(magnitude_sqrd());
+        return sqrt(length_sqrd());
+    }
+
+    [[nodiscard]] Vector4 clamp_length(const float min, const float max) const
+    {
+        const float length = this->length();
+        if (length == 0.0f) {
+            return zero();
+        }
+        const auto norm = normalize();
+        if (length < min) {
+            return norm * min;
+        }
+        if (length > max) {
+            return norm * max;
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Vector4 normalize() const
+    {
+        if (const float length = this->length(); length > 0.0f) {
+            return *this / length;
+        }
+        return zero();
     }
 
     [[nodiscard]] Vector4 lerp(const Vector4& to, const float weight) const
@@ -1792,40 +1820,62 @@ public:
                  nnm::lerp_clamped(w, to.w, weight) };
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] float dot(const Vector4& other) const
     {
-        float min_val = x;
-        auto min_axis = 0;
-        if (y < min_val) {
-            min_val = y;
-            min_axis = 1;
-        }
-        if (z < min_val) {
-            min_val = z;
-            min_axis = 2;
-        }
-        if (w < min_val) {
-            min_axis = 3;
-        }
-        return min_axis;
+        return x * other.x + y * other.y + z * other.z + w * other.w;
     }
+
+    [[nodiscard]] Matrix4 outer(const Vector4& other) const;
+
+    [[nodiscard]] Vector4 inverse() const
+    {
+        return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
+    }
+
+    [[nodiscard]] Vector4 translate(const Vector3& by) const;
+
+    [[nodiscard]] Vector4 rotate_axis_angle(const Vector3& axis, float angle) const;
+
+    [[nodiscard]] Vector4 rotate_quaternion(const Quaternion& quaternion) const;
+
+    [[nodiscard]] Vector4 scale(const Vector3& factor) const;
+
+    [[nodiscard]] Vector4 shear_x(float angle_y, float angle_z) const;
+
+    [[nodiscard]] Vector4 shear_y(float angle_x, float angle_z) const;
+
+    [[nodiscard]] Vector4 shear_z(float angle_x, float angle_y) const;
+
+    [[nodiscard]] Vector4 transform(const Transform3& by) const;
 
     [[nodiscard]] int max_index() const
     {
-        float max_val = x;
-        auto max_axis = 0;
-        if (y > max_val) {
-            max_val = y;
+        int max_axis = 0;
+        if (y > data[max_axis]) {
             max_axis = 1;
         }
-        if (z > max_val) {
-            max_val = z;
+        if (z > data[max_axis]) {
             max_axis = 2;
         }
-        if (w > max_val) {
+        if (w > data[max_axis]) {
             max_axis = 3;
         }
         return max_axis;
+    }
+
+    [[nodiscard]] int min_index() const
+    {
+        int min_axis = 0;
+        if (y < data[min_axis]) {
+            min_axis = 1;
+        }
+        if (z < data[min_axis]) {
+            min_axis = 2;
+        }
+        if (w < data[min_axis]) {
+            min_axis = 3;
+        }
+        return min_axis;
     }
 
     [[nodiscard]] bool approx_equal(const Vector4& other) const
@@ -1838,37 +1888,6 @@ public:
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z) && nnm::approx_zero(w);
     }
-
-    [[nodiscard]] float dot(const Vector4& other) const
-    {
-        return x * other.x + y * other.y + z * other.z + w * other.w;
-    }
-
-    [[nodiscard]] Vector4 inverse() const
-    {
-        return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
-    }
-
-    [[nodiscard]] Vector4 clamp_magnitude(const float min, const float max) const
-    {
-        if (const float mag_sqrd = magnitude_sqrd(); mag_sqrd > 0.0f) {
-            const auto norm = normalize();
-            if (const float mag = sqrt(mag_sqrd); mag < min) {
-                return norm * min;
-            }
-            else if (mag > max) {
-                return norm * max;
-            }
-        }
-        return *this;
-    }
-
-    [[nodiscard]] Vector4 round() const
-    {
-        return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
-    }
-
-    [[nodiscard]] Vector4 transform(const Transform3& by) const;
 
     [[nodiscard]] Vector2 xy() const
     {
@@ -1900,37 +1919,38 @@ public:
         return data + 4;
     }
 
+    [[nodiscard]] float at(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    float& at(const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    [[nodiscard]] float operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    float& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        return data[index];
+    }
+
+    [[nodiscard]] bool operator==(const Vector4& other) const
+    {
+        return x == other.x && y == other.y && z == other.z && w == other.w;
+    }
+
     [[nodiscard]] bool operator!=(const Vector4& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
-    }
-
-    [[nodiscard]] Vector4 operator*(const Vector4& other) const
-    {
-        return { x * other.x, y * other.y, z * other.z, w * other.w };
-    }
-
-    Vector4& operator*=(const Vector4& other)
-    {
-        x *= other.x;
-        y *= other.y;
-        z *= other.z;
-        w *= other.w;
-        return *this;
-    }
-
-    [[nodiscard]] Vector4 operator*(const float value) const
-    {
-        return { x * value, y * value, z * value, w * value };
-    }
-
-    Vector4& operator*=(const float value)
-    {
-        x *= value;
-        y *= value;
-        z *= value;
-        w *= value;
-        return *this;
     }
 
     [[nodiscard]] Vector4 operator+(const Vector4& other) const
@@ -1958,6 +1978,34 @@ public:
         y -= other.y;
         z -= other.z;
         w -= other.w;
+        return *this;
+    }
+
+    [[nodiscard]] Vector4 operator*(const Vector4& other) const
+    {
+        return { x * other.x, y * other.y, z * other.z, w * other.w };
+    }
+
+    Vector4& operator*=(const Vector4& other)
+    {
+        x *= other.x;
+        y *= other.y;
+        z *= other.z;
+        w *= other.w;
+        return *this;
+    }
+
+    [[nodiscard]] Vector4 operator*(const float value) const
+    {
+        return { x * value, y * value, z * value, w * value };
+    }
+
+    Vector4& operator*=(const float value)
+    {
+        x *= value;
+        y *= value;
+        z *= value;
+        w *= value;
         return *this;
     }
 
@@ -2000,35 +2048,6 @@ public:
             }
         }
         return false;
-    }
-
-    [[nodiscard]] bool operator==(const Vector4& other) const
-    {
-        return x == other.x && y == other.y && z == other.z && w == other.w;
-    }
-
-    [[nodiscard]] float at(const int index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
-    }
-
-    float& at(const int index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
-    }
-
-    [[nodiscard]] float operator[](const int index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
-    }
-
-    float& operator[](const int index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
     }
 
     [[nodiscard]] Vector4 operator+() const
@@ -2503,7 +2522,7 @@ public:
 
     [[nodiscard]] float magnitude_sqrd() const
     {
-        return vector.magnitude_sqrd();
+        return vector.length_sqrd();
     }
 
     [[nodiscard]] float magnitude() const
@@ -3503,7 +3522,7 @@ public:
     {
     }
 
-    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos)
+    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos, const float z = 1.0f)
     {
         Matrix3 matrix;
         for (int c = 0; c < 2; ++c) {
@@ -3513,12 +3532,13 @@ public:
         }
         matrix[2][0] = pos.x;
         matrix[2][1] = pos.y;
+        matrix[2][2] = z;
         return Transform2(matrix);
     }
 
-    static Transform2 from_translation(const Vector2& pos)
+    static Transform2 from_translation(const Vector2& pos, const float z = 1.0f)
     {
-        return from_basis_translation(Basis2(), pos);
+        return from_basis_translation(Basis2(), pos, z);
     }
 
     static Transform2 from_basis(const Basis2& basis)
@@ -4330,7 +4350,7 @@ public:
     {
     }
 
-    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation)
+    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation, const float w = 1.0f)
     {
         Matrix4 matrix;
         for (int c = 0; c < 3; ++c) {
@@ -4341,12 +4361,13 @@ public:
         matrix[3][0] = translation.x;
         matrix[3][1] = translation.y;
         matrix[3][2] = translation.z;
+        matrix[3][3] = w;
         return Transform3(matrix);
     }
 
-    static Transform3 from_translation(const Vector3& translation)
+    static Transform3 from_translation(const Vector3& translation, const float w = 1.0f)
     {
-        return from_basis_translation(Basis3(), translation);
+        return from_basis_translation(Basis3(), translation, w);
     }
 
     static Transform3 from_basis(const Basis3& basis)
@@ -4590,6 +4611,64 @@ inline Matrix3 Vector3::outer(const Vector3& other) const
              { z * other.x, z * other.y, z * other.z } };
 }
 
+inline Vector4::Vector4(const Vector4i& vector)
+    : x(static_cast<float>(vector.x))
+    , y(static_cast<float>(vector.y))
+    , z(static_cast<float>(vector.z))
+    , w(static_cast<float>(vector.w))
+{
+}
+
+inline Matrix4 Vector4::outer(const Vector4& other) const
+{
+    return { { x * other.x, x * other.y, x * other.z, x * other.w },
+             { y * other.x, y * other.y, y * other.z, y * other.w },
+             { z * other.x, z * other.y, z * other.z, z * other.w },
+             { w * other.x, w * other.y, w * other.z, w * other.w } };
+}
+
+inline Vector4 Vector4::translate(const Vector3& by) const
+{
+    const auto transform = Transform3::from_translation(by);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::rotate_axis_angle(const Vector3& axis, const float angle) const
+{
+    const auto transform = Transform3::from_rotation_axis_angle(axis, angle);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::rotate_quaternion(const Quaternion& quaternion) const
+{
+    const auto transform = Transform3::from_rotation_quaternion(quaternion);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::scale(const Vector3& factor) const
+{
+    const auto transform = Transform3::from_scale(factor);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::shear_x(const float angle_y, const float angle_z) const
+{
+    const auto transform = Transform3::from_shear_x(angle_y, angle_z);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::shear_y(const float angle_x, const float angle_z) const
+{
+    const auto transform = Transform3::from_shear_y(angle_x, angle_z);
+    return this->transform(transform);
+}
+
+inline Vector4 Vector4::shear_z(const float angle_x, const float angle_y) const
+{
+    const auto transform = Transform3::from_shear_z(angle_x, angle_y);
+    return this->transform(transform);
+}
+
 inline Vector4 Vector4::transform(const Transform3& by) const
 {
     return by.matrix * *this;
@@ -4612,6 +4691,12 @@ inline Matrix2 Vector2::outer(const Vector2& other) const
                  y * other.x,
                  y * other.y,
              } };
+}
+
+inline Vector2 Vector2::translate(const Vector2& by, const float z) const
+{
+    const auto transform = Transform2::from_translation(by, z);
+    return this->transform(transform);
 }
 
 inline Vector2 Vector2::rotate(const float angle) const
@@ -4646,6 +4731,12 @@ inline Vector2 Vector2::transform(const Basis2& by) const
 inline Vector2 Vector2::transform(const Transform2& by, const float z) const
 {
     return Vector3(*this, z).transform(by).xy();
+}
+
+inline Vector3 Vector3::translate(const Vector3& by, const float w) const
+{
+    const auto transform = Transform3::from_translation(by, w);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::rotate_axis_angle(const Vector3& axis, const float angle) const
