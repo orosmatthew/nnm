@@ -2275,6 +2275,16 @@ public:
     }
 };
 
+inline Quaternion operator*(const float value, const Quaternion& quaternion)
+{
+    return Quaternion(value * quaternion.vector);
+}
+
+inline Quaternion operator/(const float value, const Quaternion& quaternion)
+{
+    return Quaternion(value / quaternion.vector);
+}
+
 class Matrix2 {
 public:
     union {
