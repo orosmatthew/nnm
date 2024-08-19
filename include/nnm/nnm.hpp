@@ -1921,7 +1921,7 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] float operator[](const int index) const
+    [[nodiscard]] const float& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
@@ -2214,7 +2214,7 @@ public:
         return vector.at(index);
     }
 
-    [[nodiscard]] float operator[](const int index) const
+    [[nodiscard]] const float& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
