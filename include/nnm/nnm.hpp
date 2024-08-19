@@ -3921,7 +3921,10 @@ class Basis3 {
 public:
     Matrix3 matrix;
 
-    Basis3() = default;
+    Basis3()
+        : matrix(Matrix3::identity())
+    {
+    }
 
     explicit Basis3(const Matrix3& matrix)
         : matrix(matrix)
@@ -3953,6 +3956,11 @@ public:
         return Basis3(matrix);
     }
 
+    static Basis3 from_scale(const Vector3& factor)
+    {
+        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
+    }
+
     static Basis3 from_shear_x(const float angle_y, const float angle_z)
     {
         return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
@@ -3968,9 +3976,27 @@ public:
         return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
     }
 
-    static Basis3 from_scale(const Vector3& factor)
+    [[nodiscard]] float trace() const
     {
-        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
+    }
+
+    [[nodiscard]] Basis3 unchecked_inverse() const
+    {
+        return Basis3(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Basis3> inverse() const
+    {
+        if (valid()) {
+            return unchecked_inverse();
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
@@ -4048,29 +4074,6 @@ public:
         return Basis3(matrix * by.matrix);
     }
 
-    [[nodiscard]] Basis3 unchecked_inverse() const
-    {
-        return Basis3(matrix.unchecked_inverse());
-    }
-
-    [[nodiscard]] std::optional<Basis3> inverse() const
-    {
-        if (valid()) {
-            return Basis3(matrix.unchecked_inverse());
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]] float trace() const
-    {
-        return matrix.trace();
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        return matrix.determinant();
-    }
-
     [[nodiscard]] bool approx_equal(const Basis3& other) const
     {
         return matrix.approx_equal(other.matrix);
@@ -4088,7 +4091,7 @@ public:
         return matrix.at(column);
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const float& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
