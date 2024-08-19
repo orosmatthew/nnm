@@ -899,6 +899,71 @@ bool operator!=(const Transform2& other) const;
 bool operator<(const Transform2& other) const;
 ```
 
+## Basis3
+
+### Members
+
+```c++
+Matrix3 matrix;
+```
+
+### Constructors
+
+```cpp
+Basis3();
+explicit Basis3(const Matrix3& matrix);
+```
+
+### Static Methods
+
+```c++
+static Basis3 from_rotation_axis_angle(const Vector3& axis, float angle);
+static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
+static Basis3 from_scale(const Vector3& factor)
+static Basis3 from_shear_x(float angle_y, float angle_z);
+static Basis3 from_shear_y(float angle_x, float angle_z);
+static Basis3 from_shear_z(float angle_x, float angle_y);
+```
+
+### Methods
+
+```cpp
+float trace() const;
+float determinant() const;
+Basis3 unchecked_inverse() const;
+std::optional<Basis3> inverse() const;
+bool valid() const;
+Basis3 rotate_axis_angle(const Vector3& axis, float angle) const;
+Basis3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
+Basis3 rotate_quaternion(const Quaternion& quaternion) const;
+Basis3 rotate_quaternion_local(const Quaternion& quaternion) const;
+Basis3 scale(const Vector3& factor) const;
+Basis3 scale_local(const Vector3& factor) const;
+Basis3 shear_x(float angle_y, float angle_z) const;
+Basis3 shear_x_local(float angle_y, float angle_z) const;
+Basis3 shear_y(float angle_x, float angle_z) const;
+Basis3 shear_y_local(float angle_x, float angle_z) const;
+Basis3 shear_z(float angle_x, float angle_y) const;
+Basis3 shear_z_local(float angle_x, float angle_y) const;
+Basis3 transform(const Basis3& by) const;
+Basis3 transform_local(const Basis3& by) const;
+bool approx_equal(const Basis3& other) const;
+const Vector3& at(int column) const;
+Vector3& at(const int column);
+const float& at(int column, int row) const;
+float& at(const int column, const int row);
+```
+
+### Operators
+
+```cpp
+const Vector3& operator[](int index) const;
+Vector3& operator[](int index);
+bool operator==(const Basis3& other) const;
+bool operator!=(const Basis3& other) const;
+bool operator<(const Basis3& other) const;
+```
+
 ## Matrix4
 
 ### Members
@@ -1009,71 +1074,6 @@ Matrix4 operator/(float value, const Matrix4& matrix);
 Matrix4& operator/=(float value);
 bool operator<(const Matrix4& other) const;
 explicit operator bool() const;
-```
-
-## Basis3
-
-### Members
-
-```c++
-Matrix3 matrix;
-```
-
-### Constructors
-
-```cpp
-Basis3();
-explicit Basis3(const Matrix3& matrix);
-```
-
-### Static Methods
-
-```c++
-static Basis3 from_rotation_axis_angle(const Vector3& axis, float angle);
-static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
-static Basis3 from_scale(const Vector3& factor)
-static Basis3 from_shear_x(float angle_y, float angle_z);
-static Basis3 from_shear_y(float angle_x, float angle_z);
-static Basis3 from_shear_z(float angle_x, float angle_y);
-```
-
-### Methods
-
-```cpp
-float trace() const;
-float determinant() const;
-Basis3 unchecked_inverse() const;
-std::optional<Basis3> inverse() const;
-bool valid() const;
-Basis3 rotate_axis_angle(const Vector3& axis, float angle) const;
-Basis3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
-Basis3 rotate_quaternion(const Quaternion& quaternion) const;
-Basis3 rotate_quaternion_local(const Quaternion& quaternion) const;
-Basis3 scale(const Vector3& factor) const;
-Basis3 scale_local(const Vector3& factor) const;
-Basis3 shear_x(float angle_y, float angle_z) const;
-Basis3 shear_x_local(float angle_y, float angle_z) const;
-Basis3 shear_y(float angle_x, float angle_z) const;
-Basis3 shear_y_local(float angle_x, float angle_z) const;
-Basis3 shear_z(float angle_x, float angle_y) const;
-Basis3 shear_z_local(float angle_x, float angle_y) const;
-Basis3 transform(const Basis3& by) const;
-Basis3 transform_local(const Basis3& by) const;
-bool approx_equal(const Basis3& other) const;
-const Vector3& at(int column) const;
-Vector3& at(const int column);
-const float& at(int column, int row) const;
-float& at(const int column, const int row);
-```
-
-### Operators
-
-```cpp
-const Vector3& operator[](int index) const;
-Vector3& operator[](int index);
-bool operator==(const Basis3& other) const;
-bool operator!=(const Basis3& other) const;
-bool operator<(const Basis3& other) const;
 ```
 
 

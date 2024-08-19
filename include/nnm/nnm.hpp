@@ -3452,6 +3452,220 @@ public:
     }
 };
 
+class Basis3 {
+public:
+    Matrix3 matrix;
+
+    Basis3()
+        : matrix(Matrix3::identity())
+    {
+    }
+
+    explicit Basis3(const Matrix3& matrix)
+        : matrix(matrix)
+    {
+    }
+
+    static Basis3 from_rotation_axis_angle(const Vector3& axis, const float angle)
+    {
+        const Vector3 norm = axis.normalize();
+        // Rodrigues' formula
+        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
+        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
+        return Basis3(r_matrix);
+    }
+
+    static Basis3 from_rotation_quaternion(const Quaternion& quaternion)
+    {
+        const Quaternion& q = quaternion;
+        Matrix3 matrix;
+        matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
+        matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
+        matrix.at(0, 2) = 2 * (q.x * q.z - q.y * q.w);
+        matrix.at(1, 0) = 2 * (q.x * q.y - q.z * q.w);
+        matrix.at(1, 1) = 1 - 2 * (sqrd(q.x) + sqrd(q.z));
+        matrix.at(1, 2) = 2 * (q.y * q.z + q.x * q.w);
+        matrix.at(2, 0) = 2 * (q.x * q.z + q.y * q.w);
+        matrix.at(2, 1) = 2 * (q.y * q.z - q.x * q.w);
+        matrix.at(2, 2) = 1 - 2 * (sqrd(q.x) + sqrd(q.y));
+        return Basis3(matrix);
+    }
+
+    static Basis3 from_scale(const Vector3& factor)
+    {
+        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
+    }
+
+    static Basis3 from_shear_x(const float angle_y, const float angle_z)
+    {
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
+    }
+
+    static Basis3 from_shear_y(const float angle_x, const float angle_z)
+    {
+        return Basis3({ { 1.0f, tan(angle_x), 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, tan(angle_z), 1.0f } });
+    }
+
+    static Basis3 from_shear_z(const float angle_x, const float angle_y)
+    {
+        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
+    }
+
+    [[nodiscard]] float trace() const
+    {
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
+    }
+
+    [[nodiscard]] Basis3 unchecked_inverse() const
+    {
+        return Basis3(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Basis3> inverse() const
+    {
+        if (valid()) {
+            return unchecked_inverse();
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] bool valid() const
+    {
+        return matrix.determinant() != 0.0f;
+    }
+
+    [[nodiscard]] Basis3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    {
+        return transform(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
+    {
+        return transform_local(from_rotation_axis_angle(axis, angle));
+    }
+
+    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion& quaternion) const
+    {
+        return transform(from_rotation_quaternion(quaternion));
+    }
+
+    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion& quaternion) const
+    {
+        return transform_local(from_rotation_quaternion(quaternion));
+    }
+
+    [[nodiscard]] Basis3 scale(const Vector3& factor) const
+    {
+        return transform(from_scale(factor));
+    }
+
+    [[nodiscard]] Basis3 scale_local(const Vector3& factor) const
+    {
+        return transform_local(from_scale(factor));
+    }
+
+    [[nodiscard]] Basis3 shear_x(const float angle_y, const float angle_z) const
+    {
+        return transform(from_shear_x(angle_y, angle_z));
+    }
+
+    [[nodiscard]] Basis3 shear_x_local(const float angle_y, const float angle_z) const
+    {
+        return transform_local(from_shear_x(angle_y, angle_z));
+    }
+
+    [[nodiscard]] Basis3 shear_y(const float angle_x, const float angle_z) const
+    {
+        return transform(from_shear_y(angle_x, angle_z));
+    }
+
+    [[nodiscard]] Basis3 shear_y_local(const float angle_x, const float angle_z) const
+    {
+        return transform_local(from_shear_y(angle_x, angle_z));
+    }
+
+    [[nodiscard]] Basis3 shear_z(const float angle_x, const float angle_y) const
+    {
+        return transform(from_shear_z(angle_x, angle_y));
+    }
+
+    [[nodiscard]] Basis3 shear_z_local(const float angle_x, const float angle_y) const
+    {
+        return transform_local(from_shear_z(angle_x, angle_y));
+    }
+
+    [[nodiscard]] Basis3 transform(const Basis3& by) const
+    {
+        return Basis3(by.matrix * matrix);
+    }
+
+    [[nodiscard]] Basis3 transform_local(const Basis3& by) const
+    {
+        return Basis3(matrix * by.matrix);
+    }
+
+    [[nodiscard]] bool approx_equal(const Basis3& other) const
+    {
+        return matrix.approx_equal(other.matrix);
+    }
+
+    [[nodiscard]] const Vector3& at(const int column) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
+    Vector3& at(const int column)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
+        return matrix.at(column);
+    }
+
+    [[nodiscard]] const float& at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return matrix.at(column, row);
+    }
+
+    float& at(const int column, const int row)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        return matrix.at(column, row);
+    }
+
+    [[nodiscard]] const Vector3& operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
+        return matrix[index];
+    }
+
+    Vector3& operator[](const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
+        return matrix[index];
+    }
+
+    [[nodiscard]] bool operator==(const Basis3& other) const
+    {
+        return matrix == other.matrix;
+    }
+
+    [[nodiscard]] bool operator!=(const Basis3& other) const
+    {
+        return matrix != other.matrix;
+    }
+
+    [[nodiscard]] bool operator<(const Basis3& other) const
+    {
+        return matrix < other.matrix;
+    }
+};
+
 class Matrix4 {
 public:
     union {
@@ -3916,220 +4130,6 @@ inline Matrix4 operator/(const float value, const Matrix4& matrix)
     }
     return result;
 }
-
-class Basis3 {
-public:
-    Matrix3 matrix;
-
-    Basis3()
-        : matrix(Matrix3::identity())
-    {
-    }
-
-    explicit Basis3(const Matrix3& matrix)
-        : matrix(matrix)
-    {
-    }
-
-    static Basis3 from_rotation_axis_angle(const Vector3& axis, const float angle)
-    {
-        const Vector3 norm = axis.normalize();
-        // Rodrigues' formula
-        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
-        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
-        return Basis3(r_matrix);
-    }
-
-    static Basis3 from_rotation_quaternion(const Quaternion& quaternion)
-    {
-        const Quaternion& q = quaternion;
-        Matrix3 matrix;
-        matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
-        matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
-        matrix.at(0, 2) = 2 * (q.x * q.z - q.y * q.w);
-        matrix.at(1, 0) = 2 * (q.x * q.y - q.z * q.w);
-        matrix.at(1, 1) = 1 - 2 * (sqrd(q.x) + sqrd(q.z));
-        matrix.at(1, 2) = 2 * (q.y * q.z + q.x * q.w);
-        matrix.at(2, 0) = 2 * (q.x * q.z + q.y * q.w);
-        matrix.at(2, 1) = 2 * (q.y * q.z - q.x * q.w);
-        matrix.at(2, 2) = 1 - 2 * (sqrd(q.x) + sqrd(q.y));
-        return Basis3(matrix);
-    }
-
-    static Basis3 from_scale(const Vector3& factor)
-    {
-        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
-    }
-
-    static Basis3 from_shear_x(const float angle_y, const float angle_z)
-    {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
-    }
-
-    static Basis3 from_shear_y(const float angle_x, const float angle_z)
-    {
-        return Basis3({ { 1.0f, tan(angle_x), 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, tan(angle_z), 1.0f } });
-    }
-
-    static Basis3 from_shear_z(const float angle_x, const float angle_y)
-    {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
-    }
-
-    [[nodiscard]] float trace() const
-    {
-        return matrix.trace();
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        return matrix.determinant();
-    }
-
-    [[nodiscard]] Basis3 unchecked_inverse() const
-    {
-        return Basis3(matrix.unchecked_inverse());
-    }
-
-    [[nodiscard]] std::optional<Basis3> inverse() const
-    {
-        if (valid()) {
-            return unchecked_inverse();
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]] bool valid() const
-    {
-        return matrix.determinant() != 0.0f;
-    }
-
-    [[nodiscard]] Basis3 rotate_axis_angle(const Vector3& axis, const float angle) const
-    {
-        return transform(from_rotation_axis_angle(axis, angle));
-    }
-
-    [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
-    {
-        return transform_local(from_rotation_axis_angle(axis, angle));
-    }
-
-    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion& quaternion) const
-    {
-        return transform(from_rotation_quaternion(quaternion));
-    }
-
-    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion& quaternion) const
-    {
-        return transform_local(from_rotation_quaternion(quaternion));
-    }
-
-    [[nodiscard]] Basis3 scale(const Vector3& factor) const
-    {
-        return transform(from_scale(factor));
-    }
-
-    [[nodiscard]] Basis3 scale_local(const Vector3& factor) const
-    {
-        return transform_local(from_scale(factor));
-    }
-
-    [[nodiscard]] Basis3 shear_x(const float angle_y, const float angle_z) const
-    {
-        return transform(from_shear_x(angle_y, angle_z));
-    }
-
-    [[nodiscard]] Basis3 shear_x_local(const float angle_y, const float angle_z) const
-    {
-        return transform_local(from_shear_x(angle_y, angle_z));
-    }
-
-    [[nodiscard]] Basis3 shear_y(const float angle_x, const float angle_z) const
-    {
-        return transform(from_shear_y(angle_x, angle_z));
-    }
-
-    [[nodiscard]] Basis3 shear_y_local(const float angle_x, const float angle_z) const
-    {
-        return transform_local(from_shear_y(angle_x, angle_z));
-    }
-
-    [[nodiscard]] Basis3 shear_z(const float angle_x, const float angle_y) const
-    {
-        return transform(from_shear_z(angle_x, angle_y));
-    }
-
-    [[nodiscard]] Basis3 shear_z_local(const float angle_x, const float angle_y) const
-    {
-        return transform_local(from_shear_z(angle_x, angle_y));
-    }
-
-    [[nodiscard]] Basis3 transform(const Basis3& by) const
-    {
-        return Basis3(by.matrix * matrix);
-    }
-
-    [[nodiscard]] Basis3 transform_local(const Basis3& by) const
-    {
-        return Basis3(matrix * by.matrix);
-    }
-
-    [[nodiscard]] bool approx_equal(const Basis3& other) const
-    {
-        return matrix.approx_equal(other.matrix);
-    }
-
-    [[nodiscard]] const Vector3& at(const int column) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
-        return matrix.at(column);
-    }
-
-    Vector3& at(const int column)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
-        return matrix.at(column);
-    }
-
-    [[nodiscard]] const float& at(const int column, const int row) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return matrix.at(column, row);
-    }
-
-    float& at(const int column, const int row)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return matrix.at(column, row);
-    }
-
-    [[nodiscard]] const Vector3& operator[](const int index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
-        return matrix[index];
-    }
-
-    Vector3& operator[](const int index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
-        return matrix[index];
-    }
-
-    [[nodiscard]] bool operator==(const Basis3& other) const
-    {
-        return matrix == other.matrix;
-    }
-
-    [[nodiscard]] bool operator!=(const Basis3& other) const
-    {
-        return matrix != other.matrix;
-    }
-
-    [[nodiscard]] bool operator<(const Basis3& other) const
-    {
-        return matrix < other.matrix;
-    }
-};
 
 class Transform3 {
 public:
