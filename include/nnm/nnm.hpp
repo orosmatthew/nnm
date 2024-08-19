@@ -542,6 +542,8 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector2 operator*(const Matrix2& matrix) const;
+
     [[nodiscard]] Vector2 operator*(const float value) const
     {
         return { x * value, y * value };
@@ -2352,7 +2354,7 @@ public:
         return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
     }
 
-    [[nodiscard]] float minor(const int column, const int row) const
+    [[nodiscard]] float minor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         const int other_column = (column + 1) % 2;
@@ -2360,10 +2362,21 @@ public:
         return at(other_column, other_row);
     }
 
+    [[nodiscard]] Matrix2 minor() const
+    {
+        Matrix2 result;
+        for (int c = 0; c < 2; ++c) {
+            for (int r = 0; r < 2; ++r) {
+                result.at(c, r) = minor_at(c, r);
+            }
+        }
+        return result;
+    }
+
     [[nodiscard]] float cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor(column, row);
+        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix2 cofactor() const
@@ -2419,7 +2432,7 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector2& at(const int column) const
+    [[nodiscard]] Vector2 at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -2463,7 +2476,7 @@ public:
         return data + 4;
     }
 
-    const Vector2& operator[](const int column) const
+    Vector2 operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -2490,19 +2503,6 @@ public:
         for (int i = 0; i < 4; ++i) {
             if (data[i] != other.data[i]) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    bool operator<(const Matrix2& other) const
-    {
-        for (int i = 0; i < 4; ++i) {
-            if (data[i] < other.data[i]) {
-                return true;
-            }
-            if (data[i] > other.data[i]) {
-                return false;
             }
         }
         return false;
@@ -2592,6 +2592,19 @@ public:
         columns[0] /= value;
         columns[1] /= value;
         return *this;
+    }
+
+    bool operator<(const Matrix2& other) const
+    {
+        for (int i = 0; i < 4; ++i) {
+            if (data[i] < other.data[i]) {
+                return true;
+            }
+            if (data[i] > other.data[i]) {
+                return false;
+            }
+        }
+        return false;
     }
 
     explicit operator bool() const
@@ -4383,6 +4396,14 @@ inline Vector2 Vector2::transform(const Basis2& by) const
 inline Vector2 Vector2::transform(const Transform2& by, const float z) const
 {
     return Vector3(*this, z).transform(by).xy();
+}
+
+inline Vector2 Vector2::operator*(const Matrix2& matrix) const
+{
+    Vector2 result;
+    result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1);
+    result.y = x * matrix.at(1, 0) + y * matrix.at(1, 1);
+    return result;
 }
 
 inline Vector3 Vector3::translate(const Vector3& by) const

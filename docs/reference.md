@@ -145,6 +145,7 @@ Vector2 operator-(const Vector2& other) const;
 Vector2& operator-=(const Vector2& other);
 Vector2 operator*(const Vector2& other) const;
 Vector2& operator*=(const Vector2& other);
+Vector2 operator*(const Matrix2& matrix) const;
 Vector2 operator*(float value) const;
 Vector2 operator*(float value, const Vector2& vector);
 Vector2& operator*=(float value);
@@ -599,12 +600,6 @@ bool operator<(const Quaternion& other) const;
 
 ## Matrix2
 
-### Types
-
-```c++
-using Column = Vector2;
-```
-
 ### Members
 
 ```c++
@@ -615,7 +610,8 @@ union {
         float col1_row0;
         float col1_row1;
     };
-    std::array<Column, 2> columns;
+    Vector2 columns[2];
+    float data[4] {};
 };
 ```
 
@@ -623,7 +619,7 @@ union {
 
 ```c++
 Matrix2();
-Matrix2(const Column& column0, const Column& column1);
+Matrix2(const Vector2& column0, const Vector2& column1);
 Matrix2(float col0_row0, float col0_row1, float col1_row0, float col1_row1);
 static Matrix2 all(float value);
 static Matrix2 zero();
@@ -636,7 +632,8 @@ static Matrix2 identity();
 ```c++
 float trace() const;
 float determinant() const;
-float minor(int column, int row) const;
+float minor_at(int column, int row) const;
+Matrix2 minor() const;
 float cofactor_at(int column, int row) const;
 Matrix2 cofactor() const;
 Matrix2 transpose() const;
@@ -645,23 +642,38 @@ Matrix2 unchecked_inverse() const;
 std::optional<Matrix2> inverse() const;
 bool approx_equal(const Matrix2& other) const;
 bool approx_zero() const;
-Column at(int column) const;
-Column& at(int column);
+Vector2 at(int column) const;
+Vector2& at(int column);
 float at(int column, int row) const;
 float& at(int column, int row);
-const Column& operator[](int column) const;
-Column& operator[](int column);
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
+```
+
+### Operators
+
+```c++
+Vector2 operator[](int column) const;
+Vector2& operator[](int column);
 bool operator==(const Matrix2& other) const;
 bool operator!=(const Matrix2& other) const;
-bool operator<(const Matrix2& other) const;
+Matrix2 operator+(const Matrix2& other) const;
+Matrix2& operator+=(const Matrix2& other);
+Matrix2 operator-(const Matrix2& other) const;
+Matrix2& operator-=(const Matrix2& other);
 Matrix2 operator*(const Matrix2& other) const;
 Matrix2& operator*=(const Matrix2& other);
 Vector2 operator*(const Vector2& vector) const;
 Matrix2 operator*(float value) const;
+Matrix2 operator*(float value, const Matrix2& matrix);
 Matrix2& operator*=(float value);
 Matrix2 operator/(float value) const;
+Matrix2 operator/(float value, const Matrix2& matrix);
 Matrix2& operator/=(float value);
-operator bool() const;
+bool operator<(const Matrix2& other) const;
+explicit operator bool() const;
 ```
 
 ## Basis2
