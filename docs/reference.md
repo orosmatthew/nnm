@@ -539,7 +539,63 @@ explicit operator bool() const;
 
 ## Quaternion
 
-### 
+### Members
+
+```c++
+union {
+    struct {
+        float x;
+        float y;
+        float z;
+        float w;
+    };
+    Vector4 vector;
+    float data[4] {};
+}
+```
+
+### Constructors
+
+```c++
+Quaternion();
+explicit Quaternion(const Vector4& vector);
+Quaternion(float x, float y, float z, float w);
+```
+
+### Static Methods
+
+```c++
+static Quaternion identity();
+static Quaternion from_axis_angle(const Vector3& axis, float angle);
+static Quaternion from_vector_to_vector(const Vector3& from, const Vector3& to);
+```
+
+### Methods
+
+```c++
+Quaternion normalize() const;
+Vector3 axis(const Quaternion& to) const;
+float angle(const Quaternion& to) const;
+Vector3 axis() const;
+float angle() const;
+Quaternion inverse() const;
+float length_sqrd() const;
+float length() const;
+Quaternion slerp(const Quaternion& to, float weight) const;
+bool is_equal_approx(const Quaternion& other) const;
+float at(int index) const;
+float& at(int index);
+```
+
+### Operators
+
+```c++
+float operator[](int index) const;
+float& operator[](int index);
+bool operator==(const Quaternion& other) const;
+bool operator!=(const Quaternion& other) const;
+bool operator<(const Quaternion& other) const;
+```
 
 ## Matrix2
 

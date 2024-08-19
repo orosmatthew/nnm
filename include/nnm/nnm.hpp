@@ -2130,14 +2130,15 @@ public:
         return Quaternion(vector.normalize());
     }
 
+    [[nodiscard]] Vector3 axis(const Quaternion& to) const
+    {
+        const Vector3 cross = vector.xyz().cross(to.vector.xyz());
+        return cross.normalize();
+    }
+
     [[nodiscard]] float angle(const Quaternion& to) const
     {
         return 2 * acos(vector.dot(to.vector));
-    }
-
-    [[nodiscard]] float angle() const
-    {
-        return 2 * acos(w);
     }
 
     [[nodiscard]] Vector3 axis() const
@@ -2149,24 +2150,24 @@ public:
         return vector.xyz() / sin_half_angle;
     }
 
-    [[nodiscard]] Quaternion conjugate() const
+    [[nodiscard]] float angle() const
     {
-        return { -x, -y, -z, w };
+        return 2 * acos(w);
     }
 
     [[nodiscard]] Quaternion inverse() const
     {
-        return conjugate();
+        return { -x, -y, -z, w };
     }
 
-    [[nodiscard]] float magnitude_sqrd() const
+    [[nodiscard]] float length_sqrd() const
     {
         return vector.length_sqrd();
     }
 
-    [[nodiscard]] float magnitude() const
+    [[nodiscard]] float length() const
     {
-        return sqrt(magnitude_sqrd());
+        return sqrt(length_sqrd());
     }
 
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const float weight) const
@@ -2180,19 +2181,19 @@ public:
         return Quaternion((vector * sin((1.0f - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
     }
 
+    [[nodiscard]] Quaternion rotate_axis_angle(const Vector3& axis, const float angle) const
+    {
+        return from_axis_angle(axis, angle) * *this;
+    }
+
+    [[nodiscard]] Quaternion rotate_quaternion(const Quaternion& by) const
+    {
+        return by * *this;
+    }
+
     [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
     {
         return vector.approx_equal(other.vector);
-    }
-
-    [[nodiscard]] bool operator==(const Quaternion& other) const
-    {
-        return vector == other.vector;
-    }
-
-    [[nodiscard]] bool operator!=(const Quaternion& other) const
-    {
-        return vector != other.vector;
     }
 
     [[nodiscard]] float at(const int index) const
@@ -2217,6 +2218,60 @@ public:
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
+    }
+
+    [[nodiscard]] bool operator==(const Quaternion& other) const
+    {
+        return vector == other.vector;
+    }
+
+    [[nodiscard]] bool operator!=(const Quaternion& other) const
+    {
+        return vector != other.vector;
+    }
+
+    [[nodiscard]] Quaternion operator*(const Quaternion& other) const
+    {
+        Vector4 vector;
+        vector.x = w * other.x + x * other.w + y * other.z - z * other.y;
+        vector.y = w * other.y - x * other.z + y * other.w + z * other.x;
+        vector.z = w * other.z + x * other.y - y * other.x + z * other.w;
+        vector.w = w * other.w - x * other.x - y * other.y - z * other.z;
+        return Quaternion(vector);
+    }
+
+    [[nodiscard]] Quaternion operator*(const float value) const
+    {
+        return Quaternion(vector * value);
+    }
+
+    Quaternion& operator*=(const float value)
+    {
+        vector *= value;
+        return *this;
+    }
+
+    Quaternion& operator*=(const Quaternion& other)
+    {
+        const Quaternion result = *this * other;
+        *this = result;
+        return *this;
+    }
+
+    [[nodiscard]] Quaternion operator/(const float value) const
+    {
+        return Quaternion(vector / value);
+    }
+
+    Quaternion& operator/=(const float value)
+    {
+        vector /= value;
+        return *this;
+    }
+
+    [[nodiscard]] bool operator<(const Quaternion& other) const
+    {
+        return vector < other.vector;
     }
 };
 
