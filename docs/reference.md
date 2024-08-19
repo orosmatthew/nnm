@@ -621,6 +621,12 @@ union {
 Matrix2();
 Matrix2(const Vector2& column0, const Vector2& column1);
 Matrix2(float col0_row0, float col0_row1, float col1_row0, float col1_row1);
+
+```
+
+### Static Methods
+
+```c++
 static Matrix2 all(float value);
 static Matrix2 zero();
 static Matrix2 one();
@@ -689,32 +695,48 @@ Matrix2 matrix;
 ```c++
 Basis2();
 Basis2(const Matrix2& matrix);
+
+```
+
+### Static Methods
+
+```c++
 static Basis2 from_rotation(float angle);
 static Basis2 from_scale(const Vector2& factor);
-static Basis2 from_shear(const Vector2& vector);
+static Basis2 from_shear_x(float angle_y);
+static Basis2 from_shear_y(float angle_x);
 ```
 
 ### Methods
 
 ```c++
+float trace() const;
+float determinant();
+Basis2 unchecked_inverse() const;
+std::optional<Basis2> inverse() const;
 bool valid() const;
 Basis2 rotate(float angle) const;
 Basis2 rotate_local(float angle) const;
 Basis2 scale(const Vector2& factor) const;
 Basis2 scale_local(const Vector2& factor) const;
-Basis2 shear(const Vector2& vector) const;
-Basis2 shear_local(const Vector2& vector) const;
+Basis2 shear_x(float angle_y) const;
+Basis2 shear_x_local(float angle_y) const;
+Basis2 shear_y(float angle_x) const;
+Basis2 shear_y_local(float angle_x) const;
 Basis2 transform(const Basis2& by) const;
 Basis2 transform_local(const Basis2& by) const;
 bool approx_equal(const Basis2& other) const;
-float at(int column, int row) const;
+const Vector2& at(const int column) const;
+Vector2& at(const int column);
+const float& at(int column, int row) const;
 float& at(int column, int row);
 ```
 
 ### Operators
 
 ```c++
-const Matrix2::Column& operator[](int index) const;
+const Vector2& operator[](int index) const;
+Vector2& operator[](int index);
 bool operator==(const Basis2& other) const;
 bool operator!=(const Basis2& other) const;
 bool operator<(const Basis2& other) const;

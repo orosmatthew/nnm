@@ -2661,6 +2661,11 @@ public:
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
+    static Basis2 from_scale(const Vector2& factor)
+    {
+        return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
+    }
+
     static Basis2 from_shear_x(const float angle_y)
     {
         return Basis2({ { 1.0f, 0.0f }, { tan(angle_y), 1.0f } });
@@ -2671,14 +2676,32 @@ public:
         return Basis2({ { 1.0f, tan(angle_x) }, { 0.0f, 1.0f } });
     }
 
-    static Basis2 from_scale(const Vector2& factor)
+    [[nodiscard]] float trace() const
     {
-        return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
+    }
+
+    [[nodiscard]] Basis2 unchecked_inverse() const
+    {
+        return Basis2(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Basis2> inverse() const
+    {
+        if (valid()) {
+            return Basis2(matrix.unchecked_inverse());
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
     {
-        return matrix.determinant() != 0.0;
+        return matrix.determinant() != 0.0f;
     }
 
     [[nodiscard]] Basis2 rotate(const float angle) const
@@ -2689,6 +2712,16 @@ public:
     [[nodiscard]] Basis2 rotate_local(const float angle) const
     {
         return transform_local(from_rotation(angle));
+    }
+
+    [[nodiscard]] Basis2 scale(const Vector2& factor) const
+    {
+        return transform(from_scale(factor));
+    }
+
+    [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
+    {
+        return transform_local(from_scale(factor));
     }
 
     [[nodiscard]] Basis2 shear_x(const float angle_y) const
@@ -2711,16 +2744,6 @@ public:
         return transform_local(from_shear_y(angle_x));
     }
 
-    [[nodiscard]] Basis2 scale(const Vector2& factor) const
-    {
-        return transform(from_scale(factor));
-    }
-
-    [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
-    {
-        return transform_local(from_scale(factor));
-    }
-
     [[nodiscard]] Basis2 transform(const Basis2& by) const
     {
         return Basis2(by.matrix * matrix);
@@ -2729,29 +2752,6 @@ public:
     [[nodiscard]] Basis2 transform_local(const Basis2& by) const
     {
         return Basis2(matrix * by.matrix);
-    }
-
-    [[nodiscard]] Basis2 unchecked_inverse() const
-    {
-        return Basis2(matrix.unchecked_inverse());
-    }
-
-    [[nodiscard]] std::optional<Basis2> inverse() const
-    {
-        if (valid()) {
-            return Basis2(matrix.unchecked_inverse());
-        }
-        return std::nullopt;
-    }
-
-    [[nodiscard]] float trace() const
-    {
-        return matrix.trace();
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        return matrix.determinant();
     }
 
     [[nodiscard]] bool approx_equal(const Basis2& other) const
@@ -2776,7 +2776,7 @@ public:
         return matrix[column];
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const float& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
@@ -2789,6 +2789,12 @@ public:
     }
 
     const Vector2& operator[](const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
+        return matrix[index];
+    }
+
+    Vector2& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
         return matrix[index];
