@@ -695,7 +695,7 @@ Matrix2 matrix;
 
 ```c++
 Basis2();
-Basis2(const Matrix2& matrix);
+explicit Basis2(const Matrix2& matrix);
 ```
 
 ### Static Methods
@@ -851,31 +851,41 @@ Matrix3 matrix;
 ```c++
 Transform2();
 Transform2(const Matrix3& matrix);
-static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos);
-static Transform2 from_translation(const Vector2& pos);
+static Transform2 from_basis_translation(const Basis2& basis, const Vector2& translation);
 static Transform2 from_basis(const Basis2& basis);
+static Transform2 from_translation(const Vector2& pos);
 static Transform2 from_rotation(float angle);
 static Transform2 from_scale(const Vector2& factor);
-static Transform2 from_shear(const Vector2& vector);
+static Transform2 from_shear_x(float angle_y);
+static Transform2 from_shear_y(float angle_x);
 ```
 
 ### Methods
 ```c++
+float trace() const;
+float determinant() const;
+Transform2 unchecked_inverse() const;
+std::optional<Transform2> inverse() const;
 bool valid() const;
+bool affine() const;
 Basis2 basis() const;
 Vector2 translation() const;
+Transform2 translate(const Vector2& offset) const;
+Transform2 translate_local(const Vector2& offset) const;
 Transform2 rotate(float angle) const;
 Transform2 rotate_local(float angle) const;
 Transform2 scale(const Vector2& factor) const;
 Transform2 scale_local(const Vector2& factor) const;
-Transform2 shear(const Vector2& vector) const;
-Transform2 shear_local(const Vector2& vector) const;
-Transform2 translate(const Vector2& offset) const;
-Transform2 translate_local(const Vector2& offset) const;
+Transform2 shear_x(float angle_y) const;
+Transform2 shear_x_local(float angle_y) const;
+Transform2 shear_y(float angle_x) const;
+Transform2 shear_y_local(float angle_x) const;
 Transform2 transform(const Transform2& by) const;
 Transform2 transform_local(const Transform2& by) const;
 bool approx_equal(const Transform2& other) const;
-float at(int column, int row) const;
+const Vector3& at(int column) const;
+Vector3& at(int column);
+const float& at(int column, int row) const;
 float& at(int column, int row);
 ```
 
@@ -885,6 +895,8 @@ float& at(int column, int row);
 const Vector3& operator[](int column) const;
 Vector3& operator[](int column);
 bool operator==(const Transform2& other) const;
+bool operator!=(const Transform2& other) const;
+bool operator<(const Transform2& other) const;
 ```
 
 

@@ -1637,10 +1637,10 @@ int main()
         test_section("minor");
         {
             const nnm::Matrix2 mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.minor(0, 0) == 4.0f);
-            ASSERT(mat.minor(0, 1) == -3.0f);
-            ASSERT(mat.minor(1, 0) == -2.0f);
-            ASSERT(mat.minor(1, 1) == 1.0f);
+            ASSERT(mat.minor_at(0, 0) == 4.0f);
+            ASSERT(mat.minor_at(0, 1) == -3.0f);
+            ASSERT(mat.minor_at(1, 0) == -2.0f);
+            ASSERT(mat.minor_at(1, 1) == 1.0f);
         }
 
         test_section("cofactor");

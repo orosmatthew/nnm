@@ -484,7 +484,7 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] float operator[](const int index) const
+    [[nodiscard]] const float& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
@@ -1202,7 +1202,7 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] float operator[](const int index) const
+    [[nodiscard]] const float& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
@@ -2478,7 +2478,7 @@ public:
         return data + 4;
     }
 
-    Vector2 operator[](const int column) const
+    const Vector2& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -3247,7 +3247,7 @@ public:
     {
     }
 
-    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos)
+    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& translation)
     {
         Matrix3 matrix;
         for (int c = 0; c < 2; ++c) {
@@ -3255,19 +3255,19 @@ public:
                 matrix[c][r] = basis.matrix[c][r];
             }
         }
-        matrix[2][0] = pos.x;
-        matrix[2][1] = pos.y;
+        matrix[2][0] = translation.x;
+        matrix[2][1] = translation.y;
         return Transform2(matrix);
-    }
-
-    static Transform2 from_translation(const Vector2& pos)
-    {
-        return from_basis_translation(Basis2(), pos);
     }
 
     static Transform2 from_basis(const Basis2& basis)
     {
         return from_basis_translation(basis, Vector2::zero());
+    }
+
+    static Transform2 from_translation(const Vector2& pos)
+    {
+        return from_basis_translation(Basis2(), pos);
     }
 
     static Transform2 from_rotation(const float angle)
@@ -3290,6 +3290,29 @@ public:
         return from_basis_translation(Basis2::from_shear_y(angle_x), Vector2());
     }
 
+    [[nodiscard]] float trace() const
+    {
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
+    }
+
+    [[nodiscard]] Transform2 unchecked_inverse() const
+    {
+        return Transform2(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Transform2> inverse() const
+    {
+        if (valid()) {
+            return unchecked_inverse();
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] bool valid() const
     {
         return basis().valid();
@@ -3302,18 +3325,22 @@ public:
 
     [[nodiscard]] Basis2 basis() const
     {
-        Matrix2 basis_matrix;
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                basis_matrix[c][r] = matrix[c][r];
-            }
-        }
-        return Basis2(basis_matrix);
+        return Basis2(matrix.minor_matrix_at(2, 2));
     }
 
     [[nodiscard]] Vector2 translation() const
     {
         return { matrix[2][0], matrix[2][1] };
+    }
+
+    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    {
+        return transform(from_translation(offset));
+    }
+
+    [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
+    {
+        return transform_local(from_translation(offset));
     }
 
     [[nodiscard]] Transform2 rotate(const float angle) const
@@ -3346,14 +3373,14 @@ public:
         return transform_local(from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    [[nodiscard]] Transform2 shear_y(const float angle_x) const
     {
-        return transform(from_translation(offset));
+        return transform(from_shear_y(angle_x));
     }
 
-    [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
+    [[nodiscard]] Transform2 shear_y_local(const float angle_x) const
     {
-        return transform_local(from_translation(offset));
+        return transform_local(from_shear_y(angle_x));
     }
 
     [[nodiscard]] Transform2 transform(const Transform2& by) const
@@ -3371,29 +3398,55 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const Vector3& at(const int column) const
     {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        return matrix[column];
+    }
+
+    Vector3& at(const int column)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        return matrix[column];
+    }
+
+    [[nodiscard]] const float& at(const int column, const int row) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return matrix.at(column, row);
     }
 
     float& at(const int column, const int row)
     {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return matrix.at(column, row);
     }
 
     [[nodiscard]] const Vector3& operator[](const int column) const
     {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
     }
 
     Vector3& operator[](const int column)
     {
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
     }
 
-    bool operator==(const Transform2& other) const
+    [[nodiscard]] bool operator==(const Transform2& other) const
     {
         return matrix == other.matrix;
+    }
+
+    [[nodiscard]] bool operator!=(const Transform2& other) const
+    {
+        return matrix != other.matrix;
+    }
+
+    [[nodiscard]] bool operator<(const Transform2& other) const
+    {
+        return matrix < other.matrix;
     }
 };
 
