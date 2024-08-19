@@ -1264,6 +1264,8 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector3 operator*(const Matrix3& matrix) const;
+
     [[nodiscard]] Vector3 operator*(const float value) const
     {
         return { x * value, y * value, z * value };
@@ -2847,16 +2849,16 @@ public:
     {
     }
 
-    Matrix3(const Vector3& column1, const Vector3& column2, const Vector3& column3)
-        : col0_row0(column1[0])
-        , col0_row1(column1[1])
-        , col0_row2(column1[2])
-        , col1_row0(column2[0])
-        , col1_row1(column2[1])
-        , col1_row2(column2[2])
-        , col2_row0(column3[0])
-        , col2_row1(column3[1])
-        , col2_row2(column3[2])
+    Matrix3(const Vector3& column0, const Vector3& column1, const Vector3& column2)
+        : col0_row0(column0[0])
+        , col0_row1(column0[1])
+        , col0_row2(column0[2])
+        , col1_row0(column1[0])
+        , col1_row1(column1[1])
+        , col1_row2(column1[2])
+        , col2_row0(column2[0])
+        , col2_row1(column2[1])
+        , col2_row2(column2[2])
     {
     }
 
@@ -2907,6 +2909,16 @@ public:
         return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
+    [[nodiscard]] float determinant() const
+    {
+        float det = 0.0f;
+        for (int c = 0; c < 3; ++c) {
+            const float det_minor = minor_at(c, 0);
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+        }
+        return det;
+    }
+
     [[nodiscard]] Matrix2 minor_matrix_at(const int column, const int row) const
     {
         Matrix2 minor_matrix;
@@ -2943,16 +2955,6 @@ public:
             }
         }
         return result;
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        float det = 0.0f;
-        for (int c = 0; c < 3; ++c) {
-            const float det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
-        }
-        return det;
     }
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
@@ -3032,7 +3034,7 @@ public:
         return columns[column];
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const float& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
@@ -3091,19 +3093,6 @@ public:
         for (int i = 0; i < 9; ++i) {
             if (data[i] != other.data[i]) {
                 return true;
-            }
-        }
-        return false;
-    }
-
-    [[nodiscard]] bool operator<(const Matrix3& other) const
-    {
-        for (int i = 0; i < 9; ++i) {
-            if (data[i] < other.data[i]) {
-                return true;
-            }
-            if (data[i] > other.data[i]) {
-                return false;
             }
         }
         return false;
@@ -3196,6 +3185,19 @@ public:
         columns[1] /= value;
         columns[2] /= value;
         return *this;
+    }
+
+    [[nodiscard]] bool operator<(const Matrix3& other) const
+    {
+        for (int i = 0; i < 9; ++i) {
+            if (data[i] < other.data[i]) {
+                return true;
+            }
+            if (data[i] > other.data[i]) {
+                return false;
+            }
+        }
+        return false;
     }
 
     explicit operator bool() const
@@ -4467,6 +4469,15 @@ inline Vector3 Vector3::transform(const Transform2& by) const
 inline Vector3 Vector3::transform(const Transform3& by, const float w) const
 {
     return Vector4(*this, w).transform(by).xyz();
+}
+
+inline Vector3 Vector3::operator*(const Matrix3& matrix) const
+{
+    Vector3 result;
+    result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1) + z * matrix.at(0, 2);
+    result.y = x * matrix.at(1, 0) + y * matrix.at(1, 1) + z * matrix.at(1, 2);
+    result.z = x * matrix.at(2, 0) + y * matrix.at(2, 1) + z * matrix.at(2, 2);
+    return result;
 }
 
 }

@@ -337,6 +337,7 @@ Vector3 operator-(const Vector3& other) const;
 Vector3& operator-=(const Vector3& other);
 Vector3 operator*(const Vector3& other) const;
 Vector3& operator*=(const Vector3& other);
+Vector3 operator*(const Matrix3& other) const;
 Vector3 operator*(float value) const;
 Vector3 operator*(float value, const Vector3& vector);
 Vector3& operator*=(float value);
@@ -695,7 +696,6 @@ Matrix2 matrix;
 ```c++
 Basis2();
 Basis2(const Matrix2& matrix);
-
 ```
 
 ### Static Methods
@@ -744,12 +744,6 @@ bool operator<(const Basis2& other) const;
 
 ## Matrix3
 
-### Types
-
-```c++
-using Column = Vector3;
-```
-
 ### Members
 
 ```c++
@@ -765,7 +759,8 @@ union {
         float col2_row1;
         float col2_row2;
     };
-    std::array<Column, 3> columns;
+    Vector3 columns[3];
+    float data[9] {};
 };
 ```
 
@@ -773,7 +768,7 @@ union {
 
 ```c++
 Matrix3();
-Matrix3(const Column& column1, const Column& column2, const Column& column3)
+Matrix3(const Column& column0, const Column& column1, const Column& column2);
 Matrix3(
     float col0_row0,
     float col0_row1,
@@ -784,51 +779,65 @@ Matrix3(
     float col2_row0,
     float col2_row1,
     float col2_row2);
+```
+
+### Static Methods
+
+```c++
 static Matrix3 all(float value);
 static Matrix3 zero();
-static Matrix3 one()
-static Matrix3 identity()
+static Matrix3 one();
+static Matrix3 identity();
 ```
 
 ### Methods
 
 ```c++
-float trace() const
-float determinant() const
-float minor_at(int column, int row) const
-Matrix3 minor() const
-float cofactor_at(int column, int row) const
-Matrix3 cofactor() const
-Matrix3 transpose() const
-Matrix3 adjugate() const
-Matrix3 unchecked_inverse() const
-std::optional<Matrix3> inverse() const
-bool approx_equal(const Matrix3& other) const
-bool approx_zero() const
-Column at(int column) const
-Column& at(int column)
-float at(int column, int row) const
-float& at(int column, int row)
+float trace() const;
+float determinant() const;
+Matrix2 minor_matrix_at(int column, int row) const;
+float minor_at(int column, int row) const;
+Matrix3 minor() const;
+float cofactor_at(int column, int row) const;
+Matrix3 cofactor() const;
+Matrix3 transpose() const;
+Matrix3 adjugate() const;
+Matrix3 unchecked_inverse() const;
+std::optional<Matrix3> inverse() const;
+bool approx_equal(const Matrix3& other) const;
+bool approx_zero() const;
+const Vector3& at(int column) const;
+Column& at(int column);
+const float& at(int column, int row) const;
+float& at(int column, int row);
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
 ```
 
 ### Operators
 
 ```c++
-const Column& operator[](int column) const
-Column& operator[](int column)
-Matrix2 sub_matrix2_at(int column, int row) const
-Matrix3 sub_matrix2(int column, int row, const Matrix2& matrix) const
-bool operator==(const Matrix3& other) const
-bool operator!=(const Matrix3& other) const
-bool operator<(const Matrix3& other) const
-Matrix3 operator*(const Matrix3& other) const
-Matrix3& operator*=(const Matrix3& other)
-Vector3 operator*(const Vector3& vector) const
-Matrix3 operator*(float value) const
-Matrix3& operator*=(float value)
-Matrix3 operator/(float value) const
-Matrix3& operator/=(float value)
-operator bool() const
+const Vector3& operator[](int column) const;
+Vector3& operator[](int column);
+bool operator==(const Matrix3& other) const;
+bool operator!=(const Matrix3& other) const;
+Matrix3 operator+(const Matrix3& other) const;
+Matrix3& operator+=(const Matrix3& other);
+Matrix3 operator-(Matrix3& other) const;
+Matrix3& operator-=(const Matrix3& other);
+Matrix3 operator*(const Matrix3& other) const;
+Matrix3& operator*=(const Matrix3& other);
+Vector3 operator*(const Vector3& vector) const;
+Matrix3 operator*(float value) const;
+Matrix3 operator*(float value, const Matrix3& matrix);
+Matrix3& operator*=(float value);
+Matrix3 operator/(float value) const;
+Matrix3 operator/(float value, const Matrix3& matrix);
+Matrix3& operator/=(float value);
+bool operator<(const Matrix3& other) const;
+explicit operator bool() const;
 ```
 
 ## Transform2
