@@ -931,7 +931,8 @@ union {
         float col3_row2;
         float col3_row3;
     };
-    std::array<Column, 4> columns;
+    Vector4 columns[4];
+    float data[16] {};
 };
 ```
 
@@ -939,8 +940,7 @@ union {
 
 ```cpp
 Matrix4();
-
-Matrix4(const Column& column1, const Column& column2, const Column& column3, const Column& column4);
+Matrix4(const Vector4& column0, const Vector4& column1, const Vector4& column2, const Vector4& column3);
 Matrix4(
     float col0_row0,
     float col0_row1,
@@ -958,6 +958,11 @@ Matrix4(
     float col3_row1,
     float col3_row2,
     float col3_row3);
+```
+
+### Static Methods
+
+```c++
 static Matrix4 all(float value);
 static Matrix4 zero();
 static Matrix4 one();
@@ -968,10 +973,10 @@ static Matrix4 identity();
 
 ```cpp
 float trace() const;
+float determinant() const;
 Matrix3 minor_matrix_at(int column, int row) const;
 float minor_at(int column, int row) const;
 Matrix4 minor() const
-float determinant() const;
 float cofactor_at(int column, int row) const;
 Matrix4 cofactor() const;
 Matrix4 transpose() const;
@@ -980,27 +985,37 @@ Matrix4 unchecked_inverse() const;
 std::optional<Matrix4> inverse() const;
 bool approx_equal(const Matrix4& other) const;
 bool approx_zero() const;
-const Column& at(int column) const;
-Column& at(int column);
-float at(int column, int row) const;
+const Vector4& at(int column) const;
+Vector4& at(int column);
+const float& at(int column, int row) const;
 float& at(int column, int row);
+const float* begin() const;
+const float* end() const;
+float* begin();
+float* end();
 ```
 
 ### Operators
 
 ```cpp
-const Column& operator[](int index) const;
-Column& operator[](int index);
+const Vector4& operator[](int index) const;
+Vector4& operator[](int index);
 bool operator==(const Matrix4& other) const;
 bool operator!=(const Matrix4& other) const;
-bool operator<(const Matrix4& other) const;
+Matrix4 operator+(const Matrix4& other) const;
+Matrix4& operator+=(const Matrix4& other);
+Matrix4 operator-(const Matrix4& other) const;
+Matrix4& operator-=(const Matrix4& other);
 Matrix4 operator*(const Matrix4& other) const;
 Matrix4& operator*=(const Matrix4& other);
 Vector4 operator*(const Vector4& vector) const;
 Matrix4 operator*(float value) const;
+Matrix4 operator*(float value, const Matrix4& matrix);
 Matrix4& operator*=(float value);
 Matrix4 operator/(float value) const;
+Matrix4 operator/(float value, const Matrix4& matrix);
 Matrix4& operator/=(float value);
+bool operator<(const Matrix4& other) const;
 explicit operator bool() const;
 ```
 

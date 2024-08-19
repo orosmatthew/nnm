@@ -1985,6 +1985,8 @@ public:
         return *this;
     }
 
+    [[nodiscard]] Vector4 operator*(const Matrix4& matrix) const;
+
     [[nodiscard]] Vector4 operator*(const float value) const
     {
         return { x * value, y * value, z * value, w * value };
@@ -3495,6 +3497,26 @@ public:
     {
     }
 
+    Matrix4(const Vector4& column0, const Vector4& column1, const Vector4& column2, const Vector4& column3)
+        : col0_row0(column0[0])
+        , col0_row1(column0[1])
+        , col0_row2(column0[2])
+        , col0_row3(column0[3])
+        , col1_row0(column1[0])
+        , col1_row1(column1[1])
+        , col1_row2(column1[2])
+        , col1_row3(column1[3])
+        , col2_row0(column2[0])
+        , col2_row1(column2[1])
+        , col2_row2(column2[2])
+        , col2_row3(column2[3])
+        , col3_row0(column3[0])
+        , col3_row1(column3[1])
+        , col3_row2(column3[2])
+        , col3_row3(column3[3])
+    {
+    }
+
     Matrix4(
         const float col0_row0,
         const float col0_row1,
@@ -3531,26 +3553,6 @@ public:
     {
     }
 
-    Matrix4(const Vector4& column1, const Vector4& column2, const Vector4& column3, const Vector4& column4)
-        : col0_row0(column1[0])
-        , col0_row1(column1[1])
-        , col0_row2(column1[2])
-        , col0_row3(column1[3])
-        , col1_row0(column2[0])
-        , col1_row1(column2[1])
-        , col1_row2(column2[2])
-        , col1_row3(column2[3])
-        , col2_row0(column3[0])
-        , col2_row1(column3[1])
-        , col2_row2(column3[2])
-        , col2_row3(column3[3])
-        , col3_row0(column4[0])
-        , col3_row1(column4[1])
-        , col3_row2(column4[2])
-        , col3_row3(column4[3])
-    {
-    }
-
     [[nodiscard]] static Matrix4 all(const float value)
     {
         return { { value, value, value, value },
@@ -3580,6 +3582,16 @@ public:
     [[nodiscard]] float trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        float det = 0.0f;
+        for (int c = 0; c < 4; ++c) {
+            const float det_minor = minor_at(c, 0);
+            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+        }
+        return det;
     }
 
     [[nodiscard]] Matrix3 minor_matrix_at(const int column, const int row) const
@@ -3619,16 +3631,6 @@ public:
             }
         }
         return result;
-    }
-
-    [[nodiscard]] float determinant() const
-    {
-        float det = 0.0f;
-        for (int c = 0; c < 4; ++c) {
-            const float det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
-        }
-        return det;
     }
 
     [[nodiscard]] float cofactor_at(const int column, const int row) const
@@ -3707,13 +3709,13 @@ public:
         return columns[column];
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const float& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
     }
 
-    [[nodiscard]] float& at(const int column, const int row)
+    float& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
@@ -3771,17 +3773,38 @@ public:
         return false;
     }
 
-    bool operator<(const Matrix4& other) const
+    [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
     {
-        for (int i = 0; i < 16; ++i) {
-            if (data[i] < other.data[i]) {
-                return true;
-            }
-            if (data[i] > other.data[i]) {
-                return false;
-            }
+        Matrix4 result;
+        for (int c = 0; c < 3; ++c) {
+            result[c] = columns[c] + other[c];
         }
-        return false;
+        return result;
+    }
+
+    Matrix4& operator+=(const Matrix4& other)
+    {
+        for (int c = 0; c < 3; ++c) {
+            columns[c] += other[c];
+        }
+        return *this;
+    }
+
+    [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
+    {
+        Matrix4 result;
+        for (int c = 0; c < 3; ++c) {
+            result[c] = columns[c] - other[c];
+        }
+        return result;
+    }
+
+    Matrix4& operator-=(const Matrix4& other)
+    {
+        for (int c = 0; c < 3; ++c) {
+            columns[c] -= other[c];
+        }
+        return *this;
     }
 
     Matrix4 operator*(const Matrix4& other) const
@@ -3848,6 +3871,19 @@ public:
         return *this;
     }
 
+    bool operator<(const Matrix4& other) const
+    {
+        for (int i = 0; i < 16; ++i) {
+            if (data[i] < other.data[i]) {
+                return true;
+            }
+            if (data[i] > other.data[i]) {
+                return false;
+            }
+        }
+        return false;
+    }
+
     explicit operator bool() const
     {
         for (int c = 0; c < 4; ++c) {
@@ -3856,30 +3892,6 @@ public:
             }
         }
         return true;
-    }
-
-    static Matrix4 from_perspective(const float fov_y, const float aspect, const float front, const float back)
-    {
-        const float top = front * tan(fov_y * 0.5f);
-        const float bottom = -top;
-        const float right = top * aspect;
-        const float left = -right;
-
-        const float right_left = right - left;
-        const float top_bottom = top - bottom;
-        const float far_near = back - front;
-
-        Matrix4 result = Matrix4::zero();
-
-        result[0][0] = front * 2.0f / right_left;
-        result[1][1] = -(front * 2.0f) / top_bottom;
-        result[2][0] = (right + left) / right_left;
-        result[2][1] = (top + bottom) / top_bottom;
-        result[2][2] = -(back + front) / far_near;
-        result[2][3] = -1.0f;
-        result[3][2] = -(back * front * 2.0f) / far_near;
-
-        return result;
     }
 };
 
@@ -4398,6 +4410,16 @@ inline Matrix4 Vector4::outer(const Vector4& other) const
 inline Vector4 Vector4::transform(const Transform3& by) const
 {
     return by.matrix * *this;
+}
+inline Vector4 Vector4::operator*(const Matrix4& matrix) const
+{
+    auto result = zero();
+    for (int c = 0; c < 4; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            result.at(c) += at(c) * matrix.at(c, r);
+        }
+    }
+    return result;
 }
 
 inline Vector2::Vector2(const Vector2i& vector)
