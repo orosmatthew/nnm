@@ -113,7 +113,7 @@ Vector2 reflect(const Vector2& normal) const;
 Vector2 project(const Vector2& onto) const;
 Vector2 inverse() const;
 float angle(const Vector2& to) const;
-Vector2 translate(const Vector2& by, float z = 1.0f) const;
+Vector2 translate(const Vector2& by) const;
 Vector2 rotate(float angle) const;
 Vector2 scale(const Vector2& factor) const;
 Vector2 shear_x(float angle_y) const;
@@ -300,7 +300,7 @@ Vector3 reflect(const Vector3& normal) const;
 Vector3 project(const Vector3& onto) const;
 Vector3 inverse() const;
 float angle(const Vector3& other) const;
-Vector3 translate(const Vector3& by, float w = 1.0f) const;
+Vector3 translate(const Vector3& by) const;
 Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
 Vector3 rotate_quaternion(const Quaternion& quaternion) const;
 Vector3 scale(const Vector3& factor) const;
@@ -537,69 +537,9 @@ Vector4 operator-() const;
 explicit operator bool() const;
 ```
 
-## Vector4i
-
-### Members
-
-```c++
-union {
-    struct {
-        int x;
-        int y;
-        int z;
-        int w;
-    };
-    std::array<int, 4> array {};
-};
-```
-
-### Constructors
-
-```c++
-Vector4i();
-Vector4i(int x, int y, int z, int w);
-static Vector4i all(int value);
-static Vector4i zero();
-static Vector4i one();
-```
-
-### Methods
-
-```c++
-Vector4i abs() const;
-Vector4i clamped(const Vector4i& min, const Vector4i& max) const;
-int length_sqrd() const;
-float length() const;
-int max_index() const;
-int min_index() const;
-bool operator!=(const Vector4i& other) const;
-Vector4i operator%(const Vector4i& other) const;
-Vector4i& operator%=(const Vector4i& other);
-Vector4i operator%(int value) const;
-Vector4i& operator%=(int value);
-Vector4i operator*(const Vector4i& other) const;
-Vector4i& operator*=(const Vector4i& other);
-Vector4i operator*(int value) const;
-Vector4i& operator*=(int value);
-Vector4i operator+(const Vector4i& other) const;
-Vector4i& operator+=(const Vector4i& other);
-Vector4i operator-(const Vector4i& other) const;
-Vector4i& operator-=(const Vector4i& other);
-Vector4i operator/(const Vector4i& other) const;
-Vector4i& operator/=(const Vector4i& other);
-Vector4i operator/(int value) const;
-Vector4i& operator/=(int value);
-bool operator<(const Vector4i& other) const;
-bool operator==(const Vector4i& other) const;
-int& operator[](int index);
-Vector4i operator+() const;
-Vector4i operator-() const;
-operator bool() const;
-```
-
 ## Quaternion
 
-### TODO
+### 
 
 ## Matrix2
 

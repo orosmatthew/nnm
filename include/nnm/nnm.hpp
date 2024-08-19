@@ -406,7 +406,7 @@ public:
         return acos(cos_angle);
     }
 
-    [[nodiscard]] Vector2 translate(const Vector2& by, float z = 1.0f) const;
+    [[nodiscard]] Vector2 translate(const Vector2& by) const;
 
     [[nodiscard]] Vector2 rotate(float angle) const;
 
@@ -1105,7 +1105,7 @@ public:
         return atan2(this->cross(to).length(), this->dot(to));
     }
 
-    [[nodiscard]] Vector3 translate(const Vector3& by, float w = 1.0f) const;
+    [[nodiscard]] Vector3 translate(const Vector3& by) const;
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
 
@@ -1831,20 +1831,6 @@ public:
     {
         return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
     }
-
-    [[nodiscard]] Vector4 translate(const Vector3& by) const;
-
-    [[nodiscard]] Vector4 rotate_axis_angle(const Vector3& axis, float angle) const;
-
-    [[nodiscard]] Vector4 rotate_quaternion(const Quaternion& quaternion) const;
-
-    [[nodiscard]] Vector4 scale(const Vector3& factor) const;
-
-    [[nodiscard]] Vector4 shear_x(float angle_y, float angle_z) const;
-
-    [[nodiscard]] Vector4 shear_y(float angle_x, float angle_z) const;
-
-    [[nodiscard]] Vector4 shear_z(float angle_x, float angle_y) const;
 
     [[nodiscard]] Vector4 transform(const Transform3& by) const;
 
@@ -3175,7 +3161,7 @@ public:
     {
     }
 
-    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos, const float z = 1.0f)
+    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& pos)
     {
         Matrix3 matrix;
         for (int c = 0; c < 2; ++c) {
@@ -3185,13 +3171,12 @@ public:
         }
         matrix[2][0] = pos.x;
         matrix[2][1] = pos.y;
-        matrix[2][2] = z;
         return Transform2(matrix);
     }
 
-    static Transform2 from_translation(const Vector2& pos, const float z = 1.0f)
+    static Transform2 from_translation(const Vector2& pos)
     {
-        return from_basis_translation(Basis2(), pos, z);
+        return from_basis_translation(Basis2(), pos);
     }
 
     static Transform2 from_basis(const Basis2& basis)
@@ -4003,7 +3988,7 @@ public:
     {
     }
 
-    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation, const float w = 1.0f)
+    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation)
     {
         Matrix4 matrix;
         for (int c = 0; c < 3; ++c) {
@@ -4014,13 +3999,12 @@ public:
         matrix[3][0] = translation.x;
         matrix[3][1] = translation.y;
         matrix[3][2] = translation.z;
-        matrix[3][3] = w;
         return Transform3(matrix);
     }
 
-    static Transform3 from_translation(const Vector3& translation, const float w = 1.0f)
+    static Transform3 from_translation(const Vector3& translation)
     {
-        return from_basis_translation(Basis3(), translation, w);
+        return from_basis_translation(Basis3(), translation);
     }
 
     static Transform3 from_basis(const Basis3& basis)
@@ -4107,7 +4091,7 @@ public:
         return { matrix[3][0], matrix[3][1], matrix[3][2] };
     }
 
-    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle, const float w = 1.0f) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
@@ -4272,48 +4256,6 @@ inline Matrix4 Vector4::outer(const Vector4& other) const
              { w * other.x, w * other.y, w * other.z, w * other.w } };
 }
 
-inline Vector4 Vector4::translate(const Vector3& by) const
-{
-    const auto transform = Transform3::from_translation(by);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::rotate_axis_angle(const Vector3& axis, const float angle) const
-{
-    const auto transform = Transform3::from_rotation_axis_angle(axis, angle);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::rotate_quaternion(const Quaternion& quaternion) const
-{
-    const auto transform = Transform3::from_rotation_quaternion(quaternion);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::scale(const Vector3& factor) const
-{
-    const auto transform = Transform3::from_scale(factor);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::shear_x(const float angle_y, const float angle_z) const
-{
-    const auto transform = Transform3::from_shear_x(angle_y, angle_z);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::shear_y(const float angle_x, const float angle_z) const
-{
-    const auto transform = Transform3::from_shear_y(angle_x, angle_z);
-    return this->transform(transform);
-}
-
-inline Vector4 Vector4::shear_z(const float angle_x, const float angle_y) const
-{
-    const auto transform = Transform3::from_shear_z(angle_x, angle_y);
-    return this->transform(transform);
-}
-
 inline Vector4 Vector4::transform(const Transform3& by) const
 {
     return by.matrix * *this;
@@ -4338,34 +4280,34 @@ inline Matrix2 Vector2::outer(const Vector2& other) const
              } };
 }
 
-inline Vector2 Vector2::translate(const Vector2& by, const float z) const
+inline Vector2 Vector2::translate(const Vector2& by) const
 {
-    const auto transform = Transform2::from_translation(by, z);
+    const auto transform = Transform2::from_translation(by);
     return this->transform(transform);
 }
 
 inline Vector2 Vector2::rotate(const float angle) const
 {
-    const auto basis = Basis2::from_rotation(angle);
-    return transform(basis);
+    const auto transform = Transform2::from_rotation(angle);
+    return this->transform(transform);
 }
 
 inline Vector2 Vector2::scale(const Vector2& factor) const
 {
-    const auto basis = Basis2::from_scale(factor);
-    return transform(basis);
+    const auto transform = Transform2::from_scale(factor);
+    return this->transform(transform);
 }
 
 inline Vector2 Vector2::shear_x(const float angle_y) const
 {
-    const auto basis = Basis2::from_shear_x(angle_y);
-    return transform(basis);
+    const auto transform = Transform2::from_shear_x(angle_y);
+    return this->transform(transform);
 }
 
 inline Vector2 Vector2::shear_y(const float angle_x) const
 {
-    const auto basis = Basis2::from_shear_y(angle_x);
-    return transform(basis);
+    const auto transform = Transform2::from_shear_y(angle_x);
+    return this->transform(transform);
 }
 
 inline Vector2 Vector2::transform(const Basis2& by) const
@@ -4378,46 +4320,46 @@ inline Vector2 Vector2::transform(const Transform2& by, const float z) const
     return Vector3(*this, z).transform(by).xy();
 }
 
-inline Vector3 Vector3::translate(const Vector3& by, const float w) const
+inline Vector3 Vector3::translate(const Vector3& by) const
 {
-    const auto transform = Transform3::from_translation(by, w);
+    const auto transform = Transform3::from_translation(by);
     return this->transform(transform);
 }
 
 inline Vector3 Vector3::rotate_axis_angle(const Vector3& axis, const float angle) const
 {
-    const auto basis = Basis3::from_rotation_axis_angle(axis, angle);
-    return transform(basis);
+    const auto transform = Transform3::from_rotation_axis_angle(axis, angle);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::rotate_quaternion(const Quaternion& quaternion) const
 {
-    const auto basis = Basis3::from_rotation_quaternion(quaternion);
-    return transform(basis);
+    const auto transform = Transform3::from_rotation_quaternion(quaternion);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::scale(const Vector3& factor) const
 {
-    const auto basis = Basis3::from_scale(factor);
-    return transform(basis);
+    const auto transform = Transform3::from_scale(factor);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::shear_x(const float angle_y, const float angle_z) const
 {
-    const auto basis = Basis3::from_shear_x(angle_y, angle_z);
-    return transform(basis);
+    const auto transform = Transform3::from_shear_x(angle_y, angle_z);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::shear_y(const float angle_x, const float angle_z) const
 {
-    const auto basis = Basis3::from_shear_y(angle_x, angle_z);
-    return transform(basis);
+    const auto transform = Transform3::from_shear_y(angle_x, angle_z);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::shear_z(const float angle_x, const float angle_y) const
 {
-    const auto basis = Basis3::from_shear_z(angle_x, angle_y);
-    return transform(basis);
+    const auto transform = Transform3::from_shear_z(angle_x, angle_y);
+    return this->transform(transform);
 }
 
 inline Vector3 Vector3::transform(const Basis3& by) const
