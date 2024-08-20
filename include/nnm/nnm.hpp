@@ -4408,43 +4408,6 @@ public:
     }
 };
 
-inline Vector3::Vector3(const Vector3i& vector)
-    : x(static_cast<float>(vector.x))
-    , y(static_cast<float>(vector.y))
-    , z(static_cast<float>(vector.z))
-{
-}
-
-inline Matrix3 Vector3::outer(const Vector3& other) const
-{
-    return { { x * other.x, x * other.y, x * other.z },
-             { y * other.x, y * other.y, y * other.z },
-             { z * other.x, z * other.y, z * other.z } };
-}
-
-inline Matrix4 Vector4::outer(const Vector4& other) const
-{
-    return { { x * other.x, x * other.y, x * other.z, x * other.w },
-             { y * other.x, y * other.y, y * other.z, y * other.w },
-             { z * other.x, z * other.y, z * other.z, z * other.w },
-             { w * other.x, w * other.y, w * other.z, w * other.w } };
-}
-
-inline Vector4 Vector4::transform(const Transform3& by) const
-{
-    return by.matrix * *this;
-}
-inline Vector4 Vector4::operator*(const Matrix4& matrix) const
-{
-    auto result = zero();
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
-            result.at(c) += at(c) * matrix.at(c, r);
-        }
-    }
-    return result;
-}
-
 inline Vector2::Vector2(const Vector2i& vector)
     : x(static_cast<float>(vector.x))
     , y(static_cast<float>(vector.y))
@@ -4512,6 +4475,24 @@ inline Vector2 Vector2::operator*(const Matrix2& matrix) const
     return result;
 }
 
+inline Vector3::Vector3(const Vector3i& vector)
+    : x(static_cast<float>(vector.x))
+    , y(static_cast<float>(vector.y))
+    , z(static_cast<float>(vector.z))
+{
+}
+
+inline Matrix3 Vector3::outer(const Vector3& other) const
+{
+    Matrix3 result;
+    for (int c = 0; c < 3; ++c) {
+        for (int r = 0; r < 3; ++r) {
+            result.at(c, r) = at(c) * other.at(r);
+        }
+    }
+    return result;
+}
+
 inline Vector3 Vector3::translate(const Vector3& by) const
 {
     const auto transform = Transform3::from_translation(by);
@@ -4571,10 +4552,38 @@ inline Vector3 Vector3::transform(const Transform3& by, const float w) const
 
 inline Vector3 Vector3::operator*(const Matrix3& matrix) const
 {
-    Vector3 result;
-    result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1) + z * matrix.at(0, 2);
-    result.y = x * matrix.at(1, 0) + y * matrix.at(1, 1) + z * matrix.at(1, 2);
-    result.z = x * matrix.at(2, 0) + y * matrix.at(2, 1) + z * matrix.at(2, 2);
+    auto result = zero();
+    for (int c = 0; c < 3; ++c) {
+        for (int r = 0; r < 3; ++r) {
+            result.at(c) += at(r) * matrix.at(c, r);
+        }
+    }
+    return result;
+}
+
+inline Matrix4 Vector4::outer(const Vector4& other) const
+{
+    Matrix4 result;
+    for (int c = 0; c < 4; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            result.at(c, r) = at(c) * other.at(r);
+        }
+    }
+    return result;
+}
+
+inline Vector4 Vector4::transform(const Transform3& by) const
+{
+    return by.matrix * *this;
+}
+inline Vector4 Vector4::operator*(const Matrix4& matrix) const
+{
+    auto result = zero();
+    for (int c = 0; c < 4; ++c) {
+        for (int r = 0; r < 4; ++r) {
+            result.at(c) += at(c) * matrix.at(c, r);
+        }
+    }
     return result;
 }
 

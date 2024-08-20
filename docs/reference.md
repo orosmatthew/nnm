@@ -74,7 +74,6 @@ union {
 Vector2();
 explicit Vector2(const Vector2i& vector);
 Vector2(float x, float y);
-
 ```
 
 ### Static Methods
