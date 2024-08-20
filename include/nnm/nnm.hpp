@@ -4582,17 +4582,21 @@ inline Vector3 Vector3::operator*(const Matrix3& matrix) const
 
 template <>
 struct std::hash<nnm::Vector2i> {
-    int operator()(const nnm::Vector2i& vector) const noexcept
+    size_t operator()(const nnm::Vector2i& vector) const noexcept
     {
-        return (vector.x + vector.y + 1) * (vector.x + vector.y) / 2 + vector.y;
+        const size_t hash1 = std::hash<int>()(vector.x);
+        const size_t hash2 = std::hash<int>()(vector.y);
+        return hash1 ^ hash2 << 1;
     }
 };
 
 template <>
 struct std::hash<nnm::Vector3i> {
-    int operator()(const nnm::Vector3i& vector) const noexcept
+    size_t operator()(const nnm::Vector3i& vector) const noexcept
     {
-        const int cantor_y_z = (vector.y + vector.z + 1) * (vector.y + vector.z) / 2 + vector.z;
-        return (vector.x + cantor_y_z) * (vector.x + cantor_y_z) / 2 + cantor_y_z;
+        const size_t hash1 = std::hash<int>()(vector.x);
+        const size_t hash2 = std::hash<int>()(vector.y);
+        const size_t hash3 = std::hash<int>()(vector.z);
+        return hash1 ^ hash2 << 1 ^ hash3 << 2;
     }
 };

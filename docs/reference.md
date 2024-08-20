@@ -241,6 +241,15 @@ bool operator<(const Vector2i& other) const;
 operator bool() const;
 ```
 
+### Hash
+
+```c++
+template <>
+struct std::hash<nnm::Vector2i> {
+    size_t operator()(const nnm::Vector2i& vector) const noexcept;
+}
+```
+
 ## Vector3
 
 ### Members
@@ -433,6 +442,15 @@ Vector3i operator+() const;
 Vector3i operator-() const;
 bool operator<(const Vector3i& other) const;
 operator bool() const;
+```
+
+### Hash
+
+```c++
+template <>
+struct std::hash<nnm::Vector3i> {
+    size_t operator()(const nnm::Vector3i& vector) const noexcept;
+}
 ```
 
 ## Vector4
