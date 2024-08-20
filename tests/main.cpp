@@ -3009,7 +3009,6 @@ int main()
         {
             ASSERT(t1.at(1, 2) == 3.0f);
             ASSERT(t1.at(1) == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
-            ASSERT(t1.row_at(1) == nnm::Vector4(2.0f, 2.0f, 0.0f, -2.0f));
             ASSERT(t1[1] == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
         }
 

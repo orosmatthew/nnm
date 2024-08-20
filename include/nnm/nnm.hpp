@@ -4135,7 +4135,10 @@ class Transform3 {
 public:
     Matrix4 matrix;
 
-    Transform3() = default;
+    Transform3()
+        : matrix(Matrix4::identity())
+    {
+    }
 
     explicit Transform3(const Matrix4& matrix)
         : matrix(matrix)
@@ -4144,7 +4147,7 @@ public:
 
     static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation)
     {
-        Matrix4 matrix;
+        auto matrix = Matrix4::identity();
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
                 matrix[c][r] = basis.matrix[c][r];
@@ -4156,41 +4159,14 @@ public:
         return Transform3(matrix);
     }
 
-    static Transform3 from_translation(const Vector3& translation)
-    {
-        return from_basis_translation(Basis3(), translation);
-    }
-
     static Transform3 from_basis(const Basis3& basis)
     {
         return from_basis_translation(basis, Vector3::zero());
     }
 
-    static Transform3 from_projection_perspective(
-        const float fov, const float aspect_ratio, const float near, const float far)
+    static Transform3 from_translation(const Vector3& translation)
     {
-        Matrix4 matrix;
-        const float tan_half_fov = tan(fov / 2.0f);
-        matrix.at(0, 0) = 1.0f / (aspect_ratio * tan_half_fov);
-        matrix.at(1, 1) = 1.0f / tan_half_fov;
-        matrix.at(2, 2) = (far + near) / (near - far);
-        matrix.at(2, 3) = -1.0f;
-        matrix.at(3, 2) = 2.0f * far * near / (near - far);
-        matrix.at(3, 3) = 0.0f;
-        return Transform3(matrix);
-    }
-
-    static Transform3 from_projection_orthographic(
-        const float left, const float right, const float bottom, const float top, const float near, const float far)
-    {
-        auto matrix = Matrix4::identity();
-        matrix.at(0, 0) = 2.0f / (right - left);
-        matrix.at(1, 1) = 2.0f / (top - bottom);
-        matrix.at(2, 2) = -2.0f / (far - near);
-        matrix.at(3, 0) = -((right + left) / (right - left));
-        matrix.at(3, 1) = -((top + bottom) / (top - bottom));
-        matrix.at(3, 2) = -((far + near) / (far - near));
-        return Transform3(matrix);
+        return from_basis_translation(Basis3(), translation);
     }
 
     static Transform3 from_rotation_axis_angle(const Vector3& axis, const float angle)
@@ -4225,9 +4201,54 @@ public:
         return from_basis(Basis3::from_shear_z(angle_x, angle_y));
     }
 
-    [[nodiscard]] Basis3 basis() const
+    static Transform3 from_projection_perspective(
+        const float fov, const float aspect_ratio, const float near, const float far)
     {
-        return Basis3(matrix.minor_matrix_at(3, 3));
+        Matrix4 matrix;
+        const float tan_half_fov = tan(fov / 2.0f);
+        matrix.at(0, 0) = 1.0f / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = 1.0f / tan_half_fov;
+        matrix.at(2, 2) = (far + near) / (near - far);
+        matrix.at(2, 3) = -1.0f;
+        matrix.at(3, 2) = 2.0f * far * near / (near - far);
+        matrix.at(3, 3) = 0.0f;
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_projection_orthographic(
+        const float left, const float right, const float bottom, const float top, const float near, const float far)
+    {
+        auto matrix = Matrix4::identity();
+        matrix.at(0, 0) = 2.0f / (right - left);
+        matrix.at(1, 1) = 2.0f / (top - bottom);
+        matrix.at(2, 2) = -2.0f / (far - near);
+        matrix.at(3, 0) = -((right + left) / (right - left));
+        matrix.at(3, 1) = -((top + bottom) / (top - bottom));
+        matrix.at(3, 2) = -((far + near) / (far - near));
+        return Transform3(matrix);
+    }
+
+    [[nodiscard]] float trace() const
+    {
+        return matrix.trace();
+    }
+
+    [[nodiscard]] float determinant() const
+    {
+        return matrix.determinant();
+    }
+
+    [[nodiscard]] Transform3 unchecked_inverse() const
+    {
+        return Transform3(matrix.unchecked_inverse());
+    }
+
+    [[nodiscard]] std::optional<Transform3> inverse() const
+    {
+        if (valid()) {
+            return unchecked_inverse();
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool valid() const
@@ -4240,12 +4261,27 @@ public:
         return valid() && matrix[0][3] == 0.0f && matrix[1][3] == 0.0f && matrix[2][3] == 0.0f && matrix[3][3] == 1.0f;
     }
 
+    [[nodiscard]] Basis3 basis() const
+    {
+        return Basis3(matrix.minor_matrix_at(3, 3));
+    }
+
     [[nodiscard]] Vector3 translation() const
     {
         return { matrix[3][0], matrix[3][1], matrix[3][2] };
     }
 
-    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle, const float w = 1.0f) const
+    [[nodiscard]] Transform3 translate(const Vector3& offset) const
+    {
+        return transform(from_translation(offset));
+    }
+
+    [[nodiscard]] Transform3 translate_local(const Vector3& offset) const
+    {
+        return transform_local(from_translation(offset));
+    }
+
+    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
@@ -4305,16 +4341,6 @@ public:
         return transform_local(from_shear_z(angle_x, angle_y));
     }
 
-    [[nodiscard]] Transform3 translate(const Vector3& offset) const
-    {
-        return transform(from_translation(offset));
-    }
-
-    [[nodiscard]] Transform3 translate_local(const Vector3& offset) const
-    {
-        return transform_local(from_translation(offset));
-    }
-
     [[nodiscard]] Transform3 transform(const Transform3& by) const
     {
         return Transform3(by.matrix * matrix);
@@ -4342,13 +4368,7 @@ public:
         return matrix.at(column);
     }
 
-    [[nodiscard]] Vector4 row_at(const int row) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", row >= 0 && row <= 3);
-        return { at(0, row), at(1, row), at(2, row), at(3, row) };
-    }
-
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] const float& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);

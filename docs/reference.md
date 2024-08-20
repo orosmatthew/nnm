@@ -850,7 +850,7 @@ Matrix3 matrix;
 ### Constructors
 ```c++
 Transform2();
-Transform2(const Matrix3& matrix);
+explicit Transform2(const Matrix3& matrix);
 static Transform2 from_basis_translation(const Basis2& basis, const Vector2& translation);
 static Transform2 from_basis(const Basis2& basis);
 static Transform2 from_translation(const Vector2& pos);
@@ -1074,6 +1074,81 @@ Matrix4 operator/(float value, const Matrix4& matrix);
 Matrix4& operator/=(float value);
 bool operator<(const Matrix4& other) const;
 explicit operator bool() const;
+```
+
+## Transform3
+
+### Members
+
+```c++
+Matrix4 matrix;
+```
+
+### Constructors
+
+```c++
+Transform3();
+explicit Transform3(const Matrix4& matrix);
+```
+
+### Static Methods
+
+```c++
+static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation);
+static Transform3 from_basis(const Basis3& basis);
+static Transform3 from_translation(const Vector3& translation);
+static Transform3 from_rotation_axis_angle(const Vector3& axis, float angle);
+static Transform3 from_rotation_quaternion(const Quaternion& quaternion);
+static Transform3 from_scale(const Vector3& factor);
+static Transform3 from_shear_x(float angle_y, float angle_z);
+static Transform3 from_shear_y(float angle_x, float angle_z);
+static Transform3 from_shear_z(float angle_x, float angle_y);
+static Transform3 from_projection_perspective(float fov, float aspect_ratio, float near, float far);
+static Transform3 from_projection_orthographic(float left, float right, float bottom, float top, float near, float far);
+```
+
+### Methods
+
+```c++
+float trace() const;
+float determinant() const;
+Transform3 unchecked_inverse() const;
+std::optional<Transform3> inverse() const;
+bool valid() const;
+bool affine() const;
+Basis3 basis() const;
+Vector3 translation() const;
+Transform3 translate(const Vector3& offset) const;
+Transform3 translate_local(const Vector3& offset) const;
+Transform3 rotate_axis_angle(const Vector3& axis, float angle) const;
+Transform3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
+Transform3 rotate_quaternion(const Quaternion& quaternion) const;
+Transform3 rotate_quaternion_local(const Quaternion& quaternion) const;
+Transform3 scale(const Vector3& factor) const;
+Transform3 scale_local(const Vector3& factor) const;
+Transform3 shear_x(float angle_y, float angle_z) const;
+Transform3 shear_x_local(float angle_y, float angle_z) const;
+Transform3 shear_y(float angle_x, float angle_z) const;
+Transform3 shear_y_local(float angle_x, float angle_z) const;
+Transform3 shear_z(float angle_x, float angle_y) const;
+Transform3 shear_z_local(float angle_x, float angle_y) const;
+Transform3 transform(const Transform3& by) const;
+Transform3 transform_local(const Transform3& by) const;
+bool approx_equal(const Transform3& other) const;
+const Vector4& at(int column) const;
+Vector4& at(int column);
+const float& at(int column, int row) const;
+float& at(int column, int row);
+```
+
+### Operators
+
+```c++
+const Vector4& operator[](int column) const;
+Vector4& operator[](int column);
+bool operator==(const Transform3& other) const;
+bool operator!=(const Transform3& other) const;
+bool operator<(const Transform3& other) const;
 ```
 
 
