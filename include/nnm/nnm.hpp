@@ -4413,15 +4413,13 @@ inline Vector2::Vector2(const Vector2i& vector)
 
 inline Matrix2 Vector2::outer(const Vector2& other) const
 {
-
-    return { {
-                 x * other.x,
-                 x * other.y,
-             },
-             {
-                 y * other.x,
-                 y * other.y,
-             } };
+    Matrix2 result;
+    for (int c = 0; c < 2; ++c) {
+        for (int r = 0; r < 2; ++r) {
+            result.at(c, r) = at(c) * other.at(r);
+        }
+    }
+    return result;
 }
 
 inline Vector2 Vector2::translate(const Vector2& by) const
