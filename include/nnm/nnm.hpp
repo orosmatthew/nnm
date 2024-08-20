@@ -203,6 +203,7 @@ class Vector2;
 class Vector2i;
 class Vector3;
 class Vector3i;
+class Vector4;
 class Vector4i;
 class Quaternion;
 class Matrix2;
@@ -212,8 +213,6 @@ class Transform2;
 class Basis3;
 class Matrix4;
 class Transform3;
-
-inline Vector2 operator/(float value, const Vector2& vector);
 
 class Vector2 {
 public:
@@ -393,7 +392,7 @@ public:
 
     [[nodiscard]] Vector2 inverse() const
     {
-        return 1.0f / *this;
+        return { 1.0f / x, 1.0f / y };
     }
 
     [[nodiscard]] float angle(const Vector2& to) const
@@ -905,8 +904,6 @@ inline Vector2i operator%(const int value, const Vector2i& vector)
     return { value % vector.x, value % vector.y };
 }
 
-inline Vector3 operator/(float value, const Vector3& vector);
-
 class Vector3 {
 public:
     union {
@@ -1099,7 +1096,7 @@ public:
 
     [[nodiscard]] Vector3 inverse() const
     {
-        return 1.0f / *this;
+        return { 1.0f / x, 1.0f / y, 1.0f / z };
     }
 
     [[nodiscard]] float angle(const Vector3& to) const
