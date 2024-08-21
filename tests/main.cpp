@@ -888,6 +888,11 @@ int main()
             ASSERT(v4 * 2.0f == nnm::Vector2(2.0f, 4.0f));
         }
 
+        test_section("operator*(float, const Vector2&)");
+        {
+            ASSERT(2.0f * v4 == nnm::Vector2(2.0f, 4.0f));
+        }
+
         test_section("operator*=(float)");
         {
             nnm::Vector2 v4_copy = v4;
@@ -908,6 +913,11 @@ int main()
         test_section("operator/(float)");
         {
             ASSERT(v5 / 2.0f == nnm::Vector2(1.5f, 2.0f));
+        }
+
+        test_section("operator/(float, const Vector2&)");
+        {
+            ASSERT((2.0f / v5).approx_equal(nnm::Vector2(0.666666f, 0.5f)));
         }
 
         test_section("operator/=(float)");
