@@ -1246,39 +1246,83 @@ int main()
 
     test_case("Vector3");
     {
-        test_section("constructors");
+        test_section("Vector3()");
         {
             const nnm::Vector3 v1;
             ASSERT(v1.x == 0.0f);
             ASSERT(v1.y == 0.0f);
+        }
 
+        test_section("Vector3(const Vector3i&)");
+        {
             const nnm::Vector3 v2(nnm::Vector3i(1, 2, 3));
             ASSERT(v2.x == 1.0f);
             ASSERT(v2.y == 2.0f);
             ASSERT(v2.z == 3.0f);
+        }
 
+        test_section("Vector3(const Vector2&, float)");
+        {
+            const nnm::Vector3 v(nnm::Vector2(1.0f, 2.0f), 3.0f);
+            ASSERT(v.x == 1.0f);
+            ASSERT(v.y == 2.0f);
+            ASSERT(v.z == 3.0f);
+        }
+
+        test_section("Vector3(float, float, float)");
+        {
             const nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
             ASSERT(v3.x == 1.0f);
             ASSERT(v3.y == 2.0f);
             ASSERT(v3.z == 3.0f);
         }
 
-        test_section("static methods");
+        test_section("all");
         {
             const auto v1 = nnm::Vector3::all(3.0f);
             ASSERT(v1.x == 3.0f);
             ASSERT(v1.y == 3.0f);
             ASSERT(v1.z == 3.0f);
+        }
 
+        test_section("zero");
+        {
             const auto v2 = nnm::Vector3::zero();
             ASSERT(v2.x == 0.0f);
             ASSERT(v2.y == 0.0f);
             ASSERT(v2.z == 0.0f);
+        }
 
+        test_section("one");
+        {
             const auto v3 = nnm::Vector3::one();
             ASSERT(v3.x == 1.0f);
             ASSERT(v3.y == 1.0f);
             ASSERT(v3.z == 1.0f);
+        }
+
+        test_section("axis_x");
+        {
+            const auto x = nnm::Vector3::axis_x();
+            ASSERT(x.x == 1.0f);
+            ASSERT(x.y == 0.0f);
+            ASSERT(x.z == 0.0f);
+        }
+
+        test_section("axis_y");
+        {
+            const auto y = nnm::Vector3::axis_y();
+            ASSERT(y.x == 0.0f);
+            ASSERT(y.y == 1.0f);
+            ASSERT(y.z == 0.0f);
+        }
+
+        test_section("axis_z");
+        {
+            const auto z = nnm::Vector3::axis_z();
+            ASSERT(z.x == 0.0f);
+            ASSERT(z.y == 0.0f);
+            ASSERT(z.z == 1.0f);
         }
 
         test_section("abs");
@@ -1291,6 +1335,17 @@ int main()
             ASSERT(nnm::Vector3(0.1f, -2.1f, 1.1f).ceil() == nnm::Vector3(1.0f, -2.0f, 2.0f));
         }
 
+        test_section("floor");
+        {
+            ASSERT(nnm::Vector3(0.1f, -2.1f, 1.1f).floor() == nnm::Vector3(0.0f, -3.0f, 1.0f));
+        }
+
+        test_section("round");
+        {
+            const nnm::Vector3 v(1.1f, -2.8f, 0.0f);
+            ASSERT(v.round() == nnm::Vector3(1.0f, -3.0f, 0.0f));
+        }
+
         test_section("clamp");
         {
             const nnm::Vector3 v(0.0f, 10.0f, -2.0f);
@@ -1299,13 +1354,7 @@ int main()
             ASSERT(v.clamp(min, max) == nnm::Vector3(0.0f, 12.0f, -3.0f));
         }
 
-        test_section("normalize");
-        {
-            const nnm::Vector3 v(1.0f, -2.0f, 3.0f);
-            ASSERT(v.normalize().approx_equal(nnm::Vector3(0.267261f, -0.534522f, 0.801784f)));
-        }
-
-        test_section("direction_to");
+        test_section("direction");
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
             nnm::Vector3 to(2.0f, 2.0f, 2.0f);
@@ -1346,7 +1395,7 @@ int main()
             ASSERT(nnm::approx_equal(direction.z, 0.0f));
         }
 
-        test_section("distance_sqrd_to");
+        test_section("distance_sqrd");
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
             nnm::Vector3 to(2.0f, 2.0f, 2.0f);
@@ -1369,7 +1418,7 @@ int main()
             ASSERT(nnm::approx_equal(from.distance_sqrd(to), 0.0f));
         }
 
-        test_section("distance_to");
+        test_section("distance");
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
             nnm::Vector3 to(2.0f, 2.0f, 2.0f);
@@ -1392,9 +1441,27 @@ int main()
             ASSERT(nnm::approx_equal(from.distance(to), 0.0f));
         }
 
-        test_section("floor");
+        test_section("manhattan_distance");
         {
-            ASSERT(nnm::Vector3(0.1f, -2.1f, 1.1f).floor() == nnm::Vector3(0.0f, -3.0f, 1.0f));
+            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            nnm::Vector3 to(2.0f, 2.0f, 2.0f);
+            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 3.0f));
+
+            from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
+            to = nnm::Vector3(1.0f, 1.0f, 1.0f);
+            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 6.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(3.0f, 0.0f, 0.0f);
+            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 3.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(0.0f, 4.0f, 0.0f);
+            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 4.0f));
+
+            from = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            to = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 0.0f));
         }
 
         test_section("length_sqrd");
@@ -1409,6 +1476,20 @@ int main()
             ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(14.0f)));
         }
 
+        test_section("clamp_length");
+        {
+            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
+            ASSERT(v.clamp_length(2.0f, 5.0f).approx_equal(nnm::Vector3(1.0f, 2.0f, 3.0f)));
+            ASSERT(v.clamp_length(2.0f, 3.0f).approx_equal(nnm::Vector3(0.80178f, 1.603566f, 2.405352f)));
+            ASSERT(v.clamp_length(10.0f, 100.0f).approx_equal(nnm::Vector3(2.67261f, 5.34522f, 8.01784f)));
+        }
+
+        test_section("normalize");
+        {
+            const nnm::Vector3 v(1.0f, -2.0f, 3.0f);
+            ASSERT(v.normalize().approx_equal(nnm::Vector3(0.267261f, -0.534522f, 0.801784f)));
+        }
+
         test_section("lerp");
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
@@ -1420,7 +1501,7 @@ int main()
             ASSERT(from.lerp(to, 0.75f) == nnm::Vector3(2.5f, 4.0f, -1.25f));
         }
 
-        test_section("clamped_lerp");
+        test_section("lerp_clamped");
         {
             nnm::Vector3 from(1.0f, 1.0f, 1.0f);
             nnm::Vector3 to(3.0f, 5.0f, -2.0f);
@@ -1433,18 +1514,147 @@ int main()
             ASSERT(from.lerp_clamped(to, 5.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
         }
 
-        test_section("min/max_index");
+        test_section("dot");
+        {
+            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            ASSERT(v1.dot(v2) == -28.0f);
+        }
+
+        test_section("cross");
+        {
+            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            ASSERT(v1.cross(v2) == nnm::Vector3::zero());
+            const nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
+            const nnm::Vector3 v4(-2.0f, 4.0f, 6.0f);
+            ASSERT(v3.cross(v4) == nnm::Vector3(0.0f, -12.0f, 8.0f));
+        }
+
+        test_section("outer");
+        {
+            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            const nnm::Matrix3 expected { { -2.0f, 4.0f, -6.0f }, { 4.0f, -8.0f, 12.0f }, { -6.0f, 12.0f, -18.0f } };
+            ASSERT(v1.outer(v2).approx_equal(expected));
+        }
+
+        test_section("reflect");
+        {
+            nnm::Vector3 incident(1.0f, 1.0f, 1.0f);
+            nnm::Vector3 normal(0.0f, 1.0f, 0.0f);
+            ASSERT(incident.reflect(normal) == nnm::Vector3(1.0f, -1.0f, 1.0f));
+        }
+
+        test_section("project");
+        {
+            nnm::Vector3 v(1.0f, 2.0f, -3.0f);
+            nnm::Vector3 onto(-4.0f, 0.5f, 10.0f);
+            nnm::Vector3 expected(1.135483870967742f, -0.141935483870968f, -2.838709677419355f);
+            ASSERT(v.project(onto).approx_equal(expected));
+        }
+
+        test_section("inverse");
+        {
+            nnm::Vector3 v(1.0f, 2.0f, -3.0f);
+            ASSERT(v.inverse().approx_equal(nnm::Vector3(1.0f, 0.5f, -1.0f / 3.0f)));
+        }
+
+        test_section("angle");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
+            ASSERT(nnm::approx_equal(v1.angle(v2), 2.52872f))
+        }
+
+        test_section("translate");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
+            ASSERT(v1.translate(v2).approx_equal({ -3.0f, 2.5f, 7.0f }))
+        }
+
+        test_section("rotate_axis_angle");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            nnm::Vector3 axis = nnm::Vector3(2.0f, 0.5f, -0.8f).normalize();
+            ASSERT(v1.rotate_axis_angle(axis, nnm::pi / 5.0f).approx_equal({ 1.2574f, 3.10567f, -1.66545f }))
+        }
+
+        test_section("rotate_quaternion");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            auto quaternion = nnm::Quaternion::from_axis_angle(nnm::Vector3(2.0f, 0.5f, -0.8f), nnm::pi / 5.0f);
+            ASSERT(v1.rotate_quaternion(quaternion).approx_equal({ 1.2574f, 3.10567f, -1.66545f }));
+        }
+
+        test_section("scale");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
+            ASSERT(v1.scale(v2).approx_equal({ -4.0f, 1.0f, -30.0f }));
+        }
+
+        test_section("shear_x");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            ASSERT(v1.shear_x(nnm::pi / 5.0f, -nnm::pi / 6.0f).approx_equal({ 4.18513584f, 2.0f, -3.0f }))
+        }
+
+        test_section("shear_y");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            ASSERT(v1.shear_y(nnm::pi / 5.0f, -nnm::pi / 6.0f).approx_equal({ 1.0f, 4.45859337f, -3.0f }));
+        }
+
+        test_section("shear_z");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            ASSERT(v1.shear_z(nnm::pi / 5.0f, -nnm::pi / 6.0f).approx_equal({ -1.17962766f, 3.7320509f, -3.0f }));
+        }
+
+        test_section("transform(const Basis3&)");
+        {
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            nnm::Basis3 basis({ { 1.0f, -3.0f, -2.0f }, { 4.0f, -0.5f, 0.78f }, { 0.0f, 2.8f, 10.0f } });
+            ASSERT(v1.transform(basis).approx_equal({ 9.0f, -12.4f, -30.44f }));
+        }
+
+        test_section("transform(const Transform2&)");
+        {
+            nnm::Vector3 v1(2.0f, -3.0f, 4.0f);
+            nnm::Transform2 transform({ { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } });
+            ASSERT(v1.transform(transform).approx_equal({ 26.0f, -8.8f, 1.0f }));
+        }
+
+        test_section("transform(const Transform3&, float)");
+        {
+            nnm::Vector3 v1(2.0f, -3.0f, 4.0f);
+            nnm::Transform3 transform({ { 1.0f, 2.0f, -3.0f, 4.0f },
+                                        { -10.0f, 0.5f, 20.6f, 0.0f },
+                                        { 1.0f, 3.0f, 3.3f, -1.0f },
+                                        { 9.9f, -7.54f, 20.0f, 0.1f } });
+            ASSERT(v1.transform(transform).approx_equal({ 45.9f, 6.96f, -34.6f }));
+            ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
+        }
+
+        test_section("max_index");
         {
             nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
             ASSERT(v1.max_index() == 1);
-            ASSERT(v1.min_index() == 2);
-
             nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
             ASSERT(v2.max_index() == 2);
-            ASSERT(v2.min_index() == 0);
-
             nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
             ASSERT(v3.max_index() == 0);
+        }
+
+        test_section("min_index");
+        {
+            nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
+            ASSERT(v1.min_index() == 2);
+            nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
+            ASSERT(v2.min_index() == 0);
+            nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
             ASSERT(v3.min_index() == 0);
         }
 
@@ -1470,153 +1680,155 @@ int main()
             ASSERT_FALSE(v4.approx_zero());
         }
 
-        test_section("dot");
+        test_section("xy");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
-            ASSERT(v1.dot(v2) == -28.0f);
+            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            ASSERT(v1.xy() == nnm::Vector2(1.0f, 2.0f));
         }
 
-        test_section("outer");
+        test_section("begin");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
-            const nnm::Matrix3 expected { { -2.0f, 4.0f, -6.0f }, { 4.0f, -8.0f, 12.0f }, { -6.0f, 12.0f, -18.0f } };
-            ASSERT(v1.outer(v2).approx_equal(expected));
+            nnm::Vector3 v1(1.0f, -3.0f, 4.0f);
+            ASSERT(v1.begin() == &v1.x);
         }
 
-        test_section("cross");
+        test_section("end");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
-            ASSERT(v1.cross(v2) == nnm::Vector3::zero());
-            const nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
-            const nnm::Vector3 v4(-2.0f, 4.0f, 6.0f);
-            ASSERT(v3.cross(v4) == nnm::Vector3(0.0f, -12.0f, 8.0f));
+            nnm::Vector3 v1(1.0f, -3.0f, 4.0f);
+            ASSERT(v1.end() == &v1.z + 1);
         }
 
-        test_section("reflect");
+        test_section("at");
         {
-            nnm::Vector3 incident(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 normal(0.0f, 1.0f, 0.0f);
-            ASSERT(incident.reflect(normal) == nnm::Vector3(1.0f, -1.0f, 1.0f));
+            nnm::Vector3 v1(1.0f, -3.0f, 4.0f);
+            ASSERT(v1.at(0) == 1.0f);
+            ASSERT(v1.at(1) == -3.0f);
+            ASSERT(v1.at(2) == 4.0f);
         }
 
-        test_section("inverse");
+        test_section("operator[]");
         {
-            nnm::Vector3 v(1.0f, 2.0f, -3.0f);
-            ASSERT(v.inverse().approx_equal(nnm::Vector3(1.0f, 0.5f, -1.0f / 3.0f)));
-        }
-
-        test_section("clamp_length");
-        {
-            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
-            ASSERT(v.clamp_length(2.0f, 5.0f).approx_equal(nnm::Vector3(1.0f, 2.0f, 3.0f)));
-            ASSERT(v.clamp_length(2.0f, 3.0f).approx_equal(nnm::Vector3(0.80178f, 1.603566f, 2.405352f)));
-            ASSERT(v.clamp_length(10.0f, 100.0f).approx_equal(nnm::Vector3(2.67261f, 5.34522f, 8.01784f)));
-        }
-
-        test_section("round");
-        {
-            const nnm::Vector3 v(1.1f, -2.8f, 0.0f);
-            ASSERT(v.round() == nnm::Vector3(1.0f, -3.0f, 0.0f));
-        }
-
-        test_section("angle");
-        {
-            const nnm::Vector3 v1(1.0f, 0.0f, 0.0f);
-            const nnm::Vector3 v2(0.0f, 1.0f, 0.0f);
-            const nnm::Vector3 v3(1.0f, 1.0f, 0.0f);
-            ASSERT(nnm::approx_equal(v1.angle(v2), nnm::pi / 2.0f));
-            ASSERT(nnm::approx_equal(v1.angle(v3), nnm::pi / 4.0f));
-            ASSERT(nnm::approx_zero(v1.angle(v1)));
-            ASSERT(nnm::approx_zero(v2.angle(v2)));
-            ASSERT(nnm::approx_zero(v3.angle(v3)));
-        }
-
-        test_section("rotate_axis_angle");
-        {
-            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
-            const nnm::Vector3 axis(0.0f, 0.0f, 1.0f);
-            constexpr float angle = nnm::pi / 2.0f;
-
-            ASSERT(v.rotate_axis_angle(axis, angle).approx_equal(nnm::Vector3(-2.0f, 1.0f, 3.0f)));
-            ASSERT(v.rotate_axis_angle(axis, 2.0f * angle).approx_equal(nnm::Vector3(-1.0f, -2.0f, 3.0f)));
-            ASSERT(v.rotate_axis_angle(axis, 4.0f * angle).approx_equal(v));
-            ASSERT(v.rotate_axis_angle(axis, 0.0f).approx_equal(v));
+            nnm::Vector3 v1(1.0f, -3.0f, 4.0f);
+            ASSERT(v1[0] == 1.0f);
+            ASSERT(v1[1] == -3.0f);
+            ASSERT(v1[2] == 4.0f);
         }
 
         nnm::Vector3 v1(1.0f, 2.0f, 3.0f);
         nnm::Vector3 v2(3.0f, 4.0f, -2.0f);
         nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
 
-        test_section("equality operators");
+        test_section("operator==");
         {
             ASSERT(v1 == v3);
-            ASSERT_FALSE(v1 != v3);
-            ASSERT(v1 != v2);
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("arithmetic operators");
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(v1 != v3);
+            ASSERT(v1 != v2);
+        }
+
+        test_section("operator+(const Vector3&)");
+        {
+            ASSERT(v1 + v2 == nnm::Vector3(4.0f, 6.0f, 1.0f));
+        }
+
+        test_section("operator+=");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy += v2) == nnm::Vector3(4.0f, 6.0f, 1.0f));
+        }
+
+        test_section("operator-(const Vector3&)");
+        {
+            ASSERT(v2 - v1 == nnm::Vector3(2.0f, 2.0f, -5.0f));
+        }
+
+        test_section("operator-=");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy -= v1) == nnm::Vector3(2.0f, 2.0f, -5.0f));
+        }
+
+        test_section("operator*(const Vector3&)");
         {
             ASSERT(v1 * v2 == nnm::Vector3(3.0f, 8.0f, -6.0f));
-            ASSERT(v1 * 2.0 == nnm::Vector3(2.0f, 4.0f, 6.0f));
+        }
+
+        test_section("operator*=(const Vector3&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= v2) == nnm::Vector3(3.0f, 8.0f, -6.0f));
+        }
+
+        test_section("operator*(const Matrix3&)");
+        {
+            nnm::Matrix3 matrix { { 1.0f, -3.0f, 4.0f }, { -1.6f, 0.5f, 20.0f }, { 0.0f, 2.0f, 1.0f } };
+            ASSERT((v2 * matrix).approx_equal({ -17.0f, -42.8f, 6.0f }))
+        }
+
+        test_section("operator*(float)");
+        {
+            ASSERT(v1 * 2.0f == nnm::Vector3(2.0f, 4.0f, 6.0f));
+        }
+
+        test_section("operator*(float, const Vector3&)");
+        {
+            ASSERT(2.0f * v1 == nnm::Vector3(2.0f, 4.0f, 6.0f));
+        }
+
+        test_section("operator*=(float)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= 2.0f) == nnm::Vector3(2.0f, 4.0f, 6.0f));
+        }
+
+        test_section("operator/(const Vector3&)");
+        {
             ASSERT(v2 / v1 == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
-            ASSERT(v2 / 2.0 == nnm::Vector3(1.5f, 2.0f, -1.0f));
-            ASSERT(v1 + v2 == nnm::Vector3(4.0f, 6.0f, 1.0f));
-            ASSERT(v2 - v1 == nnm::Vector3(2.0f, 2.0f, -5.0f));
+        }
+
+        test_section("operator/=(const Vector3&)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= v1) == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
+        }
+
+        test_section("operator/(float)");
+        {
+            ASSERT(v2 / 2.0f == nnm::Vector3(1.5f, 2.0f, -1.0f));
+        }
+
+        test_section("operator/(float, const Vector3&)");
+        {
+            ASSERT(2.0f / v2 == nnm::Vector3(0.66666666f, 0.5f, -1.0f));
+        }
+
+        test_section("operator/=(float)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= 2.0) == nnm::Vector3(1.5f, 2.0f, -1.0f));
+        }
+
+        test_section("operator+");
+        {
             ASSERT(+v1 == v1);
+        }
+
+        test_section("operator-");
+        {
             ASSERT(-v1 == nnm::Vector3(-1.0f, -2.0f, -3.0f));
         }
 
-        test_section("compound assignment operators");
-        {
-            nnm::Vector3 v1_copy(v1);
-            nnm::Vector3 v2_copy(v2);
-
-            v1 *= v2;
-            ASSERT(v1 == nnm::Vector3(3.0f, 8.0f, -6.0f));
-            v1 = v1_copy;
-
-            v1 *= 2.0f;
-            ASSERT(v1 == nnm::Vector3(2.0f, 4.0f, 6.0f));
-            v1 = v1_copy;
-
-            v2 /= v1;
-            ASSERT(v2 == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
-            v2 = v2_copy;
-
-            v2 /= 2.0f;
-            ASSERT(v2 == nnm::Vector3(1.5f, 2.0f, -1.0f));
-            v2 = v2_copy;
-
-            v1 += v2;
-            ASSERT(v1 == nnm::Vector3(4.0f, 6.0f, 1.0f));
-            v1 = v1_copy;
-
-            v2 -= v1;
-            ASSERT(v2 == nnm::Vector3(2.0f, 2.0f, -5.0f));
-            v2 = v2_copy;
-        }
-
-        test_section("comparison operator");
+        test_section("operator<");
         {
             ASSERT(v1 < v2);
             ASSERT_FALSE(v2 < v1);
         }
 
-        test_section("indexing operators");
-        {
-            ASSERT(v1[0] == 1.0f);
-            ASSERT(v1[1] == 2.0f);
-            ASSERT(v1[2] == 3.0f);
-            ASSERT(v1.at(0) == 1.0f);
-            ASSERT(v1.at(1) == 2.0f);
-            ASSERT(v1.at(2) == 3.0f);
-        }
-
-        test_section("conversion operators");
+        test_section("operator bool");
         {
             ASSERT(static_cast<bool>(v1));
             ASSERT_FALSE(static_cast<bool>(nnm::Vector3(0.0f, 0.0f, 0.0f)));
