@@ -2310,10 +2310,10 @@ public:
     }
 
     Matrix2(const Vector2& column0, const Vector2& column1)
-        : col0_row0(column0[0])
-        , col0_row1(column0[1])
-        , col1_row0(column1[0])
-        , col1_row1(column1[1])
+        : col0_row0(column0.at(0))
+        , col0_row1(column0.at(1))
+        , col1_row0(column1.at(0))
+        , col1_row1(column1.at(1))
     {
     }
 
@@ -2513,7 +2513,7 @@ public:
     {
         Matrix2 result;
         for (int c = 0; c < 2; ++c) {
-            result[c] = columns[c] + other[c];
+            result.at(c) = at(c) + other.at(c);
         }
         return result;
     }
@@ -2521,7 +2521,7 @@ public:
     Matrix2& operator+=(const Matrix2& other)
     {
         for (int c = 0; c < 2; ++c) {
-            columns[c] += other[c];
+            at(c) += other.at(c);
         }
         return *this;
     }
@@ -2530,7 +2530,7 @@ public:
     {
         Matrix2 result;
         for (int c = 0; c < 2; ++c) {
-            result[c] = columns[c] - other[c];
+            result.at(c) = at(c) - other.at(c);
         }
         return result;
     }
@@ -2538,7 +2538,7 @@ public:
     Matrix2& operator-=(const Matrix2& other)
     {
         for (int c = 0; c < 2; ++c) {
-            columns[c] += other[c];
+            at(c) += other.at(c);
         }
         return *this;
     }
@@ -2566,32 +2566,32 @@ public:
     {
         Vector2 result;
         for (int r = 0; r < 2; ++r) {
-            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1];
+            result.at(r) = at(0, r) * vector.at(0) + at(1, r) * vector.at(1);
         }
         return result;
     }
 
     [[nodiscard]] Matrix2 operator*(const float value) const
     {
-        return { columns[0] * value, columns[1] * value };
+        return { at(0) * value, at(1) * value };
     }
 
     Matrix2& operator*=(const float value)
     {
-        columns[0] *= value;
-        columns[1] *= value;
+        at(0) *= value;
+        at(1) *= value;
         return *this;
     }
 
     [[nodiscard]] Matrix2 operator/(const float value) const
     {
-        return { columns[0] / value, columns[1] / value };
+        return { at(0) / value, at(1) / value };
     }
 
     Matrix2& operator/=(const float value)
     {
-        columns[0] /= value;
-        columns[1] /= value;
+        at(0) /= value;
+        at(1) /= value;
         return *this;
     }
 
@@ -2849,15 +2849,15 @@ public:
     }
 
     Matrix3(const Vector3& column0, const Vector3& column1, const Vector3& column2)
-        : col0_row0(column0[0])
-        , col0_row1(column0[1])
-        , col0_row2(column0[2])
-        , col1_row0(column1[0])
-        , col1_row1(column1[1])
-        , col1_row2(column1[2])
-        , col2_row0(column2[0])
-        , col2_row1(column2[1])
-        , col2_row2(column2[2])
+        : col0_row0(column0.at(0))
+        , col0_row1(column0.at(1))
+        , col0_row2(column0.at(2))
+        , col1_row0(column1.at(0))
+        , col1_row1(column1.at(1))
+        , col1_row2(column1.at(2))
+        , col2_row0(column2.at(0))
+        , col2_row1(column2.at(1))
+        , col2_row2(column2.at(2))
     {
     }
 
@@ -2950,7 +2950,7 @@ public:
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                result[c][r] = minor_at(c, r);
+                result.at(c, r) = minor_at(c, r);
             }
         }
         return result;
@@ -2967,7 +2967,7 @@ public:
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                result[c][r] = cofactor_at(c, r);
+                result.at(c, r) = cofactor_at(c, r);
             }
         }
         return result;
@@ -3101,7 +3101,7 @@ public:
     {
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
-            result[c] = columns[c] + other[c];
+            result.at(c) = at(c) + other.at(c);
         }
         return result;
     }
@@ -3109,7 +3109,7 @@ public:
     Matrix3& operator+=(const Matrix3& other)
     {
         for (int c = 0; c < 3; ++c) {
-            columns[c] += other[c];
+            at(c) += other.at(c);
         }
         return *this;
     }
@@ -3118,7 +3118,7 @@ public:
     {
         Matrix3 result;
         for (int c = 0; c < 3; ++c) {
-            result[c] = columns[c] - other[c];
+            result.at(c) = at(c) - other.at(c);
         }
         return result;
     }
@@ -3126,7 +3126,7 @@ public:
     Matrix3& operator-=(const Matrix3& other)
     {
         for (int c = 0; c < 3; ++c) {
-            columns[c] -= other[c];
+            at(c) -= other.at(c);
         }
         return *this;
     }
@@ -3153,36 +3153,38 @@ public:
 
     [[nodiscard]] Vector3 operator*(const Vector3& vector) const
     {
-        Vector3 result;
+        auto result = Vector3::zero();
         for (int r = 0; r < 3; ++r) {
-            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1] + at(2, r) * vector[2];
+            for (int c = 0; c < 3; ++c) {
+                result.at(r) += at(c, r) * vector.at(c);
+            }
         }
         return result;
     }
 
     [[nodiscard]] Matrix3 operator*(const float value) const
     {
-        return { columns[0] * value, columns[1] * value, columns[2] * value };
+        return { at(0) * value, at(1) * value, at(2) * value };
     }
 
     Matrix3& operator*=(const float value)
     {
-        columns[0] *= value;
-        columns[1] *= value;
-        columns[2] *= value;
+        at(0) *= value;
+        at(1) *= value;
+        at(2) *= value;
         return *this;
     }
 
     [[nodiscard]] Matrix3 operator/(const float value) const
     {
-        return { columns[0] / value, columns[1] / value, columns[2] / value };
+        return { at(0) / value, at(1) / value, at(2) / value };
     }
 
     Matrix3& operator/=(const float value)
     {
-        columns[0] /= value;
-        columns[1] /= value;
-        columns[2] /= value;
+        at(0) /= value;
+        at(1) /= value;
+        at(2) /= value;
         return *this;
     }
 
@@ -3202,7 +3204,7 @@ public:
     explicit operator bool() const
     {
         for (int c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
-            if (!static_cast<bool>(columns[c])) {
+            if (!static_cast<bool>(at(c))) {
                 return false;
             }
         }
@@ -3251,11 +3253,11 @@ public:
         Matrix3 matrix;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
-                matrix[c][r] = basis.matrix[c][r];
+                matrix.at(c, r) = basis.at(c, r);
             }
         }
-        matrix[2][0] = translation.x;
-        matrix[2][1] = translation.y;
+        matrix.at(2, 0) = translation.x;
+        matrix.at(2, 1) = translation.y;
         return Transform2(matrix);
     }
 
@@ -3319,7 +3321,7 @@ public:
 
     [[nodiscard]] bool affine() const
     {
-        return valid() && matrix[0][2] == 0.0f && matrix[1][2] == 0.0f && matrix[2][2] == 1.0f;
+        return valid() && matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
     }
 
     [[nodiscard]] Basis2 basis() const
@@ -3329,7 +3331,7 @@ public:
 
     [[nodiscard]] Vector2 translation() const
     {
-        return { matrix[2][0], matrix[2][1] };
+        return { matrix.at(2, 0), matrix.at(2, 1) };
     }
 
     [[nodiscard]] Transform2 translate(const Vector2& offset) const
@@ -3709,22 +3711,22 @@ public:
     }
 
     Matrix4(const Vector4& column0, const Vector4& column1, const Vector4& column2, const Vector4& column3)
-        : col0_row0(column0[0])
-        , col0_row1(column0[1])
-        , col0_row2(column0[2])
-        , col0_row3(column0[3])
-        , col1_row0(column1[0])
-        , col1_row1(column1[1])
-        , col1_row2(column1[2])
-        , col1_row3(column1[3])
-        , col2_row0(column2[0])
-        , col2_row1(column2[1])
-        , col2_row2(column2[2])
-        , col2_row3(column2[3])
-        , col3_row0(column3[0])
-        , col3_row1(column3[1])
-        , col3_row2(column3[2])
-        , col3_row3(column3[3])
+        : col0_row0(column0.at(0))
+        , col0_row1(column0.at(1))
+        , col0_row2(column0.at(2))
+        , col0_row3(column0.at(3))
+        , col1_row0(column1.at(0))
+        , col1_row1(column1.at(1))
+        , col1_row2(column1.at(2))
+        , col1_row3(column1.at(3))
+        , col2_row0(column2.at(0))
+        , col2_row1(column2.at(1))
+        , col2_row2(column2.at(2))
+        , col2_row3(column2.at(3))
+        , col3_row0(column3.at(0))
+        , col3_row1(column3.at(1))
+        , col3_row2(column3.at(2))
+        , col3_row3(column3.at(3))
     {
     }
 
@@ -3838,7 +3840,7 @@ public:
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
             for (int r = 0; r < 4; ++r) {
-                result[c][r] = minor_at(c, r);
+                result.at(c, r) = minor_at(c, r);
             }
         }
         return result;
@@ -3855,7 +3857,7 @@ public:
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
             for (int r = 0; r < 4; ++r) {
-                result[c][r] = cofactor_at(c, r);
+                result.at(c, r) = cofactor_at(c, r);
             }
         }
         return result;
@@ -3988,7 +3990,7 @@ public:
     {
         Matrix4 result;
         for (int c = 0; c < 3; ++c) {
-            result[c] = columns[c] + other[c];
+            result.at(c) = at(c) + other.at(c);
         }
         return result;
     }
@@ -3996,7 +3998,7 @@ public:
     Matrix4& operator+=(const Matrix4& other)
     {
         for (int c = 0; c < 3; ++c) {
-            columns[c] += other[c];
+            at(c) += other.at(c);
         }
         return *this;
     }
@@ -4005,7 +4007,7 @@ public:
     {
         Matrix4 result;
         for (int c = 0; c < 3; ++c) {
-            result[c] = columns[c] - other[c];
+            result.at(c) = at(c) - other.at(c);
         }
         return result;
     }
@@ -4013,7 +4015,7 @@ public:
     Matrix4& operator-=(const Matrix4& other)
     {
         for (int c = 0; c < 3; ++c) {
-            columns[c] -= other[c];
+            at(c) -= other.at(c);
         }
         return *this;
     }
@@ -4041,9 +4043,11 @@ public:
 
     Vector4 operator*(const Vector4& vector) const
     {
-        Vector4 result;
+        auto result = Vector4::zero();
         for (int r = 0; r < 4; ++r) {
-            result[r] = at(0, r) * vector[0] + at(1, r) * vector[1] + at(2, r) * vector[2] + at(3, r) * vector[3];
+            for (int c = 0; c < 4; ++c) {
+                result.at(r) += at(c, r) * vector.at(c);
+            }
         }
         return result;
     }
@@ -4147,12 +4151,12 @@ public:
         auto matrix = Matrix4::identity();
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                matrix[c][r] = basis.matrix[c][r];
+                matrix.at(c, r) = basis.at(c, r);
             }
         }
-        matrix[3][0] = translation.x;
-        matrix[3][1] = translation.y;
-        matrix[3][2] = translation.z;
+        matrix.at(3, 0) = translation.x;
+        matrix.at(3, 1) = translation.y;
+        matrix.at(3, 2) = translation.z;
         return Transform3(matrix);
     }
 
@@ -4255,7 +4259,8 @@ public:
 
     [[nodiscard]] bool affine() const
     {
-        return valid() && matrix[0][3] == 0.0f && matrix[1][3] == 0.0f && matrix[2][3] == 0.0f && matrix[3][3] == 1.0f;
+        return valid() && matrix.at(0, 3) == 0.0f && matrix.at(1, 3) == 0.0f && matrix.at(2, 3) == 0.0f
+            && matrix.at(3, 3) == 1.0f;
     }
 
     [[nodiscard]] Basis3 basis() const
@@ -4265,7 +4270,7 @@ public:
 
     [[nodiscard]] Vector3 translation() const
     {
-        return { matrix[3][0], matrix[3][1], matrix[3][2] };
+        return { matrix.at(3, 0), matrix.at(3, 1), matrix.at(3, 2) };
     }
 
     [[nodiscard]] Transform3 translate(const Vector3& offset) const
