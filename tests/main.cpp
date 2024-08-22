@@ -2154,14 +2154,35 @@ int main()
 
     test_case("Vector4");
     {
-        test_section("constructors");
+        test_section("Vector4()");
         {
             const nnm::Vector4 v1;
             ASSERT(v1.x == 0.0f);
             ASSERT(v1.y == 0.0f);
             ASSERT(v1.z == 0.0f);
             ASSERT(v1.w == 0.0f);
+        }
 
+        test_section("Vector4(const Vector2&, float, float)");
+        {
+            const nnm::Vector4 v(nnm::Vector2(1.0f, -2.0f), 3.0f, -4.0f);
+            ASSERT(v.x == 1.0f);
+            ASSERT(v.y == -2.0f);
+            ASSERT(v.z == 3.0f);
+            ASSERT(v.w == -4.0f);
+        }
+
+        test_section("Vector4(const Vector3&, float)");
+        {
+            const nnm::Vector4 v(nnm::Vector3(1.0f, -2.0f, 3.0f), -4.0f);
+            ASSERT(v.x == 1.0f);
+            ASSERT(v.y == -2.0f);
+            ASSERT(v.z == 3.0f);
+            ASSERT(v.w == -4.0f);
+        }
+
+        test_section("Vector4(float, float, float, float)");
+        {
             const nnm::Vector4 v2(-1.0f, 2.0f, -3.0f, 4.0f);
             ASSERT(v2.x == -1.0f);
             ASSERT(v2.y == 2.0f);
@@ -2169,25 +2190,67 @@ int main()
             ASSERT(v2.w == 4.0f);
         }
 
-        test_section("static methods");
+        test_section("all");
         {
             const auto v1 = nnm::Vector4::all(3.0f);
             ASSERT(v1.x == 3.0f);
             ASSERT(v1.y == 3.0f);
             ASSERT(v1.z == 3.0f);
             ASSERT(v1.w == 3.0f);
+        }
 
+        test_section("zero");
+        {
             const auto v2 = nnm::Vector4::zero();
             ASSERT(v2.x == 0.0f);
             ASSERT(v2.y == 0.0f);
             ASSERT(v2.z == 0.0f);
             ASSERT(v2.w == 0.0f);
+        }
 
+        test_section("one");
+        {
             const auto v3 = nnm::Vector4::one();
             ASSERT(v3.x == 1.0f);
             ASSERT(v3.y == 1.0f);
             ASSERT(v3.z == 1.0f);
             ASSERT(v3.w == 1.0f);
+        }
+
+        test_section("axis_x");
+        {
+            const auto x = nnm::Vector4::axis_x();
+            ASSERT(x.x == 1.0f);
+            ASSERT(x.y == 0.0f);
+            ASSERT(x.z == 0.0f);
+            ASSERT(x.w == 0.0f);
+        }
+
+        test_section("axis_y");
+        {
+            const auto y = nnm::Vector4::axis_y();
+            ASSERT(y.x == 0.0f);
+            ASSERT(y.y == 1.0f);
+            ASSERT(y.z == 0.0f);
+            ASSERT(y.w == 0.0f);
+        }
+
+        test_section("axis_z");
+        {
+            const auto z = nnm::Vector4::axis_z();
+            ASSERT(z.x == 0.0f);
+            ASSERT(z.y == 0.0f);
+            ASSERT(z.z == 1.0f);
+            ASSERT(z.w == 0.0f);
+        }
+
+        test_section("axis_w");
+        {
+            const auto w = nnm::Vector4::axis_w();
+            ASSERT(w.x == 0.0f);
+            ASSERT(w.y == 0.0f);
+            ASSERT(w.z == 0.0f);
+            ASSERT(w.w == 1.0f);
         }
 
         test_section("abs");
@@ -2211,20 +2274,19 @@ int main()
             ASSERT(v1.floor() == v_expected);
         }
 
+        test_section("round");
+        {
+            const nnm::Vector4 v1(-1.9f, 0.001f, 0.0f, 1.6f);
+            const nnm::Vector4 v_expected(-2.0f, 0.0f, 0.0f, 2.0f);
+            ASSERT(v1.round() == v_expected);
+        }
+
         test_section("clamp");
         {
             const nnm::Vector4 v1(-1.0f, 2.0f, 3.0f, -4.0f);
             const nnm::Vector4 v2(2.0f, -3.0f, -2.0f, -3.0f);
             const nnm::Vector4 v3(4.0f, 1.0f, 4.0f, 1.0f);
             ASSERT(v1.clamp(v2, v3) == nnm::Vector4(2.0f, 1.0f, 3.0f, -3.0f));
-        }
-
-        test_section("normalize");
-        {
-            ASSERT(nnm::Vector4().normalize() == nnm::Vector4());
-            const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
-            const nnm::Vector4 v_expected(-0.182574f, 0.365148f, -0.547723f, 0.730297f);
-            ASSERT(v1.normalize().approx_equal(v_expected));
         }
 
         test_section("length_sqrd");
@@ -2242,6 +2304,21 @@ int main()
         const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
         const nnm::Vector4 v2(4.0f, 5.0f, -2.0f, 1.5f);
 
+        test_section("clamp_length");
+        {
+            ASSERT(v1.clamp_length(0.0f, 1.0f).approx_equal(v1.normalize()));
+            ASSERT(v1.clamp_length(2.0f, 3.0f).approx_equal(v1.normalize() * 3.0f));
+            ASSERT(v1.clamp_length(10.0f, 50.0f).approx_equal(v1.normalize() * 10.0f));
+        }
+
+        test_section("normalize");
+        {
+            ASSERT(nnm::Vector4().normalize() == nnm::Vector4());
+            const nnm::Vector4 v3(-1.0f, 2.0f, -3.0f, 4.0f);
+            const nnm::Vector4 v_expected(-0.182574f, 0.365148f, -0.547723f, 0.730297f);
+            ASSERT(v3.normalize().approx_equal(v_expected));
+        }
+
         test_section("lerp");
         {
             ASSERT(v1.lerp(v2, 0.0f) == v1);
@@ -2249,7 +2326,7 @@ int main()
             ASSERT(v1.lerp(v2, 0.5f).approx_equal({ 1.5f, 3.5f, -2.5f, 2.75f }));
         }
 
-        test_section("clamped_lerp");
+        test_section("lerp_clamped");
         {
             ASSERT(v1.lerp_clamped(v2, 0.0f) == v1);
             ASSERT(v1.lerp_clamped(v2, 1.0f) == v2);
@@ -2258,12 +2335,45 @@ int main()
             ASSERT(v1.lerp_clamped(v2, 5.0f) == v2);
         }
 
-        test_section("min/max_index");
+        test_section("dot");
+        {
+            ASSERT(nnm::approx_equal(v1.dot(v2), 18.0f));
+        }
+
+        test_section("outer");
+        {
+            nnm::Matrix4 expected { { -4.0f, -5.0f, 2.0f, -1.5f },
+                                    { 8.0f, 10.0f, -4.0f, 3.0f },
+                                    { -12.0f, -15.0f, 6.0f, -4.5f },
+                                    { 16.0f, 20.0f, -8.0f, 6.0f } };
+            ASSERT(v1.outer(v2).approx_equal(expected));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Vector4 v_expected(-1.0f, 0.5f, -0.33333333f, 0.25f);
+            ASSERT(v1.inverse().approx_equal(v_expected));
+        }
+
+        test_section("transform");
+        {
+            nnm::Transform3 transform({ { 1.0f, 2.0f, -3.0f, 4.0f },
+                                        { -10.0f, 0.5f, 20.6f, 0.0f },
+                                        { 1.0f, 3.0f, 3.3f, -1.0f },
+                                        { 9.9f, -7.54f, 20.0f, 0.1f } });
+            ASSERT(v1.transform(transform).approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
+        }
+
+        test_section("max_index");
+        {
+            ASSERT(v1.max_index() == 3);
+            ASSERT(v2.max_index() == 1);
+        }
+
+        test_section("min_index");
         {
             ASSERT(v1.min_index() == 2);
-            ASSERT(v1.max_index() == 3);
             ASSERT(v2.min_index() == 2);
-            ASSERT(v2.max_index() == 1);
         }
 
         test_section("approx_equal");
@@ -2279,27 +2389,158 @@ int main()
             ASSERT(almost_zero.approx_zero());
         }
 
-        test_section("dot");
+        test_section("xy");
         {
-            ASSERT(nnm::approx_equal(v1.dot(v2), 18.0f));
+            ASSERT(v1.xy() == nnm::Vector2(-1.0f, 2.0f));
         }
 
-        test_section("inverse");
+        test_section("xyz");
         {
-            const nnm::Vector4 v_expected(-1.0f, 0.5f, -0.33333333f, 0.25f);
-            ASSERT(v1.inverse().approx_equal(v_expected));
+            ASSERT(v1.xyz() == nnm::Vector3(-1.0f, 2.0f, -3.0f));
         }
 
-        test_section("clamp_length");
+        test_section("begin");
         {
-            ASSERT(v1.clamp_length(0.0f, 1.0f).approx_equal(v1.normalize()));
-            ASSERT(v1.clamp_length(2.0f, 3.0f).approx_equal(v1.normalize() * 3.0f));
-            ASSERT(v1.clamp_length(10.0f, 50.0f).approx_equal(v1.normalize() * 10.0f));
+            ASSERT(v1.begin() == &v1.x);
         }
 
-        test_section("round");
+        test_section("end");
         {
-            // TODO
+            ASSERT(v1.end() == &v1.w + 1);
+        }
+
+        test_section("at");
+        {
+            ASSERT(v1.at(0) == -1.0f);
+            ASSERT(v1.at(1) == 2.0f);
+            ASSERT(v1.at(2) == -3.0f);
+            ASSERT(v1.at(3) == 4.0f);
+        }
+
+        test_section("operator[]");
+        {
+            ASSERT(v1[0] == -1.0f);
+            ASSERT(v1[1] == 2.0f);
+            ASSERT(v1[2] == -3.0f);
+            ASSERT(v1[3] == 4.0f);
+        }
+
+        // const nnm::Vector4 v1(-1.0f, 2.0f, -3.0f, 4.0f);
+        // const nnm::Vector4 v2(4.0f, 5.0f, -2.0f, 1.5f);
+        const nnm::Vector4 v3(-1.0f, 2.0f, -3.0f, 4.0f);
+
+        test_section("operator==");
+        {
+            ASSERT(v1 == v3);
+            ASSERT_FALSE(v1 == v2);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT(v1 != v2);
+            ASSERT_FALSE(v1 != v3);
+        }
+
+        test_section("operator+(const Vector4&)");
+        {
+            ASSERT((v1 + v2).approx_equal({ 3.0f, 7.0f, -5.0f, 5.5f }));
+        }
+
+        test_section("operator+=(const Vector4&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy += v2).approx_equal({ 3.0f, 7.0f, -5.0f, 5.5f }));
+        }
+
+        test_section("operator-(const Vector4&)");
+        {
+            ASSERT((v1 - v2).approx_equal({ -5.0f, -3.0f, -1.0f, 2.5f }));
+        }
+
+        test_section("operator-=(const Vector4&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy -= v2).approx_equal({ -5.0f, -3.0f, -1.0f, 2.5f }));
+        }
+
+        test_section("operator*(const Vector4&)");
+        {
+            ASSERT((v1 * v2).approx_equal({ -4.0f, 10.0f, 6.0f, 6.0f }));
+        }
+
+        test_section("operator*=(const Vector4&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= v2).approx_equal({ -4.0f, 10.0f, 6.0f, 6.0f }));
+        }
+
+        test_section("operator*(const Matrix4&)");
+        {
+            const nnm::Matrix4 matrix { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                        { -1.0f, -2.0f, -3.0f, -4.0f },
+                                        { 1.0f, 3.0f, 2.0f, 4.0f },
+                                        { -4.0f, -2.0f, -3.0f, -1.0f } };
+            ASSERT((v1 * matrix).approx_equal({ 10.0f, -10.0f, 15.0f, 5.0f }))
+        }
+
+        test_section("operator*(float)");
+        {
+            ASSERT((v1 * 2.0f).approx_equal({ -2.0f, 4.0f, -6.0f, 8.0f }));
+        }
+
+        test_section("operator*(float, const Vector4&)");
+        {
+            ASSERT((2.0f * v1).approx_equal({ -2.0f, 4.0f, -6.0f, 8.0f }));
+        }
+
+        test_section("operator*=(float)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= 2.0f).approx_equal({ -2.0f, 4.0f, -6.0f, 8.0f }));
+        }
+
+        test_section("operator/(const Vector4&)");
+        {
+            ASSERT((v2 / v1).approx_equal({ -4.0f, 2.5f, 0.66666666f, 0.375f }));
+        }
+
+        test_section("operator/=(const Vector4&)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= v1).approx_equal({ -4.0f, 2.5f, 0.66666666f, 0.375f }));
+        }
+
+        test_section("operator/(float)");
+        {
+            ASSERT((v2 / 2.0f).approx_equal({ 2.0f, 2.5f, -1.0f, 0.75f }));
+        }
+
+        test_section("operator/=(float)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= 2.0f).approx_equal({ 2.0f, 2.5f, -1.0f, 0.75f }));
+        }
+
+        test_section("operator<(const Vector4&)");
+        {
+            ASSERT(v1 < v2);
+            ASSERT_FALSE(v2 < v1);
+        }
+
+        test_section("operator+");
+        {
+            ASSERT(+v1 == v1);
+        }
+
+        test_section("operator-");
+        {
+            ASSERT(-v1 == nnm::Vector4(1.0f, -2.0f, 3.0f, -4.0f));
+        }
+
+        test_section("operator bool");
+        {
+            ASSERT(static_cast<bool>(v1));
+            ASSERT_FALSE(static_cast<bool>(nnm::Vector4::zero()));
         }
     }
 

@@ -204,7 +204,6 @@ class Vector2i;
 class Vector3;
 class Vector3i;
 class Vector4;
-class Vector4i;
 class Quaternion;
 class Matrix2;
 class Basis2;
@@ -1681,8 +1680,6 @@ public:
         , w(0.0f)
     {
     }
-
-    explicit Vector4(const Vector4i& vector);
 
     Vector4(const Vector2& vector, const float z, const float w)
         : x(vector.x)
@@ -4576,12 +4573,13 @@ inline Vector4 Vector4::transform(const Transform3& by) const
 {
     return by.matrix * *this;
 }
+
 inline Vector4 Vector4::operator*(const Matrix4& matrix) const
 {
     auto result = zero();
     for (int c = 0; c < 4; ++c) {
         for (int r = 0; r < 4; ++r) {
-            result.at(c) += at(c) * matrix.at(c, r);
+            result.at(c) += at(r) * matrix.at(c, r);
         }
     }
     return result;
