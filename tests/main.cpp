@@ -2724,6 +2724,111 @@ int main()
         }
     }
 
+    test_case("Quaternion");
+    {
+        test_section("Quaternion()");
+        {
+            nnm::Quaternion q;
+            ASSERT(q.x == 0.0f);
+            ASSERT(q.y == 0.0f);
+            ASSERT(q.z == 0.0f);
+            ASSERT(q.w == 1.0f);
+        }
+
+        test_section("Quaternion(const Vector4&)");
+        {
+            nnm::Quaternion q(nnm::Vector4(1.0f, -2.0f, 3.0f, -4.0f));
+            ASSERT(q.x == 1.0f);
+            ASSERT(q.y == -2.0f);
+            ASSERT(q.z == 3.0f);
+            ASSERT(q.w == -4.0f);
+        }
+
+        test_section("Quaternion(float, float, float, float)");
+        {
+            nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(q.x == 1.0f);
+            ASSERT(q.y == -2.0f);
+            ASSERT(q.z == 3.0f);
+            ASSERT(q.w == -4.0f);
+        }
+
+        test_section("identity");
+        {
+            const auto q = nnm::Quaternion::identity();
+            ASSERT(q.x == 0.0f);
+            ASSERT(q.y == 0.0f);
+            ASSERT(q.z == 0.0f);
+            ASSERT(q.w == 1.0f);
+        }
+
+        test_section("from_axis_angle");
+        {
+            const auto q = nnm::Quaternion::from_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi / 9.0f);
+            ASSERT(q.approx_equal({ 0.1515726f, -0.0757863f, 0.0378931f, 0.9848078f }))
+        }
+
+        test_section("from_vector_to_vector");
+        {
+            const nnm::Vector3 from(1.0f, -2.0f, 3.0f);
+            const auto to = from.rotate_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi / 9.0f);
+            const auto q = nnm::Quaternion::from_vector_to_vector(from, to);
+            const auto rotated_from = from.rotate_quaternion(q);
+            ASSERT(rotated_from.approx_equal(to));
+        }
+
+        test_section("normalize");
+        {
+            const nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(q.normalize().approx_equal({ 0.182574f, -0.365148f, 0.547723f, -0.730297f }));
+        }
+
+        test_section("axis");
+        {
+            const auto axis = nnm::Vector3(2.0f, -1.0f, 0.5f).normalize();
+            constexpr float angle = nnm::pi / 9.0f;
+            const auto q = nnm::Quaternion::from_axis_angle(axis, angle);
+            ASSERT(q.axis().approx_equal(axis));
+        }
+
+        test_section("angle");
+        {
+            const auto axis = nnm::Vector3(2.0f, -1.0f, 0.5f).normalize();
+            constexpr float angle = nnm::pi / 9.0f;
+            const auto q = nnm::Quaternion::from_axis_angle(axis, angle);
+            ASSERT(nnm::approx_equal(q.angle(), angle));
+        }
+
+        test_section("inverse");
+        {
+            const auto q = nnm::Quaternion(1.0f, -2.0f, 3.0f, -4.0f).normalize();
+            ASSERT(q.inverse().approx_equal({ -q.x, -q.y, -q.z, q.w }));
+        }
+
+        test_section("length_sqrd");
+        {
+            const nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(nnm::approx_equal(q.length_sqrd(), 30.0f));
+        }
+
+        test_section("length");
+        {
+            const nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(nnm::approx_equal(q.length(), 5.47723f));
+        }
+
+        const auto q1 = nnm::Quaternion::from_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi / 9.0f);
+        const auto q2 = nnm::Quaternion::from_axis_angle({ 2.0f, 10.0f, -8.0f }, -nnm::pi / 2.0f);
+
+        test_section("slerp");
+        {
+            ASSERT(q1.slerp(q2, 0.75f).approx_equal({ -0.0439172f, -0.4470681f, 0.3514504f, 0.8213915f }));
+        }
+
+
+
+    }
+
     test_case("Basis2");
     {
         test_section("constructor");

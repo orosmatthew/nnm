@@ -2120,8 +2120,9 @@ public:
     {
         const Vector3 from_norm = from.normalize();
         const Vector3 to_norm = to.normalize();
-        const Vector3 axis = from_norm.cross(to_norm);
-        const float angle = acos(from_norm.dot(to_norm));
+        const Vector3 axis = from_norm.cross(to_norm).normalize();
+        const float dot = clamp(from_norm.dot(to_norm), -1.0f, 1.0f);
+        const float angle = acos(dot);
         return from_axis_angle(axis, angle);
     }
 
@@ -2191,7 +2192,7 @@ public:
         return by * *this;
     }
 
-    [[nodiscard]] bool is_equal_approx(const Quaternion& other) const
+    [[nodiscard]] bool approx_equal(const Quaternion& other) const
     {
         return vector.approx_equal(other.vector);
     }
