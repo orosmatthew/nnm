@@ -1423,7 +1423,7 @@ public:
 
     [[nodiscard]] int manhattan_distance(const Vector3i& to) const
     {
-        return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z + to.z);
+        return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
     [[nodiscard]] int length_sqrd() const

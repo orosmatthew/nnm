@@ -1837,32 +1837,84 @@ int main()
 
     test_case("Vector3i");
     {
-        test_section("constructors");
+        test_section("Vector3i()");
         {
             const nnm::Vector3i v_default;
             ASSERT(v_default.x == 0);
             ASSERT(v_default.y == 0);
             ASSERT(v_default.z == 0);
+        }
+
+        test_section("Vector3i(const Vector3&)");
+        {
+            const nnm::Vector3i v(nnm::Vector3(1.1f, 0.2f, -1.6f));
+            ASSERT(v.x == 1);
+            ASSERT(v.y == 0);
+            ASSERT(v.z == -1);
+        }
+
+        test_section("Vector3i(const Vector2i&, int)");
+        {
+            const nnm::Vector3i v(nnm::Vector2i(1, -2), 3);
+            ASSERT(v.x == 1);
+            ASSERT(v.y == -2);
+            ASSERT(v.z == 3);
+        }
+
+        test_section("Vector3i(int, int, int)");
+        {
             const nnm::Vector3i v_with_params(1, -2, 3);
             ASSERT(v_with_params.x == 1);
             ASSERT(v_with_params.y == -2);
             ASSERT(v_with_params.z == 3);
         }
 
-        test_section("static methods");
+        test_section("all");
         {
             const auto v_all_threes = nnm::Vector3i::all(3);
             ASSERT(v_all_threes.x == 3);
             ASSERT(v_all_threes.y == 3);
             ASSERT(v_all_threes.z == 3);
+        }
+
+        test_section("zero");
+        {
             const auto v_zero = nnm::Vector3i::zero();
             ASSERT(v_zero.x == 0);
             ASSERT(v_zero.y == 0);
             ASSERT(v_zero.z == 0);
+        }
+
+        test_section("one");
+        {
             const auto v_one = nnm::Vector3i::one();
             ASSERT(v_one.x == 1);
             ASSERT(v_one.y == 1);
             ASSERT(v_one.z == 1);
+        }
+
+        test_section("axis_x");
+        {
+            const auto x = nnm::Vector3i::axis_x();
+            ASSERT(x.x == 1);
+            ASSERT(x.y == 0);
+            ASSERT(x.z == 0);
+        }
+
+        test_section("axis_y");
+        {
+            const auto y = nnm::Vector3i::axis_y();
+            ASSERT(y.x == 0);
+            ASSERT(y.y == 1);
+            ASSERT(y.z == 0);
+        }
+
+        test_section("axis_z");
+        {
+            const auto z = nnm::Vector3i::axis_z();
+            ASSERT(z.x == 0);
+            ASSERT(z.y == 0);
+            ASSERT(z.z == 1);
         }
 
         test_section("abs");
@@ -1879,95 +1931,221 @@ int main()
             ASSERT(v.clamp({ -10, -5, -100 }, { -1, -4, 3 }) == nnm::Vector3i(-1, -4, 3));
         }
 
+        test_section("manhattan_distance");
+        {
+            nnm::Vector3i from(1, 1, 1);
+            nnm::Vector3i to(2, 2, 2);
+            ASSERT(from.manhattan_distance(to) == 3);
+
+            from = nnm::Vector3i(-1, -1, -1);
+            to = nnm::Vector3i(1, 1, 1);
+            ASSERT(from.manhattan_distance(to) == 6);
+
+            from = nnm::Vector3i(0, 0, 0);
+            to = nnm::Vector3i(3, 0, 0);
+            ASSERT(from.manhattan_distance(to) == 3);
+
+            from = nnm::Vector3i(0, 0, 0);
+            to = nnm::Vector3i(0, 4, 0);
+            ASSERT(from.manhattan_distance(to) == 4);
+
+            from = nnm::Vector3i(1, 2, 3);
+            to = nnm::Vector3i(1, 2, 3);
+            ASSERT(from.manhattan_distance(to) == 0);
+        }
+
         test_section("length_sqrd");
         {
             nnm::Vector3i v(1, -2, 3);
             ASSERT(v.length_sqrd() == 14);
         }
 
-        test_section("min/max_index");
+        test_section("max_index");
         {
             nnm::Vector3i v1(1, -2, 3);
-            ASSERT(v1.min_index() == 1);
             ASSERT(v1.max_index() == 2);
             nnm::Vector3i v2(-1, 2, -3);
-            ASSERT(v2.min_index() == 2);
             ASSERT(v2.max_index() == 1);
         }
 
-        nnm::Vector3i v1(1, 2, -3);
-        nnm::Vector3i v2(-3, 4, 100);
-        nnm::Vector3i v3(1, 2, -3);
+        test_section("min_index");
+        {
+            nnm::Vector3i v1(1, -2, 3);
+            ASSERT(v1.min_index() == 1);
+            nnm::Vector3i v2(-1, 2, -3);
+            ASSERT(v2.min_index() == 2);
+        }
 
-        test_section("equality operators");
+        test_section("xy");
+        {
+            nnm::Vector3i v(1, -2, 3);
+            ASSERT(v.xy() == nnm::Vector2i(1, -2));
+        }
+
+        test_section("begin");
+        {
+            nnm::Vector3i v(1, -2, 3);
+            ASSERT(v.begin() == &v.x);
+        }
+
+        test_section("end");
+        {
+            nnm::Vector3i v(1, -2, 3);
+            ASSERT(v.end() == &v.z + 1);
+        }
+
+        test_section("at");
+        {
+            nnm::Vector3i v(1, -2, 3);
+            ASSERT(v.at(0) == 1);
+            ASSERT(v.at(1) == -2);
+            ASSERT(v.at(2) == 3);
+        }
+
+        test_section("operator[]");
+        {
+            nnm::Vector3i v(1, -2, 3);
+            ASSERT(v[0] == 1);
+            ASSERT(v[1] == -2);
+            ASSERT(v[2] == 3);
+        }
+
+        const nnm::Vector3i v1(1, 2, -3);
+        const nnm::Vector3i v2(-3, 4, 100);
+        const nnm::Vector3i v3(1, 2, -3);
+
+        test_section("operator==");
         {
             ASSERT(v1 == v3);
-            ASSERT_FALSE(v1 != v3);
-            ASSERT(v1 != v2);
             ASSERT_FALSE(v1 == v2);
         }
 
-        test_section("arithmetic operators");
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(v1 != v3);
+            ASSERT(v1 != v2);
+        }
+
+        test_section("operator+(const Vector3i&)");
+        {
+            ASSERT(v1 + v2 == nnm::Vector3i(-2, 6, 97));
+        }
+
+        test_section("operator+=(const Vector3i&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy += v2) == nnm::Vector3i(-2, 6, 97));
+        }
+
+        test_section("operator-(const Vector3i&)");
+        {
+            ASSERT(v2 - v1 == nnm::Vector3i(-4, 2, 103));
+        }
+
+        test_section("operator-=(const Vector3i&)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy -= v1) == nnm::Vector3i(-4, 2, 103));
+        }
+
+        test_section("operator*(const Vector3i&)");
+        {
+            ASSERT(v1 * v2 == nnm::Vector3i(-3, 8, -300));
+        }
+
+        test_section("operator*=(const Vector3i&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= v2) == nnm::Vector3i(-3, 8, -300));
+        }
+
+        test_section("operator*(int)");
+        {
+            ASSERT(v1 * 2 == nnm::Vector3i(2, 4, -6));
+        }
+
+        test_section("operator*(int, const Vector3i&)");
+        {
+            ASSERT(2 * v1 == nnm::Vector3i(2, 4, -6));
+        }
+
+        test_section("operator*=(int)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy *= 2) == nnm::Vector3i(2, 4, -6));
+        }
+
+        test_section("operator/(const Vector3i&)");
+        {
+            ASSERT(v2 / v1 == nnm::Vector3i(-3, 2, -33));
+        }
+
+        test_section("operator/=(const Vector3i&)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= v1) == nnm::Vector3i(-3, 2, -33));
+        }
+
+        test_section("operator/(int)");
+        {
+            ASSERT(v2 / 2 == nnm::Vector3i(-1, 2, 50));
+        }
+
+        test_section("operator/(int, const Vector3i&)");
+        {
+            ASSERT(2 / v1 == nnm::Vector3i(2, 1, 0));
+        }
+
+        test_section("operator/=(int)");
+        {
+            auto v2_copy = v2;
+            ASSERT((v2_copy /= 2) == nnm::Vector3i(-1, 2, 50));
+        }
+
+        test_section("operator%(const Vector3i&)");
         {
             ASSERT(v1 % v2 == nnm::Vector3i(1, 2, -3));
+        }
+
+        test_section("operator%=(const Vector3i&)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy %= v2) == nnm::Vector3i(1, 2, -3));
+        }
+
+        test_section("operator%(int)");
+        {
             ASSERT(v1 % 2 == nnm::Vector3i(1, 0, -1));
-            ASSERT(v1 * v2 == nnm::Vector3i(-3, 8, -300));
-            ASSERT(v1 * 2 == nnm::Vector3i(2, 4, -6));
-            ASSERT(v1 + v2 == nnm::Vector3i(-2, 6, 97));
-            ASSERT(v2 - v1 == nnm::Vector3i(-4, 2, 103));
-            ASSERT(v2 / v1 == nnm::Vector3i(-3, 2, -33));
-            ASSERT(v2 / 2 == nnm::Vector3i(-1, 2, 50));
+        }
+
+        test_section("operator%(int, const Vector3i&)");
+        {
+            ASSERT(3 % v2 == nnm::Vector3i(0, 3, 3));
+        }
+
+        test_section("operator%=(int)");
+        {
+            auto v1_copy = v1;
+            ASSERT((v1_copy %= 2) == nnm::Vector3i(1, 0, -1));
+        }
+
+        test_section("operator+");
+        {
             ASSERT(+v1 == v1);
+        }
+
+        test_section("operator-");
+        {
             ASSERT(-v1 == nnm::Vector3i(-1, -2, 3));
         }
 
-        test_section("compound assignment operators");
-        {
-            nnm::Vector3i v1_copy(v1);
-            nnm::Vector3i v2_copy(v2);
-
-            v1 *= v2;
-            ASSERT(v1 == nnm::Vector3i(-3, 8, -300));
-            v1 = v1_copy;
-
-            v1 *= 2;
-            ASSERT(v1 == nnm::Vector3i(2, 4, -6));
-            v1 = v1_copy;
-
-            v2 /= v1;
-            ASSERT(v2 == nnm::Vector3i(-3, 2, -33));
-            v2 = v2_copy;
-
-            v2 /= 2;
-            ASSERT(v2 == nnm::Vector3i(-1, 2, 50));
-            v2 = v2_copy;
-
-            v1 += v2;
-            ASSERT(v1 == nnm::Vector3i(-2, 6, 97));
-            v1 = v1_copy;
-
-            v2 -= v1;
-            ASSERT(v2 == nnm::Vector3i(-4, 2, 103));
-            v2 = v2_copy;
-        }
-
-        test_section("comparison operator");
+        test_section("operator<");
         {
             ASSERT(v2 < v1);
             ASSERT_FALSE(v1 < v2);
         }
 
-        test_section("indexing operators");
-        {
-            ASSERT(v1[0] == 1);
-            ASSERT(v1[1] == 2);
-            ASSERT(v1[2] == -3);
-            ASSERT(v1.at(0) == 1);
-            ASSERT(v1.at(1) == 2);
-            ASSERT(v1.at(2) == -3);
-        }
-
-        test_section("conversion operators");
+        test_section("operator bool");
         {
             ASSERT(static_cast<bool>(v1));
             ASSERT_FALSE(static_cast<bool>(nnm::Vector3i(0, 0, 0)));
