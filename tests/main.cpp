@@ -2825,8 +2825,81 @@ int main()
             ASSERT(q1.slerp(q2, 0.75f).approx_equal({ -0.0439172f, -0.4470681f, 0.3514504f, 0.8213915f }));
         }
 
+        test_section("rotate_axis_angle");
+        {
+            const nnm::Quaternion q3 = q1.rotate_axis_angle({ -1.0f, 2.0f, -0.5f }, -nnm::pi / 3.0f);
+            ASSERT(q3.approx_equal({ 0.3378994f, -0.4871692f, 0.1898815f, 0.7825823f }));
+        }
 
+        test_section("rotate_quaternion");
+        {
+            const auto q3 = nnm::Quaternion::from_axis_angle({ -1.0f, 2.0f, -0.5f }, -nnm::pi / 3.0f);
+            const nnm::Quaternion q4 = q1.rotate_quaternion(q3);
+            ASSERT(q4.approx_equal({ 0.3378994f, -0.4871692f, 0.1898815f, 0.7825823f }));
+        }
 
+        test_section("approx_equal");
+        {
+            ASSERT_FALSE(q1.approx_equal(q2));
+            ASSERT(q1.approx_equal(q1));
+            const nnm::Quaternion q3(0.15157f, -0.07579f, 0.03789f, 0.98481f);
+            ASSERT(q1.approx_equal(q3));
+        }
+
+        test_section("at");
+        {
+            const nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(q3.at(0) == 1.0f);
+            ASSERT(q3.at(1) == -2.0f);
+            ASSERT(q3.at(2) == 3.0f);
+            ASSERT(q3.at(3) == -4.0f);
+        }
+
+        test_section("operator[]");
+        {
+            const nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
+            ASSERT(q3[0] == 1.0f);
+            ASSERT(q3[1] == -2.0f);
+            ASSERT(q3[2] == 3.0f);
+            ASSERT(q3[3] == -4.0f);
+        }
+
+        test_section("operator==");
+        {
+            const auto q3 = q1;
+            ASSERT(q1 == q3);
+            ASSERT_FALSE(q1 == q2);
+        }
+
+        test_section("operator!=");
+        {
+            const auto q3 = q1;
+            ASSERT_FALSE(q1 != q3);
+            ASSERT(q1 != q2);
+        }
+
+        test_section("operator*");
+        {
+            ASSERT((q1 * q2).approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
+        }
+
+        test_section("operator*=");
+        {
+            auto q1_copy = q1;
+            ASSERT((q1_copy *= q2).approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(q2 < q1);
+            ASSERT_FALSE(q1 < q2);
+        }
+
+        test_section("operator bool");
+        {
+            ASSERT(static_cast<bool>(q1));
+            ASSERT_FALSE(static_cast<bool>(nnm::Quaternion(nnm::Vector4::zero())));
+        }
     }
 
     test_case("Basis2");

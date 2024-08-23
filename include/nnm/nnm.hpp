@@ -2241,32 +2241,9 @@ public:
         return Quaternion(vector);
     }
 
-    [[nodiscard]] Quaternion operator*(const float value) const
-    {
-        return Quaternion(vector * value);
-    }
-
-    Quaternion& operator*=(const float value)
-    {
-        vector *= value;
-        return *this;
-    }
-
     Quaternion& operator*=(const Quaternion& other)
     {
-        const Quaternion result = *this * other;
-        *this = result;
-        return *this;
-    }
-
-    [[nodiscard]] Quaternion operator/(const float value) const
-    {
-        return Quaternion(vector / value);
-    }
-
-    Quaternion& operator/=(const float value)
-    {
-        vector /= value;
+        *this = *this * other;
         return *this;
     }
 
@@ -2274,17 +2251,12 @@ public:
     {
         return vector < other.vector;
     }
+
+    [[nodiscard]] explicit operator bool() const
+    {
+        return static_cast<bool>(vector);
+    }
 };
-
-inline Quaternion operator*(const float value, const Quaternion& quaternion)
-{
-    return Quaternion(value * quaternion.vector);
-}
-
-inline Quaternion operator/(const float value, const Quaternion& quaternion)
-{
-    return Quaternion(value / quaternion.vector);
-}
 
 class Matrix2 {
 public:
