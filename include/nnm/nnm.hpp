@@ -2508,7 +2508,7 @@ public:
     Matrix2& operator-=(const Matrix2& other)
     {
         for (int c = 0; c < 2; ++c) {
-            at(c) += other.at(c);
+            at(c) -= other.at(c);
         }
         return *this;
     }
