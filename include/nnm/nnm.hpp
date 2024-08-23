@@ -2515,12 +2515,12 @@ public:
 
     [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
     {
-        Matrix2 result;
+        auto result = zero();
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
-                const float sum1 = at(0, r) * other.at(c, 0);
-                const float sum2 = at(1, r) * other.at(c, 1);
-                result.at(c, r) = sum1 + sum2;
+                for (int i = 0; i < 2; ++i) {
+                    result.at(c, r) += at(i, r) * other.at(c, i);
+                }
             }
         }
         return result;
@@ -3103,13 +3103,12 @@ public:
 
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
     {
-        Matrix3 result;
+        auto result = zero();
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
-                const float sum1 = at(0, r) * other.at(c, 0);
-                const float sum2 = at(1, r) * other.at(c, 1);
-                const float sum3 = at(2, r) * other.at(c, 2);
-                result.at(c, r) = sum1 + sum2 + sum3;
+                for (int i = 0; i < 3; ++i) {
+                    result.at(c, r) += at(i, r) * other.at(c, i);
+                }
             }
         }
         return result;
@@ -3992,14 +3991,12 @@ public:
 
     Matrix4 operator*(const Matrix4& other) const
     {
-        Matrix4 result;
+        auto result = zero();
         for (int c = 0; c < 4; ++c) {
             for (int r = 0; r < 4; ++r) {
-                const float sum1 = at(0, r) * other.at(c, 0);
-                const float sum2 = at(1, r) * other.at(c, 1);
-                const float sum3 = at(2, r) * other.at(c, 2);
-                const float sum4 = at(3, r) * other.at(c, 3);
-                result.at(c, r) = sum1 + sum2 + sum3 + sum4;
+                for (int i = 0; i < 4; ++i) {
+                    result.at(c, r) += at(i, r) * other.at(c, i);
+                }
             }
         }
         return result;

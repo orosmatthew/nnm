@@ -3005,13 +3005,13 @@ int main()
 
     test_case("Basis2");
     {
-        test_section("constructor");
+        test_case("Basis()");
         {
             const nnm::Basis2 b;
             ASSERT(b.matrix == nnm::Matrix2::identity());
         }
 
-        test_section("from matrix");
+        test_section("Basis2(const Matrix2&)");
         {
             const auto m1 = nnm::Matrix2::identity();
             const auto b1 = nnm::Basis2(m1);
@@ -3019,7 +3019,7 @@ int main()
             ASSERT(b1.matrix == nnm::Matrix2::identity());
         }
 
-        test_section("from rotation");
+        test_section("from_rotation");
         {
             const auto b1 = nnm::Basis2::from_rotation(0.0f);
             ASSERT(b1.matrix.approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
@@ -3037,12 +3037,43 @@ int main()
             ASSERT(b1.matrix == nnm::Matrix2({ 2.0f, 0.0f }, { 0.0f, -3.0f }));
         }
 
-        // TODO
-        // test_section("from shear");
-        // {
-        //     const auto b1 = nnm::Basis2::from_shear({ 2.0f, -3.0f });
-        //     ASSERT(b1.matrix == nnm::Matrix2({ 1.0f, 2.0f }, { -3.0f, 1.0f }));
-        // }
+        test_section("from_shear_x");
+        {
+            const auto b = nnm::Basis2::from_shear_x(nnm::pi / 4.5f);
+            ASSERT(b.matrix.approx_equal({ { 1.0f, 0.0f }, { 0.8390996312f, 1.0f } }));
+        }
+
+        test_section("from_shear_y");
+        {
+            const auto b = nnm::Basis2::from_shear_y(-nnm::pi / 3.1f);
+            ASSERT(b.matrix.approx_equal({ { 1.0f, -1.6043516022f }, { 0.0f, 1.0f } }))
+        }
+
+        test_section("trace");
+        {
+            const nnm::Basis2 b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            ASSERT(b.trace() == b.matrix.trace());
+        }
+
+        test_section("determinant");
+        {
+            const nnm::Basis2 b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            ASSERT(b.determinant() == b.matrix.determinant());
+        }
+
+        test_section("unchecked_inverse");
+        {
+            const nnm::Basis2 b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            ASSERT(b.unchecked_inverse().matrix == b.matrix.unchecked_inverse());
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Basis2 b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
+            const auto inv = b.inverse();
+            ASSERT(inv.has_value() && inv.value().matrix == b.matrix.inverse().value());
+            ASSERT_FALSE(nnm::Basis2(nnm::Matrix2::zero()).inverse().has_value());
+        }
 
         test_section("valid");
         {
@@ -3052,12 +3083,6 @@ int main()
             ASSERT(b1.valid());
             ASSERT_FALSE(b2.valid());
             ASSERT_FALSE(b3.valid());
-        }
-
-        test_section("matrix");
-        {
-            ASSERT(nnm::Basis2().matrix == nnm::Matrix2::identity());
-            ASSERT(nnm::Basis2().matrix == nnm::Matrix2::identity());
         }
 
         test_section("rotate");
@@ -3072,6 +3097,12 @@ int main()
             ASSERT(b2_rotated.matrix.approx_equal({ { 1.41421f, 1.41421f }, { -0.353553f, 0.353553f } }));
         }
 
+        test_section("matrix");
+        {
+            ASSERT(nnm::Basis2().matrix == nnm::Matrix2::identity());
+            ASSERT(nnm::Basis2().matrix == nnm::Matrix2::identity());
+        }
+
         test_section("scale");
         {
             const nnm::Basis2 b1;
@@ -3081,15 +3112,6 @@ int main()
             ASSERT(b1.scale({ 2.0f, 0.5f }).matrix.approx_equal({ { 2.0f, 0.0f }, { 0.0f, 0.5f } }));
             ASSERT(b1.scale({ -1.0f, -1.0f }).matrix.approx_equal({ { -1.0f, 0.0f }, { 0.0f, -1.0f } }));
         }
-
-        // TODO
-        // test_section("shear");
-        // {
-        //     const nnm::Basis2 b1;
-        //     ASSERT(b1.shear({ 0.0f, 0.0f }).matrix.approx_equal({ { 1.0f, 0.0f }, { 0.0f, 1.0f } }));
-        //     ASSERT(b1.shear({ 1.0f, 1.0f }).matrix.approx_equal({ { 1.0f, 1.0f }, { 1.0f, 1.0f } }));
-        //     ASSERT(b1.shear({ 2.0f, -0.5f }).matrix.approx_equal({ { 1.0f, 2.0f }, { -0.5f, 1.0f } }));
-        // }
 
         test_section("approx equal");
         {
