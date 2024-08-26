@@ -3784,6 +3784,274 @@ int main()
         }
     }
 
+    test_case("Basis3");
+    {
+        test_section("Basis3()");
+        {
+            nnm::Basis3 b1;
+            ASSERT(b1.matrix == nnm::Matrix3::identity());
+        }
+
+        test_section("Basis3(const Matrix3&)");
+        {
+            nnm::Matrix3 m1 { { 1.0f, 2.0f, 0.0f }, { 3.0f, 4.0f, 0.0f }, { 3.0f, -8.0f, 1.0f } };
+            nnm::Basis3 b2(m1);
+            ASSERT(b2.matrix == m1);
+        }
+
+        test_section("from_rotation_axis_angle");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, nnm::pi);
+            ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }))
+            auto b2 = nnm::Basis3::from_rotation_axis_angle({ 2.0f, 0.0f, 0.0f }, nnm::pi / 4.0f);
+            ASSERT(b2.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.707107f, 0.707107f }, { 0.0f, -0.707107f, 0.707107f } }));
+        }
+
+        test_section("from_rotation_quaternion");
+        {
+            auto b = nnm::Basis3::from_rotation_quaternion(
+                nnm::Quaternion(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f));
+            const nnm::Basis3 expected(
+                { { 0.9980918f, -0.0213389f, -0.0579437f },
+                  {
+                      0.0335516f,
+                      0.9751930f,
+                      0.2187989f,
+                  },
+                  { 0.0518374f, -0.2203254f, 0.9740480f } });
+            ASSERT(b.approx_equal(expected));
+        }
+
+        test_section("from_scale");
+        {
+            auto b1 = nnm::Basis3::from_scale({ -1.0f, 2.0f, 3.0f });
+            ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 0.0f }, { 0.0f, 0.0f, 3.0f } }));
+        }
+
+        test_section("from_shear_x");
+        {
+            auto b1 = nnm::Basis3::from_shear_x(0.5f, -0.1f);
+            ASSERT(b1.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721f, 0.0f, 1.0f } }));
+        }
+
+        test_section("from_shear_y");
+        {
+            auto b1 = nnm::Basis3::from_shear_y(0.5f, -0.1f);
+            ASSERT(b1.approx_equal(
+                nnm::Basis3({ { 1.0f, 0.5463024898f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, -0.1003346721f, 1.0f } })));
+        }
+
+        test_section("from_shear_z");
+        {
+            auto b1 = nnm::Basis3::from_shear_z(0.5f, -0.1f);
+            ASSERT(b1.approx_equal(
+                nnm::Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.5463024898f, -0.1003346721f, 1.0f } })));
+        }
+
+        test_section("trace");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            ASSERT(nnm::approx_equal(b.trace(), 12.0f));
+        }
+
+        test_section("determinant");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            ASSERT(nnm::approx_equal(b.determinant(), -54.925f));
+        }
+
+        test_section("unchecked_inverse");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            const nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
+                                         { -0.559854f, -0.00455166f, 0.37096f },
+                                         { 0.270369f, 0.0509786f, -0.154756f } });
+            ASSERT(b.unchecked_inverse().approx_equal(expected));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            const nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
+                                         { -0.559854f, -0.00455166f, 0.37096f },
+                                         { 0.270369f, 0.0509786f, -0.154756f } });
+            ASSERT(b.inverse().has_value() && b.inverse().value().approx_equal(expected));
+            ASSERT_FALSE(nnm::Basis3(nnm::Matrix3::zero()).inverse().has_value());
+        }
+
+        test_section("valid");
+        {
+            nnm::Basis3 b1(nnm::Matrix3::zero());
+            ASSERT_FALSE(b1.valid());
+            nnm::Basis3 b2;
+            ASSERT(b2.valid());
+            nnm::Basis3 b3({ { 1.0f, 2.0f, 3.0f }, { 2.0f, 4.0f, 6.0f }, { 3.0f, 6.0f, 9.0f } });
+            ASSERT_FALSE(b3.valid());
+            nnm::Basis3 b4({ { 1.0f, 2.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { -2.0f, 3.0f, 1.0f } });
+            ASSERT(b4.valid());
+        }
+
+        test_section("rotate_axis_angle");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi / 2.0f);
+            nnm::Basis3 b1_rot = b1.rotate_axis_angle({ 0.0f, 2.0f, 0.0f }, nnm::pi / 4.0f);
+            ASSERT(b1_rot.matrix.approx_equal(
+                { { 0.707107f, 0.0f, -0.707107f }, { 0.707107f, 0.0f, 0.707107f }, { 0.0f, -1.0f, 0.0f } }));
+        }
+
+        test_section("rotate_axis_angle_local");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, -nnm::pi / 4.0f);
+            nnm::Basis3 b1_rot = b1.rotate_axis_angle_local({ 0.0f, 0.0f, 3.0f }, nnm::pi / 2.0f);
+            ASSERT(b1_rot.matrix.approx_equal(
+                { { 0.0f, 1.0f, 0.0f }, { -0.707107f, 0.0f, -0.707107f }, { -0.707107f, 0.0f, 0.707107f } }))
+        }
+
+        test_section("rotate_quaternion");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            const nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
+            const nnm::Basis3 expected({ { 0.956907f, -2.08189f, -0.0085175f },
+                                         { 0.623695f, 5.36143f, 21.7124f },
+                                         { 1.54226f, -0.447372f, 0.843373f } });
+            ASSERT(b.rotate_quaternion(q).approx_equal(expected));
+        }
+
+        test_section("rotate_quaternion_local");
+        {
+            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            const nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
+            const nnm::Basis3 expected({ { 0.92718f, -2.19798f, 0.0143242f },
+                                         { -0.369645f, 9.64107f, 19.7394f },
+                                         { 1.67815f, -2.50174f, -3.40654f } });
+            ASSERT(b.rotate_quaternion_local(q).approx_equal(expected));
+        }
+
+        test_section("scale");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, nnm::pi / 2.0f);
+            nnm::Basis3 b1_scaled = b1.scale({ 2.0f, -1.0f, 0.4f });
+            ASSERT(
+                b1_scaled.matrix.approx_equal({ { 0.0f, 0.0f, -0.4f }, { 0.0f, -1.0f, 0.0f }, { 2.0f, 0.0f, 0.0f } }));
+        }
+
+        test_section("scale_local");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 0.0f, 1.0f }, -nnm::pi / 4.0f);
+            nnm::Basis3 b1_scaled = b1.scale_local({ 0.6f, 2.0f, -1.5f });
+            ASSERT(b1_scaled.matrix.approx_equal(
+                { { 0.424264f, -0.424264f, 0.0f }, { 1.41421f, 1.41421f, 0.0f }, { 0.0f, 0.0f, -1.5f } }));
+        }
+
+        test_section("shear_x");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_x(1.5f, -0.1f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { -14.1014204f, -1.0f, 0.0f }, { 0.10034f, 0.0f, -1.0f } }))
+        }
+
+        test_section("shear_x_local");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_x_local(1.5f, -0.1f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 14.1014f, -1.0f, 0.0f }, { -0.10033f, 0.0f, -1.0f } }))
+        }
+
+        test_section("shear_y");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_y(-1.5f, -0.1f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, -14.1014204f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.10033f, -1.0f } }))
+        }
+
+        test_section("shear_y_local");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_y_local(1.3f, 0.3f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, -3.6021f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -0.30934f, -1.0f } }))
+        }
+
+        test_section("shear_z");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_z(1.2f, -0.8f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { -2.57215f, 1.02964f, -1.0f } }))
+        }
+
+        test_section("shear_z_local");
+        {
+            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
+            auto b1_sheared = b1.shear_z_local(-1.2f, 0.8f);
+            ASSERT(b1_sheared.matrix.approx_equal(
+                { { 1.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { -2.57215f, -1.02964f, -1.0f } }))
+        }
+
+        test_section("transform");
+        {
+            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
+            nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
+            auto b3 = b1.transform(b2);
+            ASSERT(
+                b3.matrix.approx_equal({ { 34.0f, 11.5f, -111.0f }, { 2.0f, -2.8f, 5.5f }, { 13.0f, 4.25f, -35.0f } }))
+        }
+
+        test_section("transform_local");
+        {
+            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
+            nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
+            auto b3 = b1.transform_local(b2);
+            ASSERT(b3.matrix.approx_equal({ { 5.0f, -0.5f, 6.15f }, { 0.5f, -4.0f, 0.2f }, { -38.5f, 14.0f, -4.8f } }))
+        }
+
+        test_section("approx_equal");
+        {
+            nnm::Basis3 b1({ { 1.000001f, -0.00001f, 0.0f }, { 0.0f, 0.99999999f, 0.000001f }, { 0.0f, 0.0f, 1.0f } });
+            ASSERT(b1.approx_equal(nnm::Basis3()));
+        }
+
+        const nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
+        const nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
+
+        test_section("at");
+        {
+            ASSERT(b1.at(0, 0) == 1.0f);
+            ASSERT(b1.at(1, 2) == 0.1f);
+            ASSERT(b2.at(2, 2) == -35.0f);
+        }
+
+        test_section("operator[]");
+        {
+            ASSERT(b1[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
+            ASSERT(b1[1] == nnm::Vector3(2.0f, -3.0f, 0.1f));
+            ASSERT(b2[2] == nnm::Vector3(10.0f, 2.0f, -35.0f));
+        }
+
+        test_section("operator==");
+        {
+            ASSERT(b1 == b1);
+            ASSERT_FALSE(b1 == b2);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(b1 != b1);
+            ASSERT(b1 != b2);
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(b1 < b2);
+            ASSERT_FALSE(b2 < b1);
+        }
+    }
+
     test_case("Matrix4");
     {
         test_section("constructors");
@@ -4090,204 +4358,6 @@ int main()
             ASSERT_FALSE(static_cast<bool>(nnm::Matrix4::zero()));
             ASSERT(static_cast<bool>(nnm::Matrix4::identity()));
             ASSERT(static_cast<bool>(m1));
-        }
-    }
-
-    test_case("Basis3");
-    {
-        test_section("constructors");
-        {
-            nnm::Basis3 b1;
-            ASSERT(b1.matrix == nnm::Matrix3::identity());
-            nnm::Matrix3 m1 { { 1.0f, 2.0f, 0.0f }, { 3.0f, 4.0f, 0.0f }, { 3.0f, -8.0f, 1.0f } };
-            nnm::Basis3 b2(m1);
-            ASSERT(b2.matrix == m1);
-        }
-
-        test_section("from_rotation_axis_angle");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, nnm::pi);
-            ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }))
-            auto b2 = nnm::Basis3::from_rotation_axis_angle({ 2.0f, 0.0f, 0.0f }, nnm::pi / 4.0f);
-            ASSERT(b2.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.707107f, 0.707107f }, { 0.0f, -0.707107f, 0.707107f } }));
-        }
-
-        test_section("from_shear_x");
-        {
-            auto b1 = nnm::Basis3::from_shear_x(0.5f, -0.1f);
-            ASSERT(b1.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721f, 0.0f, 1.0f } }));
-        }
-
-        test_section("from_scale");
-        {
-            auto b1 = nnm::Basis3::from_scale({ -1.0f, 2.0f, 3.0f });
-            ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 0.0f }, { 0.0f, 0.0f, 3.0f } }));
-        }
-
-        test_section("valid");
-        {
-            nnm::Basis3 b1(nnm::Matrix3::zero());
-            ASSERT_FALSE(b1.valid());
-            nnm::Basis3 b2;
-            ASSERT(b2.valid());
-            nnm::Basis3 b3({ { 1.0f, 2.0f, 3.0f }, { 2.0f, 4.0f, 6.0f }, { 3.0f, 6.0f, 9.0f } });
-            ASSERT_FALSE(b3.valid());
-            nnm::Basis3 b4({ { 1.0f, 2.0f, 3.0f }, { 3.0f, 1.0f, 3.0f }, { -2.0f, 3.0f, 1.0f } });
-            ASSERT(b4.valid());
-        }
-
-        test_section("rotate_axis_angle");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi / 2.0f);
-            nnm::Basis3 b1_rot = b1.rotate_axis_angle({ 0.0f, 2.0f, 0.0f }, nnm::pi / 4.0f);
-            ASSERT(b1_rot.matrix.approx_equal(
-                { { 0.707107f, 0.0f, -0.707107f }, { 0.707107f, 0.0f, 0.707107f }, { 0.0f, -1.0f, 0.0f } }));
-        }
-
-        test_section("rotate_axis_angle_local");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, -nnm::pi / 4.0f);
-            nnm::Basis3 b1_rot = b1.rotate_axis_angle_local({ 0.0f, 0.0f, 3.0f }, nnm::pi / 2.0f);
-            ASSERT(b1_rot.matrix.approx_equal(
-                { { 0.0f, 1.0f, 0.0f }, { -0.707107f, 0.0f, -0.707107f }, { -0.707107f, 0.0f, 0.707107f } }))
-        }
-
-        test_section("scale");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, nnm::pi / 2.0f);
-            nnm::Basis3 b1_scaled = b1.scale({ 2.0f, -1.0f, 0.4f });
-            ASSERT(
-                b1_scaled.matrix.approx_equal({ { 0.0f, 0.0f, -0.4f }, { 0.0f, -1.0f, 0.0f }, { 2.0f, 0.0f, 0.0f } }));
-        }
-
-        test_section("scale_local");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 0.0f, 0.0f, 1.0f }, -nnm::pi / 4.0f);
-            nnm::Basis3 b1_scaled = b1.scale_local({ 0.6f, 2.0f, -1.5f });
-            ASSERT(b1_scaled.matrix.approx_equal(
-                { { 0.424264f, -0.424264f, 0.0f }, { 1.41421f, 1.41421f, 0.0f }, { 0.0f, 0.0f, -1.5f } }));
-        }
-
-        test_section("shear_x");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_x(1.5f, -0.1f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { -14.1014204f, -1.0f, 0.0f }, { 0.10034f, 0.0f, -1.0f } }))
-        }
-
-        test_section("shear_x_local");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_x_local(1.5f, -0.1f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 14.1014f, -1.0f, 0.0f }, { -0.10033f, 0.0f, -1.0f } }))
-        }
-
-        test_section("shear_y");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_y(-1.5f, -0.1f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, -14.1014204f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.10033f, -1.0f } }))
-        }
-
-        test_section("shear_y_local");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_y_local(1.3f, 0.3f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, -3.6021f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -0.30934f, -1.0f } }))
-        }
-
-        test_section("shear_z");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_z(1.2f, -0.8f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { -2.57215f, 1.02964f, -1.0f } }))
-        }
-
-        test_section("shear_z_local");
-        {
-            auto b1 = nnm::Basis3::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi);
-            auto b1_sheared = b1.shear_z_local(-1.2f, 0.8f);
-            ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { -2.57215f, -1.02964f, -1.0f } }))
-        }
-
-        test_section("transform");
-        {
-            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
-            nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
-            auto b3 = b1.transform(b2);
-            ASSERT(
-                b3.matrix.approx_equal({ { 34.0f, 11.5f, -111.0f }, { 2.0f, -2.8f, 5.5f }, { 13.0f, 4.25f, -35.0f } }))
-        }
-
-        test_section("transform_local");
-        {
-            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
-            nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
-            auto b3 = b1.transform_local(b2);
-            ASSERT(b3.matrix.approx_equal({ { 5.0f, -0.5f, 6.15f }, { 0.5f, -4.0f, 0.2f }, { -38.5f, 14.0f, -4.8f } }))
-        }
-
-        test_section("inverse");
-        {
-            nnm::Basis3 b1(nnm::Matrix3::zero());
-            ASSERT_FALSE(b1.inverse().has_value());
-            nnm::Basis3 b2({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
-            std::optional<nnm::Basis3> b2_inv = b2.inverse();
-            nnm::Basis3 expected({ { -0.441176f, -0.294118f, 1.35294f },
-                                   { -0.272059f, -0.514706f, 0.867647f },
-                                   { 0.661765f, 0.441176f, -1.02941f } });
-            ASSERT(b2_inv.has_value() && b2_inv.value().approx_equal(expected))
-            ASSERT(b2.unchecked_inverse().approx_equal(expected));
-        }
-
-        test_section("trace");
-        {
-            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 0.2f } });
-            ASSERT(nnm::approx_equal(b1.trace(), -1.8f));
-        }
-
-        test_section("determinant");
-        {
-            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 0.2f } });
-            ASSERT(nnm::approx_equal(b1.determinant(), 12.4f))
-        }
-
-        test_section("approx_equal");
-        {
-            nnm::Basis3 b1({ { 1.000001f, -0.00001f, 0.0f }, { 0.0f, 0.99999999f, 0.000001f }, { 0.0f, 0.0f, 1.0f } });
-            ASSERT(b1.approx_equal(nnm::Basis3()));
-        }
-
-        const nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
-        const nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
-
-        test_section("accessors");
-        {
-            ASSERT(b1.at(1, 2) == 0.1f);
-            ASSERT(b1[1] == nnm::Vector3(2.0f, -3.0f, 0.1f));
-            ASSERT(b1.at(1) == nnm::Vector3(2.0f, -3.0f, 0.1f));
-        }
-
-        test_section("equality");
-        {
-            ASSERT(b1 == b1);
-            ASSERT_FALSE(b1 != b1);
-            ASSERT_FALSE(b1 == b2);
-            ASSERT(b1 != b2);
-        }
-
-        test_section("comparison");
-        {
-            ASSERT(b1 < b2);
-            ASSERT_FALSE(b2 < b1);
         }
     }
 
