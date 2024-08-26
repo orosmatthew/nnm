@@ -3220,42 +3220,57 @@ int main()
 
     test_case("Matrix3");
     {
-        test_section("constructors");
+        test_section("Matrix3()");
         {
             const nnm::Matrix3 default_mat;
             ASSERT(default_mat.columns[0] == nnm::Vector3(1.0f, 0.0f, 0.0f));
             ASSERT(default_mat.columns[1] == nnm::Vector3(0.0f, 1.0f, 0.0f));
             ASSERT(default_mat.columns[2] == nnm::Vector3(0.0f, 0.0f, 1.0f));
+        }
 
+        test_section("Matrix3(const Vector3&, const Vector3&, const Vector3&)");
+        {
             const nnm::Matrix3 cols(
                 nnm::Vector3(1.0f, 2.0f, 3.0f), nnm::Vector3(-1.0f, -2.0f, -3.0f), nnm::Vector3(2.0f, 4.0f, 6.0f));
             ASSERT(cols.columns[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
             ASSERT(cols.columns[1] == nnm::Vector3(-1.0f, -2.0f, -3.0f));
             ASSERT(cols.columns[2] == nnm::Vector3(2.0f, 4.0f, 6.0f));
+        }
 
+        test_section("Matrix3(float, float, float, float, float, float, float, float, float)");
+        {
             const nnm::Matrix3 elems(1.0f, 2.0f, 3.0f, -1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 6.0f);
             ASSERT(elems.columns[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
             ASSERT(elems.columns[1] == nnm::Vector3(-1.0f, -2.0f, -3.0f));
             ASSERT(elems.columns[2] == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
-        test_section("static methods");
+        test_section("all");
         {
             const auto threes = nnm::Matrix3::all(3.0f);
             ASSERT(threes.columns[0] == nnm::Vector3::all(3.0f));
             ASSERT(threes.columns[1] == nnm::Vector3::all(3.0f));
             ASSERT(threes.columns[2] == nnm::Vector3::all(3.0f));
+        }
 
+        test_section("zero");
+        {
             const auto zeros = nnm::Matrix3::zero();
             ASSERT(zeros.columns[0] == nnm::Vector3::zero());
             ASSERT(zeros.columns[1] == nnm::Vector3::zero());
             ASSERT(zeros.columns[2] == nnm::Vector3::zero());
+        }
 
+        test_section("one");
+        {
             const auto ones = nnm::Matrix3::one();
             ASSERT(ones.columns[0] == nnm::Vector3::one());
             ASSERT(ones.columns[1] == nnm::Vector3::one());
             ASSERT(ones.columns[2] == nnm::Vector3::one());
+        }
 
+        test_section("identity");
+        {
             const auto identity_mat = nnm::Matrix3::identity();
             ASSERT(identity_mat.columns[0] == nnm::Vector3(1.0f, 0.0f, 0.0f));
             ASSERT(identity_mat.columns[1] == nnm::Vector3(0.0f, 1.0f, 0.0f));
@@ -3276,20 +3291,36 @@ int main()
             ASSERT(nnm::approx_equal(nnm::Matrix3::zero().determinant(), 0.0f));
         }
 
-        test_section("minor");
+        test_section("minor_matrix_at");
+        {
+            ASSERT(m1.minor_matrix_at(0, 0).approx_equal({ { -2.0f, -1.0f }, { -4.0f, 6.0f } }));
+            ASSERT(m1.minor_matrix_at(1, 2).approx_equal({ { 1.0f, 2.0f }, { 2.0f, -4.0f } }));
+        }
+
+        test_section("minor_at");
         {
             const nnm::Matrix3 result({ -16.0f, -16.0f, 16.0f }, { 24.0f, 0.0f, -8.0f }, { 4.0f, 8.0f, 4.0f });
             ASSERT(nnm::approx_equal(m1.minor_at(0, 0), result.at(0, 0)));
             ASSERT(nnm::approx_equal(m1.minor_at(1, 2), result.at(1, 2)));
-            ASSERT(m1.minor().approx_equal(result));
         }
 
-        test_section("cofactor");
+        test_section("minor");
+        {
+            const nnm::Matrix3 expected({ -16.0f, -16.0f, 16.0f }, { 24.0f, 0.0f, -8.0f }, { 4.0f, 8.0f, 4.0f });
+            ASSERT(m1.minor().approx_equal(expected));
+        }
+
+        test_section("cofactor_at");
         {
             const nnm::Matrix3 result({ -16.0f, 16.0f, 16.0f }, { -24.0f, 0.0f, 8.0f }, { 4.0f, -8.0f, 4.0f });
             ASSERT(nnm::approx_equal(m1.cofactor_at(0, 0), result.at(0, 0)));
             ASSERT(nnm::approx_equal(m1.cofactor_at(1, 2), result.at(1, 2)));
-            ASSERT(m1.cofactor().approx_equal(result));
+        }
+
+        test_section("cofactor");
+        {
+            const nnm::Matrix3 expected({ -16.0f, 16.0f, 16.0f }, { -24.0f, 0.0f, 8.0f }, { 4.0f, -8.0f, 4.0f });
+            ASSERT(m1.cofactor().approx_equal(expected));
         }
 
         test_section("transpose");
@@ -3304,80 +3335,175 @@ int main()
             ASSERT(m1.adjugate().approx_equal(result));
         }
 
-        test_section("inverse");
+        test_section("unchecked_inverse");
         {
             const nnm::Matrix3 result(
                 { -0.25f, -0.375f, 0.0625f }, { 0.25f, 0.0f, -0.125f }, { 0.25f, 0.125f, 0.0625f });
             ASSERT(m1.unchecked_inverse().approx_equal(result));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Matrix3 result(
+                { -0.25f, -0.375f, 0.0625f }, { 0.25f, 0.0f, -0.125f }, { 0.25f, 0.125f, 0.0625f });
             ASSERT(m1.inverse().has_value());
             ASSERT(m1.inverse().value().approx_equal(result));
             ASSERT_FALSE(nnm::Matrix3::zero().inverse().has_value());
         }
 
-        test_section("approx");
+        test_section("approx_equal");
         {
             const nnm::Matrix3 almost_ident(
                 { 0.9999999f, 0.000001f, 0.0f }, { -0.00000001f, 1.00000001f, 0.0f }, { 0.0f, -0.000000001f, 1.0f });
             const nnm::Matrix3 almost_zero(
                 { 0.0f, 0.000000001f, -0.00000001f }, { -0.00000001f, 0.0f, 0.00000001f }, { 0.0f, 0.0f, 0.0f });
+
             ASSERT(nnm::Matrix3::identity().approx_equal(almost_ident));
             ASSERT_FALSE(almost_zero.approx_equal(almost_ident));
-            ASSERT(nnm::Matrix3::zero().approx_zero());
-            ASSERT_FALSE(almost_ident.approx_zero());
         }
 
-        test_section("accessors");
+        test_section("approx_zero");
+        {
+            const nnm::Matrix3 almost_ident(
+                { 0.9999999f, 0.000001f, 0.0f }, { -0.00000001f, 1.00000001f, 0.0f }, { 0.0f, -0.000000001f, 1.0f });
+            const nnm::Matrix3 almost_zero(
+                { 0.0f, 0.000000001f, -0.00000001f }, { -0.00000001f, 0.0f, 0.00000001f }, { 0.0f, 0.0f, 0.0f });
+            ASSERT(nnm::Matrix3::zero().approx_zero());
+            ASSERT_FALSE(almost_ident.approx_zero());
+            ASSERT(almost_zero.approx_zero());
+        }
+
+        test_section("at");
         {
             ASSERT(m1.at(0) == nnm::Vector3(1.0f, 2.0f, 3.0f));
             ASSERT(m1.at(1) == nnm::Vector3(-3.0f, -2.0f, -1.0f));
             ASSERT(m1.at(0, 0) == 1.0f);
             ASSERT(m1.at(1, 2) == -1.0f);
+        }
+
+        test_section("begin");
+        {
+            ASSERT(m1.begin() == &m1.col0_row0);
+        }
+
+        test_section("end");
+        {
+            ASSERT(m1.end() == &m1.col2_row2 + 1);
+        }
+
+        test_section("operator[]");
+        {
             ASSERT(m1[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
             ASSERT(m1[1] == nnm::Vector3(-3.0f, -2.0f, -1.0f));
         }
 
-        test_section("equality");
+        test_section("operator==");
         {
             ASSERT(m1 == nnm::Matrix3({ 1.0f, 2.0f, 3.0f }, { -3.0f, -2.0f, -1.0f }, { 2.0f, -4.0f, 6.0f }));
             ASSERT_FALSE(m1 == nnm::Matrix3::identity());
+        }
+
+        test_section("operator!=");
+        {
             ASSERT(m1 != nnm::Matrix3::identity());
             ASSERT_FALSE(m1 != nnm::Matrix3({ 1.0f, 2.0f, 3.0f }, { -3.0f, -2.0f, -1.0f }, { 2.0f, -4.0f, 6.0f }));
         }
 
-        test_section("comparison");
+        const nnm::Matrix3 m2({ 3.0f, -6.0f, -9.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 2.0f, 10.0f });
+
+        test_section("operator+");
+        {
+            const nnm::Matrix3 expected({ 4.0f, -4.0f, -6.0f }, { -2.0f, -2.0f, -1.0f }, { 1.0f, -2.0f, 16.0f });
+            ASSERT((m1 + m2).approx_equal(expected));
+        }
+
+        test_section("operator+=");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix3 expected({ 4.0f, -4.0f, -6.0f }, { -2.0f, -2.0f, -1.0f }, { 1.0f, -2.0f, 16.0f });
+            ASSERT((m1_copy += m2).approx_equal(expected));
+        }
+
+        test_section("operator-");
+        {
+            const nnm::Matrix3 expected({ -2.0f, 8.0f, 12.0f }, { -4.0f, -2.0f, -1.0f }, { 3.0f, -6.0f, -4.0f });
+            ASSERT((m1 - m2).approx_equal(expected));
+        }
+
+        test_section("operator-=");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix3 expected({ -2.0f, 8.0f, 12.0f }, { -4.0f, -2.0f, -1.0f }, { 3.0f, -6.0f, -4.0f });
+            ASSERT((m1_copy -= m2).approx_equal(expected));
+        }
+
+        test_section("operator*(const Matrix3&)");
+        {
+            const nnm::Matrix3 expected({ 3.0f, 54.0f, -39.0f }, { 1.0f, 2.0f, 3.0f }, { 13.0f, -46.0f, 55.0f });
+            ASSERT((m1 * m2).approx_equal(expected));
+        }
+
+        test_section("operator*=(const Matrix3&)");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix3 expected({ 3.0f, 54.0f, -39.0f }, { 1.0f, 2.0f, 3.0f }, { 13.0f, -46.0f, 55.0f });
+            ASSERT((m1_copy *= m2).approx_equal(expected));
+        }
+
+        test_section("operator*(const Vector3&)");
+        {
+            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            ASSERT((m1 * v1).approx_equal({ 13.0f, -6.0f, 23.0f }));
+        }
+
+        test_section("operator*(float)");
+        {
+            const nnm::Matrix3 expected({ 5.0f, 10.0f, 15.0f }, { -15.0f, -10.0f, -5.0f }, { 10.0f, -20.0f, 30.0f });
+            ASSERT((m1 * 5.0f).approx_equal(expected));
+        }
+
+        test_section("operator*(float, const Matrix3&)");
+        {
+            const nnm::Matrix3 expected({ 5.0f, 10.0f, 15.0f }, { -15.0f, -10.0f, -5.0f }, { 10.0f, -20.0f, 30.0f });
+            ASSERT((5.0f * m1).approx_equal(expected));
+        }
+
+        test_section("operator*=(float)");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix3 expected({ 5.0f, 10.0f, 15.0f }, { -15.0f, -10.0f, -5.0f }, { 10.0f, -20.0f, 30.0f });
+            ASSERT((m1_copy *= 5.0f).approx_equal(expected));
+        }
+
+        test_section("operator/(float)");
+        {
+            const nnm::Matrix3 expected(
+                { 0.5f, 1.0f, 3.0f / 2.0f }, { -3.0f / 2.0f, -1.0f, -0.5f }, { 1.0f, -2.0f, 3.0f });
+            ASSERT((m1 / 2.0f).approx_equal(expected));
+        }
+
+        test_section("operator/(float, const Matrix3&)");
+        {
+            const nnm::Matrix3 expected(
+                { 2.0f, 1.0f, 0.666666f }, { -0.6666666f, -1.0f, -2.0f }, { 1.0f, -0.5f, 0.3333333f });
+            ASSERT((2.0f / m1).approx_equal(expected));
+        }
+
+        test_section("operator/=");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix3 expected(
+                { 0.5f, 1.0f, 3.0f / 2.0f }, { -3.0f / 2.0f, -1.0f, -0.5f }, { 1.0f, -2.0f, 3.0f });
+            ASSERT((m1_copy /= 2.0f).approx_equal(expected));
+        }
+
+        test_section("operator<");
         {
             ASSERT_FALSE(m1 < nnm::Matrix3::identity());
             ASSERT(m1 < nnm::Matrix3::all(10.0f));
         }
 
-        const nnm::Matrix3 m2({ 3.0f, -6.0f, -9.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 2.0f, 10.0f });
-
-        test_section("arithmetic");
-        {
-            ASSERT((m1 * nnm::Matrix3::identity()).approx_equal(m1));
-            const nnm::Matrix3 m1_m2({ 3.0f, 54.0f, -39.0f }, { 1.0f, 2.0f, 3.0f }, { 13.0f, -46.0f, 55.0f });
-            ASSERT((m1 * m2).approx_equal(m1_m2));
-            nnm::Matrix3 m1_copy = m1;
-            m1_copy *= m2;
-            ASSERT(m1_copy.approx_equal(m1_m2));
-
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            ASSERT((m1 * v1).approx_equal({ 13.0f, -6.0f, 23.0f }));
-
-            const nnm::Matrix3 m1_5({ 5.0f, 10.0f, 15.0f }, { -15.0f, -10.0f, -5.0f }, { 10.0f, -20.0f, 30.0f });
-            ASSERT((m1 * 5.0f).approx_equal(m1_5));
-            m1_copy = m1;
-            m1_copy *= 5.0f;
-            ASSERT(m1_copy.approx_equal(m1_5));
-
-            const nnm::Matrix3 m1_2({ 0.5f, 1.0f, 3.0f / 2.0f }, { -3.0f / 2.0f, -1.0f, -0.5f }, { 1.0f, -2.0f, 3.0f });
-            ASSERT((m1 / 2.0f).approx_equal(m1_2));
-            m1_copy = m1;
-            m1_copy /= 2.0f;
-            ASSERT(m1_copy.approx_equal(m1_2));
-        }
-
-        test_section("bool conversion");
+        test_section("operator bool");
         {
             ASSERT_FALSE(static_cast<bool>(nnm::Matrix3::zero()));
             ASSERT(static_cast<bool>(nnm::Matrix3::identity()));
