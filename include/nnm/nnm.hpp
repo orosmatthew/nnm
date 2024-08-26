@@ -3958,7 +3958,7 @@ public:
     [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
     {
         Matrix4 result;
-        for (int c = 0; c < 3; ++c) {
+        for (int c = 0; c < 4; ++c) {
             result.at(c) = at(c) + other.at(c);
         }
         return result;
@@ -3966,7 +3966,7 @@ public:
 
     Matrix4& operator+=(const Matrix4& other)
     {
-        for (int c = 0; c < 3; ++c) {
+        for (int c = 0; c < 4; ++c) {
             at(c) += other.at(c);
         }
         return *this;
@@ -3975,7 +3975,7 @@ public:
     [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
     {
         Matrix4 result;
-        for (int c = 0; c < 3; ++c) {
+        for (int c = 0; c < 4; ++c) {
             result.at(c) = at(c) - other.at(c);
         }
         return result;
@@ -3983,7 +3983,7 @@ public:
 
     Matrix4& operator-=(const Matrix4& other)
     {
-        for (int c = 0; c < 3; ++c) {
+        for (int c = 0; c < 4; ++c) {
             at(c) -= other.at(c);
         }
         return *this;

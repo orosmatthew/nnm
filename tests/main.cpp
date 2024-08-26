@@ -4054,7 +4054,7 @@ int main()
 
     test_case("Matrix4");
     {
-        test_section("constructors");
+        test_section("Matrix4()");
         {
             const nnm::Matrix4 m1;
             ASSERT(m1.col0_row0 == 1.0f);
@@ -4073,24 +4073,10 @@ int main()
             ASSERT(m1.col3_row1 == 0.0f);
             ASSERT(m1.col3_row2 == 0.0f);
             ASSERT(m1.col3_row3 == 1.0f);
-            const nnm::Matrix4 m2 { 1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f,
-                                    4.0f, 3.0f, 2.0f, 1.0f, -4.0f, -3.0f, -2.0f, -1.0f };
-            ASSERT(m2.col0_row0 == 1.0f);
-            ASSERT(m2.col0_row1 == 2.0f);
-            ASSERT(m2.col0_row2 == 3.0f);
-            ASSERT(m2.col0_row3 == 4.0f);
-            ASSERT(m2.col1_row0 == -1.0f);
-            ASSERT(m2.col1_row1 == -2.0f);
-            ASSERT(m2.col1_row2 == -3.0f);
-            ASSERT(m2.col1_row3 == -4.0f);
-            ASSERT(m2.col2_row0 == 4.0f);
-            ASSERT(m2.col2_row1 == 3.0f);
-            ASSERT(m2.col2_row2 == 2.0f);
-            ASSERT(m2.col2_row3 == 1.0f);
-            ASSERT(m2.col3_row0 == -4.0f);
-            ASSERT(m2.col3_row1 == -3.0f);
-            ASSERT(m2.col3_row2 == -2.0f);
-            ASSERT(m2.col3_row3 == -1.0f);
+        }
+
+        test_section("Matrix4(const Vector4&, const Vector4&, const Vector4&, const Vector4&)");
+        {
             const nnm::Matrix4 m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
                                     { -1.0f, -2.0f, -3.0f, -4.0f },
                                     { 4.0f, 3.0f, 2.0f, 1.0f },
@@ -4113,7 +4099,30 @@ int main()
             ASSERT(m3.col3_row3 == -1.0f);
         }
 
-        test_section("static methods");
+        test_section("Matrix4(float, float, float, float, float, float, float, float, float, float, float, float, "
+                     "float, float, float, float)");
+        {
+            const nnm::Matrix4 m2 { 1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f,
+                                    4.0f, 3.0f, 2.0f, 1.0f, -4.0f, -3.0f, -2.0f, -1.0f };
+            ASSERT(m2.col0_row0 == 1.0f);
+            ASSERT(m2.col0_row1 == 2.0f);
+            ASSERT(m2.col0_row2 == 3.0f);
+            ASSERT(m2.col0_row3 == 4.0f);
+            ASSERT(m2.col1_row0 == -1.0f);
+            ASSERT(m2.col1_row1 == -2.0f);
+            ASSERT(m2.col1_row2 == -3.0f);
+            ASSERT(m2.col1_row3 == -4.0f);
+            ASSERT(m2.col2_row0 == 4.0f);
+            ASSERT(m2.col2_row1 == 3.0f);
+            ASSERT(m2.col2_row2 == 2.0f);
+            ASSERT(m2.col2_row3 == 1.0f);
+            ASSERT(m2.col3_row0 == -4.0f);
+            ASSERT(m2.col3_row1 == -3.0f);
+            ASSERT(m2.col3_row2 == -2.0f);
+            ASSERT(m2.col3_row3 == -1.0f);
+        }
+
+        test_section("all");
         {
             const auto m1 = nnm::Matrix4::all(3.0f);
             ASSERT(m1.col0_row0 == 3.0f);
@@ -4132,7 +4141,10 @@ int main()
             ASSERT(m1.col3_row1 == 3.0f);
             ASSERT(m1.col3_row2 == 3.0f);
             ASSERT(m1.col3_row3 == 3.0f);
+        }
 
+        test_section("zero");
+        {
             const auto m2 = nnm::Matrix4::zero();
             ASSERT(m2.col0_row0 == 0.0f);
             ASSERT(m2.col0_row1 == 0.0f);
@@ -4150,7 +4162,10 @@ int main()
             ASSERT(m2.col3_row1 == 0.0f);
             ASSERT(m2.col3_row2 == 0.0f);
             ASSERT(m2.col3_row3 == 0.0f);
+        }
 
+        test_section("one");
+        {
             const auto m3 = nnm::Matrix4::one();
             ASSERT(m3.col0_row0 == 1.0f);
             ASSERT(m3.col0_row1 == 1.0f);
@@ -4168,7 +4183,10 @@ int main()
             ASSERT(m3.col3_row1 == 1.0f);
             ASSERT(m3.col3_row2 == 1.0f);
             ASSERT(m3.col3_row3 == 1.0f);
+        }
 
+        test_section("identity");
+        {
             const auto m4 = nnm::Matrix4::identity();
             ASSERT(m4.col0_row0 == 1.0f);
             ASSERT(m4.col0_row1 == 0.0f);
@@ -4198,6 +4216,11 @@ int main()
             ASSERT(m1.trace() == -3.0f);
         }
 
+        test_section("determinant");
+        {
+            ASSERT(nnm::approx_equal(m1.determinant(), -64.0f));
+        }
+
         test_section("minor_matrix_at");
         {
             const nnm::Matrix3 m2 = m1.minor_matrix_at(0, 0);
@@ -4213,9 +4236,14 @@ int main()
             ASSERT(nnm::approx_equal(m1.minor_at(1, 2), 80.0f));
         }
 
-        test_section("determinant");
+        test_section("minor");
         {
-            ASSERT(nnm::approx_equal(m1.determinant(), -64.0f));
+            nnm::Matrix4 expected(
+                { 64.0f, 32.0f, -96.0f, -56.0f },
+                { -56.0f, -16.0f, 80.0f, 54.0f },
+                { 8.0f, 16.0f, -16.0f, -18.0f },
+                { -24.0f, -16.0f, 16.0f, 14.0f });
+            ASSERT(m1.minor().approx_equal(expected));
         }
 
         test_section("cofactor_at");
@@ -4251,6 +4279,15 @@ int main()
             ASSERT(m1.adjugate().approx_equal(expected));
         }
 
+        test_section("unchecked_inverse");
+        {
+            const nnm::Matrix4 expected { { -1.0f, -0.875f, -0.125f, -0.375f },
+                                          { 0.5f, 0.25f, 0.25f, 0.25f },
+                                          { 1.5f, 1.25f, 0.25f, 0.25f },
+                                          { -0.875f, -0.84375f, -0.28125f, -0.21875f } };
+            ASSERT(m1.unchecked_inverse().approx_equal(expected));
+        }
+
         test_section("inverse");
         {
             const nnm::Matrix4 expected { { -1.0f, -0.875f, -0.125f, -0.375f },
@@ -4258,8 +4295,6 @@ int main()
                                           { 1.5f, 1.25f, 0.25f, 0.25f },
                                           { -0.875f, -0.84375f, -0.28125f, -0.21875f } };
             ASSERT(m1.inverse().has_value() && m1.inverse().value().approx_equal(expected));
-            ASSERT(m1.unchecked_inverse().approx_equal(expected));
-
             ASSERT_FALSE(nnm::Matrix4::zero().inverse().has_value());
         }
 
@@ -4281,21 +4316,30 @@ int main()
             ASSERT(m2.approx_zero());
         }
 
-        // const nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
-        //                         { -1.0f, -3.0f, -2.0f, -4.0f },
-        //                         { 3.0f, 2.0f, -1.0f, -4.0f },
-        //                         { -4.0f, 1.0f, -3.0f, 0.0f } };
-
-        test_section("accessors");
+        test_section("at");
         {
-            ASSERT(m1[0][0] == 1.0f);
             ASSERT(m1.at(0, 0) == 1.0f);
-            ASSERT(m1[1][2] == -2.0f);
             ASSERT(m1.at(1, 2) == -2.0f);
-            ASSERT(m1[3][3] == 0.0f);
             ASSERT(m1.at(3, 3) == 0.0f);
             ASSERT(m1.at(0) == nnm::Vector4(1.0f, 2.0f, 3.0f, 4.0f))
             ASSERT(m1.at(2) == nnm::Vector4(3.0f, 2.0f, -1.0f, -4.0f))
+        }
+
+        test_section("begin");
+        {
+            ASSERT(m1.begin() == &m1.col0_row0);
+        }
+
+        test_section("end");
+        {
+            ASSERT(m1.end() == &m1.col3_row3 + 1);
+        }
+
+        test_section("operator[]");
+        {
+            ASSERT(m1[0][0] == 1.0f);
+            ASSERT(m1[1][2] == -2.0f);
+            ASSERT(m1[3][3] == 0.0f);
         }
 
         const nnm::Matrix4 m2 { { 1.5f, 3.0f, -3.0f, 4.0f },
@@ -4303,57 +4347,155 @@ int main()
                                 { 0.0f, 29.0f, -129.0f, -4293.0f },
                                 { -4.0f, 100.3f, -3.0f, 0.0f } };
 
-        test_section("equality");
+        test_section("operator==");
         {
             ASSERT(m1 == m1);
-            ASSERT_FALSE(m1 != m1);
-            ASSERT(m1 != m2);
             ASSERT_FALSE(m1 == m2);
             ASSERT(m2 == m2);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(m1 != m1);
+            ASSERT(m1 != m2);
             ASSERT_FALSE(m2 != m2);
         }
 
-        test_section("comparison");
+        test_section("operator+");
+        {
+            nnm::Matrix4 expected(
+                { 2.5f, 5.0f, 0.0f, 8.0f },
+                { -2.0f, 97.0f, -4.0f, -8.0f },
+                { 3.0f, 31.0f, -130.0f, -4297.0f },
+                { -8.0f, 101.3f, -6.0f, 0.0f });
+            ASSERT((m1 + m2).approx_equal(expected));
+        }
+
+        test_section("operator+=");
+        {
+            auto m1_copy = m1;
+            nnm::Matrix4 expected(
+                { 2.5f, 5.0f, 0.0f, 8.0f },
+                { -2.0f, 97.0f, -4.0f, -8.0f },
+                { 3.0f, 31.0f, -130.0f, -4297.0f },
+                { -8.0f, 101.3f, -6.0f, 0.0f });
+            ASSERT((m1_copy += m2).approx_equal(expected));
+        }
+
+        test_section("operator-");
+        {
+            nnm::Matrix4 expected(
+                { -0.5f, -1.0f, 6.0f, 0.0f },
+                { 0.0f, -103.0f, 0.0f, 0.0f },
+                { 3.0f, -27.0f, 128.0f, 4289.0f },
+                { 0.0f, -99.3f, 0.0f, 0.0f });
+            ASSERT((m1 - m2).approx_equal(expected));
+        }
+
+        test_section("operator-=");
+        {
+            auto m1_copy = m1;
+            nnm::Matrix4 expected(
+                { -0.5f, -1.0f, 6.0f, 0.0f },
+                { 0.0f, -103.0f, 0.0f, 0.0f },
+                { 3.0f, -27.0f, 128.0f, 4289.0f },
+                { 0.0f, -99.3f, 0.0f, 0.0f });
+            ASSERT((m1_copy -= m2).approx_equal(expected));
+        }
+
+        test_section("operator*(const Matrix4&)");
+        {
+            const nnm::Matrix4 expected { { -26.5f, -8.0f, -10.5f, 6.0f },
+                                          { -91.0f, -310.0f, -189.0f, -396.0f },
+                                          { 16756.0f, -4638.0f, 12950.0f, 400.0f },
+                                          { -113.3f, -314.9f, -209.6f, -405.2f } };
+            ASSERT((m1 * m2).approx_equal(expected));
+        }
+
+        test_section("operator*=(const Matrix4&)");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix4 expected { { -26.5f, -8.0f, -10.5f, 6.0f },
+                                          { -91.0f, -310.0f, -189.0f, -396.0f },
+                                          { 16756.0f, -4638.0f, 12950.0f, 400.0f },
+                                          { -113.3f, -314.9f, -209.6f, -405.2f } };
+            ASSERT((m1_copy *= m2).approx_equal(expected));
+        }
+
+        test_section("operator*(const Vector4&)");
+        {
+            const nnm::Vector4 v { 1.0f, -2.0f, 3.0f, -4.0f };
+            const nnm::Vector4 expected { 28.0f, 10.0f, 16.0f, 0.0f };
+            ASSERT((m1 * v).approx_equal(expected));
+        }
+
+        test_section("operator*(float)");
+        {
+            const nnm::Matrix4 expected { { -2.0, -4.0f, -6.0f, -8.0f },
+                                          { 2.0f, 6.0f, 4.0f, 8.0f },
+                                          { -6.0f, -4.0f, 2.0f, 8.0f },
+                                          { 8.0f, -2.0f, 6.0f, 0.0f } };
+            ASSERT((m1 * -2.0f).approx_equal(expected));
+        }
+
+        test_section("operator*(float, const Matrix4&)");
+        {
+            const nnm::Matrix4 expected { { -2.0, -4.0f, -6.0f, -8.0f },
+                                          { 2.0f, 6.0f, 4.0f, 8.0f },
+                                          { -6.0f, -4.0f, 2.0f, 8.0f },
+                                          { 8.0f, -2.0f, 6.0f, 0.0f } };
+            ASSERT((-2.0f * m1).approx_equal(expected));
+        }
+
+        test_section("operator*=(float)");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix4 expected { { -2.0, -4.0f, -6.0f, -8.0f },
+                                          { 2.0f, 6.0f, 4.0f, 8.0f },
+                                          { -6.0f, -4.0f, 2.0f, 8.0f },
+                                          { 8.0f, -2.0f, 6.0f, 0.0f } };
+            ASSERT((m1_copy *= -2.0f).approx_equal(expected));
+        }
+
+        test_section("operator/(float)");
+        {
+            const nnm::Matrix4 expected { { -0.25, -0.5f, -0.75f, -1.0f },
+                                          { 0.25f, 0.75f, 0.5f, 1.0f },
+                                          { -0.75f, -0.5f, 0.25f, 1.0f },
+                                          { 1.0f, -0.25f, 0.75f, 0.0f } };
+            ASSERT((m1 / -4.0f).approx_equal(expected));
+        }
+
+        test_section("operator(float, const Matrix4&)");
+        {
+            const nnm::Matrix4 m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                    { -1.0f, -3.0f, -2.0f, -4.0f },
+                                    { 3.0f, 2.0f, -1.0f, -4.0f },
+                                    { -4.0f, 1.0f, -3.0f, 1.5f } };
+            const nnm::Matrix4 expected { { -4.0f, -2.0f, -1.333333f, -1.0f },
+                                          { 4.0f, 1.333333f, 2.0f, 1.0f },
+                                          { -1.333333f, -2.0f, 4.0f, 1.0f },
+                                          { 1.0f, -4.0f, 1.33333f, -2.6666666f } };
+            ASSERT((-4.0f / m3).approx_equal(expected));
+        }
+
+        test_section("operator/=");
+        {
+            auto m1_copy = m1;
+            const nnm::Matrix4 expected { { -0.25, -0.5f, -0.75f, -1.0f },
+                                          { 0.25f, 0.75f, 0.5f, 1.0f },
+                                          { -0.75f, -0.5f, 0.25f, 1.0f },
+                                          { 1.0f, -0.25f, 0.75f, 0.0f } };
+            ASSERT((m1_copy /= -4.0f).approx_equal(expected));
+        }
+
+        test_section("operator<");
         {
             ASSERT(m1 < m2);
             ASSERT_FALSE(m2 < m1);
         }
 
-        test_section("multiplication");
-        {
-            const nnm::Matrix4 expected1 { { -26.5f, -8.0f, -10.5f, 6.0f },
-                                           { -91.0f, -310.0f, -189.0f, -396.0f },
-                                           { 16756.0f, -4638.0f, 12950.0f, 400.0f },
-                                           { -113.3f, -314.9f, -209.6f, -405.2f } };
-            ASSERT((m1 * m2).approx_equal(expected1));
-            auto m1_copy = m1;
-            ASSERT((m1_copy *= m2).approx_equal(expected1))
-
-            const nnm::Vector4 v1 { 1.0f, -2.0f, 3.0f, -4.0f };
-            const nnm::Vector4 expected2 { 28.0f, 10.0f, 16.0f, 0.0f };
-            ASSERT((m1 * v1).approx_equal(expected2));
-
-            const nnm::Matrix4 expected3 { { -2.0, -4.0f, -6.0f, -8.0f },
-                                           { 2.0f, 6.0f, 4.0f, 8.0f },
-                                           { -6.0f, -4.0f, 2.0f, 8.0f },
-                                           { 8.0f, -2.0f, 6.0f, 0.0f } };
-            ASSERT((m1 * -2.0f).approx_equal(expected3));
-            m1_copy = m1;
-            ASSERT((m1_copy *= -2.0f).approx_equal(expected3));
-        }
-
-        test_section("division");
-        {
-            const nnm::Matrix4 expected1 { { -0.25, -0.5f, -0.75f, -1.0f },
-                                           { 0.25f, 0.75f, 0.5f, 1.0f },
-                                           { -0.75f, -0.5f, 0.25f, 1.0f },
-                                           { 1.0f, -0.25f, 0.75f, 0.0f } };
-            ASSERT((m1 / -4.0f).approx_equal(expected1));
-            auto m1_copy = m1;
-            ASSERT((m1_copy /= -4.0f).approx_equal(expected1));
-        }
-
-        test_section("bool conversion");
+        test_section("operator bool");
         {
             ASSERT_FALSE(static_cast<bool>(nnm::Matrix4::zero()));
             ASSERT(static_cast<bool>(nnm::Matrix4::identity()));
@@ -4646,20 +4788,32 @@ int main()
             ASSERT(t1.approx_equal(t3));
         }
 
-        test_section("accessors");
+        test_section("at");
         {
+            ASSERT(t1.at(0, 0) == 1.0f);
             ASSERT(t1.at(1, 2) == 3.0f);
+            ASSERT(t1.at(3, 3) == 1.0f);
             ASSERT(t1.at(1) == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
+        }
+
+        test_section("operator[]");
+        {
             ASSERT(t1[1] == nnm::Vector4(-0.5f, 2.0f, 3.0f, 0.0f));
         }
 
-        test_section("equality");
+        test_section("operator==");
         {
             ASSERT(t1 == t1);
-            ASSERT(t1 != t2);
+            ASSERT_FALSE(t1 == t2);
         }
 
-        test_section("comparison");
+        test_section("operator!=");
+        {
+            ASSERT(t1 != t2);
+            ASSERT_FALSE(t1 != t1);
+        }
+
+        test_section("operator<");
         {
             ASSERT(t1 < t2);
             ASSERT_FALSE(t2 < t1);
