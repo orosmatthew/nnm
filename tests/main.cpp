@@ -4505,11 +4505,14 @@ int main()
 
     test_case("Transform3");
     {
-        test_section("constructors");
+        test_section("Transform3()");
         {
             nnm::Transform3 t1;
             ASSERT(t1.matrix == nnm::Matrix4::identity());
+        }
 
+        test_section("Transform3(const Matrix4&)");
+        {
             nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
                               { 5.0f, 6.0f, 7.0f, 8.0f },
                               { 9.0f, 10.0f, 11.0f, 12.0f },
@@ -4518,29 +4521,36 @@ int main()
             ASSERT(t2.matrix == m1);
         }
 
-        test_section("static methods");
+        test_section("from_basis_translation");
         {
             nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { -4.0f, -1.0f, 3.5f }, { 1.0f, 0.0f, 1.0f } });
             auto t1 = nnm::Transform3::from_basis_translation(b1, { 1.0f, -2.0f, 3.0f });
-            nnm::Matrix4 expected1 { { 1.0f, 2.0f, 3.0f, 0.0f },
-                                     { -4.0f, -1.0f, 3.5f, 0.0f },
-                                     { 1.0f, 0.0f, 1.0f, 0.0f },
-                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
-            ASSERT(t1.matrix == expected1);
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -4.0f, -1.0f, 3.5f, 0.0f },
+                                    { 1.0f, 0.0f, 1.0f, 0.0f },
+                                    { 1.0f, -2.0f, 3.0f, 1.0f } };
+            ASSERT(t1.matrix == expected);
+        }
 
-            auto t2 = nnm::Transform3::from_translation({ 1.0f, -2.0f, 3.0f });
-            nnm::Matrix4 expected2 { { 1.0f, 0.0f, 0.0f, 0.0f },
-                                     { 0.0f, 1.0f, 0.0f, 0.0f },
-                                     { 0.0f, 0.0f, 1.0f, 0.0f },
-                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
-            ASSERT(t2.matrix == expected2);
-
+        test_section("from_basis");
+        {
+            nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { -4.0f, -1.0f, 3.5f }, { 1.0f, 0.0f, 1.0f } });
             auto t3 = nnm::Transform3::from_basis(b1);
-            nnm::Matrix4 expected3 { { 1.0f, 2.0f, 3.0f, 0.0f },
-                                     { -4.0f, -1.0f, 3.5f, 0.0f },
-                                     { 1.0f, 0.0f, 1.0f, 0.0f },
-                                     { 0.0f, 0.0f, 0.0f, 1.0f } };
-            ASSERT(t3.matrix == expected3);
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -4.0f, -1.0f, 3.5f, 0.0f },
+                                    { 1.0f, 0.0f, 1.0f, 0.0f },
+                                    { 0.0f, 0.0f, 0.0f, 1.0f } };
+            ASSERT(t3.matrix == expected);
+        }
+
+        test_section("from_translation");
+        {
+            auto t2 = nnm::Transform3::from_translation({ 1.0f, -2.0f, 3.0f });
+            nnm::Matrix4 expected { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                    { 0.0f, 1.0f, 0.0f, 0.0f },
+                                    { 0.0f, 0.0f, 1.0f, 0.0f },
+                                    { 1.0f, -2.0f, 3.0f, 1.0f } };
+            ASSERT(t2.matrix == expected);
         }
 
         test_section("from_rotation_axis_angle");
@@ -4551,6 +4561,18 @@ int main()
                                      { 0.3420202f, 0.0f, 0.9396926f, 0.0f },
                                      { 0.0f, 0.0f, 0.0f, 1.0f } };
             ASSERT(t1.matrix.approx_equal(expected1));
+        }
+
+        test_section("from_rotation_quaternion");
+        {
+            auto t = nnm::Transform3::from_rotation_quaternion(
+                nnm::Quaternion(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f));
+            const nnm::Transform3 expected(
+                { { 0.9980918f, -0.0213389f, -0.0579437f, 0.0f },
+                  { 0.0335516f, 0.9751930f, 0.2187989f, 0.0f },
+                  { 0.0518374f, -0.2203254f, 0.9740480f, 0.0f },
+                  { 0.0f, 0.0f, 0.0f, 1.0f } });
+            ASSERT(t.approx_equal(expected));
         }
 
         test_section("from_scale");
@@ -4593,6 +4615,28 @@ int main()
             ASSERT(t1.matrix.approx_equal(expected1));
         }
 
+        test_section("from_projection_perspective");
+        {
+            const auto t = nnm::Transform3::from_projection_perspective(nnm::pi / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+            const nnm::Transform3 expected(
+                { { 0.5625f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 1.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, -1.002f, -1.0f },
+                  { 0.0f, 0.0f, -0.2002f, 0.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_projection_orthographic");
+        {
+            const auto t = nnm::Transform3::from_projection_orthographic(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
+            const nnm::Transform3 expected(
+                { { 0.25f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.3333333f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, -0.0404040404f, 0.0f },
+                  { -0.25f, -0.333333f, -1.0202f, 1.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
         auto t1 = nnm::Transform3({ { 1.0f, 2.0f, 3.0f, 0.0f },
                                     { -0.5f, 2.0f, 3.0f, 0.0f },
                                     { 0.0f, 0.0f, 2.0f, 0.0f },
@@ -4603,10 +4647,35 @@ int main()
                                     { 0.0f, 0.0f, 2.0f, 0.0f },
                                     { 1.0f, -2.0f, 3.0f, 1.0f } });
 
-        test_section("basis");
+        test_section("trace");
         {
-            nnm::Basis3 expected({ { 1.0f, 2.0f, 3.0f }, { -0.5f, 2.0f, 3.0f }, { 0.0f, 0.0f, 2.0f } });
-            ASSERT(t2.basis() == expected);
+            ASSERT(nnm::approx_equal(t1.trace(), 6.0f));
+        }
+
+        test_section("determinant");
+        {
+            ASSERT(nnm::approx_equal(t1.determinant(), 6.0f));
+        }
+
+        test_section("unchecked_inverse");
+        {
+            const nnm::Transform3 expected(
+                { { 0.666666f, -0.6666666f, 0.0f, 0.0f },
+                  { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
+                  { 0.0f, 0.0f, 0.5f, 0.0f },
+                  { -0.33333333f, 1.33333333f, -3.0f, 1.0f } });
+            ASSERT(t1.unchecked_inverse().approx_equal(expected));
+        }
+
+        test_section("inverse");
+        {
+            const nnm::Transform3 expected(
+                { { 0.666666f, -0.6666666f, 0.0f, 0.0f },
+                  { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
+                  { 0.0f, 0.0f, 0.5f, 0.0f },
+                  { -0.33333333f, 1.33333333f, -3.0f, 1.0f } });
+            ASSERT(t1.inverse().has_value() && t1.inverse().value().approx_equal(expected));
+            ASSERT_FALSE(nnm::Transform3(nnm::Matrix4::zero()).inverse().has_value());
         }
 
         test_section("valid");
@@ -4624,11 +4693,37 @@ int main()
             ASSERT(nnm::Transform3().affine());
         }
 
+        test_section("basis");
+        {
+            nnm::Basis3 expected({ { 1.0f, 2.0f, 3.0f }, { -0.5f, 2.0f, 3.0f }, { 0.0f, 0.0f, 2.0f } });
+            ASSERT(t2.basis() == expected);
+        }
+
         test_section("translation");
         {
             ASSERT(nnm::Transform3(nnm::Matrix4::zero()).translation() == nnm::Vector3(0.0f, 0.0f, 0.0f));
             ASSERT(t1.translation() == nnm::Vector3(1.0f, -2.0f, 3.0f));
             ASSERT(nnm::Transform3().translation() == nnm::Vector3(0.0f, 0.0f, 0.0f));
+        }
+
+        test_section("translate");
+        {
+            auto t3 = t1.translate({ 3.0f, -1.5f, 1.0f });
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -0.5f, 2.0f, 3.0f, 0.0f },
+                                    { 0.0f, 0.0f, 2.0f, 0.0f },
+                                    { 4.0f, -3.5f, 4.0f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
+        }
+
+        test_section("translate_local");
+        {
+            auto t3 = t1.translate_local({ 3.0f, -1.5f, 1.0f });
+            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                    { -0.5f, 2.0f, 3.0f, 0.0f },
+                                    { 0.0f, 0.0f, 2.0f, 0.0f },
+                                    { 4.75f, 1.0f, 9.5f, 1.0f } };
+            ASSERT(t3.matrix.approx_equal(expected));
         }
 
         test_section("rotate_axis_angle");
@@ -4728,26 +4823,6 @@ int main()
                                     { -0.5f, 2.0f, 3.0f, 0.0f },
                                     { -3.2511f, -5.05303f, -5.57954f, 0.0f },
                                     { 1.0f, -2.0f, 3.0f, 1.0f } };
-            ASSERT(t3.matrix.approx_equal(expected));
-        }
-
-        test_section("translate");
-        {
-            auto t3 = t1.translate({ 3.0f, -1.5f, 1.0f });
-            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
-                                    { -0.5f, 2.0f, 3.0f, 0.0f },
-                                    { 0.0f, 0.0f, 2.0f, 0.0f },
-                                    { 4.0f, -3.5f, 4.0f, 1.0f } };
-            ASSERT(t3.matrix.approx_equal(expected));
-        }
-
-        test_section("translate_local");
-        {
-            auto t3 = t1.translate_local({ 3.0f, -1.5f, 1.0f });
-            nnm::Matrix4 expected { { 1.0f, 2.0f, 3.0f, 0.0f },
-                                    { -0.5f, 2.0f, 3.0f, 0.0f },
-                                    { 0.0f, 0.0f, 2.0f, 0.0f },
-                                    { 4.75f, 1.0f, 9.5f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
 
