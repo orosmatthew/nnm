@@ -4746,6 +4746,28 @@ int main()
             ASSERT(t3.matrix.approx_equal(expected));
         }
 
+        test_section("rotate_quaternion");
+        {
+            const nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
+            const nnm::Transform3 expected(
+                { { 1.22071f, 1.26807f, 3.3018f, 4.0f },
+                  { -0.27643f, 1.30008f, 3.38871f, -3.0f },
+                  { 0.103675f, -0.440651f, 1.9481f, 0.0f },
+                  { 1.0865f, -2.6327f, 2.4266f, 1.0f } });
+            ASSERT(t2.rotate_quaternion(q).approx_equal(expected));
+        }
+
+        test_section("rotate_quaternion_local");
+        {
+            const nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
+            const nnm::Transform3 expected(
+                { { 1.00876f, 1.95351f, 2.81437f, 4.05638f },
+                  { -0.454045f, 2.01749f, 3.46383f, -2.79137f },
+                  { 0.162f, -0.336976f, 1.44263f, 0.868326f },
+                  { 1.0f, -2.0f, 3.0f, 1.0f } });
+            ASSERT(t2.rotate_quaternion_local(q).approx_equal(expected));
+        }
+
         test_section("scale");
         {
             auto t3 = t1.scale({ 0.2f, -2.1f, 1.2f });
