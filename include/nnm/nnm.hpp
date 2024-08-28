@@ -236,28 +236,50 @@ Real log2(const Real value)
 
 template <typename Real = float>
 class Vector2;
+using Vector2f = Vector2<>;
+using Vector2d = Vector2<double>;
 class Vector2i;
 template <typename Real = float>
 class Vector3;
+using Vector3f = Vector3<>;
+using Vector3d = Vector3<double>;
 class Vector3i;
 template <typename Real = float>
 class Vector4;
+using Vector4f = Vector4<>;
+using Vector4d = Vector4<double>;
 template <typename Real = float>
 class Quaternion;
+using QuaternionF = Quaternion<>;
+using QuaternionD = Quaternion<double>;
 template <typename Real = float>
 class Matrix2;
+using Matrix2f = Matrix2<>;
+using Matrix2d = Matrix2<double>;
 template <typename Real = float>
 class Basis2;
+using Basis2f = Basis2<>;
+using Basis2d = Basis2<double>;
 template <typename Real = float>
 class Matrix3;
+using Matrix3f = Matrix3<>;
+using Matrix3d = Matrix3<double>;
 template <typename Real = float>
 class Transform2;
+using Transform2f = Transform2<>;
+using Transform2d = Transform2<double>;
 template <typename Real = float>
 class Basis3;
+using Basis3f = Basis3<>;
+using Basis3d = Basis3<double>;
 template <typename Real = float>
 class Matrix4;
+using Matrix4f = Matrix4<>;
+using Matrix4d = Matrix4<double>;
 template <typename Real = float>
 class Transform3;
+using Transform3f = Transform3<>;
+using Transform3d = Transform3<double>;
 
 template <typename Real>
 class Vector2 {
