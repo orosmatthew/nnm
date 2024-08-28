@@ -32,7 +32,7 @@ Real epsilon()
 template <typename Real = float>
 Real sign(const Real value)
 {
-    return std::copysignf(1.0f, value);
+    return std::copysignf(static_cast<Real>(1.0), value);
 }
 
 inline int sign(const int value)
@@ -148,10 +148,10 @@ Real lerp(const Real from, const Real to, const Real weight)
 template <typename Real = float>
 Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
-    if (weight >= 1.0f) {
+    if (weight >= static_cast<Real>(1.0)) {
         return to;
     }
-    if (weight <= 0.0f) {
+    if (weight <= static_cast<Real>(0.0)) {
         return from;
     }
     return lerp(from, to, weight);
@@ -196,13 +196,13 @@ Real atan2(const Real a, const Real b)
 template <typename Real = float>
 Real radians(const Real degrees)
 {
-    return pi<Real>() / 180.0f * degrees;
+    return pi<Real>() / static_cast<Real>(180.0) * degrees;
 }
 
 template <typename Real = float>
 Real degrees(const Real radians)
 {
-    return 180.0f / pi<Real>() * radians;
+    return static_cast<Real>(180.0) / pi<Real>() * radians;
 }
 
 template <typename Real = float>
@@ -271,8 +271,8 @@ public:
     };
 
     Vector2()
-        : x(0.0f)
-        , y(0.0f)
+        : x(static_cast<Real>(0.0))
+        , y(static_cast<Real>(0.0))
     {
     }
 
@@ -291,22 +291,22 @@ public:
 
     static Vector2 zero()
     {
-        return { 0.0f, 0.0f };
+        return all(static_cast<Real>(0.0));
     }
 
     static Vector2 one()
     {
-        return { 1.0f, 1.0f };
+        return all(static_cast<Real>(1.0));
     }
 
     static Vector2 axis_x()
     {
-        return { 1.0f, 0.0f };
+        return { static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
     static Vector2 axis_y()
     {
-        return { 0.0f, 1.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
     [[nodiscard]] Vector2 abs() const
@@ -374,7 +374,7 @@ public:
     [[nodiscard]] Vector2 clamp_length(const Real min, const Real max) const
     {
         const Real length = this->length();
-        if (length == 0.0f) {
+        if (length == static_cast<Real>(0.0)) {
             return zero();
         }
         const auto norm = normalize();
@@ -389,7 +389,7 @@ public:
 
     [[nodiscard]] Vector2 normalize() const
     {
-        if (const Real length = this->length(); length > 0.0f) {
+        if (const Real length = this->length(); length > static_cast<Real>(0.0)) {
             return *this / length;
         }
         return zero();
@@ -421,15 +421,15 @@ public:
     {
         const Real dot = this->dot(normal);
         Vector2 result;
-        result.x = x - 2.0f * normal.x * dot;
-        result.y = y - 2.0f * normal.y * dot;
+        result.x = x - static_cast<Real>(2.0) * normal.x * dot;
+        result.y = y - static_cast<Real>(2.0) * normal.y * dot;
         return result;
     }
 
     [[nodiscard]] Vector2 project(const Vector2& onto) const
     {
         const Real onto_length_sqrd = onto.length_sqrd();
-        if (onto_length_sqrd == 0.0f) {
+        if (onto_length_sqrd == static_cast<Real>(0.0)) {
             return zero();
         }
         const Real scale = dot(onto) / onto_length_sqrd;
@@ -438,16 +438,16 @@ public:
 
     [[nodiscard]] Vector2 inverse() const
     {
-        return { 1.0f / x, 1.0f / y };
+        return { static_cast<Real>(1.0) / x, static_cast<Real>(1.0) / y };
     }
 
     [[nodiscard]] Real angle(const Vector2& to) const
     {
         const Real lengths = length() * to.length();
         if (lengths == 0) {
-            return 0.0f;
+            return static_cast<Real>(0.0);
         }
-        const Real cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
+        const Real cos_angle = nnm::clamp(dot(to) / lengths, static_cast<Real>(-1.0), static_cast<Real>(1.0));
         return acos(cos_angle);
     }
 
@@ -463,7 +463,7 @@ public:
 
     [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
 
-    [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = 1.0f) const;
+    [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1.0)) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -966,9 +966,9 @@ public:
     };
 
     Vector3()
-        : x(0.0f)
-        , y(0.0f)
-        , z(0.0f)
+        : x(static_cast<Real>(0.0))
+        , y(static_cast<Real>(0.0))
+        , z(static_cast<Real>(0.0))
     {
     }
 
@@ -995,27 +995,27 @@ public:
 
     static Vector3 zero()
     {
-        return { 0.0f, 0.0f, 0.0f };
+        return all(static_cast<Real>(0.0));
     }
 
     static Vector3 one()
     {
-        return { 1.0f, 1.0f, 1.0f };
+        return all(static_cast<Real>(1.0));
     }
 
     static Vector3 axis_x()
     {
-        return { 1.0f, 0.0f, 0.0f };
+        return { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
     static Vector3 axis_y()
     {
-        return { 0.0f, 1.0f, 0.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
     static Vector3 axis_z()
     {
-        return { 0.0f, 0.0f, 1.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
     [[nodiscard]] Vector3 abs() const
@@ -1079,7 +1079,7 @@ public:
     [[nodiscard]] Vector3 clamp_length(const Real min, const Real max) const
     {
         const Real length = this->length();
-        if (length == 0.0f) {
+        if (length == static_cast<Real>(0.0)) {
             return zero();
         }
         const auto norm = normalize();
@@ -1094,7 +1094,7 @@ public:
 
     [[nodiscard]] Vector3 normalize() const
     {
-        if (const auto length = this->length(); length > 0.0f) {
+        if (const auto length = this->length(); length > static_cast<Real>(0.0)) {
             return *this / length;
         }
         return zero();
@@ -1128,16 +1128,16 @@ public:
     {
         Vector3 result;
         const Real dot = this->dot(normal);
-        result.x = x - 2.0f * normal.x * dot;
-        result.y = y - 2.0f * normal.y * dot;
-        result.z = z - 2.0f * normal.z * dot;
+        result.x = x - static_cast<Real>(2.0) * normal.x * dot;
+        result.y = y - static_cast<Real>(2.0) * normal.y * dot;
+        result.z = z - static_cast<Real>(2.0) * normal.z * dot;
         return result;
     }
 
     [[nodiscard]] Vector3 project(const Vector3& onto) const
     {
         const Real onto_length_sqrd = onto.length_sqrd();
-        if (onto_length_sqrd == 0.0f) {
+        if (onto_length_sqrd == static_cast<Real>(0.0)) {
             return zero();
         }
         const Real scale = dot(onto) / onto_length_sqrd;
@@ -1146,7 +1146,7 @@ public:
 
     [[nodiscard]] Vector3 inverse() const
     {
-        return { 1.0f / x, 1.0f / y, 1.0f / z };
+        return { static_cast<Real>(1.0) / x, static_cast<Real>(1.0) / y, static_cast<Real>(1.0) / z };
     }
 
     [[nodiscard]] Real angle(const Vector3& to) const
@@ -1172,7 +1172,7 @@ public:
 
     [[nodiscard]] Vector3 transform(const Transform2<Real>& by) const;
 
-    [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = 1.0f) const;
+    [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1.0)) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -1378,7 +1378,7 @@ public:
 
     [[nodiscard]] explicit operator bool() const
     {
-        return x != 0.0f || y != 0.0f || z != 0.0f;
+        return x != static_cast<Real>(0.0) || y != static_cast<Real>(0.0) || z != static_cast<Real>(0.0);
     }
 };
 
@@ -1729,10 +1729,10 @@ public:
     };
 
     Vector4()
-        : x(0.0f)
-        , y(0.0f)
-        , z(0.0f)
-        , w(0.0f)
+        : x(static_cast<Real>(0.0))
+        , y(static_cast<Real>(0.0))
+        , z(static_cast<Real>(0.0))
+        , w(static_cast<Real>(0.0))
     {
     }
 
@@ -1767,32 +1767,32 @@ public:
 
     static Vector4 zero()
     {
-        return { 0.0, 0.0, 0.0, 0.0 };
+        return all(static_cast<Real>(0.0));
     }
 
     static Vector4 one()
     {
-        return { 1.0, 1.0, 1.0, 1.0 };
+        return all(static_cast<Real>(1.0));
     }
 
     static Vector4 axis_x()
     {
-        return { 1.0f, 0.0f, 0.0f, 0.0f };
+        return { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
     static Vector4 axis_y()
     {
-        return { 0.0f, 1.0f, 0.0f, 0.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
     static Vector4 axis_z()
     {
-        return { 0.0f, 0.0f, 1.0f, 0.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
     static Vector4 axis_w()
     {
-        return { 0.0f, 0.0f, 0.0f, 1.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
     [[nodiscard]] Vector4 abs() const
@@ -1836,7 +1836,7 @@ public:
     [[nodiscard]] Vector4 clamp_length(const Real min, const Real max) const
     {
         const Real length = this->length();
-        if (length == 0.0f) {
+        if (length == static_cast<Real>(0.0)) {
             return zero();
         }
         const auto norm = normalize();
@@ -1851,7 +1851,7 @@ public:
 
     [[nodiscard]] Vector4 normalize() const
     {
-        if (const Real length = this->length(); length > 0.0f) {
+        if (const Real length = this->length(); length > static_cast<Real>(0.0)) {
             return *this / length;
         }
         return zero();
@@ -1882,7 +1882,10 @@ public:
 
     [[nodiscard]] Vector4 inverse() const
     {
-        return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
+        return { static_cast<Real>(1.0) / x,
+                 static_cast<Real>(1.0) / y,
+                 static_cast<Real>(1.0) / z,
+                 static_cast<Real>(1.0) / w };
     }
 
     [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
@@ -2103,7 +2106,8 @@ public:
 
     [[nodiscard]] explicit operator bool() const
     {
-        return x != 0.0f || y != 0.0f || z != 0.0f || w != 0.0f;
+        return x != static_cast<Real>(0.0) || y != static_cast<Real>(0.0) || z != static_cast<Real>(0.0)
+            || w != static_cast<Real>(0.0);
     }
 };
 
@@ -2134,10 +2138,10 @@ public:
     };
 
     Quaternion()
-        : x(0.0f)
-        , y(0.0f)
-        , z(0.0f)
-        , w(1.0f)
+        : x(static_cast<Real>(0.0))
+        , y(static_cast<Real>(0.0))
+        , z(static_cast<Real>(0.0))
+        , w(static_cast<Real>(1.0))
     {
     }
 
@@ -2159,18 +2163,18 @@ public:
 
     [[nodiscard]] static Quaternion identity()
     {
-        return { 0.0f, 0.0f, 0.0f, 1.0f };
+        return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
     [[nodiscard]] static Quaternion from_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
         const Vector3 norm = axis.normalize();
-        const Real half_sin = sin(angle / 2.0f);
+        const Real half_sin = sin(angle / static_cast<Real>(2.0));
         Quaternion result;
         result.x = norm.x * half_sin;
         result.y = norm.y * half_sin;
         result.z = norm.z * half_sin;
-        result.w = cos(angle / 2.0f);
+        result.w = cos(angle / static_cast<Real>(2.0));
         return result;
     }
 
@@ -2179,7 +2183,7 @@ public:
         const Vector3 from_norm = from.normalize();
         const Vector3 to_norm = to.normalize();
         const Vector3 axis = from_norm.cross(to_norm).normalize();
-        const Real dot = clamp(from_norm.dot(to_norm), -1.0f, 1.0f);
+        const Real dot = clamp(from_norm.dot(to_norm), static_cast<Real>(-1.0), static_cast<Real>(1.0));
         const Real angle = acos(dot);
         return from_axis_angle(axis, angle);
     }
@@ -2203,7 +2207,7 @@ public:
     [[nodiscard]] Vector3<Real> axis() const
     {
         const Real sin_half_angle = sqrt(1 - sqrd(w));
-        if (sin_half_angle == 0.0f) {
+        if (sin_half_angle == static_cast<Real>(0.0)) {
             return vector.xyz();
         }
         return vector.xyz() / sin_half_angle;
@@ -2231,13 +2235,14 @@ public:
 
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const Real weight) const
     {
-        const Real dot = clamp(vector.dot(to.vector), -1.0f, 1.0f);
+        const Real dot = clamp(vector.dot(to.vector), static_cast<Real>(-1.0), static_cast<Real>(1.0));
         const Real angle = acos(dot);
         const Real sin_angle = sin(angle);
-        if (sin_angle == 0.0f) {
+        if (sin_angle == static_cast<Real>(0.0)) {
             return Quaternion(vector.lerp(to.vector, weight));
         }
-        return Quaternion((vector * sin((1.0f - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
+        return Quaternion(
+            (vector * sin((static_cast<Real>(1.0) - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
     }
 
     [[nodiscard]] Quaternion rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
@@ -2331,10 +2336,10 @@ public:
     };
 
     Matrix2()
-        : col0_row0(1.0f)
-        , col0_row1(0.0f)
-        , col1_row0(0.0f)
-        , col1_row1(1.0f)
+        : col0_row0(static_cast<Real>(1.0))
+        , col0_row1(static_cast<Real>(0.0))
+        , col1_row0(static_cast<Real>(0.0))
+        , col1_row1(static_cast<Real>(1.0))
     {
     }
 
@@ -2361,17 +2366,18 @@ public:
 
     [[nodiscard]] static Matrix2 zero()
     {
-        return all(0.0f);
+        return all(static_cast<Real>(0.0));
     }
 
     [[nodiscard]] static Matrix2 one()
     {
-        return all(1.0f);
+        return all(static_cast<Real>(1.0));
     }
 
     [[nodiscard]] static Matrix2 identity()
     {
-        return { { 1.0f, 0.0f }, { 0.0f, 1.0f } };
+        return { { static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(1.0) } };
     }
 
     [[nodiscard]] Real trace() const
@@ -2406,7 +2412,7 @@ public:
     [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(static_cast<Real>(-1.0), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix2 cofactor() const
@@ -2432,7 +2438,7 @@ public:
     [[nodiscard]] std::optional<Matrix2> inverse() const
     {
         const Real det = determinant();
-        if (det == 0.0f) {
+        if (det == static_cast<Real>(0.0)) {
             return std::nullopt;
         }
         return adjugate() / det;
@@ -2696,17 +2702,17 @@ public:
 
     static Basis2 from_scale(const Vector2<Real>& factor)
     {
-        return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
+        return Basis2({ { factor.x, static_cast<Real>(0.0) }, { static_cast<Real>(0.0), factor.y } });
     }
 
     static Basis2 from_shear_x(const Real angle_y)
     {
-        return Basis2({ { 1.0f, 0.0f }, { tan(angle_y), 1.0f } });
+        return Basis2({ { static_cast<Real>(1.0), static_cast<Real>(0.0) }, { tan(angle_y), static_cast<Real>(1.0) } });
     }
 
     static Basis2 from_shear_y(const Real angle_x)
     {
-        return Basis2({ { 1.0f, tan(angle_x) }, { 0.0f, 1.0f } });
+        return Basis2({ { static_cast<Real>(1.0), tan(angle_x) }, { static_cast<Real>(0.0), static_cast<Real>(1.0) } });
     }
 
     [[nodiscard]] Real trace() const
@@ -2734,7 +2740,7 @@ public:
 
     [[nodiscard]] bool valid() const
     {
-        return matrix.determinant() != 0.0f;
+        return matrix.determinant() != static_cast<Real>(0.0);
     }
 
     [[nodiscard]] Basis2 rotate(const Real angle) const
@@ -2869,15 +2875,15 @@ public:
     };
 
     Matrix3()
-        : col0_row0(1.0f)
-        , col0_row1(0.0f)
-        , col0_row2(0.0f)
-        , col1_row0(0.0f)
-        , col1_row1(1.0f)
-        , col1_row2(0.0f)
-        , col2_row0(0.0f)
-        , col2_row1(0.0f)
-        , col2_row2(1.0f)
+        : col0_row0(static_cast<Real>(1.0))
+        , col0_row1(static_cast<Real>(0.0))
+        , col0_row2(static_cast<Real>(0.0))
+        , col1_row0(static_cast<Real>(0.0))
+        , col1_row1(static_cast<Real>(1.0))
+        , col1_row2(static_cast<Real>(0.0))
+        , col2_row0(static_cast<Real>(0.0))
+        , col2_row1(static_cast<Real>(0.0))
+        , col2_row2(static_cast<Real>(1.0))
     {
     }
 
@@ -2923,17 +2929,19 @@ public:
 
     [[nodiscard]] static Matrix3 zero()
     {
-        return all(0.0f);
+        return all(static_cast<Real>(0.0));
     }
 
     [[nodiscard]] static Matrix3 one()
     {
-        return all(1.0f);
+        return all(static_cast<Real>(1.0));
     }
 
     [[nodiscard]] static Matrix3 identity()
     {
-        return { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
+        return { { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) } };
     }
 
     [[nodiscard]] Real trace() const
@@ -2943,10 +2951,10 @@ public:
 
     [[nodiscard]] Real determinant() const
     {
-        Real det = 0.0f;
+        Real det = static_cast<Real>(0.0);
         for (int c = 0; c < 3; ++c) {
             const Real det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+            det += (c % 2 == 0 ? static_cast<Real>(1.0) : -static_cast<Real>(1.0)) * at(c, 0) * det_minor;
         }
         return det;
     }
@@ -2992,7 +3000,7 @@ public:
     [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
-        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(-static_cast<Real>(1.0), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix3 cofactor() const
@@ -3024,7 +3032,7 @@ public:
     [[nodiscard]] std::optional<Matrix3> inverse() const
     {
         const Real det = determinant();
-        if (det == 0.0f) {
+        if (det == static_cast<Real>(0.0)) {
             return std::nullopt;
         }
         return adjugate() / det;
@@ -3356,7 +3364,8 @@ public:
 
     [[nodiscard]] bool affine() const
     {
-        return valid() && matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
+        return valid() && matrix.at(0, 2) == static_cast<Real>(0.0) && matrix.at(1, 2) == static_cast<Real>(0.0)
+            && matrix.at(2, 2) == static_cast<Real>(1.0);
     }
 
     [[nodiscard]] Basis2<Real> basis() const
@@ -3505,7 +3514,9 @@ public:
     {
         const Vector3 norm = axis.normalize();
         // Rodrigues' formula
-        const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
+        const Matrix3 k_matrix { { static_cast<Real>(0.0), norm.z, -norm.y },
+                                 { -norm.z, static_cast<Real>(0.0), norm.x },
+                                 { norm.y, -norm.x, static_cast<Real>(0.0) } };
         const Matrix3 r_matrix
             = Matrix3<Real>::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
         return Basis3(r_matrix);
@@ -3529,22 +3540,30 @@ public:
 
     static Basis3 from_scale(const Vector3<Real>& factor)
     {
-        return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
+        return Basis3({ { factor.x, static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                        { static_cast<Real>(0.0), factor.y, static_cast<Real>(0.0) },
+                        { static_cast<Real>(0.0), static_cast<Real>(0.0), factor.z } });
     }
 
     static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
     {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
+        return Basis3({ { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                        { tan(angle_y), static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                        { tan(angle_z), static_cast<Real>(0.0), static_cast<Real>(1.0) } });
     }
 
     static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
     {
-        return Basis3({ { 1.0f, tan(angle_x), 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, tan(angle_z), 1.0f } });
+        return Basis3({ { static_cast<Real>(1.0), tan(angle_x), static_cast<Real>(0.0) },
+                        { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                        { static_cast<Real>(0.0), tan(angle_z), static_cast<Real>(1.0) } });
     }
 
     static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
-        return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
+        return Basis3({ { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                        { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                        { tan(angle_x), tan(angle_y), static_cast<Real>(1.0) } });
     }
 
     [[nodiscard]] Real trace() const
@@ -3572,7 +3591,7 @@ public:
 
     [[nodiscard]] bool valid() const
     {
-        return matrix.determinant() != 0.0f;
+        return matrix.determinant() != static_cast<Real>(0.0);
     }
 
     [[nodiscard]] Basis3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
@@ -3729,22 +3748,22 @@ public:
     };
 
     Matrix4()
-        : col0_row0(1.0f)
-        , col0_row1(0.0f)
-        , col0_row2(0.0f)
-        , col0_row3(0.0f)
-        , col1_row0(0.0f)
-        , col1_row1(1.0f)
-        , col1_row2(0.0f)
-        , col1_row3(0.0f)
-        , col2_row0(0.0f)
-        , col2_row1(0.0f)
-        , col2_row2(1.0f)
-        , col2_row3(0.0f)
-        , col3_row0(0.0f)
-        , col3_row1(0.0f)
-        , col3_row2(0.0f)
-        , col3_row3(1.0f)
+        : col0_row0(static_cast<Real>(1.0))
+        , col0_row1(static_cast<Real>(0.0))
+        , col0_row2(static_cast<Real>(0.0))
+        , col0_row3(static_cast<Real>(0.0))
+        , col1_row0(static_cast<Real>(0.0))
+        , col1_row1(static_cast<Real>(1.0))
+        , col1_row2(static_cast<Real>(0.0))
+        , col1_row3(static_cast<Real>(0.0))
+        , col2_row0(static_cast<Real>(0.0))
+        , col2_row1(static_cast<Real>(0.0))
+        , col2_row2(static_cast<Real>(1.0))
+        , col2_row3(static_cast<Real>(0.0))
+        , col3_row0(static_cast<Real>(0.0))
+        , col3_row1(static_cast<Real>(0.0))
+        , col3_row2(static_cast<Real>(0.0))
+        , col3_row3(static_cast<Real>(1.0))
     {
     }
 
@@ -3818,20 +3837,20 @@ public:
 
     [[nodiscard]] static Matrix4 zero()
     {
-        return all(0.0f);
+        return all(static_cast<Real>(0.0));
     }
 
     [[nodiscard]] static Matrix4 one()
     {
-        return all(1.0f);
+        return all(static_cast<Real>(1.0));
     }
 
     [[nodiscard]] static Matrix4 identity()
     {
-        return { { 1.0f, 0.0f, 0.0f, 0.0f },
-                 { 0.0f, 1.0f, 0.0f, 0.0f },
-                 { 0.0f, 0.0f, 1.0f, 0.0f },
-                 { 0.0f, 0.0f, 0.0f, 1.0f } };
+        return { { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) },
+                 { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) } };
     }
 
     [[nodiscard]] Real trace() const
@@ -3841,10 +3860,10 @@ public:
 
     [[nodiscard]] Real determinant() const
     {
-        Real det = 0.0f;
+        Real det = static_cast<Real>(0.0);
         for (int c = 0; c < 4; ++c) {
             const Real det_minor = minor_at(c, 0);
-            det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
+            det += (c % 2 == 0 ? static_cast<Real>(1.0) : -static_cast<Real>(1.0)) * at(c, 0) * det_minor;
         }
         return det;
     }
@@ -3891,7 +3910,7 @@ public:
     [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(-static_cast<Real>(1.0), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix4 cofactor() const
@@ -3926,7 +3945,7 @@ public:
     [[nodiscard]] std::optional<Matrix4> inverse() const
     {
         const Real det = determinant();
-        if (det == 0.0f) {
+        if (det == static_cast<Real>(0.0)) {
             return std::nullopt;
         }
         return adjugate() / det;
@@ -4249,13 +4268,13 @@ public:
         const Real fov, const Real aspect_ratio, const Real near, const Real far)
     {
         Matrix4 matrix;
-        const Real tan_half_fov = tan(fov / 2.0f);
-        matrix.at(0, 0) = 1.0f / (aspect_ratio * tan_half_fov);
-        matrix.at(1, 1) = 1.0f / tan_half_fov;
+        const Real tan_half_fov = tan(fov / static_cast<Real>(2.0));
+        matrix.at(0, 0) = static_cast<Real>(1.0) / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = static_cast<Real>(1.0) / tan_half_fov;
         matrix.at(2, 2) = (far + near) / (near - far);
-        matrix.at(2, 3) = -1.0f;
-        matrix.at(3, 2) = 2.0f * far * near / (near - far);
-        matrix.at(3, 3) = 0.0f;
+        matrix.at(2, 3) = -static_cast<Real>(1.0);
+        matrix.at(3, 2) = static_cast<Real>(2.0) * far * near / (near - far);
+        matrix.at(3, 3) = static_cast<Real>(0.0);
         return Transform3(matrix);
     }
 
@@ -4263,9 +4282,9 @@ public:
         const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
     {
         auto matrix = Matrix4<Real>::identity();
-        matrix.at(0, 0) = 2.0f / (right - left);
-        matrix.at(1, 1) = 2.0f / (top - bottom);
-        matrix.at(2, 2) = -2.0f / (far - near);
+        matrix.at(0, 0) = static_cast<Real>(2.0) / (right - left);
+        matrix.at(1, 1) = static_cast<Real>(2.0) / (top - bottom);
+        matrix.at(2, 2) = -static_cast<Real>(2.0) / (far - near);
         matrix.at(3, 0) = -((right + left) / (right - left));
         matrix.at(3, 1) = -((top + bottom) / (top - bottom));
         matrix.at(3, 2) = -((far + near) / (far - near));
@@ -4302,8 +4321,8 @@ public:
 
     [[nodiscard]] bool affine() const
     {
-        return valid() && matrix.at(0, 3) == 0.0f && matrix.at(1, 3) == 0.0f && matrix.at(2, 3) == 0.0f
-            && matrix.at(3, 3) == 1.0f;
+        return valid() && matrix.at(0, 3) == static_cast<Real>(0.0) && matrix.at(1, 3) == static_cast<Real>(0.0)
+            && matrix.at(2, 3) == static_cast<Real>(0.0) && matrix.at(3, 3) == static_cast<Real>(1.0);
     }
 
     [[nodiscard]] Basis3<Real> basis() const
