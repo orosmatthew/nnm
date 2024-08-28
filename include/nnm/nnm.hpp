@@ -16,10 +16,21 @@
 #endif
 
 namespace nnm {
-constexpr float pi = 3.141592653589793238462643383279502f;
-constexpr float epsilon = 0.00001f;
 
-inline float sign(const float value)
+template <typename Real = float>
+Real pi()
+{
+    return static_cast<Real>(3.141592653589793238462643383279502);
+}
+
+template <typename Real = float>
+Real epsilon()
+{
+    return static_cast<Real>(0.00001);
+}
+
+template <typename Real = float>
+Real sign(const Real value)
 {
     return std::copysignf(1.0f, value);
 }
@@ -29,7 +40,8 @@ inline int sign(const int value)
     return (value >= 0) - (value < 0);
 }
 
-inline float abs(const float value)
+template <typename Real = float>
+Real abs(const Real value)
 {
     return std::abs(value);
 }
@@ -39,7 +51,8 @@ inline int abs(const int value)
     return std::abs(value);
 }
 
-inline float max(const float a, const float b)
+template <typename Real = float>
+Real max(const Real a, const Real b)
 {
     return std::max(a, b);
 }
@@ -49,29 +62,33 @@ inline int max(const int a, const int b)
     return std::max(a, b);
 }
 
-inline bool approx_zero(const float value)
+template <typename Real = float>
+bool approx_zero(const Real value)
 {
-    float tolerance = epsilon * abs(value);
-    tolerance = max(tolerance, epsilon);
+    Real tolerance = epsilon<Real>() * abs(value);
+    tolerance = max(tolerance, epsilon<Real>());
     return abs(value) <= tolerance;
 }
 
-inline bool approx_equal(const float a, const float b)
+template <typename Real = float>
+bool approx_equal(const Real a, const Real b)
 {
     if (a == b) {
         return true;
     }
-    float tolerance = epsilon * max(abs(a), abs(b));
-    tolerance = max(tolerance, epsilon);
+    Real tolerance = epsilon<Real>() * max(abs(a), abs(b));
+    tolerance = max(tolerance, epsilon<Real>());
     return abs(a - b) <= tolerance;
 }
 
-inline float ceil(const float value)
+template <typename Real = float>
+Real ceil(const Real value)
 {
     return std::ceil(value);
 }
 
-inline float clamp(const float value, const float min, const float max)
+template <typename Real = float>
+Real clamp(const Real value, const Real min, const Real max)
 {
     if (value < min) {
         return min;
@@ -93,17 +110,20 @@ inline int clamp(const int value, const int min, const int max)
     return value;
 }
 
-inline float sqrt(const float value)
+template <typename Real = float>
+Real sqrt(const Real value)
 {
     return std::sqrt(value);
 }
 
-inline float pow(const float base, const float power)
+template <typename Real = float>
+Real pow(const Real base, const Real power)
 {
     return std::pow(base, power);
 }
 
-inline float sqrd(const float value)
+template <typename Real = float>
+Real sqrd(const Real value)
 {
     return value * value;
 }
@@ -113,17 +133,20 @@ inline int sqrd(const int value)
     return value * value;
 }
 
-inline float floor(const float value)
+template <typename Real = float>
+Real floor(const Real value)
 {
     return std::floor(value);
 }
 
-inline float lerp(const float from, const float to, const float weight)
+template <typename Real = float>
+Real lerp(const Real from, const Real to, const Real weight)
 {
     return from + weight * (to - from);
 }
 
-inline float lerp_clamped(const float from, const float to, const float weight)
+template <typename Real = float>
+Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
     if (weight >= 1.0f) {
         return to;
@@ -134,57 +157,68 @@ inline float lerp_clamped(const float from, const float to, const float weight)
     return lerp(from, to, weight);
 }
 
-inline float sin(const float value)
+template <typename Real = float>
+Real sin(const Real value)
 {
     return std::sin(value);
 }
 
-inline float cos(const float value)
+template <typename Real = float>
+Real cos(const Real value)
 {
     return std::cos(value);
 }
 
-inline float tan(const float value)
+template <typename Real = float>
+Real tan(const Real value)
 {
     return std::tan(value);
 }
 
-inline float round(const float value)
+template <typename Real = float>
+Real round(const Real value)
 {
     return std::round(value);
 }
 
-inline float atan(const float value)
+template <typename Real = float>
+Real atan(const Real value)
 {
     return std::atan(value);
 }
 
-inline float atan2(const float a, const float b)
+template <typename Real = float>
+Real atan2(const Real a, const Real b)
 {
     return std::atan2(a, b);
 }
 
-inline float radians(const float degrees)
+template <typename Real = float>
+Real radians(const Real degrees)
 {
-    return pi / 180.0f * degrees;
+    return pi<Real>() / 180.0f * degrees;
 }
 
-inline float degrees(const float radians)
+template <typename Real = float>
+Real degrees(const Real radians)
 {
-    return 180.0f / pi * radians;
+    return 180.0f / pi<Real>() * radians;
 }
 
-inline float asin(const float value)
+template <typename Real = float>
+Real asin(const Real value)
 {
     return std::asin(value);
 }
 
-inline float acos(const float value)
+template <typename Real = float>
+Real acos(const Real value)
 {
     return std::acos(value);
 }
 
-inline float min(const float a, const float b)
+template <typename Real = float>
+Real min(const Real a, const Real b)
 {
     return std::min(a, b);
 }
@@ -194,33 +228,46 @@ inline int min(const int a, const int b)
     return std::min(a, b);
 }
 
-inline float log2(const float value)
+template <typename Real = float>
+Real log2(const Real value)
 {
     return std::log2(value);
 }
 
+template <typename Real = float>
 class Vector2;
 class Vector2i;
+template <typename Real = float>
 class Vector3;
 class Vector3i;
+template <typename Real = float>
 class Vector4;
+template <typename Real = float>
 class Quaternion;
+template <typename Real = float>
 class Matrix2;
+template <typename Real = float>
 class Basis2;
+template <typename Real = float>
 class Matrix3;
+template <typename Real = float>
 class Transform2;
+template <typename Real = float>
 class Basis3;
+template <typename Real = float>
 class Matrix4;
+template <typename Real = float>
 class Transform3;
 
+template <typename Real>
 class Vector2 {
 public:
     union {
         struct {
-            float x;
-            float y;
+            Real x;
+            Real y;
         };
-        float data[2] {};
+        Real data[2] {};
     };
 
     Vector2()
@@ -231,13 +278,13 @@ public:
 
     explicit Vector2(const Vector2i& vector);
 
-    Vector2(const float x, const float y)
+    Vector2(const Real x, const Real y)
         : x(x)
         , y(y)
     {
     }
 
-    static Vector2 all(const float value)
+    static Vector2 all(const Real value)
     {
         return { value, value };
     }
@@ -282,7 +329,7 @@ public:
         return { nnm::round(x), nnm::round(y) };
     }
 
-    [[nodiscard]] float aspect_ratio() const
+    [[nodiscard]] Real aspect_ratio() const
     {
         return x / y;
     }
@@ -297,36 +344,36 @@ public:
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] float distance_sqrd(const Vector2& to) const
+    [[nodiscard]] Real distance_sqrd(const Vector2& to) const
     {
-        const float diff_x = to.x - x;
-        const float diff_y = to.y - y;
+        const Real diff_x = to.x - x;
+        const Real diff_y = to.y - y;
         return sqrd(diff_x) + sqrd(diff_y);
     }
 
-    [[nodiscard]] float distance(const Vector2& to) const
+    [[nodiscard]] Real distance(const Vector2& to) const
     {
         return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] float manhattan_distance(const Vector2& to) const
+    [[nodiscard]] Real manhattan_distance(const Vector2& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Vector2 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector2 clamp_length(const Real min, const Real max) const
     {
-        const float length = this->length();
+        const Real length = this->length();
         if (length == 0.0f) {
             return zero();
         }
@@ -342,37 +389,37 @@ public:
 
     [[nodiscard]] Vector2 normalize() const
     {
-        if (const float length = this->length(); length > 0.0f) {
+        if (const Real length = this->length(); length > 0.0f) {
             return *this / length;
         }
         return zero();
     }
 
-    [[nodiscard]] Vector2 lerp(const Vector2& to, const float weight) const
+    [[nodiscard]] Vector2 lerp(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
-    [[nodiscard]] Vector2 lerp_clamped(const Vector2& to, const float weight) const
+    [[nodiscard]] Vector2 lerp_clamped(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
-    [[nodiscard]] float dot(const Vector2& other) const
+    [[nodiscard]] Real dot(const Vector2& other) const
     {
         return x * other.x + y * other.y;
     }
 
-    [[nodiscard]] float cross(const Vector2& other) const
+    [[nodiscard]] Real cross(const Vector2& other) const
     {
         return x * other.y - y * other.x;
     }
 
-    [[nodiscard]] Matrix2 outer(const Vector2& other) const;
+    [[nodiscard]] Matrix2<Real> outer(const Vector2& other) const;
 
     [[nodiscard]] Vector2 reflect(const Vector2& normal) const
     {
-        const float dot = this->dot(normal);
+        const Real dot = this->dot(normal);
         Vector2 result;
         result.x = x - 2.0f * normal.x * dot;
         result.y = y - 2.0f * normal.y * dot;
@@ -381,11 +428,11 @@ public:
 
     [[nodiscard]] Vector2 project(const Vector2& onto) const
     {
-        const float onto_length_sqrd = onto.length_sqrd();
+        const Real onto_length_sqrd = onto.length_sqrd();
         if (onto_length_sqrd == 0.0f) {
             return zero();
         }
-        const float scale = dot(onto) / onto_length_sqrd;
+        const Real scale = dot(onto) / onto_length_sqrd;
         return onto * scale;
     }
 
@@ -394,29 +441,29 @@ public:
         return { 1.0f / x, 1.0f / y };
     }
 
-    [[nodiscard]] float angle(const Vector2& to) const
+    [[nodiscard]] Real angle(const Vector2& to) const
     {
-        const float lengths = length() * to.length();
+        const Real lengths = length() * to.length();
         if (lengths == 0) {
             return 0.0f;
         }
-        const float cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
+        const Real cos_angle = nnm::clamp(dot(to) / lengths, -1.0f, 1.0f);
         return acos(cos_angle);
     }
 
     [[nodiscard]] Vector2 translate(const Vector2& by) const;
 
-    [[nodiscard]] Vector2 rotate(float angle) const;
+    [[nodiscard]] Vector2 rotate(Real angle) const;
 
     [[nodiscard]] Vector2 scale(const Vector2& factor) const;
 
-    [[nodiscard]] Vector2 shear_x(float angle_y) const;
+    [[nodiscard]] Vector2 shear_x(Real angle_y) const;
 
-    [[nodiscard]] Vector2 shear_y(float angle_x) const;
+    [[nodiscard]] Vector2 shear_y(Real angle_x) const;
 
-    [[nodiscard]] Vector2 transform(const Basis2& by) const;
+    [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
 
-    [[nodiscard]] Vector2 transform(const Transform2& by, float z = 1.0f) const;
+    [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = 1.0f) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -450,45 +497,45 @@ public:
         return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 2;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 2;
     }
 
-    [[nodiscard]] float at(const int index) const
+    [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
-    float& at(const int index)
+    Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
     }
 
-    float& operator[](const int index)
+    Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
         return data[index];
@@ -540,14 +587,14 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator*(const Matrix2& matrix) const;
+    [[nodiscard]] Vector2 operator*(const Matrix2<Real>& matrix) const;
 
-    [[nodiscard]] Vector2 operator*(const float value) const
+    [[nodiscard]] Vector2 operator*(const Real value) const
     {
         return { x * value, y * value };
     }
 
-    Vector2& operator*=(const float value)
+    Vector2& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -566,12 +613,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator/(const float value) const
+    [[nodiscard]] Vector2 operator/(const Real value) const
     {
         return { x / value, y / value };
     }
 
-    Vector2& operator/=(const float value)
+    Vector2& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -605,12 +652,14 @@ public:
     }
 };
 
-inline Vector2 operator*(const float value, const Vector2& vector)
+template <typename Real = float>
+Vector2<Real> operator*(const Real value, const Vector2<Real>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
-inline Vector2 operator/(const float value, const Vector2& vector)
+template <typename Real = float>
+Vector2<Real> operator/(const Real value, const Vector2<Real>& vector)
 {
     return { value / vector.x, value / vector.y };
 }
@@ -631,7 +680,8 @@ public:
     {
     }
 
-    explicit Vector2i(const Vector2& vector)
+    template <typename Real = float>
+    explicit Vector2i(const Vector2<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
     {
@@ -903,15 +953,16 @@ inline Vector2i operator%(const int value, const Vector2i& vector)
     return { value % vector.x, value % vector.y };
 }
 
+template <typename Real>
 class Vector3 {
 public:
     union {
         struct {
-            float x;
-            float y;
-            float z;
+            Real x;
+            Real y;
+            Real z;
         };
-        float data[3] {};
+        Real data[3] {};
     };
 
     Vector3()
@@ -923,21 +974,21 @@ public:
 
     explicit Vector3(const Vector3i& vector);
 
-    Vector3(const Vector2& vector, const float z)
+    Vector3(const Vector2<Real>& vector, const Real z)
         : x(vector.x)
         , y(vector.y)
         , z(z)
     {
     }
 
-    Vector3(const float x, const float y, const float z)
+    Vector3(const Real x, const Real y, const Real z)
         : x(x)
         , y(y)
         , z(z)
     {
     }
 
-    static Vector3 all(float value)
+    static Vector3 all(Real value)
     {
         return { value, value, value };
     }
@@ -997,37 +1048,37 @@ public:
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] float distance_sqrd(const Vector3& to) const
+    [[nodiscard]] Real distance_sqrd(const Vector3& to) const
     {
-        const float diff_x = to.x - x;
-        const float diff_y = to.y - y;
-        const float diff_z = to.z - z;
+        const Real diff_x = to.x - x;
+        const Real diff_y = to.y - y;
+        const Real diff_z = to.z - z;
         return sqrd(diff_x) + sqrd(diff_y) + sqrd(diff_z);
     }
 
-    [[nodiscard]] float distance(const Vector3& to) const
+    [[nodiscard]] Real distance(const Vector3& to) const
     {
         return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] float manhattan_distance(const Vector3& to) const
+    [[nodiscard]] Real manhattan_distance(const Vector3& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Vector3 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector3 clamp_length(const Real min, const Real max) const
     {
-        const float length = this->length();
+        const Real length = this->length();
         if (length == 0.0f) {
             return zero();
         }
@@ -1049,19 +1100,19 @@ public:
         return zero();
     }
 
-    [[nodiscard]] Vector3 lerp(const Vector3& to, const float weight) const
+    [[nodiscard]] Vector3 lerp(const Vector3& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
 
-    [[nodiscard]] Vector3 lerp_clamped(const Vector3& to, const float weight) const
+    [[nodiscard]] Vector3 lerp_clamped(const Vector3& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight),
                  nnm::lerp_clamped(y, to.y, weight),
                  nnm::lerp_clamped(z, to.z, weight) };
     }
 
-    [[nodiscard]] float dot(const Vector3& other) const
+    [[nodiscard]] Real dot(const Vector3& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
@@ -1071,12 +1122,12 @@ public:
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
     }
 
-    [[nodiscard]] Matrix3 outer(const Vector3& other) const;
+    [[nodiscard]] Matrix3<Real> outer(const Vector3& other) const;
 
     [[nodiscard]] Vector3 reflect(const Vector3& normal) const
     {
         Vector3 result;
-        const float dot = this->dot(normal);
+        const Real dot = this->dot(normal);
         result.x = x - 2.0f * normal.x * dot;
         result.y = y - 2.0f * normal.y * dot;
         result.z = z - 2.0f * normal.z * dot;
@@ -1085,11 +1136,11 @@ public:
 
     [[nodiscard]] Vector3 project(const Vector3& onto) const
     {
-        const float onto_length_sqrd = onto.length_sqrd();
+        const Real onto_length_sqrd = onto.length_sqrd();
         if (onto_length_sqrd == 0.0f) {
             return zero();
         }
-        const float scale = dot(onto) / onto_length_sqrd;
+        const Real scale = dot(onto) / onto_length_sqrd;
         return onto * scale;
     }
 
@@ -1098,34 +1149,34 @@ public:
         return { 1.0f / x, 1.0f / y, 1.0f / z };
     }
 
-    [[nodiscard]] float angle(const Vector3& to) const
+    [[nodiscard]] Real angle(const Vector3& to) const
     {
         return atan2(this->cross(to).length(), this->dot(to));
     }
 
     [[nodiscard]] Vector3 translate(const Vector3& by) const;
 
-    [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+    [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
 
-    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion& quaternion) const;
+    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion<Real>& quaternion) const;
 
     [[nodiscard]] Vector3 scale(const Vector3& factor) const;
 
-    [[nodiscard]] Vector3 shear_x(float angle_y, float angle_z) const;
+    [[nodiscard]] Vector3 shear_x(Real angle_y, Real angle_z) const;
 
-    [[nodiscard]] Vector3 shear_y(float angle_x, float angle_z) const;
+    [[nodiscard]] Vector3 shear_y(Real angle_x, Real angle_z) const;
 
-    [[nodiscard]] Vector3 shear_z(float angle_x, float angle_y) const;
+    [[nodiscard]] Vector3 shear_z(Real angle_x, Real angle_y) const;
 
-    [[nodiscard]] Vector3 transform(const Basis3& by) const;
+    [[nodiscard]] Vector3 transform(const Basis3<Real>& by) const;
 
-    [[nodiscard]] Vector3 transform(const Transform2& by) const;
+    [[nodiscard]] Vector3 transform(const Transform2<Real>& by) const;
 
-    [[nodiscard]] Vector3 transform(const Transform3& by, float w = 1.0f) const;
+    [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = 1.0f) const;
 
     [[nodiscard]] int max_index() const
     {
-        float max_val = x;
+        Real max_val = x;
         auto max_axis = 0;
         if (y > max_val) {
             max_val = y;
@@ -1139,7 +1190,7 @@ public:
 
     [[nodiscard]] int min_index() const
     {
-        float min_val = x;
+        Real min_val = x;
         auto min_axis = 0;
         if (y < min_val) {
             min_val = y;
@@ -1161,50 +1212,50 @@ public:
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z);
     }
 
-    [[nodiscard]] Vector2 xy() const
+    [[nodiscard]] Vector2<Real> xy() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 3;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 3;
     }
 
-    [[nodiscard]] float at(const int index) const
+    [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
-    float& at(const int index)
+    Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
     }
 
-    float& operator[](const int index)
+    Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
         return data[index];
@@ -1260,14 +1311,14 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator*(const Matrix3& matrix) const;
+    [[nodiscard]] Vector3 operator*(const Matrix3<Real>& matrix) const;
 
-    [[nodiscard]] Vector3 operator*(const float value) const
+    [[nodiscard]] Vector3 operator*(const Real value) const
     {
         return { x * value, y * value, z * value };
     }
 
-    Vector3& operator*=(const float value)
+    Vector3& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -1289,12 +1340,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator/(const float value) const
+    [[nodiscard]] Vector3 operator/(const Real value) const
     {
         return { x / value, y / value, z / value };
     }
 
-    Vector3& operator/=(const float value)
+    Vector3& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -1331,12 +1382,14 @@ public:
     }
 };
 
-inline Vector3 operator*(const float value, const Vector3& vector)
+template <typename Real = float>
+Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
-inline Vector3 operator/(const float value, const Vector3& vector)
+template <typename Real = float>
+Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
 }
@@ -1359,7 +1412,8 @@ public:
     {
     }
 
-    explicit Vector3i(const Vector3& vector)
+    template <typename Real = float>
+    explicit Vector3i(const Vector3<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
         , z(static_cast<int>(vector.z))
@@ -1661,16 +1715,17 @@ inline Vector3i operator%(const int value, const Vector3i& vector)
     return { value % vector.x, value % vector.y, value % vector.z };
 }
 
+template <typename Real>
 class Vector4 {
 public:
     union {
         struct {
-            float x;
-            float y;
-            float z;
-            float w;
+            Real x;
+            Real y;
+            Real z;
+            Real w;
         };
-        float data[4] {};
+        Real data[4] {};
     };
 
     Vector4()
@@ -1681,7 +1736,7 @@ public:
     {
     }
 
-    Vector4(const Vector2& vector, const float z, const float w)
+    Vector4(const Vector2<Real>& vector, const Real z, const Real w)
         : x(vector.x)
         , y(vector.y)
         , z(z)
@@ -1689,7 +1744,7 @@ public:
     {
     }
 
-    Vector4(const Vector3& vector, const float w)
+    Vector4(const Vector3<Real>& vector, const Real w)
         : x(vector.x)
         , y(vector.y)
         , z(vector.z)
@@ -1697,7 +1752,7 @@ public:
     {
     }
 
-    Vector4(const float x, const float y, const float z, const float w)
+    Vector4(const Real x, const Real y, const Real z, const Real w)
         : x(x)
         , y(y)
         , z(z)
@@ -1705,7 +1760,7 @@ public:
     {
     }
 
-    static Vector4 all(const float value)
+    static Vector4 all(const Real value)
     {
         return { value, value, value, value };
     }
@@ -1768,19 +1823,19 @@ public:
                  nnm::clamp(w, min.w, max.w) };
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Vector4 clamp_length(const float min, const float max) const
+    [[nodiscard]] Vector4 clamp_length(const Real min, const Real max) const
     {
-        const float length = this->length();
+        const Real length = this->length();
         if (length == 0.0f) {
             return zero();
         }
@@ -1796,13 +1851,13 @@ public:
 
     [[nodiscard]] Vector4 normalize() const
     {
-        if (const float length = this->length(); length > 0.0f) {
+        if (const Real length = this->length(); length > 0.0f) {
             return *this / length;
         }
         return zero();
     }
 
-    [[nodiscard]] Vector4 lerp(const Vector4& to, const float weight) const
+    [[nodiscard]] Vector4 lerp(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight),
                  nnm::lerp(y, to.y, weight),
@@ -1810,7 +1865,7 @@ public:
                  nnm::lerp(w, to.w, weight) };
     }
 
-    [[nodiscard]] Vector4 lerp_clamped(const Vector4& to, const float weight) const
+    [[nodiscard]] Vector4 lerp_clamped(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight),
                  nnm::lerp_clamped(y, to.y, weight),
@@ -1818,19 +1873,19 @@ public:
                  nnm::lerp_clamped(w, to.w, weight) };
     }
 
-    [[nodiscard]] float dot(const Vector4& other) const
+    [[nodiscard]] Real dot(const Vector4& other) const
     {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
-    [[nodiscard]] Matrix4 outer(const Vector4& other) const;
+    [[nodiscard]] Matrix4<Real> outer(const Vector4& other) const;
 
     [[nodiscard]] Vector4 inverse() const
     {
         return { 1.0f / x, 1.0f / y, 1.0f / z, 1.0f / w };
     }
 
-    [[nodiscard]] Vector4 transform(const Transform3& by) const;
+    [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
 
     [[nodiscard]] int max_index() const
     {
@@ -1873,55 +1928,55 @@ public:
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z) && nnm::approx_zero(w);
     }
 
-    [[nodiscard]] Vector2 xy() const
+    [[nodiscard]] Vector2<Real> xy() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] Vector3 xyz() const
+    [[nodiscard]] Vector3<Real> xyz() const
     {
         return { x, y, z };
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 4;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 4;
     }
 
-    [[nodiscard]] float at(const int index) const
+    [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
-    float& at(const int index)
+    Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
     }
 
-    float& operator[](const int index)
+    Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
         return data[index];
@@ -1979,14 +2034,14 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator*(const Matrix4& matrix) const;
+    [[nodiscard]] Vector4 operator*(const Matrix4<Real>& matrix) const;
 
-    [[nodiscard]] Vector4 operator*(const float value) const
+    [[nodiscard]] Vector4 operator*(const Real value) const
     {
         return { x * value, y * value, z * value, w * value };
     }
 
-    Vector4& operator*=(const float value)
+    Vector4& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -2009,12 +2064,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator/(const float value) const
+    [[nodiscard]] Vector4 operator/(const Real value) const
     {
         return { x / value, y / value, z / value, w / value };
     }
 
-    Vector4& operator/=(const float value)
+    Vector4& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -2052,27 +2107,30 @@ public:
     }
 };
 
-inline Vector4 operator*(const float value, const Vector4& vector)
+template <typename Real = float>
+Vector4<Real> operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
 
-inline Vector4 operator/(const float value, const Vector4& vector)
+template <typename Real = float>
+Vector4<Real> operator/(const Real value, const Vector4<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
 }
 
+template <typename Real>
 class Quaternion {
 public:
     union {
         struct {
-            float x;
-            float y;
-            float z;
-            float w;
+            Real x;
+            Real y;
+            Real z;
+            Real w;
         };
-        Vector4 vector;
-        float data[4] {};
+        Vector4<Real> vector;
+        Real data[4] {};
     };
 
     Quaternion()
@@ -2083,7 +2141,7 @@ public:
     {
     }
 
-    explicit Quaternion(const Vector4& vector)
+    explicit Quaternion(const Vector4<Real>& vector)
         : x(vector.x)
         , y(vector.y)
         , z(vector.z)
@@ -2091,7 +2149,7 @@ public:
     {
     }
 
-    Quaternion(const float x, const float y, const float z, const float w)
+    Quaternion(const Real x, const Real y, const Real z, const Real w)
         : x(x)
         , y(y)
         , z(z)
@@ -2104,10 +2162,10 @@ public:
         return { 0.0f, 0.0f, 0.0f, 1.0f };
     }
 
-    [[nodiscard]] static Quaternion from_axis_angle(const Vector3& axis, const float angle)
+    [[nodiscard]] static Quaternion from_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
         const Vector3 norm = axis.normalize();
-        const float half_sin = sin(angle / 2.0f);
+        const Real half_sin = sin(angle / 2.0f);
         Quaternion result;
         result.x = norm.x * half_sin;
         result.y = norm.y * half_sin;
@@ -2116,13 +2174,13 @@ public:
         return result;
     }
 
-    [[nodiscard]] static Quaternion from_vector_to_vector(const Vector3& from, const Vector3& to)
+    [[nodiscard]] static Quaternion from_vector_to_vector(const Vector3<Real>& from, const Vector3<Real>& to)
     {
         const Vector3 from_norm = from.normalize();
         const Vector3 to_norm = to.normalize();
         const Vector3 axis = from_norm.cross(to_norm).normalize();
-        const float dot = clamp(from_norm.dot(to_norm), -1.0f, 1.0f);
-        const float angle = acos(dot);
+        const Real dot = clamp(from_norm.dot(to_norm), -1.0f, 1.0f);
+        const Real angle = acos(dot);
         return from_axis_angle(axis, angle);
     }
 
@@ -2131,27 +2189,27 @@ public:
         return Quaternion(vector.normalize());
     }
 
-    [[nodiscard]] Vector3 axis(const Quaternion& to) const
+    [[nodiscard]] Vector3<Real> axis(const Quaternion& to) const
     {
         const Vector3 cross = vector.xyz().cross(to.vector.xyz());
         return cross.normalize();
     }
 
-    [[nodiscard]] float angle(const Quaternion& to) const
+    [[nodiscard]] Real angle(const Quaternion& to) const
     {
         return 2 * acos(vector.dot(to.vector));
     }
 
-    [[nodiscard]] Vector3 axis() const
+    [[nodiscard]] Vector3<Real> axis() const
     {
-        const float sin_half_angle = sqrt(1 - sqrd(w));
+        const Real sin_half_angle = sqrt(1 - sqrd(w));
         if (sin_half_angle == 0.0f) {
             return vector.xyz();
         }
         return vector.xyz() / sin_half_angle;
     }
 
-    [[nodiscard]] float angle() const
+    [[nodiscard]] Real angle() const
     {
         return 2 * acos(w);
     }
@@ -2161,28 +2219,28 @@ public:
         return { -x, -y, -z, w };
     }
 
-    [[nodiscard]] float length_sqrd() const
+    [[nodiscard]] Real length_sqrd() const
     {
         return vector.length_sqrd();
     }
 
-    [[nodiscard]] float length() const
+    [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
-    [[nodiscard]] Quaternion slerp(const Quaternion& to, const float weight) const
+    [[nodiscard]] Quaternion slerp(const Quaternion& to, const Real weight) const
     {
-        const float dot = clamp(vector.dot(to.vector), -1.0f, 1.0f);
-        const float angle = acos(dot);
-        const float sin_angle = sin(angle);
+        const Real dot = clamp(vector.dot(to.vector), -1.0f, 1.0f);
+        const Real angle = acos(dot);
+        const Real sin_angle = sin(angle);
         if (sin_angle == 0.0f) {
             return Quaternion(vector.lerp(to.vector, weight));
         }
         return Quaternion((vector * sin((1.0f - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
     }
 
-    [[nodiscard]] Quaternion rotate_axis_angle(const Vector3& axis, const float angle) const
+    [[nodiscard]] Quaternion rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return from_axis_angle(axis, angle) * *this;
     }
@@ -2197,25 +2255,25 @@ public:
         return vector.approx_equal(other.vector);
     }
 
-    [[nodiscard]] float at(const int index) const
+    [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector.at(index);
     }
 
-    float& at(const int index)
+    Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector.at(index);
     }
 
-    [[nodiscard]] const float& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
     }
 
-    [[nodiscard]] float& operator[](const int index)
+    [[nodiscard]] Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
         return vector[index];
@@ -2258,17 +2316,18 @@ public:
     }
 };
 
+template <typename Real>
 class Matrix2 {
 public:
     union {
         struct {
-            float col0_row0;
-            float col0_row1;
-            float col1_row0;
-            float col1_row1;
+            Real col0_row0;
+            Real col0_row1;
+            Real col1_row0;
+            Real col1_row1;
         };
-        Vector2 columns[2];
-        float data[4] {};
+        Vector2<Real> columns[2];
+        Real data[4] {};
     };
 
     Matrix2()
@@ -2279,7 +2338,7 @@ public:
     {
     }
 
-    Matrix2(const Vector2& column0, const Vector2& column1)
+    Matrix2(const Vector2<Real>& column0, const Vector2<Real>& column1)
         : col0_row0(column0.at(0))
         , col0_row1(column0.at(1))
         , col1_row0(column1.at(0))
@@ -2287,7 +2346,7 @@ public:
     {
     }
 
-    Matrix2(const float col0_row0, const float col0_row1, const float col1_row0, const float col1_row1)
+    Matrix2(const Real col0_row0, const Real col0_row1, const Real col1_row0, const Real col1_row1)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col1_row0(col1_row0)
@@ -2295,7 +2354,7 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix2 all(const float value)
+    [[nodiscard]] static Matrix2 all(const Real value)
     {
         return { { value, value }, { value, value } };
     }
@@ -2315,17 +2374,17 @@ public:
         return { { 1.0f, 0.0f }, { 0.0f, 1.0f } };
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1);
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
         return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
     }
 
-    [[nodiscard]] float minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         const int other_column = (column + 1) % 2;
@@ -2344,10 +2403,10 @@ public:
         return result;
     }
 
-    [[nodiscard]] float cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix2 cofactor() const
@@ -2372,7 +2431,7 @@ public:
 
     [[nodiscard]] std::optional<Matrix2> inverse() const
     {
-        const float det = determinant();
+        const Real det = determinant();
         if (det == 0.0f) {
             return std::nullopt;
         }
@@ -2403,57 +2462,57 @@ public:
         return true;
     }
 
-    [[nodiscard]] Vector2 at(const int column) const
+    [[nodiscard]] Vector2<Real> at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
-    Vector2& at(const int column)
+    Vector2<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
-    [[nodiscard]] float at(const int column, const int row) const
+    [[nodiscard]] Real at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 4;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 4;
     }
 
-    const Vector2& operator[](const int column) const
+    const Vector2<Real>& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
     }
 
-    Vector2& operator[](const int column)
+    Vector2<Real>& operator[](const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
         return columns[column];
@@ -2532,7 +2591,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator*(const Vector2& vector) const
+    [[nodiscard]] Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
         Vector2 result;
         for (int r = 0; r < 2; ++r) {
@@ -2541,24 +2600,24 @@ public:
         return result;
     }
 
-    [[nodiscard]] Matrix2 operator*(const float value) const
+    [[nodiscard]] Matrix2 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value };
     }
 
-    Matrix2& operator*=(const float value)
+    Matrix2& operator*=(const Real value)
     {
         at(0) *= value;
         at(1) *= value;
         return *this;
     }
 
-    [[nodiscard]] Matrix2 operator/(const float value) const
+    [[nodiscard]] Matrix2 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value };
     }
 
-    Matrix2& operator/=(const float value)
+    Matrix2& operator/=(const Real value)
     {
         at(0) /= value;
         at(1) /= value;
@@ -2591,7 +2650,8 @@ public:
     }
 };
 
-inline Matrix2 operator*(const float value, const Matrix2& matrix)
+template <typename Real = float>
+Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2 result;
     for (int c = 0; c < 2; ++c) {
@@ -2602,7 +2662,8 @@ inline Matrix2 operator*(const float value, const Matrix2& matrix)
     return result;
 }
 
-inline Matrix2 operator/(const float value, const Matrix2& matrix)
+template <typename Real = float>
+Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2 result;
     for (int c = 0; c < 2; ++c) {
@@ -2613,46 +2674,47 @@ inline Matrix2 operator/(const float value, const Matrix2& matrix)
     return result;
 }
 
+template <typename Real>
 class Basis2 {
 public:
-    Matrix2 matrix;
+    Matrix2<Real> matrix;
 
     Basis2()
-        : matrix(Matrix2::identity())
+        : matrix(Matrix2<Real>::identity())
     {
     }
 
-    explicit Basis2(const Matrix2& matrix)
+    explicit Basis2(const Matrix2<Real>& matrix)
         : matrix(matrix)
     {
     }
 
-    static Basis2 from_rotation(const float angle)
+    static Basis2 from_rotation(const Real angle)
     {
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
-    static Basis2 from_scale(const Vector2& factor)
+    static Basis2 from_scale(const Vector2<Real>& factor)
     {
         return Basis2({ { factor.x, 0.0f }, { 0.0f, factor.y } });
     }
 
-    static Basis2 from_shear_x(const float angle_y)
+    static Basis2 from_shear_x(const Real angle_y)
     {
         return Basis2({ { 1.0f, 0.0f }, { tan(angle_y), 1.0f } });
     }
 
-    static Basis2 from_shear_y(const float angle_x)
+    static Basis2 from_shear_y(const Real angle_x)
     {
         return Basis2({ { 1.0f, tan(angle_x) }, { 0.0f, 1.0f } });
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
@@ -2675,42 +2737,42 @@ public:
         return matrix.determinant() != 0.0f;
     }
 
-    [[nodiscard]] Basis2 rotate(const float angle) const
+    [[nodiscard]] Basis2 rotate(const Real angle) const
     {
         return transform(from_rotation(angle));
     }
 
-    [[nodiscard]] Basis2 rotate_local(const float angle) const
+    [[nodiscard]] Basis2 rotate_local(const Real angle) const
     {
         return transform_local(from_rotation(angle));
     }
 
-    [[nodiscard]] Basis2 scale(const Vector2& factor) const
+    [[nodiscard]] Basis2 scale(const Vector2<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
-    [[nodiscard]] Basis2 scale_local(const Vector2& factor) const
+    [[nodiscard]] Basis2 scale_local(const Vector2<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
-    [[nodiscard]] Basis2 shear_x(const float angle_y) const
+    [[nodiscard]] Basis2 shear_x(const Real angle_y) const
     {
         return transform(from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Basis2 shear_x_local(const float angle_y) const
+    [[nodiscard]] Basis2 shear_x_local(const Real angle_y) const
     {
         return transform_local(from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Basis2 shear_y(const float angle_x) const
+    [[nodiscard]] Basis2 shear_y(const Real angle_x) const
     {
         return transform(from_shear_y(angle_x));
     }
 
-    [[nodiscard]] Basis2 shear_y_local(const float angle_x) const
+    [[nodiscard]] Basis2 shear_y_local(const Real angle_x) const
     {
         return transform_local(from_shear_y(angle_x));
     }
@@ -2735,37 +2797,37 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector2& at(const int column) const
+    [[nodiscard]] const Vector2<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
         return matrix[column];
     }
 
-    Vector2& at(const int column)
+    Vector2<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
         return matrix[column];
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
         return matrix[column][row];
     }
 
-    const Vector2& operator[](const int index) const
+    const Vector2<Real>& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
         return matrix[index];
     }
 
-    Vector2& operator[](const int index)
+    Vector2<Real>& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
         return matrix[index];
@@ -2787,22 +2849,23 @@ public:
     }
 };
 
+template <typename Real>
 class Matrix3 {
 public:
     union {
         struct {
-            float col0_row0;
-            float col0_row1;
-            float col0_row2;
-            float col1_row0;
-            float col1_row1;
-            float col1_row2;
-            float col2_row0;
-            float col2_row1;
-            float col2_row2;
+            Real col0_row0;
+            Real col0_row1;
+            Real col0_row2;
+            Real col1_row0;
+            Real col1_row1;
+            Real col1_row2;
+            Real col2_row0;
+            Real col2_row1;
+            Real col2_row2;
         };
-        Vector3 columns[3];
-        float data[9] {};
+        Vector3<Real> columns[3];
+        Real data[9] {};
     };
 
     Matrix3()
@@ -2818,7 +2881,7 @@ public:
     {
     }
 
-    Matrix3(const Vector3& column0, const Vector3& column1, const Vector3& column2)
+    Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
         : col0_row0(column0.at(0))
         , col0_row1(column0.at(1))
         , col0_row2(column0.at(2))
@@ -2832,15 +2895,15 @@ public:
     }
 
     Matrix3(
-        const float col0_row0,
-        const float col0_row1,
-        const float col0_row2,
-        const float col1_row0,
-        const float col1_row1,
-        const float col1_row2,
-        const float col2_row0,
-        const float col2_row1,
-        const float col2_row2)
+        const Real col0_row0,
+        const Real col0_row1,
+        const Real col0_row2,
+        const Real col1_row0,
+        const Real col1_row1,
+        const Real col1_row2,
+        const Real col2_row0,
+        const Real col2_row1,
+        const Real col2_row2)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col0_row2(col0_row2)
@@ -2853,7 +2916,7 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix3 all(const float value)
+    [[nodiscard]] static Matrix3 all(const Real value)
     {
         return { { value, value, value }, { value, value, value }, { value, value, value } };
     }
@@ -2873,22 +2936,22 @@ public:
         return { { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } };
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
-        float det = 0.0f;
+        Real det = 0.0f;
         for (int c = 0; c < 3; ++c) {
-            const float det_minor = minor_at(c, 0);
+            const Real det_minor = minor_at(c, 0);
             det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
         }
         return det;
     }
 
-    [[nodiscard]] Matrix2 minor_matrix_at(const int column, const int row) const
+    [[nodiscard]] Matrix2<Real> minor_matrix_at(const int column, const int row) const
     {
         Matrix2 minor_matrix;
         int minor_col = 0;
@@ -2909,7 +2972,7 @@ public:
         return minor_matrix;
     }
 
-    [[nodiscard]] float minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return minor_matrix_at(column, row).determinant();
@@ -2926,10 +2989,10 @@ public:
         return result;
     }
 
-    [[nodiscard]] float cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
-        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix3 cofactor() const
@@ -2960,7 +3023,7 @@ public:
 
     [[nodiscard]] std::optional<Matrix3> inverse() const
     {
-        const float det = determinant();
+        const Real det = determinant();
         if (det == 0.0f) {
             return std::nullopt;
         }
@@ -2991,57 +3054,57 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector3& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
-    Vector3& at(const int column)
+    Vector3<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 9;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 9;
     }
 
-    const Vector3& operator[](const int column) const
+    const Vector3<Real>& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
     }
 
-    Vector3& operator[](const int column)
+    Vector3<Real>& operator[](const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
         return columns[column];
@@ -3120,9 +3183,9 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator*(const Vector3& vector) const
+    [[nodiscard]] Vector3<Real> operator*(const Vector3<Real>& vector) const
     {
-        auto result = Vector3::zero();
+        auto result = Vector3<Real>::zero();
         for (int r = 0; r < 3; ++r) {
             for (int c = 0; c < 3; ++c) {
                 result.at(r) += at(c, r) * vector.at(c);
@@ -3131,12 +3194,12 @@ public:
         return result;
     }
 
-    [[nodiscard]] Matrix3 operator*(const float value) const
+    [[nodiscard]] Matrix3 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value, at(2) * value };
     }
 
-    Matrix3& operator*=(const float value)
+    Matrix3& operator*=(const Real value)
     {
         at(0) *= value;
         at(1) *= value;
@@ -3144,12 +3207,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Matrix3 operator/(const float value) const
+    [[nodiscard]] Matrix3 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value, at(2) / value };
     }
 
-    Matrix3& operator/=(const float value)
+    Matrix3& operator/=(const Real value)
     {
         at(0) /= value;
         at(1) /= value;
@@ -3181,7 +3244,8 @@ public:
     }
 };
 
-inline Matrix3 operator*(const float value, const Matrix3& matrix)
+template <typename Real = float>
+Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3 result;
     for (int c = 0; c < 3; ++c) {
@@ -3192,7 +3256,8 @@ inline Matrix3 operator*(const float value, const Matrix3& matrix)
     return result;
 }
 
-inline Matrix3 operator/(const float value, const Matrix3& matrix)
+template <typename Real = float>
+Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3 result;
     for (int c = 0; c < 3; ++c) {
@@ -3203,21 +3268,22 @@ inline Matrix3 operator/(const float value, const Matrix3& matrix)
     return result;
 }
 
+template <typename Real>
 class Transform2 {
 public:
-    Matrix3 matrix;
+    Matrix3<Real> matrix;
 
     Transform2()
-        : matrix(Matrix3::identity())
+        : matrix(Matrix3<Real>::identity())
     {
     }
 
-    explicit Transform2(const Matrix3& matrix)
+    explicit Transform2(const Matrix3<Real>& matrix)
         : matrix(matrix)
     {
     }
 
-    static Transform2 from_basis_translation(const Basis2& basis, const Vector2& translation)
+    static Transform2 from_basis_translation(const Basis2<Real>& basis, const Vector2<Real>& translation)
     {
         Matrix3 matrix;
         for (int c = 0; c < 2; ++c) {
@@ -3230,42 +3296,42 @@ public:
         return Transform2(matrix);
     }
 
-    static Transform2 from_basis(const Basis2& basis)
+    static Transform2 from_basis(const Basis2<Real>& basis)
     {
-        return from_basis_translation(basis, Vector2::zero());
+        return from_basis_translation(basis, Vector2<Real>::zero());
     }
 
-    static Transform2 from_translation(const Vector2& pos)
+    static Transform2 from_translation(const Vector2<Real>& pos)
     {
         return from_basis_translation(Basis2(), pos);
     }
 
-    static Transform2 from_rotation(const float angle)
+    static Transform2 from_rotation(const Real angle)
     {
-        return from_basis_translation(Basis2::from_rotation(angle), Vector2());
+        return from_basis_translation(Basis2<Real>::from_rotation(angle), Vector2());
     }
 
-    static Transform2 from_scale(const Vector2& factor)
+    static Transform2 from_scale(const Vector2<Real>& factor)
     {
-        return from_basis_translation(Basis2::from_scale(factor), Vector2());
+        return from_basis_translation(Basis2<Real>::from_scale(factor), Vector2());
     }
 
-    static Transform2 from_shear_x(const float angle_y)
+    static Transform2 from_shear_x(const Real angle_y)
     {
-        return from_basis_translation(Basis2::from_shear_x(angle_y), Vector2());
+        return from_basis_translation(Basis2<Real>::from_shear_x(angle_y), Vector2());
     }
 
-    static Transform2 from_shear_y(const float angle_x)
+    static Transform2 from_shear_y(const Real angle_x)
     {
-        return from_basis_translation(Basis2::from_shear_y(angle_x), Vector2());
+        return from_basis_translation(Basis2<Real>::from_shear_y(angle_x), Vector2());
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
@@ -3293,62 +3359,62 @@ public:
         return valid() && matrix.at(0, 2) == 0.0f && matrix.at(1, 2) == 0.0f && matrix.at(2, 2) == 1.0f;
     }
 
-    [[nodiscard]] Basis2 basis() const
+    [[nodiscard]] Basis2<Real> basis() const
     {
         return Basis2(matrix.minor_matrix_at(2, 2));
     }
 
-    [[nodiscard]] Vector2 translation() const
+    [[nodiscard]] Vector2<Real> translation() const
     {
         return { matrix.at(2, 0), matrix.at(2, 1) };
     }
 
-    [[nodiscard]] Transform2 translate(const Vector2& offset) const
+    [[nodiscard]] Transform2 translate(const Vector2<Real>& offset) const
     {
         return transform(from_translation(offset));
     }
 
-    [[nodiscard]] Transform2 translate_local(const Vector2& offset) const
+    [[nodiscard]] Transform2 translate_local(const Vector2<Real>& offset) const
     {
         return transform_local(from_translation(offset));
     }
 
-    [[nodiscard]] Transform2 rotate(const float angle) const
+    [[nodiscard]] Transform2 rotate(const Real angle) const
     {
         return transform(from_rotation(angle));
     }
 
-    [[nodiscard]] Transform2 rotate_local(const float angle) const
+    [[nodiscard]] Transform2 rotate_local(const Real angle) const
     {
         return transform_local(from_rotation(angle));
     }
 
-    [[nodiscard]] Transform2 scale(const Vector2& factor) const
+    [[nodiscard]] Transform2 scale(const Vector2<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
-    [[nodiscard]] Transform2 scale_local(const Vector2& factor) const
+    [[nodiscard]] Transform2 scale_local(const Vector2<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
-    [[nodiscard]] Transform2 shear_x(const float angle_y) const
+    [[nodiscard]] Transform2 shear_x(const Real angle_y) const
     {
         return transform(from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Transform2 shear_x_local(const float angle_y) const
+    [[nodiscard]] Transform2 shear_x_local(const Real angle_y) const
     {
         return transform_local(from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Transform2 shear_y(const float angle_x) const
+    [[nodiscard]] Transform2 shear_y(const Real angle_x) const
     {
         return transform(from_shear_y(angle_x));
     }
 
-    [[nodiscard]] Transform2 shear_y_local(const float angle_x) const
+    [[nodiscard]] Transform2 shear_y_local(const Real angle_x) const
     {
         return transform_local(from_shear_y(angle_x));
     }
@@ -3368,37 +3434,37 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector3& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
     }
 
-    Vector3& at(const int column)
+    Vector3<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return matrix.at(column, row);
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector3& operator[](const int column) const
+    [[nodiscard]] const Vector3<Real>& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
     }
 
-    Vector3& operator[](const int column)
+    Vector3<Real>& operator[](const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
         return matrix[column];
@@ -3420,32 +3486,34 @@ public:
     }
 };
 
+template <typename Real>
 class Basis3 {
 public:
-    Matrix3 matrix;
+    Matrix3<Real> matrix;
 
     Basis3()
-        : matrix(Matrix3::identity())
+        : matrix(Matrix3<Real>::identity())
     {
     }
 
-    explicit Basis3(const Matrix3& matrix)
+    explicit Basis3(const Matrix3<Real>& matrix)
         : matrix(matrix)
     {
     }
 
-    static Basis3 from_rotation_axis_angle(const Vector3& axis, const float angle)
+    static Basis3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
         const Vector3 norm = axis.normalize();
         // Rodrigues' formula
         const Matrix3 k_matrix { { 0.0f, norm.z, -norm.y }, { -norm.z, 0.0f, norm.x }, { norm.y, -norm.x, 0.0f } };
-        const Matrix3 r_matrix = Matrix3::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
+        const Matrix3 r_matrix
+            = Matrix3<Real>::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
         return Basis3(r_matrix);
     }
 
-    static Basis3 from_rotation_quaternion(const Quaternion& quaternion)
+    static Basis3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
-        const Quaternion& q = quaternion;
+        const Quaternion<Real>& q = quaternion;
         Matrix3 matrix;
         matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
         matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
@@ -3459,32 +3527,32 @@ public:
         return Basis3(matrix);
     }
 
-    static Basis3 from_scale(const Vector3& factor)
+    static Basis3 from_scale(const Vector3<Real>& factor)
     {
         return Basis3({ { factor.x, 0.0f, 0.0f }, { 0.0f, factor.y, 0.0f }, { 0.0f, 0.0f, factor.z } });
     }
 
-    static Basis3 from_shear_x(const float angle_y, const float angle_z)
+    static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
     {
         return Basis3({ { 1.0f, 0.0f, 0.0f }, { tan(angle_y), 1.0f, 0.0f }, { tan(angle_z), 0.0f, 1.0f } });
     }
 
-    static Basis3 from_shear_y(const float angle_x, const float angle_z)
+    static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
     {
         return Basis3({ { 1.0f, tan(angle_x), 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, tan(angle_z), 1.0f } });
     }
 
-    static Basis3 from_shear_z(const float angle_x, const float angle_y)
+    static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
         return Basis3({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { tan(angle_x), tan(angle_y), 1.0f } });
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
@@ -3507,62 +3575,62 @@ public:
         return matrix.determinant() != 0.0f;
     }
 
-    [[nodiscard]] Basis3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    [[nodiscard]] Basis3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
 
-    [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
+    [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3<Real>& axis, const Real angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
     }
 
-    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion& quaternion) const
+    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
 
-    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion& quaternion) const
+    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
 
-    [[nodiscard]] Basis3 scale(const Vector3& factor) const
+    [[nodiscard]] Basis3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
-    [[nodiscard]] Basis3 scale_local(const Vector3& factor) const
+    [[nodiscard]] Basis3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
-    [[nodiscard]] Basis3 shear_x(const float angle_y, const float angle_z) const
+    [[nodiscard]] Basis3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return transform(from_shear_x(angle_y, angle_z));
     }
 
-    [[nodiscard]] Basis3 shear_x_local(const float angle_y, const float angle_z) const
+    [[nodiscard]] Basis3 shear_x_local(const Real angle_y, const Real angle_z) const
     {
         return transform_local(from_shear_x(angle_y, angle_z));
     }
 
-    [[nodiscard]] Basis3 shear_y(const float angle_x, const float angle_z) const
+    [[nodiscard]] Basis3 shear_y(const Real angle_x, const Real angle_z) const
     {
         return transform(from_shear_y(angle_x, angle_z));
     }
 
-    [[nodiscard]] Basis3 shear_y_local(const float angle_x, const float angle_z) const
+    [[nodiscard]] Basis3 shear_y_local(const Real angle_x, const Real angle_z) const
     {
         return transform_local(from_shear_y(angle_x, angle_z));
     }
 
-    [[nodiscard]] Basis3 shear_z(const float angle_x, const float angle_y) const
+    [[nodiscard]] Basis3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return transform(from_shear_z(angle_x, angle_y));
     }
 
-    [[nodiscard]] Basis3 shear_z_local(const float angle_x, const float angle_y) const
+    [[nodiscard]] Basis3 shear_z_local(const Real angle_x, const Real angle_y) const
     {
         return transform_local(from_shear_z(angle_x, angle_y));
     }
@@ -3582,37 +3650,37 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector3& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
-    Vector3& at(const int column)
+    Vector3<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector3& operator[](const int index) const
+    [[nodiscard]] const Vector3<Real>& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
         return matrix[index];
     }
 
-    Vector3& operator[](const int index)
+    Vector3<Real>& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
         return matrix[index];
@@ -3634,29 +3702,30 @@ public:
     }
 };
 
+template <typename Real>
 class Matrix4 {
 public:
     union {
         struct {
-            float col0_row0;
-            float col0_row1;
-            float col0_row2;
-            float col0_row3;
-            float col1_row0;
-            float col1_row1;
-            float col1_row2;
-            float col1_row3;
-            float col2_row0;
-            float col2_row1;
-            float col2_row2;
-            float col2_row3;
-            float col3_row0;
-            float col3_row1;
-            float col3_row2;
-            float col3_row3;
+            Real col0_row0;
+            Real col0_row1;
+            Real col0_row2;
+            Real col0_row3;
+            Real col1_row0;
+            Real col1_row1;
+            Real col1_row2;
+            Real col1_row3;
+            Real col2_row0;
+            Real col2_row1;
+            Real col2_row2;
+            Real col2_row3;
+            Real col3_row0;
+            Real col3_row1;
+            Real col3_row2;
+            Real col3_row3;
         };
-        Vector4 columns[4];
-        float data[16] {};
+        Vector4<Real> columns[4];
+        Real data[16] {};
     };
 
     Matrix4()
@@ -3679,7 +3748,11 @@ public:
     {
     }
 
-    Matrix4(const Vector4& column0, const Vector4& column1, const Vector4& column2, const Vector4& column3)
+    Matrix4(
+        const Vector4<Real>& column0,
+        const Vector4<Real>& column1,
+        const Vector4<Real>& column2,
+        const Vector4<Real>& column3)
         : col0_row0(column0.at(0))
         , col0_row1(column0.at(1))
         , col0_row2(column0.at(2))
@@ -3700,22 +3773,22 @@ public:
     }
 
     Matrix4(
-        const float col0_row0,
-        const float col0_row1,
-        const float col0_row2,
-        const float col0_row3,
-        const float col1_row0,
-        const float col1_row1,
-        const float col1_row2,
-        const float col1_row3,
-        const float col2_row0,
-        const float col2_row1,
-        const float col2_row2,
-        const float col2_row3,
-        const float col3_row0,
-        const float col3_row1,
-        const float col3_row2,
-        const float col3_row3)
+        const Real col0_row0,
+        const Real col0_row1,
+        const Real col0_row2,
+        const Real col0_row3,
+        const Real col1_row0,
+        const Real col1_row1,
+        const Real col1_row2,
+        const Real col1_row3,
+        const Real col2_row0,
+        const Real col2_row1,
+        const Real col2_row2,
+        const Real col2_row3,
+        const Real col3_row0,
+        const Real col3_row1,
+        const Real col3_row2,
+        const Real col3_row3)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col0_row2(col0_row2)
@@ -3735,7 +3808,7 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix4 all(const float value)
+    [[nodiscard]] static Matrix4 all(const Real value)
     {
         return { { value, value, value, value },
                  { value, value, value, value },
@@ -3761,22 +3834,22 @@ public:
                  { 0.0f, 0.0f, 0.0f, 1.0f } };
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
-        float det = 0.0f;
+        Real det = 0.0f;
         for (int c = 0; c < 4; ++c) {
-            const float det_minor = minor_at(c, 0);
+            const Real det_minor = minor_at(c, 0);
             det += (c % 2 == 0 ? 1.0f : -1.0f) * at(c, 0) * det_minor;
         }
         return det;
     }
 
-    [[nodiscard]] Matrix3 minor_matrix_at(const int column, const int row) const
+    [[nodiscard]] Matrix3<Real> minor_matrix_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         Matrix3 minor_matrix;
@@ -3798,7 +3871,7 @@ public:
         return minor_matrix;
     }
 
-    [[nodiscard]] float minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return minor_matrix_at(column, row).determinant();
@@ -3815,10 +3888,10 @@ public:
         return result;
     }
 
-    [[nodiscard]] float cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        return pow(-1.0f, static_cast<float>(column + 1 + row + 1)) * minor_at(column, row);
+        return pow(-1.0f, static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix4 cofactor() const
@@ -3852,7 +3925,7 @@ public:
 
     [[nodiscard]] std::optional<Matrix4> inverse() const
     {
-        const float det = determinant();
+        const Real det = determinant();
         if (det == 0.0f) {
             return std::nullopt;
         }
@@ -3879,57 +3952,57 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector4& at(const int column) const
+    [[nodiscard]] const Vector4<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
         return columns[column];
     }
 
-    Vector4& at(const int column)
+    Vector4<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
         return columns[column];
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return columns[column][row];
     }
 
-    [[nodiscard]] const float* begin() const
+    [[nodiscard]] const Real* begin() const
     {
         return data;
     }
 
-    [[nodiscard]] const float* end() const
+    [[nodiscard]] const Real* end() const
     {
         return data + 16;
     }
 
-    float* begin()
+    Real* begin()
     {
         return data;
     }
 
-    float* end()
+    Real* end()
     {
         return data + 16;
     }
 
-    const Vector4& operator[](const int index) const
+    const Vector4<Real>& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
         return columns[index];
     }
 
-    Vector4& operator[](const int index)
+    Vector4<Real>& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
         return columns[index];
@@ -4008,9 +4081,9 @@ public:
         return *this;
     }
 
-    Vector4 operator*(const Vector4& vector) const
+    Vector4<Real> operator*(const Vector4<Real>& vector) const
     {
-        auto result = Vector4::zero();
+        auto result = Vector4<Real>::zero();
         for (int r = 0; r < 4; ++r) {
             for (int c = 0; c < 4; ++c) {
                 result.at(r) += at(c, r) * vector.at(c);
@@ -4019,7 +4092,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] Matrix4 operator*(const float value) const
+    [[nodiscard]] Matrix4 operator*(const Real value) const
     {
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
@@ -4028,7 +4101,7 @@ public:
         return result;
     }
 
-    Matrix4& operator*=(const float value)
+    Matrix4& operator*=(const Real value)
     {
         for (int c = 0; c < 4; ++c) {
             at(c) *= value;
@@ -4036,7 +4109,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Matrix4 operator/(const float value) const
+    [[nodiscard]] Matrix4 operator/(const Real value) const
     {
         Matrix4 result;
         for (int c = 0; c < 4; ++c) {
@@ -4045,7 +4118,7 @@ public:
         return result;
     }
 
-    Matrix4& operator/=(const float value)
+    Matrix4& operator/=(const Real value)
     {
         for (int c = 0; c < 4; ++c) {
             at(c) /= value;
@@ -4077,7 +4150,8 @@ public:
     }
 };
 
-inline Matrix4 operator*(const float value, const Matrix4& matrix)
+template <typename Real = float>
+Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4 result;
     for (int c = 0; c < 4; ++c) {
@@ -4088,7 +4162,8 @@ inline Matrix4 operator*(const float value, const Matrix4& matrix)
     return result;
 }
 
-inline Matrix4 operator/(const float value, const Matrix4& matrix)
+template <typename Real = float>
+Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4 result;
     for (int c = 0; c < 4; ++c) {
@@ -4099,23 +4174,24 @@ inline Matrix4 operator/(const float value, const Matrix4& matrix)
     return result;
 }
 
+template <typename Real>
 class Transform3 {
 public:
-    Matrix4 matrix;
+    Matrix4<Real> matrix;
 
     Transform3()
-        : matrix(Matrix4::identity())
+        : matrix(Matrix4<Real>::identity())
     {
     }
 
-    explicit Transform3(const Matrix4& matrix)
+    explicit Transform3(const Matrix4<Real>& matrix)
         : matrix(matrix)
     {
     }
 
-    static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation)
+    static Transform3 from_basis_translation(const Basis3<Real>& basis, const Vector3<Real>& translation)
     {
-        auto matrix = Matrix4::identity();
+        auto matrix = Matrix4<Real>::identity();
         for (int c = 0; c < 3; ++c) {
             for (int r = 0; r < 3; ++r) {
                 matrix.at(c, r) = basis.at(c, r);
@@ -4127,53 +4203,53 @@ public:
         return Transform3(matrix);
     }
 
-    static Transform3 from_basis(const Basis3& basis)
+    static Transform3 from_basis(const Basis3<Real>& basis)
     {
-        return from_basis_translation(basis, Vector3::zero());
+        return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
-    static Transform3 from_translation(const Vector3& translation)
+    static Transform3 from_translation(const Vector3<Real>& translation)
     {
         return from_basis_translation(Basis3(), translation);
     }
 
-    static Transform3 from_rotation_axis_angle(const Vector3& axis, const float angle)
+    static Transform3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
-        const auto basis = Basis3::from_rotation_axis_angle(axis, angle);
-        return from_basis_translation(basis, Vector3::zero());
+        const auto basis = Basis3<Real>::from_rotation_axis_angle(axis, angle);
+        return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
-    static Transform3 from_rotation_quaternion(const Quaternion& quaternion)
+    static Transform3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
-        const auto basis = Basis3::from_rotation_quaternion(quaternion);
-        return from_basis_translation(basis, Vector3::zero());
+        const auto basis = Basis3<Real>::from_rotation_quaternion(quaternion);
+        return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
-    static Transform3 from_scale(const Vector3& factor)
+    static Transform3 from_scale(const Vector3<Real>& factor)
     {
-        return from_basis(Basis3::from_scale(factor));
+        return from_basis(Basis3<Real>::from_scale(factor));
     }
 
-    static Transform3 from_shear_x(const float angle_y, const float angle_z)
+    static Transform3 from_shear_x(const Real angle_y, const Real angle_z)
     {
-        return from_basis(Basis3::from_shear_x(angle_y, angle_z));
+        return from_basis(Basis3<Real>::from_shear_x(angle_y, angle_z));
     }
 
-    static Transform3 from_shear_y(const float angle_x, const float angle_z)
+    static Transform3 from_shear_y(const Real angle_x, const Real angle_z)
     {
-        return from_basis(Basis3::from_shear_y(angle_x, angle_z));
+        return from_basis(Basis3<Real>::from_shear_y(angle_x, angle_z));
     }
 
-    static Transform3 from_shear_z(const float angle_x, const float angle_y)
+    static Transform3 from_shear_z(const Real angle_x, const Real angle_y)
     {
-        return from_basis(Basis3::from_shear_z(angle_x, angle_y));
+        return from_basis(Basis3<Real>::from_shear_z(angle_x, angle_y));
     }
 
     static Transform3 from_projection_perspective(
-        const float fov, const float aspect_ratio, const float near, const float far)
+        const Real fov, const Real aspect_ratio, const Real near, const Real far)
     {
         Matrix4 matrix;
-        const float tan_half_fov = tan(fov / 2.0f);
+        const Real tan_half_fov = tan(fov / 2.0f);
         matrix.at(0, 0) = 1.0f / (aspect_ratio * tan_half_fov);
         matrix.at(1, 1) = 1.0f / tan_half_fov;
         matrix.at(2, 2) = (far + near) / (near - far);
@@ -4184,9 +4260,9 @@ public:
     }
 
     static Transform3 from_projection_orthographic(
-        const float left, const float right, const float bottom, const float top, const float near, const float far)
+        const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
     {
-        auto matrix = Matrix4::identity();
+        auto matrix = Matrix4<Real>::identity();
         matrix.at(0, 0) = 2.0f / (right - left);
         matrix.at(1, 1) = 2.0f / (top - bottom);
         matrix.at(2, 2) = -2.0f / (far - near);
@@ -4196,12 +4272,12 @@ public:
         return Transform3(matrix);
     }
 
-    [[nodiscard]] float trace() const
+    [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
-    [[nodiscard]] float determinant() const
+    [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
@@ -4230,82 +4306,82 @@ public:
             && matrix.at(3, 3) == 1.0f;
     }
 
-    [[nodiscard]] Basis3 basis() const
+    [[nodiscard]] Basis3<Real> basis() const
     {
         return Basis3(matrix.minor_matrix_at(3, 3));
     }
 
-    [[nodiscard]] Vector3 translation() const
+    [[nodiscard]] Vector3<Real> translation() const
     {
         return { matrix.at(3, 0), matrix.at(3, 1), matrix.at(3, 2) };
     }
 
-    [[nodiscard]] Transform3 translate(const Vector3& offset) const
+    [[nodiscard]] Transform3 translate(const Vector3<Real>& offset) const
     {
         return transform(from_translation(offset));
     }
 
-    [[nodiscard]] Transform3 translate_local(const Vector3& offset) const
+    [[nodiscard]] Transform3 translate_local(const Vector3<Real>& offset) const
     {
         return transform_local(from_translation(offset));
     }
 
-    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3& axis, const float angle) const
+    [[nodiscard]] Transform3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
 
-    [[nodiscard]] Transform3 rotate_axis_angle_local(const Vector3& axis, const float angle) const
+    [[nodiscard]] Transform3 rotate_axis_angle_local(const Vector3<Real>& axis, const Real angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
     }
 
-    [[nodiscard]] Transform3 rotate_quaternion(const Quaternion& quaternion) const
+    [[nodiscard]] Transform3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
 
-    [[nodiscard]] Transform3 rotate_quaternion_local(const Quaternion& quaternion) const
+    [[nodiscard]] Transform3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
 
-    [[nodiscard]] Transform3 scale(const Vector3& factor) const
+    [[nodiscard]] Transform3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
-    [[nodiscard]] Transform3 scale_local(const Vector3& factor) const
+    [[nodiscard]] Transform3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
-    [[nodiscard]] Transform3 shear_x(const float angle_y, const float angle_z) const
+    [[nodiscard]] Transform3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return transform(from_shear_x(angle_y, angle_z));
     }
 
-    [[nodiscard]] Transform3 shear_x_local(const float angle_y, const float angle_z) const
+    [[nodiscard]] Transform3 shear_x_local(const Real angle_y, const Real angle_z) const
     {
         return transform_local(from_shear_x(angle_y, angle_z));
     }
 
-    [[nodiscard]] Transform3 shear_y(const float angle_x, const float angle_z) const
+    [[nodiscard]] Transform3 shear_y(const Real angle_x, const Real angle_z) const
     {
         return transform(from_shear_y(angle_x, angle_z));
     }
 
-    [[nodiscard]] Transform3 shear_y_local(const float angle_x, const float angle_z) const
+    [[nodiscard]] Transform3 shear_y_local(const Real angle_x, const Real angle_z) const
     {
         return transform_local(from_shear_y(angle_x, angle_z));
     }
 
-    [[nodiscard]] Transform3 shear_z(const float angle_x, const float angle_y) const
+    [[nodiscard]] Transform3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return transform(from_shear_z(angle_x, angle_y));
     }
 
-    [[nodiscard]] Transform3 shear_z_local(const float angle_x, const float angle_y) const
+    [[nodiscard]] Transform3 shear_z_local(const Real angle_x, const Real angle_y) const
     {
         return transform_local(from_shear_z(angle_x, angle_y));
     }
@@ -4325,37 +4401,37 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector4& at(const int column) const
+    [[nodiscard]] const Vector4<Real>& at(const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
-    Vector4& at(const int column)
+    Vector4<Real>& at(const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix.at(column);
     }
 
-    [[nodiscard]] const float& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
-    float& at(const int column, const int row)
+    Real& at(const int column, const int row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector4& operator[](const int column) const
+    [[nodiscard]] const Vector4<Real>& operator[](const int column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix[column];
     }
 
-    Vector4& operator[](const int column)
+    Vector4<Real>& operator[](const int column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
         return matrix[column];
@@ -4377,13 +4453,15 @@ public:
     }
 };
 
-inline Vector2::Vector2(const Vector2i& vector)
-    : x(static_cast<float>(vector.x))
-    , y(static_cast<float>(vector.y))
+template <typename Real>
+Vector2<Real>::Vector2(const Vector2i& vector)
+    : x(static_cast<Real>(vector.x))
+    , y(static_cast<Real>(vector.y))
 {
 }
 
-inline Matrix2 Vector2::outer(const Vector2& other) const
+template <typename Real>
+Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 {
     Matrix2 result;
     for (int c = 0; c < 2; ++c) {
@@ -4394,47 +4472,55 @@ inline Matrix2 Vector2::outer(const Vector2& other) const
     return result;
 }
 
-inline Vector2 Vector2::translate(const Vector2& by) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::translate(const Vector2& by) const
 {
-    const auto transform = Transform2::from_translation(by);
+    const auto transform = Transform2<Real>::from_translation(by);
     return this->transform(transform);
 }
 
-inline Vector2 Vector2::rotate(const float angle) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::rotate(const Real angle) const
 {
-    const auto transform = Transform2::from_rotation(angle);
+    const auto transform = Transform2<Real>::from_rotation(angle);
     return this->transform(transform);
 }
 
-inline Vector2 Vector2::scale(const Vector2& factor) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::scale(const Vector2& factor) const
 {
-    const auto transform = Transform2::from_scale(factor);
+    const auto transform = Transform2<Real>::from_scale(factor);
     return this->transform(transform);
 }
 
-inline Vector2 Vector2::shear_x(const float angle_y) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::shear_x(const Real angle_y) const
 {
-    const auto transform = Transform2::from_shear_x(angle_y);
+    const auto transform = Transform2<Real>::from_shear_x(angle_y);
     return this->transform(transform);
 }
 
-inline Vector2 Vector2::shear_y(const float angle_x) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::shear_y(const Real angle_x) const
 {
-    const auto transform = Transform2::from_shear_y(angle_x);
+    const auto transform = Transform2<Real>::from_shear_y(angle_x);
     return this->transform(transform);
 }
 
-inline Vector2 Vector2::transform(const Basis2& by) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
-inline Vector2 Vector2::transform(const Transform2& by, const float z) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
 {
     return Vector3(*this, z).transform(by).xy();
 }
 
-inline Vector2 Vector2::operator*(const Matrix2& matrix) const
+template <typename Real>
+Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 {
     Vector2 result;
     result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1);
@@ -4442,14 +4528,16 @@ inline Vector2 Vector2::operator*(const Matrix2& matrix) const
     return result;
 }
 
-inline Vector3::Vector3(const Vector3i& vector)
-    : x(static_cast<float>(vector.x))
-    , y(static_cast<float>(vector.y))
-    , z(static_cast<float>(vector.z))
+template <typename Real>
+Vector3<Real>::Vector3(const Vector3i& vector)
+    : x(static_cast<Real>(vector.x))
+    , y(static_cast<Real>(vector.y))
+    , z(static_cast<Real>(vector.z))
 {
 }
 
-inline Matrix3 Vector3::outer(const Vector3& other) const
+template <typename Real>
+Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 {
     Matrix3 result;
     for (int c = 0; c < 3; ++c) {
@@ -4460,64 +4548,75 @@ inline Matrix3 Vector3::outer(const Vector3& other) const
     return result;
 }
 
-inline Vector3 Vector3::translate(const Vector3& by) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::translate(const Vector3& by) const
 {
-    const auto transform = Transform3::from_translation(by);
+    const auto transform = Transform3<Real>::from_translation(by);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::rotate_axis_angle(const Vector3& axis, const float angle) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::rotate_axis_angle(const Vector3& axis, const Real angle) const
 {
-    const auto transform = Transform3::from_rotation_axis_angle(axis, angle);
+    const auto transform = Transform3<Real>::from_rotation_axis_angle(axis, angle);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::rotate_quaternion(const Quaternion& quaternion) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::rotate_quaternion(const Quaternion<Real>& quaternion) const
 {
-    const auto transform = Transform3::from_rotation_quaternion(quaternion);
+    const auto transform = Transform3<Real>::from_rotation_quaternion(quaternion);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::scale(const Vector3& factor) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::scale(const Vector3& factor) const
 {
-    const auto transform = Transform3::from_scale(factor);
+    const auto transform = Transform3<Real>::from_scale(factor);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::shear_x(const float angle_y, const float angle_z) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_x(const Real angle_y, const Real angle_z) const
 {
-    const auto transform = Transform3::from_shear_x(angle_y, angle_z);
+    const auto transform = Transform3<Real>::from_shear_x(angle_y, angle_z);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::shear_y(const float angle_x, const float angle_z) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_y(const Real angle_x, const Real angle_z) const
 {
-    const auto transform = Transform3::from_shear_y(angle_x, angle_z);
+    const auto transform = Transform3<Real>::from_shear_y(angle_x, angle_z);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::shear_z(const float angle_x, const float angle_y) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_z(const Real angle_x, const Real angle_y) const
 {
-    const auto transform = Transform3::from_shear_z(angle_x, angle_y);
+    const auto transform = Transform3<Real>::from_shear_z(angle_x, angle_y);
     return this->transform(transform);
 }
 
-inline Vector3 Vector3::transform(const Basis3& by) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::transform(const Basis3<Real>& by) const
 {
     return by.matrix * *this;
 }
 
-inline Vector3 Vector3::transform(const Transform2& by) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::transform(const Transform2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
-inline Vector3 Vector3::transform(const Transform3& by, const float w) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::transform(const Transform3<Real>& by, const Real w) const
 {
     return Vector4(*this, w).transform(by).xyz();
 }
 
-inline Vector3 Vector3::operator*(const Matrix3& matrix) const
+template <typename Real>
+Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
 {
     auto result = zero();
     for (int c = 0; c < 3; ++c) {
@@ -4528,7 +4627,8 @@ inline Vector3 Vector3::operator*(const Matrix3& matrix) const
     return result;
 }
 
-inline Matrix4 Vector4::outer(const Vector4& other) const
+template <typename Real>
+Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
 {
     Matrix4 result;
     for (int c = 0; c < 4; ++c) {
@@ -4539,12 +4639,14 @@ inline Matrix4 Vector4::outer(const Vector4& other) const
     return result;
 }
 
-inline Vector4 Vector4::transform(const Transform3& by) const
+template <typename Real>
+Vector4<Real> Vector4<Real>::transform(const Transform3<Real>& by) const
 {
     return by.matrix * *this;
 }
 
-inline Vector4 Vector4::operator*(const Matrix4& matrix) const
+template <typename Real>
+Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
 {
     auto result = zero();
     for (int c = 0; c < 4; ++c) {
