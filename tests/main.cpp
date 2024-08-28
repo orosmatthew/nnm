@@ -2606,7 +2606,7 @@ int main()
         test_section("axis");
         {
             const auto axis = nnm::Vector3(2.0f, -1.0f, 0.5f).normalize();
-            const float angle = nnm::pi() / 9.0f;
+            constexpr float angle = nnm::pi() / 9.0f;
             const auto q = nnm::QuaternionF::from_axis_angle(axis, angle);
             ASSERT(q.axis().approx_equal(axis));
         }
@@ -2614,7 +2614,7 @@ int main()
         test_section("angle");
         {
             const auto axis = nnm::Vector3(2.0f, -1.0f, 0.5f).normalize();
-            const float angle = nnm::pi() / 9.0f;
+            constexpr float angle = nnm::pi() / 9.0f;
             const auto q = nnm::QuaternionF::from_axis_angle(axis, angle);
             ASSERT(nnm::approx_equal(q.angle(), angle));
         }

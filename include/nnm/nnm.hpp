@@ -18,13 +18,13 @@
 namespace nnm {
 
 template <typename Real = float>
-Real pi()
+constexpr Real pi()
 {
     return static_cast<Real>(3.141592653589793238462643383279502);
 }
 
 template <typename Real = float>
-Real epsilon()
+constexpr Real epsilon()
 {
     return static_cast<Real>(0.00001);
 }
