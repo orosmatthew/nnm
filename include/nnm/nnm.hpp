@@ -300,6 +300,13 @@ public:
 
     explicit Vector2(const Vector2i& vector);
 
+    template <typename Other>
+    explicit Vector2(const Vector2<Other>& vector)
+        : x(static_cast<Real>(vector.x))
+        , y(static_cast<Real>(vector.y))
+    {
+    }
+
     Vector2(const Real x, const Real y)
         : x(x)
         , y(y)
@@ -995,6 +1002,14 @@ public:
     }
 
     explicit Vector3(const Vector3i& vector);
+
+    template <typename Other>
+    explicit Vector3(const Vector3<Other>& vector)
+        : x(static_cast<Real>(vector.x))
+        , y(static_cast<Real>(vector.y))
+        , z(static_cast<Real>(vector.z))
+    {
+    }
 
     Vector3(const Vector2<Real>& vector, const Real z)
         : x(vector.x)
@@ -1758,6 +1773,15 @@ public:
     {
     }
 
+    template <typename Other>
+    explicit Vector4(const Vector4<Other>& vector)
+        : x(static_cast<Real>(vector.x))
+        , y(static_cast<Real>(vector.y))
+        , z(static_cast<Real>(vector.z))
+        , w(static_cast<Real>(vector.w))
+    {
+    }
+
     Vector4(const Vector2<Real>& vector, const Real z, const Real w)
         : x(vector.x)
         , y(vector.y)
@@ -2167,6 +2191,15 @@ public:
     {
     }
 
+    template <typename Other>
+    explicit Quaternion(const Quaternion<Other>& quaternion)
+        : x(static_cast<Real>(quaternion.x))
+        , y(static_cast<Real>(quaternion.y))
+        , z(static_cast<Real>(quaternion.z))
+        , w(static_cast<Real>(quaternion.w))
+    {
+    }
+
     explicit Quaternion(const Vector4<Real>& vector)
         : x(vector.x)
         , y(vector.y)
@@ -2362,6 +2395,15 @@ public:
         , col0_row1(static_cast<Real>(0.0))
         , col1_row0(static_cast<Real>(0.0))
         , col1_row1(static_cast<Real>(1.0))
+    {
+    }
+
+    template <typename Other>
+    explicit Matrix2(const Matrix2<Other>& matrix)
+        : col0_row0(static_cast<Real>(matrix.col0_row0))
+        , col0_row1(static_cast<Real>(matrix.col0_row1))
+        , col1_row0(static_cast<Real>(matrix.col1_row0))
+        , col1_row1(static_cast<Real>(matrix.col1_row1))
     {
     }
 
@@ -2712,6 +2754,12 @@ public:
     {
     }
 
+    template <typename Other>
+    explicit Basis2(const Basis2<Other>& basis)
+        : matrix(Matrix2<Real>(basis.matrix))
+    {
+    }
+
     explicit Basis2(const Matrix2<Real>& matrix)
         : matrix(matrix)
     {
@@ -2909,6 +2957,19 @@ public:
     {
     }
 
+    template <typename Other>
+    explicit Matrix3(const Matrix3<Other>& matrix)
+        : col0_row0(static_cast<Real>(matrix.col0_row0))
+        , col0_row1(static_cast<Real>(matrix.col0_row1))
+        , col0_row2(static_cast<Real>(matrix.col0_row2))
+        , col1_row0(static_cast<Real>(matrix.col1_row0))
+        , col1_row1(static_cast<Real>(matrix.col1_row1))
+        , col1_row2(static_cast<Real>(matrix.col1_row2))
+        , col2_row0(static_cast<Real>(matrix.col2_row0))
+        , col2_row1(static_cast<Real>(matrix.col2_row1))
+        , col2_row2(static_cast<Real>(matrix.col2_row2))
+    {
+    }
     Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
         : col0_row0(column0.at(0))
         , col0_row1(column0.at(1))
@@ -3308,6 +3369,12 @@ public:
     {
     }
 
+    template <typename Other>
+    explicit Transform2(const Transform2<Other>& transform)
+        : matrix(Matrix3<Real>(transform.matrix))
+    {
+    }
+
     explicit Transform2(const Matrix3<Real>& matrix)
         : matrix(matrix)
     {
@@ -3524,6 +3591,12 @@ public:
 
     Basis3()
         : matrix(Matrix3<Real>::identity())
+    {
+    }
+
+    template <typename Other>
+    explicit Basis3(const Basis3<Other>& basis)
+        : matrix(Matrix3<Real>(basis.matrix))
     {
     }
 
@@ -3786,6 +3859,27 @@ public:
         , col3_row1(static_cast<Real>(0.0))
         , col3_row2(static_cast<Real>(0.0))
         , col3_row3(static_cast<Real>(1.0))
+    {
+    }
+
+    template <typename Other>
+    explicit Matrix4(const Matrix4<Other>& matrix)
+        : col0_row0(static_cast<Real>(matrix.col0_row0))
+        , col0_row1(static_cast<Real>(matrix.col0_row1))
+        , col0_row2(static_cast<Real>(matrix.col0_row2))
+        , col0_row3(static_cast<Real>(matrix.col0_row3))
+        , col1_row0(static_cast<Real>(matrix.col1_row0))
+        , col1_row1(static_cast<Real>(matrix.col1_row1))
+        , col1_row2(static_cast<Real>(matrix.col1_row2))
+        , col1_row3(static_cast<Real>(matrix.col1_row3))
+        , col2_row0(static_cast<Real>(matrix.col2_row0))
+        , col2_row1(static_cast<Real>(matrix.col2_row1))
+        , col2_row2(static_cast<Real>(matrix.col2_row2))
+        , col2_row3(static_cast<Real>(matrix.col2_row3))
+        , col3_row0(static_cast<Real>(matrix.col3_row0))
+        , col3_row1(static_cast<Real>(matrix.col3_row1))
+        , col3_row2(static_cast<Real>(matrix.col3_row2))
+        , col3_row3(static_cast<Real>(matrix.col3_row3))
     {
     }
 
@@ -4222,6 +4316,12 @@ public:
 
     Transform3()
         : matrix(Matrix4<Real>::identity())
+    {
+    }
+
+    template <typename Other>
+    explicit Transform3(const Transform3<Other>& transform)
+        : matrix(Matrix4<Real>(transform.matrix))
     {
     }
 
@@ -4697,7 +4797,6 @@ Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
     }
     return result;
 }
-
 }
 
 template <>

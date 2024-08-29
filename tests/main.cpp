@@ -407,6 +407,14 @@ int main()
             ASSERT(v2.y == 2.0f);
         }
 
+        test_section("Vector2(const Vector2<Other>&)");
+        {
+            const nnm::Vector2d v1(1.0, -2.0);
+            const nnm::Vector2f v2(v1);
+            ASSERT(v2.x == 1.0f);
+            ASSERT(v2.y == -2.0f);
+        }
+
         test_section("Vector2(float, float)");
         {
             const nnm::Vector2 v3(1.0f, 2.0f);
@@ -1259,6 +1267,15 @@ int main()
             ASSERT(v2.x == 1.0f);
             ASSERT(v2.y == 2.0f);
             ASSERT(v2.z == 3.0f);
+        }
+
+        test_section("Vector3(const Vector3<Other>&)");
+        {
+            const nnm::Vector3d v1(1.0, -2.0, 0.5);
+            const nnm::Vector3f v2(v1);
+            ASSERT(v2.x == 1.0f);
+            ASSERT(v2.y == -2.0f);
+            ASSERT(v2.z == 0.5f);
         }
 
         test_section("Vector3(const Vector2&, float)");
@@ -2163,6 +2180,16 @@ int main()
             ASSERT(v1.w == 0.0f);
         }
 
+        test_section("Vector4(const Vector4<Other>&)");
+        {
+            const nnm::Vector4d v1(1.0, -2.0, 0.5, -0.75);
+            const nnm::Vector4f v2(v1);
+            ASSERT(v2.x == 1.0f);
+            ASSERT(v2.y == -2.0f);
+            ASSERT(v2.z == 0.5f);
+            ASSERT(v2.w == -0.75f);
+        }
+
         test_section("Vector4(const Vector2&, float, float)");
         {
             const nnm::Vector4 v(nnm::Vector2(1.0f, -2.0f), 3.0f, -4.0f);
@@ -2555,6 +2582,16 @@ int main()
             ASSERT(q.w == 1.0f);
         }
 
+        test_section("Quaternion(const Quaternion<Other>&)");
+        {
+            nnm::QuaternionD q1(1.0, -2.0, 3.0, -4.5);
+            nnm::QuaternionF q2(q1);
+            ASSERT(q2.x == 1.0f);
+            ASSERT(q2.y == -2.0f);
+            ASSERT(q2.z == 3.0f);
+            ASSERT(q2.w == -4.5f);
+        }
+
         test_section("Quaternion(const Vector4&)");
         {
             nnm::Quaternion q(nnm::Vector4(1.0f, -2.0f, 3.0f, -4.0f));
@@ -2731,6 +2768,16 @@ int main()
             ASSERT(mat_default.col0_row1 == 0.0f);
             ASSERT(mat_default.col1_row0 == 0.0f);
             ASSERT(mat_default.col1_row1 == 1.0f);
+        }
+
+        test_section("Matrix2(const Matrix2<Other>&)");
+        {
+            const nnm::Matrix2d m1({ 1.0, -2.0 }, { 3.0, -4.5 });
+            const nnm::Matrix2f m2(m1);
+            ASSERT(m2.col0_row0 == 1.0f);
+            ASSERT(m2.col0_row1 == -2.0f);
+            ASSERT(m2.col1_row0 == 3.0f);
+            ASSERT(m2.col1_row1 == -4.5f);
         }
 
         test_section("Matrix2(const Vector2&, const Vector2&)");
@@ -3011,6 +3058,16 @@ int main()
             ASSERT(b.matrix == nnm::Matrix2f::identity());
         }
 
+        test_section("Basis2(const Basis2<Other>&)");
+        {
+            const nnm::Basis2d b1({ { 1.0, -2.0 }, { 3.0, -4.5 } });
+            const nnm::Basis2f b2(b1);
+            ASSERT(b2.matrix.col0_row0 == 1.0f);
+            ASSERT(b2.matrix.col0_row1 == -2.0f);
+            ASSERT(b2.matrix.col1_row0 == 3.0f);
+            ASSERT(b2.matrix.col1_row1 == -4.5f);
+        }
+
         test_section("Basis2(const Matrix2&)");
         {
             const auto m1 = nnm::Matrix2f::identity();
@@ -3226,6 +3283,21 @@ int main()
             ASSERT(default_mat.columns[0] == nnm::Vector3(1.0f, 0.0f, 0.0f));
             ASSERT(default_mat.columns[1] == nnm::Vector3(0.0f, 1.0f, 0.0f));
             ASSERT(default_mat.columns[2] == nnm::Vector3(0.0f, 0.0f, 1.0f));
+        }
+
+        test_section("Matrix3(const Matrix3<Other>&)");
+        {
+            const nnm::Matrix3d m1({ 1.0, -2.0, 3.0 }, { 0.5, 0.75, -0.1 }, { 0.0, 2.0, -4.0 });
+            const nnm::Matrix3f m2(m1);
+            ASSERT(m2.col0_row0 == 1.0f);
+            ASSERT(m2.col0_row1 == -2.0f);
+            ASSERT(m2.col0_row2 == 3.0f);
+            ASSERT(m2.col1_row0 == 0.5f);
+            ASSERT(m2.col1_row1 == 0.75f);
+            ASSERT(m2.col1_row2 == -0.1f);
+            ASSERT(m2.col2_row0 == 0.0f);
+            ASSERT(m2.col2_row1 == 2.0f);
+            ASSERT(m2.col2_row2 == -4.0f);
         }
 
         test_section("Matrix3(const Vector3&, const Vector3&, const Vector3&)");
@@ -3518,6 +3590,21 @@ int main()
             ASSERT(default_transform.matrix == nnm::Matrix3f::identity());
         }
 
+        test_section("Transform2(const Transform2<Other>&)");
+        {
+            const nnm::Transform2d t1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 4.0, 28.0, 100.0 } });
+            const nnm::Transform2f t2(t1);
+            ASSERT(t2.matrix.col0_row0 == 1.0f);
+            ASSERT(t2.matrix.col0_row1 == 2.0f);
+            ASSERT(t2.matrix.col0_row2 == 3.0f);
+            ASSERT(t2.matrix.col1_row0 == -0.5f);
+            ASSERT(t2.matrix.col1_row1 == -0.75f);
+            ASSERT(t2.matrix.col1_row2 == 0.1f);
+            ASSERT(t2.matrix.col2_row0 == 4.0f);
+            ASSERT(t2.matrix.col2_row1 == 28.0f);
+            ASSERT(t2.matrix.col2_row2 == 100.0f);
+        }
+
         test_section("Transform2(const Matrix3&)");
         {
             nnm::Transform2 transform_matrix(nnm::Matrix3f::all(3.0f));
@@ -3791,6 +3878,21 @@ int main()
         {
             nnm::Basis3 b1;
             ASSERT(b1.matrix == nnm::Matrix3f::identity());
+        }
+
+        test_section("Basis3(const Basis3<Other>&)");
+        {
+            const nnm::Basis3d b1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 2.0, 88.0, -101.0 } });
+            const nnm::Basis3f b2(b1);
+            ASSERT(b2.matrix.col0_row0 == 1.0f);
+            ASSERT(b2.matrix.col0_row1 == 2.0f);
+            ASSERT(b2.matrix.col0_row2 == 3.0f);
+            ASSERT(b2.matrix.col1_row0 == -0.5f);
+            ASSERT(b2.matrix.col1_row1 == -0.75f);
+            ASSERT(b2.matrix.col1_row2 == 0.1f);
+            ASSERT(b2.matrix.col2_row0 == 2.0f);
+            ASSERT(b2.matrix.col2_row1 == 88.0f);
+            ASSERT(b2.matrix.col2_row2 == -101.0f);
         }
 
         test_section("Basis3(const Matrix3&)");
@@ -4074,6 +4176,32 @@ int main()
             ASSERT(m1.col3_row1 == 0.0f);
             ASSERT(m1.col3_row2 == 0.0f);
             ASSERT(m1.col3_row3 == 1.0f);
+        }
+
+        test_section("Matrix4(const Matrix4<Other>&)");
+        {
+            const nnm::Matrix4d m1(
+                { 1.0, 2.0, 3.0, 4.0 },
+                { -0.5, 0.75, 0.6, 0.1 },
+                { -100.0, -88.0, 28.0, 0.0 },
+                { 1.0, 29.0, -89.0, 67.0 });
+            const nnm::Matrix4f m2(m1);
+            ASSERT(m2.col0_row0 == 1.0f);
+            ASSERT(m2.col0_row1 == 2.0f);
+            ASSERT(m2.col0_row2 == 3.0f);
+            ASSERT(m2.col0_row3 == 4.0f);
+            ASSERT(m2.col1_row0 == -0.5f);
+            ASSERT(m2.col1_row1 == 0.75f);
+            ASSERT(m2.col1_row2 == 0.6f);
+            ASSERT(m2.col1_row3 == 0.1f);
+            ASSERT(m2.col2_row0 == -100.0f);
+            ASSERT(m2.col2_row1 == -88.0f);
+            ASSERT(m2.col2_row2 == 28.0f);
+            ASSERT(m2.col2_row3 == 0.0f);
+            ASSERT(m2.col3_row0 == 1.0f);
+            ASSERT(m2.col3_row1 == 29.0f);
+            ASSERT(m2.col3_row2 == -89.0f);
+            ASSERT(m2.col3_row3 == 67.0f);
         }
 
         test_section("Matrix4(const Vector4&, const Vector4&, const Vector4&, const Vector4&)");
@@ -4510,6 +4638,31 @@ int main()
         {
             nnm::Transform3 t1;
             ASSERT(t1.matrix == nnm::Matrix4f::identity());
+        }
+
+        test_section("Transform3(const Transform3<Other>&)");
+        {
+            const nnm::Transform3d t1({ { 1.0, 2.0, 3.0, 4.0 },
+                                        { -0.5, 0.75, 0.6, 0.1 },
+                                        { -100.0, -88.0, 28.0, 0.0 },
+                                        { 1.0, 29.0, -89.0, 67.0 } });
+            const nnm::Transform3f t2(t1);
+            ASSERT(t2.matrix.col0_row0 == 1.0f);
+            ASSERT(t2.matrix.col0_row1 == 2.0f);
+            ASSERT(t2.matrix.col0_row2 == 3.0f);
+            ASSERT(t2.matrix.col0_row3 == 4.0f);
+            ASSERT(t2.matrix.col1_row0 == -0.5f);
+            ASSERT(t2.matrix.col1_row1 == 0.75f);
+            ASSERT(t2.matrix.col1_row2 == 0.6f);
+            ASSERT(t2.matrix.col1_row3 == 0.1f);
+            ASSERT(t2.matrix.col2_row0 == -100.0f);
+            ASSERT(t2.matrix.col2_row1 == -88.0f);
+            ASSERT(t2.matrix.col2_row2 == 28.0f);
+            ASSERT(t2.matrix.col2_row3 == 0.0f);
+            ASSERT(t2.matrix.col3_row0 == 1.0f);
+            ASSERT(t2.matrix.col3_row1 == 29.0f);
+            ASSERT(t2.matrix.col3_row2 == -89.0f);
+            ASSERT(t2.matrix.col3_row3 == 67.0f);
         }
 
         test_section("Transform3(const Matrix4&)");
