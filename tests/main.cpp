@@ -3309,7 +3309,8 @@ int main()
             ASSERT(cols.columns[2] == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
-        test_section("Matrix3(float, float, float, float, float, float, float, float, float)");
+        test_section("Matrix3(float, float, float, float, float, float, float, "
+                     "float, float)");
         {
             const nnm::Matrix3 elems(1.0f, 2.0f, 3.0f, -1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 6.0f);
             ASSERT(elems.columns[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
@@ -4204,7 +4205,8 @@ int main()
             ASSERT(m2.col3_row3 == 67.0f);
         }
 
-        test_section("Matrix4(const Vector4&, const Vector4&, const Vector4&, const Vector4&)");
+        test_section("Matrix4(const Vector4&, const Vector4&, const Vector4&, "
+                     "const Vector4&)");
         {
             const nnm::Matrix4 m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
                                     { -1.0f, -2.0f, -3.0f, -4.0f },
@@ -4228,7 +4230,8 @@ int main()
             ASSERT(m3.col3_row3 == -1.0f);
         }
 
-        test_section("Matrix4(float, float, float, float, float, float, float, float, float, float, float, float, "
+        test_section("Matrix4(float, float, float, float, float, float, float, "
+                     "float, float, float, float, float, "
                      "float, float, float, float)");
         {
             const nnm::Matrix4 m2 { 1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f,
