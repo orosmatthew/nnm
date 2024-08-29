@@ -1,4 +1,5 @@
-#pragma once
+#ifndef TEST_HPP
+#define TEST_HPP
 
 #include <iostream>
 #include <optional>
@@ -49,3 +50,5 @@ inline void test_failed(const char* file, const int line)
 #define ASSERT_FALSE(expression) \
     if (expression)              \
         test_failed(__FILE__, __LINE__);
+
+#endif
