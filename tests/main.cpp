@@ -9,9 +9,11 @@ int main()
 {
     test_case("sign");
     {
+        [[maybe_unused]] constexpr auto s1 = nnm::sign(-2.0f);
         ASSERT(nnm::sign(0.0f) == 1.0f);
         ASSERT(nnm::sign(1.0f) == 1.0f);
         ASSERT(nnm::sign(-1.0f) == -1.0f);
+        [[maybe_unused]] constexpr auto s2 = nnm::sign(-2);
         ASSERT(nnm::sign(0) == 1);
         ASSERT(nnm::sign(1) == 1);
         ASSERT(nnm::sign(-1) == -1);
@@ -19,9 +21,11 @@ int main()
 
     test_case("abs");
     {
+        [[maybe_unused]] constexpr auto a1 = nnm::abs(-1.0f);
         ASSERT(nnm::abs(0.0f) == 0.0f);
         ASSERT(nnm::abs(1.0f) == 1.0f);
         ASSERT(nnm::abs(-1.0f) == 1.0f);
+        [[maybe_unused]] constexpr auto a2 = nnm::abs(-1);
         ASSERT(nnm::abs(0) == 0);
         ASSERT(nnm::abs(1) == 1);
         ASSERT(nnm::abs(-1) == 1);
@@ -29,6 +33,7 @@ int main()
 
     test_case("max");
     {
+        [[maybe_unused]] constexpr auto m1 = nnm::max(5.0f, 10.0f);
         ASSERT(nnm::max(5.0f, 10.0f) == 10.0f);
         ASSERT(nnm::max(10.0f, 5.0f) == 10.0f);
         ASSERT(nnm::max(-5.0f, -10.0f) == -5.0f);
@@ -37,6 +42,7 @@ int main()
         ASSERT(nnm::max(3.14159f, 2.71828f) == 3.14159f);
         ASSERT(nnm::max(-3.14159f, -2.71828f) == -2.71828f);
 
+        [[maybe_unused]] constexpr auto m2 = nnm::max(5, 10);
         ASSERT(nnm::max(5, 10) == 10);
         ASSERT(nnm::max(10, 5) == 10);
         ASSERT(nnm::max(-5, -10) == -5);
@@ -46,6 +52,7 @@ int main()
 
     test_case("approx_zero");
     {
+        [[maybe_unused]] constexpr auto a1 = nnm::approx_zero(0.005f);
         ASSERT(nnm::approx_zero(0.0f));
         ASSERT_FALSE(nnm::approx_zero(0.005f));
         ASSERT_FALSE(nnm::approx_zero(0.01f));
@@ -61,6 +68,7 @@ int main()
 
     test_case("approx_equal");
     {
+        [[maybe_unused]] constexpr auto a1 = nnm::approx_equal(1.0f, 1.0f);
         ASSERT(nnm::approx_equal(1.0f, 1.0f));
         ASSERT_FALSE(nnm::approx_equal(1.0f, 1.005f));
         ASSERT_FALSE(nnm::approx_equal(1.0f, 1.01f));
@@ -91,6 +99,8 @@ int main()
 
     test_case("clamp");
     {
+        [[maybe_unused]] constexpr auto c1 = nnm::clamp(3.5f, 1.0f, 5.0f);
+        [[maybe_unused]] constexpr auto c2 = nnm::clamp(5, 0, 10);
         ASSERT(nnm::clamp(5, 0, 10) == 5);
         ASSERT(nnm::clamp(-5, 0, 10) == 0);
         ASSERT(nnm::clamp(15, 0, 10) == 10);
@@ -147,6 +157,8 @@ int main()
 
     test_case("sqrd");
     {
+        [[maybe_unused]] constexpr auto s1 = nnm::sqrd(2.0f);
+        [[maybe_unused]] constexpr auto s2 = nnm::sqrd(3);
         ASSERT(nnm::sqrd(2) == 4);
         ASSERT(nnm::sqrd(3) == 9);
         ASSERT(nnm::sqrd(-4) == 16);
@@ -183,6 +195,7 @@ int main()
 
     test_case("lerp");
     {
+        [[maybe_unused]] constexpr auto l1 = nnm::lerp(0.0f, 10.0f, 0.5f);
         ASSERT(nnm::lerp(0.0f, 10.0f, 0.5f) == 5.0f);
         ASSERT(nnm::lerp(0.0f, 10.0f, 0.25f) == 2.5f);
         ASSERT(nnm::lerp(-5.0f, 5.0f, 0.75f) == 2.5f);
@@ -203,6 +216,7 @@ int main()
 
     test_case("lerp_clamped");
     {
+        [[maybe_unused]] constexpr auto l1 = nnm::lerp_clamped(5.0f, 10.0f, 20.0f);
         ASSERT(nnm::lerp_clamped(5.0f, 10.0f, 20.0f) == 10.0f);
         ASSERT(nnm::approx_equal(nnm::lerp_clamped(5.0f, 10.0f, 0.5f), 7.5f));
         ASSERT(nnm::lerp_clamped(5.0f, 10.0f, -20.0f) == 5.0f);
@@ -312,6 +326,7 @@ int main()
 
     test_case("radians");
     {
+        [[maybe_unused]] constexpr auto r1 = nnm::radians(0.0f);
         ASSERT(nnm::approx_equal(nnm::radians(0.0f), 0.0f));
         ASSERT(nnm::approx_equal(nnm::radians(45.0f), nnm::pi() / 4.0f));
         ASSERT(nnm::approx_equal(nnm::radians(90.0f), nnm::pi() / 2.0f));
@@ -331,6 +346,7 @@ int main()
 
     test_case("degrees");
     {
+        [[maybe_unused]] constexpr auto d1 = nnm::degrees(0.0f);
         ASSERT(nnm::approx_equal(nnm::degrees(0.0f), 0.0f));
         ASSERT(nnm::approx_equal(nnm::degrees(nnm::pi() / 4.0f), 45.0f));
         ASSERT(nnm::approx_equal(nnm::degrees(nnm::pi() / 2.0f), 90.0f));
@@ -368,6 +384,8 @@ int main()
 
     test_case("min");
     {
+        [[maybe_unused]] constexpr auto m1 = nnm::min(1, 2);
+        [[maybe_unused]] constexpr auto m2 = nnm::min(1.0f, 2.0f);
         ASSERT(nnm::min(1, 2) == 1);
         ASSERT(nnm::min(5, 3) == 3);
         ASSERT(nnm::min(-1, -5) == -5);

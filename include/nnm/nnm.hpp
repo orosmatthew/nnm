@@ -31,40 +31,52 @@ constexpr Real epsilon()
 }
 
 template <typename Real = float>
-Real sign(const Real value)
+constexpr Real sign(const Real value)
 {
-    return std::copysignf(static_cast<Real>(1.0), value);
+    if (value < static_cast<Real>(0.0)) {
+        return static_cast<Real>(-1.0);
+    }
+    return static_cast<Real>(1.0);
 }
 
-inline int sign(const int value)
+constexpr int sign(const int value)
 {
-    return (value >= 0) - (value < 0);
-}
-
-template <typename Real = float>
-Real abs(const Real value)
-{
-    return std::abs(value);
-}
-
-inline int abs(const int value)
-{
-    return std::abs(value);
+    if (value < 0) {
+        return -1;
+    }
+    return 1;
 }
 
 template <typename Real = float>
-Real max(const Real a, const Real b)
+constexpr Real abs(const Real value)
+{
+    if (value < static_cast<Real>(0.0)) {
+        return -value;
+    }
+    return value;
+}
+
+constexpr int abs(const int value)
+{
+    if (value < 0) {
+        return -value;
+    }
+    return value;
+}
+
+template <typename Real = float>
+constexpr Real max(const Real a, const Real b)
 {
     return std::max(a, b);
 }
 
-inline int max(const int a, const int b)
+constexpr int max(const int a, const int b)
 {
     return std::max(a, b);
 }
 
 template <typename Real = float>
-bool approx_zero(const Real value)
+constexpr bool approx_zero(const Real value)
 {
     Real tolerance = epsilon<Real>() * abs(value);
     tolerance = max(tolerance, epsilon<Real>());
@@ -72,7 +84,7 @@ bool approx_zero(const Real value)
 }
 
 template <typename Real = float>
-bool approx_equal(const Real a, const Real b)
+constexpr bool approx_equal(const Real a, const Real b)
 {
     if (a == b) {
         return true;
@@ -89,7 +101,7 @@ Real ceil(const Real value)
 }
 
 template <typename Real = float>
-Real clamp(const Real value, const Real min, const Real max)
+constexpr Real clamp(const Real value, const Real min, const Real max)
 {
     if (value < min) {
         return min;
@@ -100,7 +112,7 @@ Real clamp(const Real value, const Real min, const Real max)
     return value;
 }
 
-inline int clamp(const int value, const int min, const int max)
+constexpr int clamp(const int value, const int min, const int max)
 {
     if (value < min) {
         return min;
@@ -124,12 +136,12 @@ Real pow(const Real base, const Real power)
 }
 
 template <typename Real = float>
-Real sqrd(const Real value)
+constexpr Real sqrd(const Real value)
 {
     return value * value;
 }
 
-inline int sqrd(const int value)
+constexpr int sqrd(const int value)
 {
     return value * value;
 }
@@ -141,13 +153,13 @@ Real floor(const Real value)
 }
 
 template <typename Real = float>
-Real lerp(const Real from, const Real to, const Real weight)
+constexpr Real lerp(const Real from, const Real to, const Real weight)
 {
     return from + weight * (to - from);
 }
 
 template <typename Real = float>
-Real lerp_clamped(const Real from, const Real to, const Real weight)
+constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
     if (weight >= static_cast<Real>(1.0)) {
         return to;
@@ -195,13 +207,13 @@ Real atan2(const Real a, const Real b)
 }
 
 template <typename Real = float>
-Real radians(const Real degrees)
+constexpr Real radians(const Real degrees)
 {
     return pi<Real>() / static_cast<Real>(180.0) * degrees;
 }
 
 template <typename Real = float>
-Real degrees(const Real radians)
+constexpr Real degrees(const Real radians)
 {
     return static_cast<Real>(180.0) / pi<Real>() * radians;
 }
@@ -219,12 +231,12 @@ Real acos(const Real value)
 }
 
 template <typename Real = float>
-Real min(const Real a, const Real b)
+constexpr Real min(const Real a, const Real b)
 {
     return std::min(a, b);
 }
 
-inline int min(const int a, const int b)
+constexpr int min(const int a, const int b)
 {
     return std::min(a, b);
 }
