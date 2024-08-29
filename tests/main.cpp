@@ -656,7 +656,7 @@ int main()
 
         test_section("normalize");
         {
-            const nnm::Vector2 v(1.1f, -3.0f);
+            constexpr nnm::Vector2 v(1.1f, -3.0f);
             const auto norm = v.normalize();
             ASSERT(nnm::approx_equal(norm.x, 0.344255f));
             ASSERT(nnm::approx_equal(norm.y, -0.938876f));
@@ -1027,7 +1027,7 @@ int main()
 
         test_section("Vector2i(int, int)");
         {
-            const nnm::Vector2i v2(1, 2);
+            constexpr nnm::Vector2i v2(1, 2);
             ASSERT(v2.x == 1);
             ASSERT(v2.y == 2);
         }
@@ -1153,9 +1153,9 @@ int main()
             ASSERT(v1[1] == -3);
         }
 
-        const nnm::Vector2i v1(1, 2);
-        const nnm::Vector2i v2(3, 4);
-        const nnm::Vector2i v3(1, 2);
+        constexpr nnm::Vector2i v1(1, 2);
+        constexpr nnm::Vector2i v2(3, 4);
+        constexpr nnm::Vector2i v3(1, 2);
 
         test_section("operator==");
         {
@@ -1169,8 +1169,8 @@ int main()
             ASSERT(v1 != v2);
         }
 
-        const nnm::Vector2i v4(1, 2);
-        const nnm::Vector2i v5(3, 4);
+        constexpr nnm::Vector2i v4(1, 2);
+        constexpr nnm::Vector2i v5(3, 4);
 
         test_section("operator+(const Vector2i&)");
         {
@@ -1287,15 +1287,15 @@ int main()
 
         test_section("operator<");
         {
-            const nnm::Vector2i v7(1, 2);
-            const nnm::Vector2i v8(3, 4);
+            constexpr nnm::Vector2i v7(1, 2);
+            constexpr nnm::Vector2i v8(3, 4);
             ASSERT(v7 < v8);
             ASSERT_FALSE(v8 < v7);
         }
 
         test_section("operator bool");
         {
-            const nnm::Vector2i v7(1, 2);
+            constexpr nnm::Vector2i v7(1, 2);
             ASSERT(static_cast<bool>(v7));
             ASSERT_FALSE(static_cast<bool>(nnm::Vector2i(0, 0)));
         }
@@ -3664,7 +3664,7 @@ int main()
         test_section("from_basis_translation");
         {
             const nnm::Basis2 basis({ { 1.0f, 2.0f }, { 3.0f, 4.0f } });
-            const nnm::Vector2 pos(-1.0f, 2.0f);
+            constexpr nnm::Vector2 pos(-1.0f, 2.0f);
             const auto transform_basis_pos = nnm::Transform2f::from_basis_translation(basis, pos);
             const nnm::Matrix3 expected({ 1.0f, 2.0f, 0.0f }, { 3.0f, 4.0f, 0.0f }, { -1.0f, 2.0f, 1.0f });
             ASSERT(transform_basis_pos.matrix.approx_equal(expected));
@@ -3680,7 +3680,7 @@ int main()
 
         test_section("from_translation");
         {
-            const nnm::Vector2 pos(-1.0f, 2.0f);
+            constexpr nnm::Vector2 pos(-1.0f, 2.0f);
             const auto transform_pos = nnm::Transform2f::from_translation(pos);
             const nnm::Matrix3 expected({ 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { -1.0f, 2.0f, 1.0f });
             ASSERT(transform_pos.matrix.approx_equal(expected));
