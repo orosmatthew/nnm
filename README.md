@@ -29,6 +29,8 @@ nnm::Transform3f calculate_object_transform(
 
 ## Features
 
+A full list of all functions/classes can be found in [**docs/reference.md**](docs/reference.md).
+
 NNM provides classes for:
 
 * Vectors

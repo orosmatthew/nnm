@@ -1,5 +1,27 @@
 # Reference
 
+Reference for NNM math library.
+
+Many functions and classes are templated with `template<typename Real = float>` and thus any function/class that references the `Real` type is templated with a default template value of float.
+
+## Contents
+
+* [Macros](#Macros)
+* [Functions](#Functions)
+* [Vector2](#Vector2)
+* [Vector2i](#Vector2i)
+* [Vector3](#Vector3)
+* [Vector3i](#Vector3i)
+* [Vector4](#Vector4)
+* [Quaternion](#Quaternion)
+* [Matrix2](#Matrix2)
+* [Basis2](#Basis2)
+* [Matrix3](#Matrix3)
+* [Transform2](#Transform2)
+* [Basis3](#Basis3)
+* [Matrix4](#Matrix4)
+* [Transform3](#Transform3)
+
 ## Macros
 
 ```c++
@@ -11,60 +33,62 @@ NNM_BOUNDS_CHECK
 NNM_BOUNDS_CHECK_ASSERT(msg, expression)
 ```
 
-## Constants
-
-```c++
-float pi = 3.141592653589793238462643383279502f;
-float epsilon = 0.00001f;
-```
-
 ## Functions
 
 ```c++
-float sign(float value);
+Real pi();
+Real epsilon();
+Real sign(Real value);
 int sign(int value);
-float abs(float value);
+Real abs(Real value);
 int abs(int value);
-float max(float a, float b);
+Real max(Real a, Real b);
 int max(int a, int b);
-bool approx_zero(float value);
-bool approx_equal(float a, float b);
-float ceil(float value);
-float clamp(float value, float min, float max);
+bool approx_zero(Real value);
+bool approx_equal(Real a, Real b);
+Real ceil(Real value);
+Real clamp(Real value, Real min, Real max);
 int clamp(int value, int min, int max);
-float sqrt(float value);
-float pow(float base, float power);
-float sqrd(float value);
+Real sqrt(Real value);
+Real pow(Real base, Real power);
+Real sqrd(Real value);
 int sqrd(int value);
-float floor(float value);
-float lerp(float from, float to, float weight);
-float lerp_clamped(float from, float to, float weight);
-float sin(float value);
-float cos(float value);
-float tan(float value);
-float round(float value);
-float atan(float value);
-float atan2(float a, float b);
-float radians(float degrees);
-float degrees(float radians);
-float asin(float value);
-float acos(float value);
-float min(float a, float b);
+Real floor(Real value);
+Real lerp(Real from, Real to, Real weight);
+Real lerp_clamped(Real from, Real to, Real weight);
+Real sin(Real value);
+Real cos(Real value);
+Real tan(Real value);
+Real round(Real value);
+Real atan(Real value);
+Real atan2(Real a, Real b);
+Real radians(Real degrees);
+Real degrees(Real radians);
+Real asin(Real value);
+Real acos(Real value);
+Real min(Real a, Real b);
 int min(int a, int b);
-float log2(float value);
+Real log2(Real value);
 ```
 
 ## Vector2
+
+### Aliases
+
+```cpp
+using Vector2f = Vector2<float>;
+using Vector2d = Vector2<double>;
+```
 
 ### Members
 
 ```c++
 union {
     struct {
-        float x;
-        float y;
+        Real x;
+        Real y;
     };
-    float data[2] {};
+    Real data[2] {};
 };
 ```
 
@@ -73,13 +97,14 @@ union {
 ```c++
 Vector2();
 explicit Vector2(const Vector2i& vector);
-Vector2(float x, float y);
+explicit Vector2(const Vector2<Other>& vector);
+Vector2(Real x, Real y);
 ```
 
 ### Static Methods
 
 ```c++
-static Vector2 all(float value);
+static Vector2 all(Real value);
 static Vector2 zero();
 static Vector2 one();
 static Vector2 axis_x();
@@ -93,49 +118,49 @@ Vector2 abs() const;
 Vector2 ceil() const;
 Vector2 floor() const;
 Vector2 round() const;
-float aspect_ratio() const;
+Real aspect_ratio() const;
 Vector2 clamp(const Vector2& min, const Vector2& max) const;
 Vector2 direction(const Vector2& to) const;
-float distance_sqrd(const Vector2& to) const;
-float distance(const Vector2& to) const;
-float manhattan_distance(const Vector2& to) const
-float length_sqrd() const;
-float length() const;
-Vector2 clamp_length(float min, float max) const;
+Real distance_sqrd(const Vector2& to) const;
+Real distance(const Vector2& to) const;
+Real manhattan_distance(const Vector2& to) const
+Real length_sqrd() const;
+Real length() const;
+Vector2 clamp_length(Real min, Real max) const;
 Vector2 normalize() const;
-Vector2 lerp(const Vector2& to, float weight) const;
-Vector2 lerp_clamped(const Vector2& to, float weight) const;
-float dot(const Vector2& other) const;
-float cross(const Vector2& other) const;
+Vector2 lerp(const Vector2& to, Real weight) const;
+Vector2 lerp_clamped(const Vector2& to, Real weight) const;
+Real dot(const Vector2& other) const;
+Real cross(const Vector2& other) const;
 Matrix2 outer(const Vector2& other) const;
 Vector2 reflect(const Vector2& normal) const;
 Vector2 project(const Vector2& onto) const;
 Vector2 inverse() const;
-float angle(const Vector2& to) const;
+Real angle(const Vector2& to) const;
 Vector2 translate(const Vector2& by) const;
-Vector2 rotate(float angle) const;
+Vector2 rotate(Real angle) const;
 Vector2 scale(const Vector2& factor) const;
-Vector2 shear_x(float angle_y) const;
-Vector2 shear_y(float angle_x) const;
+Vector2 shear_x(Real angle_y) const;
+Vector2 shear_y(Real angle_x) const;
 Vector2 transform(const Basis2& by) const;
-Vector2 transform(const Transform2& by, float z = 1.0f) const;
+Vector2 transform(const Transform2& by, Real z = 1.0) const;
 int max_index() const;
 int min_index() const;
 bool approx_equal(const Vector2& other) const;
 bool approx_zero() const;
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
-float at(const int index) const;
-float& at(const int index);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
+Real at(const int index) const;
+Real& at(const int index);
 ```
 
 ### Operators
 
 ```c++
-float operator[](int index) const;
-float& operator[](int index);
+Real operator[](int index) const;
+Real& operator[](int index);
 bool operator==(const Vector2& other) const;
 bool operator!=(const Vector2& other) const;
 Vector2 operator+(const Vector2& other) const;
@@ -145,14 +170,14 @@ Vector2& operator-=(const Vector2& other);
 Vector2 operator*(const Vector2& other) const;
 Vector2& operator*=(const Vector2& other);
 Vector2 operator*(const Matrix2& matrix) const;
-Vector2 operator*(float value) const;
-Vector2 operator*(float value, const Vector2& vector);
-Vector2& operator*=(float value);
+Vector2 operator*(Real value) const;
+Vector2 operator*(Real value, const Vector2& vector);
+Vector2& operator*=(Real value);
 Vector2 operator/(const Vector2& other) const;
 Vector2& operator/=(const Vector2& other);
-Vector2 operator/(float value) const;
-Vector2 operator/(const float value, const Vector2& vector);
-Vector2& operator/=(float value);
+Vector2 operator/(Real value) const;
+Vector2 operator/(const Real value, const Vector2& vector);
+Vector2& operator/=(Real value);
 Vector2 operator+() const;
 Vector2 operator-() const;
 bool operator<(const Vector2& other) const;
@@ -251,16 +276,23 @@ struct std::hash<nnm::Vector2i> {
 
 ## Vector3
 
+### Aliases
+
+```cpp
+using Vector3f = Vector3<float>;
+using Vector3d = Vector3<double>;
+```
+
 ### Members
 
 ```c++
 union {
     struct {
-        float x;
-        float y;
-        float z;
+        Real x;
+        Real y;
+        Real z;
     };
-    float data[3] {};
+    Real data[3] {};
 };
 ```
 
@@ -269,14 +301,15 @@ union {
 ```c++
 Vector3();
 explicit Vector3(const Vector3i& vector);
-Vector3(const Vector2& vector, float z);
-Vector3(float x, float y, float z);
+explicit Vector3(const Vector3<Other>& vector);
+Vector3(const Vector2& vector, Real z);
+Vector3(Real x, Real y, Real z);
 ```
 
 ### Static Methods
 
 ```c++
-static Vector3 all(float value);
+static Vector3 all(Real value);
 static Vector3 zero();
 static Vector3 one();
 static Vector3 axis_x();
@@ -293,50 +326,50 @@ Vector3 floor() const;
 Vector3 round() const;
 Vector3 clamp(const Vector3& min, const Vector3& max) const;
 Vector3 direction(const Vector3& to) const;
-float distance_sqrd(const Vector3& to) const;
-float distance(const Vector3& to) const;
-float manhattan_distance(const Vector3& to) const;
-float length_sqrd() const;
-float length() const;
-Vector3 clamp_length(float min, float max) const;
+Real distance_sqrd(const Vector3& to) const;
+Real distance(const Vector3& to) const;
+Real manhattan_distance(const Vector3& to) const;
+Real length_sqrd() const;
+Real length() const;
+Vector3 clamp_length(Real min, Real max) const;
 Vector3 normalize() const;
-Vector3 lerp(const Vector3& to, float weight) const;
-Vector3 lerp_clamped(const Vector3& to, float weight) const;
-float dot(const Vector3& other) const;
+Vector3 lerp(const Vector3& to, Real weight) const;
+Vector3 lerp_clamped(const Vector3& to, Real weight) const;
+Real dot(const Vector3& other) const;
 Vector3 cross(const Vector3& other) const;
 Matrix3 outer(const Vector3& other) const;
 Vector3 reflect(const Vector3& normal) const;
 Vector3 project(const Vector3& onto) const;
 Vector3 inverse() const;
-float angle(const Vector3& other) const;
+Real angle(const Vector3& other) const;
 Vector3 translate(const Vector3& by) const;
-Vector3 rotate_axis_angle(const Vector3& axis, float angle) const;
+Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
 Vector3 rotate_quaternion(const Quaternion& quaternion) const;
 Vector3 scale(const Vector3& factor) const;
-Vector3 shear_x(float angle_y, float angle_z) const;
-Vector3 shear_y(float angle_x, float angle_z) const;
-Vector3 shear_z(float angle_x, float angle_y) const;
+Vector3 shear_x(Real angle_y, Real angle_z) const;
+Vector3 shear_y(Real angle_x, Real angle_z) const;
+Vector3 shear_z(Real angle_x, Real angle_y) const;
 Vector3 transform(const Basis3& by) const;
 Vector3 transform(const Transform2& by) const;
-Vector3 transform(const Transform3& by, float w = 1.0f) const;
+Vector3 transform(const Transform3& by, Real w = 1.0) const;
 int max_index() const;
 int min_index() const;
 bool approx_equal(const Vector3& other) const;
 bool approx_zero() const;
 Vector2 xy() const;
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
-float at(int index) const;
-float& at(int index);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
+Real at(int index) const;
+Real& at(int index);
 ```
 
 ### Operators
 
 ```c++
-float operator[](int index) const;
-float& operator[](int index);
+Real operator[](int index) const;
+Real& operator[](int index);
 bool operator==(const Vector3& other) const;
 bool operator!=(const Vector3& other) const;
 Vector3 operator+(const Vector3& other) const;
@@ -346,14 +379,14 @@ Vector3& operator-=(const Vector3& other);
 Vector3 operator*(const Vector3& other) const;
 Vector3& operator*=(const Vector3& other);
 Vector3 operator*(const Matrix3& other) const;
-Vector3 operator*(float value) const;
-Vector3 operator*(float value, const Vector3& vector);
-Vector3& operator*=(float value);
+Vector3 operator*(Real value) const;
+Vector3 operator*(Real value, const Vector3& vector);
+Vector3& operator*=(Real value);
 Vector3 operator/(const Vector3& other) const;
 Vector3& operator/=(const Vector3& other);
-Vector3 operator/(float value) const;
-Vector3 operator/(float value, const Vector3& vector);
-Vector3& operator/=(float value);
+Vector3 operator/(Real value) const;
+Vector3 operator/(Real value, const Vector3& vector);
+Vector3& operator/=(Real value);
 bool operator<(const Vector3& other) const;
 Vector3 operator+() const;
 Vector3 operator-() const;
@@ -454,17 +487,24 @@ struct std::hash<nnm::Vector3i> {
 
 ## Vector4
 
+### Aliases
+
+```cpp
+using Vector4f = Vector4<float>;
+using Vector4d = Vector4<double>;
+```
+
 ### Members
 
 ```c++
 union {
     struct {
-        float x;
-        float y;
-        float z;
-        float w;
+        Real x;
+        Real y;
+        Real z;
+        Real w;
     };
-    float data[4] {};
+    Real data[4] {};
 };
 ```
 
@@ -472,16 +512,16 @@ union {
 
 ```c++
 Vector4();
-explicit Vector4(const Vector4i& vector);
-Vector4(const Vector2& vector, const float z, const float w);
-Vector4(const Vector3& vector, const float w);
-Vector4(float x, float y, float z, float w);
+explicit Vector4(const Vector4<Other>& vector);
+Vector4(const Vector2& vector, const Real z, const Real w);
+Vector4(const Vector3& vector, const Real w);
+Vector4(Real x, Real y, Real z, Real w);
 ```
 
 ### Static Methods
 
 ```c++
-static Vector4 all(float value);
+static Vector4 all(Real value);
 static Vector4 zero();
 static Vector4 one();
 static Vector4 axis_x();
@@ -498,22 +538,22 @@ Vector4 ceil() const;
 Vector4 floor() const;
 Vector4 round() const;
 Vector4 clamp(const Vector4& min, const Vector4& max) const;
-float length_sqrd() const;
-float length() const;
-Vector4 clamp_length(float min, float max) const;
+Real length_sqrd() const;
+Real length() const;
+Vector4 clamp_length(Real min, Real max) const;
 Vector4 normalize() const;
-Vector4 lerp(const Vector4& to, float weight) const;
-Vector4 lerp_clamped(const Vector4& to, float weight) const;
-float dot(const Vector4& other) const;
+Vector4 lerp(const Vector4& to, Real weight) const;
+Vector4 lerp_clamped(const Vector4& to, Real weight) const;
+Real dot(const Vector4& other) const;
 Matrix4 outer(const Vector4& other) const;
 Vector4 inverse() const;
 Vector4 translate(const Vector3& by) const;
-Vector4 rotate_axis_angle(const Vector3& axis, float angle) const;
+Vector4 rotate_axis_angle(const Vector3& axis, Real angle) const;
 Vector4 rotate_quaternion(const Quaternion& quaternion) const;
 Vector4 scale(const Vector3& factor) const;
-Vector4 shear_x(float angle_y, float angle_z) const;
-Vector4 shear_y(float angle_x, float angle_z) const;
-Vector4 shear_z(float angle_x, float angle_y) const;
+Vector4 shear_x(Real angle_y, Real angle_z) const;
+Vector4 shear_y(Real angle_x, Real angle_z) const;
+Vector4 shear_z(Real angle_x, Real angle_y) const;
 Vector4 transform(const Transform& by) const;
 int max_index() const;
 int min_index() const;
@@ -521,19 +561,19 @@ bool approx_equal(const Vector4& other) const;
 bool approx_zero() const;
 Vector2 xy() const;
 Vector3 xyz() const;
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
-float at(int index) const;
-float& at(int index);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
+Real at(int index) const;
+Real& at(int index);
 ```
 
 ### Operators
 
 ```c++
-float operator[](int index) const;
-float& operator[](int index);
+Real operator[](int index) const;
+Real& operator[](int index);
 bool operator==(const Vector4& other) const;
 bool operator!=(const Vector4& other) const;
 Vector4 operator+(const Vector4& other) const;
@@ -542,14 +582,14 @@ Vector4 operator-(const Vector4& other) const;
 Vector4& operator-=(const Vector4& other);
 Vector4 operator*(const Vector4& other) const;
 Vector4& operator*=(const Vector4& other);
-Vector4 operator*(float value) const;
-Vector4 operator*(float value, const Vector4& vector);
-Vector4& operator*=(float value);
+Vector4 operator*(Real value) const;
+Vector4 operator*(Real value, const Vector4& vector);
+Vector4& operator*=(Real value);
 Vector4 operator/(const Vector4& other) const;
 Vector4& operator/=(const Vector4& other);
-Vector4 operator/(float value) const;
-Vector4 operator/(float value, const Vector4& vector)
-Vector4& operator/=(float value);
+Vector4 operator/(Real value) const;
+Vector4 operator/(Real value, const Vector4& vector)
+Vector4& operator/=(Real value);
 bool operator<(const Vector4& other) const;
 Vector4 operator+() const;
 Vector4 operator-() const;
@@ -558,18 +598,25 @@ explicit operator bool() const;
 
 ## Quaternion
 
+### Aliases
+
+```cpp
+using QuaternionF = Quaternion<float>;
+using QuaternionD = Quaternion<double>;
+```
+
 ### Members
 
 ```c++
 union {
     struct {
-        float x;
-        float y;
-        float z;
-        float w;
+        Real x;
+        Real y;
+        Real z;
+        Real w;
     };
     Vector4 vector;
-    float data[4] {};
+    Real data[4] {};
 }
 ```
 
@@ -577,15 +624,16 @@ union {
 
 ```c++
 Quaternion();
+explicit Quaternion(const Quaternion<Other>& quaternion);
 explicit Quaternion(const Vector4& vector);
-Quaternion(float x, float y, float z, float w);
+Quaternion(Real x, Real y, Real z, Real w);
 ```
 
 ### Static Methods
 
 ```c++
 static Quaternion identity();
-static Quaternion from_axis_angle(const Vector3& axis, float angle);
+static Quaternion from_axis_angle(const Vector3& axis, Real angle);
 static Quaternion from_vector_to_vector(const Vector3& from, const Vector3& to);
 ```
 
@@ -594,23 +642,23 @@ static Quaternion from_vector_to_vector(const Vector3& from, const Vector3& to);
 ```c++
 Quaternion normalize() const;
 Vector3 axis(const Quaternion& to) const;
-float angle(const Quaternion& to) const;
+Real angle(const Quaternion& to) const;
 Vector3 axis() const;
-float angle() const;
+Real angle() const;
 Quaternion inverse() const;
-float length_sqrd() const;
-float length() const;
-Quaternion slerp(const Quaternion& to, float weight) const;
+Real length_sqrd() const;
+Real length() const;
+Quaternion slerp(const Quaternion& to, Real weight) const;
 bool is_equal_approx(const Quaternion& other) const;
-float at(int index) const;
-float& at(int index);
+Real at(int index) const;
+Real& at(int index);
 ```
 
 ### Operators
 
 ```c++
-float operator[](int index) const;
-float& operator[](int index);
+Real operator[](int index) const;
+Real& operator[](int index);
 bool operator==(const Quaternion& other) const;
 bool operator!=(const Quaternion& other) const;
 bool operator<(const Quaternion& other) const;
@@ -618,18 +666,25 @@ bool operator<(const Quaternion& other) const;
 
 ## Matrix2
 
+### Aliases
+
+```cpp
+using Matrix2f = Matrix2<float>;
+using Matrix2d = Matrix2<double>;
+```
+
 ### Members
 
 ```c++
 union {
     struct {
-        float col0_row0;
-        float col0_row1;
-        float col1_row0;
-        float col1_row1;
+        Real col0_row0;
+        Real col0_row1;
+        Real col1_row0;
+        Real col1_row1;
     };
     Vector2 columns[2];
-    float data[4] {};
+    Real data[4] {};
 };
 ```
 
@@ -637,15 +692,15 @@ union {
 
 ```c++
 Matrix2();
+explicit Matrix2(const Matrix2<Other>& matrix);
 Matrix2(const Vector2& column0, const Vector2& column1);
-Matrix2(float col0_row0, float col0_row1, float col1_row0, float col1_row1);
-
+Matrix2(Real col0_row0, Real col0_row1, Real col1_row0, Real col1_row1);
 ```
 
 ### Static Methods
 
 ```c++
-static Matrix2 all(float value);
+static Matrix2 all(Real value);
 static Matrix2 zero();
 static Matrix2 one();
 static Matrix2 identity();
@@ -654,11 +709,11 @@ static Matrix2 identity();
 ### Methods
 
 ```c++
-float trace() const;
-float determinant() const;
-float minor_at(int column, int row) const;
+Real trace() const;
+Real determinant() const;
+Real minor_at(int column, int row) const;
 Matrix2 minor() const;
-float cofactor_at(int column, int row) const;
+Real cofactor_at(int column, int row) const;
 Matrix2 cofactor() const;
 Matrix2 transpose() const;
 Matrix2 adjugate() const;
@@ -668,12 +723,12 @@ bool approx_equal(const Matrix2& other) const;
 bool approx_zero() const;
 Vector2 at(int column) const;
 Vector2& at(int column);
-float at(int column, int row) const;
-float& at(int column, int row);
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
+Real at(int column, int row) const;
+Real& at(int column, int row);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
 ```
 
 ### Operators
@@ -690,17 +745,24 @@ Matrix2& operator-=(const Matrix2& other);
 Matrix2 operator*(const Matrix2& other) const;
 Matrix2& operator*=(const Matrix2& other);
 Vector2 operator*(const Vector2& vector) const;
-Matrix2 operator*(float value) const;
-Matrix2 operator*(float value, const Matrix2& matrix);
-Matrix2& operator*=(float value);
-Matrix2 operator/(float value) const;
-Matrix2 operator/(float value, const Matrix2& matrix);
-Matrix2& operator/=(float value);
+Matrix2 operator*(Real value) const;
+Matrix2 operator*(Real value, const Matrix2& matrix);
+Matrix2& operator*=(Real value);
+Matrix2 operator/(Real value) const;
+Matrix2 operator/(Real value, const Matrix2& matrix);
+Matrix2& operator/=(Real value);
 bool operator<(const Matrix2& other) const;
 explicit operator bool() const;
 ```
 
 ## Basis2
+
+### Aliases
+
+```cpp
+using Basis2f = Basis2<float>;
+using Basis2d = Basis2<double>;
+```
 
 ### Members
 
@@ -712,41 +774,42 @@ Matrix2 matrix;
 
 ```c++
 Basis2();
+explicit Basis2(const Basis2<Other>& basis);
 explicit Basis2(const Matrix2& matrix);
 ```
 
 ### Static Methods
 
 ```c++
-static Basis2 from_rotation(float angle);
+static Basis2 from_rotation(Real angle);
 static Basis2 from_scale(const Vector2& factor);
-static Basis2 from_shear_x(float angle_y);
-static Basis2 from_shear_y(float angle_x);
+static Basis2 from_shear_x(Real angle_y);
+static Basis2 from_shear_y(Real angle_x);
 ```
 
 ### Methods
 
 ```c++
-float trace() const;
-float determinant();
+Real trace() const;
+Real determinant();
 Basis2 unchecked_inverse() const;
 std::optional<Basis2> inverse() const;
 bool valid() const;
-Basis2 rotate(float angle) const;
-Basis2 rotate_local(float angle) const;
+Basis2 rotate(Real angle) const;
+Basis2 rotate_local(Real angle) const;
 Basis2 scale(const Vector2& factor) const;
 Basis2 scale_local(const Vector2& factor) const;
-Basis2 shear_x(float angle_y) const;
-Basis2 shear_x_local(float angle_y) const;
-Basis2 shear_y(float angle_x) const;
-Basis2 shear_y_local(float angle_x) const;
+Basis2 shear_x(Real angle_y) const;
+Basis2 shear_x_local(Real angle_y) const;
+Basis2 shear_y(Real angle_x) const;
+Basis2 shear_y_local(Real angle_x) const;
 Basis2 transform(const Basis2& by) const;
 Basis2 transform_local(const Basis2& by) const;
 bool approx_equal(const Basis2& other) const;
 const Vector2& at(const int column) const;
 Vector2& at(const int column);
-const float& at(int column, int row) const;
-float& at(int column, int row);
+const Real& at(int column, int row) const;
+Real& at(int column, int row);
 ```
 
 ### Operators
@@ -761,23 +824,30 @@ bool operator<(const Basis2& other) const;
 
 ## Matrix3
 
+### Aliases
+
+```cpp
+using Matrix3f = Matrix3<float>;
+using Matrix3d = Matrix3<double>;
+```
+
 ### Members
 
 ```c++
 union {
     struct {
-        float col0_row0;
-        float col0_row1;
-        float col0_row2;
-        float col1_row0;
-        float col1_row1;
-        float col1_row2;
-        float col2_row0;
-        float col2_row1;
-        float col2_row2;
+        Real col0_row0;
+        Real col0_row1;
+        Real col0_row2;
+        Real col1_row0;
+        Real col1_row1;
+        Real col1_row2;
+        Real col2_row0;
+        Real col2_row1;
+        Real col2_row2;
     };
     Vector3 columns[3];
-    float data[9] {};
+    Real data[9] {};
 };
 ```
 
@@ -785,23 +855,24 @@ union {
 
 ```c++
 Matrix3();
+explicit Matrix3(const Matrix3<Other>& matrix);
 Matrix3(const Column& column0, const Column& column1, const Column& column2);
 Matrix3(
-    float col0_row0,
-    float col0_row1,
-    float col0_row2,
-    float col1_row0,
-    float col1_row1,
-    float col1_row2,
-    float col2_row0,
-    float col2_row1,
-    float col2_row2);
+    Real col0_row0,
+    Real col0_row1,
+    Real col0_row2,
+    Real col1_row0,
+    Real col1_row1,
+    Real col1_row2,
+    Real col2_row0,
+    Real col2_row1,
+    Real col2_row2);
 ```
 
 ### Static Methods
 
 ```c++
-static Matrix3 all(float value);
+static Matrix3 all(Real value);
 static Matrix3 zero();
 static Matrix3 one();
 static Matrix3 identity();
@@ -810,12 +881,12 @@ static Matrix3 identity();
 ### Methods
 
 ```c++
-float trace() const;
-float determinant() const;
+Real trace() const;
+Real determinant() const;
 Matrix2 minor_matrix_at(int column, int row) const;
-float minor_at(int column, int row) const;
+Real minor_at(int column, int row) const;
 Matrix3 minor() const;
-float cofactor_at(int column, int row) const;
+Real cofactor_at(int column, int row) const;
 Matrix3 cofactor() const;
 Matrix3 transpose() const;
 Matrix3 adjugate() const;
@@ -825,12 +896,12 @@ bool approx_equal(const Matrix3& other) const;
 bool approx_zero() const;
 const Vector3& at(int column) const;
 Column& at(int column);
-const float& at(int column, int row) const;
-float& at(int column, int row);
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
+const Real& at(int column, int row) const;
+Real& at(int column, int row);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
 ```
 
 ### Operators
@@ -847,17 +918,24 @@ Matrix3& operator-=(const Matrix3& other);
 Matrix3 operator*(const Matrix3& other) const;
 Matrix3& operator*=(const Matrix3& other);
 Vector3 operator*(const Vector3& vector) const;
-Matrix3 operator*(float value) const;
-Matrix3 operator*(float value, const Matrix3& matrix);
-Matrix3& operator*=(float value);
-Matrix3 operator/(float value) const;
-Matrix3 operator/(float value, const Matrix3& matrix);
-Matrix3& operator/=(float value);
+Matrix3 operator*(Real value) const;
+Matrix3 operator*(Real value, const Matrix3& matrix);
+Matrix3& operator*=(Real value);
+Matrix3 operator/(Real value) const;
+Matrix3 operator/(Real value, const Matrix3& matrix);
+Matrix3& operator/=(Real value);
 bool operator<(const Matrix3& other) const;
 explicit operator bool() const;
 ```
 
 ## Transform2
+
+### Aliases
+
+```cpp
+using Transform2f = Transform2<float>;
+using Transform2d = Transform2<double>;
+```
 
 ### Members
 ```c++
@@ -867,20 +945,21 @@ Matrix3 matrix;
 ### Constructors
 ```c++
 Transform2();
+explicit Transform2(const Transform2<Other>& transform);
 explicit Transform2(const Matrix3& matrix);
 static Transform2 from_basis_translation(const Basis2& basis, const Vector2& translation);
 static Transform2 from_basis(const Basis2& basis);
 static Transform2 from_translation(const Vector2& pos);
-static Transform2 from_rotation(float angle);
+static Transform2 from_rotation(Real angle);
 static Transform2 from_scale(const Vector2& factor);
-static Transform2 from_shear_x(float angle_y);
-static Transform2 from_shear_y(float angle_x);
+static Transform2 from_shear_x(Real angle_y);
+static Transform2 from_shear_y(Real angle_x);
 ```
 
 ### Methods
 ```c++
-float trace() const;
-float determinant() const;
+Real trace() const;
+Real determinant() const;
 Transform2 unchecked_inverse() const;
 std::optional<Transform2> inverse() const;
 bool valid() const;
@@ -889,21 +968,21 @@ Basis2 basis() const;
 Vector2 translation() const;
 Transform2 translate(const Vector2& offset) const;
 Transform2 translate_local(const Vector2& offset) const;
-Transform2 rotate(float angle) const;
-Transform2 rotate_local(float angle) const;
+Transform2 rotate(Real angle) const;
+Transform2 rotate_local(Real angle) const;
 Transform2 scale(const Vector2& factor) const;
 Transform2 scale_local(const Vector2& factor) const;
-Transform2 shear_x(float angle_y) const;
-Transform2 shear_x_local(float angle_y) const;
-Transform2 shear_y(float angle_x) const;
-Transform2 shear_y_local(float angle_x) const;
+Transform2 shear_x(Real angle_y) const;
+Transform2 shear_x_local(Real angle_y) const;
+Transform2 shear_y(Real angle_x) const;
+Transform2 shear_y_local(Real angle_x) const;
 Transform2 transform(const Transform2& by) const;
 Transform2 transform_local(const Transform2& by) const;
 bool approx_equal(const Transform2& other) const;
 const Vector3& at(int column) const;
 Vector3& at(int column);
-const float& at(int column, int row) const;
-float& at(int column, int row);
+const Real& at(int column, int row) const;
+Real& at(int column, int row);
 ```
 
 ### Operators
@@ -918,6 +997,13 @@ bool operator<(const Transform2& other) const;
 
 ## Basis3
 
+### Aliases
+
+```cpp
+using Basis3f = Basis3<float>;
+using Basis3d = Basis3<double>;
+```
+
 ### Members
 
 ```c++
@@ -928,47 +1014,48 @@ Matrix3 matrix;
 
 ```cpp
 Basis3();
+explicit Basis3(const Basis3<Other>& basis);
 explicit Basis3(const Matrix3& matrix);
 ```
 
 ### Static Methods
 
 ```c++
-static Basis3 from_rotation_axis_angle(const Vector3& axis, float angle);
+static Basis3 from_rotation_axis_angle(const Vector3& axis, Real angle);
 static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
 static Basis3 from_scale(const Vector3& factor)
-static Basis3 from_shear_x(float angle_y, float angle_z);
-static Basis3 from_shear_y(float angle_x, float angle_z);
-static Basis3 from_shear_z(float angle_x, float angle_y);
+static Basis3 from_shear_x(Real angle_y, Real angle_z);
+static Basis3 from_shear_y(Real angle_x, Real angle_z);
+static Basis3 from_shear_z(Real angle_x, Real angle_y);
 ```
 
 ### Methods
 
 ```cpp
-float trace() const;
-float determinant() const;
+Real trace() const;
+Real determinant() const;
 Basis3 unchecked_inverse() const;
 std::optional<Basis3> inverse() const;
 bool valid() const;
-Basis3 rotate_axis_angle(const Vector3& axis, float angle) const;
-Basis3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
+Basis3 rotate_axis_angle(const Vector3& axis, Real angle) const;
+Basis3 rotate_axis_angle_local(const Vector3& axis, Real angle) const;
 Basis3 rotate_quaternion(const Quaternion& quaternion) const;
 Basis3 rotate_quaternion_local(const Quaternion& quaternion) const;
 Basis3 scale(const Vector3& factor) const;
 Basis3 scale_local(const Vector3& factor) const;
-Basis3 shear_x(float angle_y, float angle_z) const;
-Basis3 shear_x_local(float angle_y, float angle_z) const;
-Basis3 shear_y(float angle_x, float angle_z) const;
-Basis3 shear_y_local(float angle_x, float angle_z) const;
-Basis3 shear_z(float angle_x, float angle_y) const;
-Basis3 shear_z_local(float angle_x, float angle_y) const;
+Basis3 shear_x(Real angle_y, Real angle_z) const;
+Basis3 shear_x_local(Real angle_y, Real angle_z) const;
+Basis3 shear_y(Real angle_x, Real angle_z) const;
+Basis3 shear_y_local(Real angle_x, Real angle_z) const;
+Basis3 shear_z(Real angle_x, Real angle_y) const;
+Basis3 shear_z_local(Real angle_x, Real angle_y) const;
 Basis3 transform(const Basis3& by) const;
 Basis3 transform_local(const Basis3& by) const;
 bool approx_equal(const Basis3& other) const;
 const Vector3& at(int column) const;
 Vector3& at(const int column);
-const float& at(int column, int row) const;
-float& at(const int column, const int row);
+const Real& at(int column, int row) const;
+Real& at(const int column, const int row);
 ```
 
 ### Operators
@@ -983,30 +1070,37 @@ bool operator<(const Basis3& other) const;
 
 ## Matrix4
 
+### Aliases
+
+```cpp
+using Matrix4f = Matrix4<float>;
+using Matrix4d = Matrix4<double>;
+```
+
 ### Members
 
 ```cpp
 union {
     struct {
-        float col0_row0;
-        float col0_row1;
-        float col0_row2;
-        float col0_row3;
-        float col1_row0;
-        float col1_row1;
-        float col1_row2;
-        float col1_row3;
-        float col2_row0;
-        float col2_row1;
-        float col2_row2;
-        float col2_row3;
-        float col3_row0;
-        float col3_row1;
-        float col3_row2;
-        float col3_row3;
+        Real col0_row0;
+        Real col0_row1;
+        Real col0_row2;
+        Real col0_row3;
+        Real col1_row0;
+        Real col1_row1;
+        Real col1_row2;
+        Real col1_row3;
+        Real col2_row0;
+        Real col2_row1;
+        Real col2_row2;
+        Real col2_row3;
+        Real col3_row0;
+        Real col3_row1;
+        Real col3_row2;
+        Real col3_row3;
     };
     Vector4 columns[4];
-    float data[16] {};
+    Real data[16] {};
 };
 ```
 
@@ -1014,30 +1108,31 @@ union {
 
 ```cpp
 Matrix4();
+explicit Matrix4(const Matrix4<Other>& matrix);
 Matrix4(const Vector4& column0, const Vector4& column1, const Vector4& column2, const Vector4& column3);
 Matrix4(
-    float col0_row0,
-    float col0_row1,
-    float col0_row2,
-    float col0_row3,
-    float col1_row0,
-    float col1_row1,
-    float col1_row2,
-    float col1_row3,
-    float col2_row0,
-    float col2_row1,
-    float col2_row2,
-    float col2_row3,
-    float col3_row0,
-    float col3_row1,
-    float col3_row2,
-    float col3_row3);
+    Real col0_row0,
+    Real col0_row1,
+    Real col0_row2,
+    Real col0_row3,
+    Real col1_row0,
+    Real col1_row1,
+    Real col1_row2,
+    Real col1_row3,
+    Real col2_row0,
+    Real col2_row1,
+    Real col2_row2,
+    Real col2_row3,
+    Real col3_row0,
+    Real col3_row1,
+    Real col3_row2,
+    Real col3_row3);
 ```
 
 ### Static Methods
 
 ```c++
-static Matrix4 all(float value);
+static Matrix4 all(Real value);
 static Matrix4 zero();
 static Matrix4 one();
 static Matrix4 identity();
@@ -1046,12 +1141,12 @@ static Matrix4 identity();
 ### Methods
 
 ```cpp
-float trace() const;
-float determinant() const;
+Real trace() const;
+Real determinant() const;
 Matrix3 minor_matrix_at(int column, int row) const;
-float minor_at(int column, int row) const;
+Real minor_at(int column, int row) const;
 Matrix4 minor() const
-float cofactor_at(int column, int row) const;
+Real cofactor_at(int column, int row) const;
 Matrix4 cofactor() const;
 Matrix4 transpose() const;
 Matrix4 adjugate() const;
@@ -1061,12 +1156,12 @@ bool approx_equal(const Matrix4& other) const;
 bool approx_zero() const;
 const Vector4& at(int column) const;
 Vector4& at(int column);
-const float& at(int column, int row) const;
-float& at(int column, int row);
-const float* begin() const;
-const float* end() const;
-float* begin();
-float* end();
+const Real& at(int column, int row) const;
+Real& at(int column, int row);
+const Real* begin() const;
+const Real* end() const;
+Real* begin();
+Real* end();
 ```
 
 ### Operators
@@ -1083,17 +1178,24 @@ Matrix4& operator-=(const Matrix4& other);
 Matrix4 operator*(const Matrix4& other) const;
 Matrix4& operator*=(const Matrix4& other);
 Vector4 operator*(const Vector4& vector) const;
-Matrix4 operator*(float value) const;
-Matrix4 operator*(float value, const Matrix4& matrix);
-Matrix4& operator*=(float value);
-Matrix4 operator/(float value) const;
-Matrix4 operator/(float value, const Matrix4& matrix);
-Matrix4& operator/=(float value);
+Matrix4 operator*(Real value) const;
+Matrix4 operator*(Real value, const Matrix4& matrix);
+Matrix4& operator*=(Real value);
+Matrix4 operator/(Real value) const;
+Matrix4 operator/(Real value, const Matrix4& matrix);
+Matrix4& operator/=(Real value);
 bool operator<(const Matrix4& other) const;
 explicit operator bool() const;
 ```
 
 ## Transform3
+
+### Aliases
+
+```cpp
+using Transform3f = Transform3<float>;
+using Transform3d = Transform3<double>;
+```
 
 ### Members
 
@@ -1105,6 +1207,7 @@ Matrix4 matrix;
 
 ```c++
 Transform3();
+explicit Transform3(const Transform3<Other>& transform);
 explicit Transform3(const Matrix4& matrix);
 ```
 
@@ -1114,21 +1217,21 @@ explicit Transform3(const Matrix4& matrix);
 static Transform3 from_basis_translation(const Basis3& basis, const Vector3& translation);
 static Transform3 from_basis(const Basis3& basis);
 static Transform3 from_translation(const Vector3& translation);
-static Transform3 from_rotation_axis_angle(const Vector3& axis, float angle);
+static Transform3 from_rotation_axis_angle(const Vector3& axis, Real angle);
 static Transform3 from_rotation_quaternion(const Quaternion& quaternion);
 static Transform3 from_scale(const Vector3& factor);
-static Transform3 from_shear_x(float angle_y, float angle_z);
-static Transform3 from_shear_y(float angle_x, float angle_z);
-static Transform3 from_shear_z(float angle_x, float angle_y);
-static Transform3 from_projection_perspective(float fov, float aspect_ratio, float near, float far);
-static Transform3 from_projection_orthographic(float left, float right, float bottom, float top, float near, float far);
+static Transform3 from_shear_x(Real angle_y, Real angle_z);
+static Transform3 from_shear_y(Real angle_x, Real angle_z);
+static Transform3 from_shear_z(Real angle_x, Real angle_y);
+static Transform3 from_projection_perspective(Real fov, Real aspect_ratio, Real near, Real far);
+static Transform3 from_projection_orthographic(Real left, Real right, Real bottom, Real top, Real near, Real far);
 ```
 
 ### Methods
 
 ```c++
-float trace() const;
-float determinant() const;
+Real trace() const;
+Real determinant() const;
 Transform3 unchecked_inverse() const;
 std::optional<Transform3> inverse() const;
 bool valid() const;
@@ -1137,25 +1240,25 @@ Basis3 basis() const;
 Vector3 translation() const;
 Transform3 translate(const Vector3& offset) const;
 Transform3 translate_local(const Vector3& offset) const;
-Transform3 rotate_axis_angle(const Vector3& axis, float angle) const;
-Transform3 rotate_axis_angle_local(const Vector3& axis, float angle) const;
+Transform3 rotate_axis_angle(const Vector3& axis, Real angle) const;
+Transform3 rotate_axis_angle_local(const Vector3& axis, Real angle) const;
 Transform3 rotate_quaternion(const Quaternion& quaternion) const;
 Transform3 rotate_quaternion_local(const Quaternion& quaternion) const;
 Transform3 scale(const Vector3& factor) const;
 Transform3 scale_local(const Vector3& factor) const;
-Transform3 shear_x(float angle_y, float angle_z) const;
-Transform3 shear_x_local(float angle_y, float angle_z) const;
-Transform3 shear_y(float angle_x, float angle_z) const;
-Transform3 shear_y_local(float angle_x, float angle_z) const;
-Transform3 shear_z(float angle_x, float angle_y) const;
-Transform3 shear_z_local(float angle_x, float angle_y) const;
+Transform3 shear_x(Real angle_y, Real angle_z) const;
+Transform3 shear_x_local(Real angle_y, Real angle_z) const;
+Transform3 shear_y(Real angle_x, Real angle_z) const;
+Transform3 shear_y_local(Real angle_x, Real angle_z) const;
+Transform3 shear_z(Real angle_x, Real angle_y) const;
+Transform3 shear_z_local(Real angle_x, Real angle_y) const;
 Transform3 transform(const Transform3& by) const;
 Transform3 transform_local(const Transform3& by) const;
 bool approx_equal(const Transform3& other) const;
 const Vector4& at(int column) const;
 Vector4& at(int column);
-const float& at(int column, int row) const;
-float& at(int column, int row);
+const Real& at(int column, int row) const;
+Real& at(int column, int row);
 ```
 
 ### Operators
