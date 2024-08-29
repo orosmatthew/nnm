@@ -72,6 +72,7 @@ Other notable features/qualities of NNM include:
 * No special SIMD instructions or compiler intrinsics. This makes NNM extremely portable. I personally have faith in
   modern compilers to auto-vectorize when necessary.
 * `std::hash` specializations for `Vector2i` and `Vector3i`.
+* `begin()` and `end()` iterators for looping through classes with a ranged-for loop.
 
 ## Installation Instructions
 
