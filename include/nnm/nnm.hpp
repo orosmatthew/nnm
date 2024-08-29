@@ -305,53 +305,53 @@ public:
         Real data[2] {};
     };
 
-    Vector2()
+    constexpr Vector2()
         : x(static_cast<Real>(0.0))
         , y(static_cast<Real>(0.0))
     {
     }
 
-    explicit Vector2(const Vector2i& vector);
+    constexpr explicit Vector2(const Vector2i& vector);
 
     template <typename Other>
-    explicit Vector2(const Vector2<Other>& vector)
+    constexpr explicit Vector2(const Vector2<Other>& vector)
         : x(static_cast<Real>(vector.x))
         , y(static_cast<Real>(vector.y))
     {
     }
 
-    Vector2(const Real x, const Real y)
+    constexpr Vector2(const Real x, const Real y)
         : x(x)
         , y(y)
     {
     }
 
-    static Vector2 all(const Real value)
+    constexpr static Vector2 all(const Real value)
     {
         return { value, value };
     }
 
-    static Vector2 zero()
+    constexpr static Vector2 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    static Vector2 one()
+    constexpr static Vector2 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    static Vector2 axis_x()
+    constexpr static Vector2 axis_x()
     {
         return { static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
-    static Vector2 axis_y()
+    constexpr static Vector2 axis_y()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
-    [[nodiscard]] Vector2 abs() const
+    [[nodiscard]] constexpr Vector2 abs() const
     {
         return { nnm::abs(x), nnm::abs(y) };
     }
@@ -371,12 +371,12 @@ public:
         return { nnm::round(x), nnm::round(y) };
     }
 
-    [[nodiscard]] Real aspect_ratio() const
+    [[nodiscard]] constexpr Real aspect_ratio() const
     {
         return x / y;
     }
 
-    [[nodiscard]] Vector2 clamp(const Vector2& min, const Vector2& max) const
+    [[nodiscard]] constexpr Vector2 clamp(const Vector2& min, const Vector2& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
@@ -386,7 +386,7 @@ public:
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] Real distance_sqrd(const Vector2& to) const
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector2& to) const
     {
         const Real diff_x = to.x - x;
         const Real diff_y = to.y - y;
@@ -398,12 +398,12 @@ public:
         return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] Real manhattan_distance(const Vector2& to) const
+    [[nodiscard]] constexpr Real manhattan_distance(const Vector2& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    [[nodiscard]] Real length_sqrd() const
+    [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
@@ -437,29 +437,29 @@ public:
         return zero();
     }
 
-    [[nodiscard]] Vector2 lerp(const Vector2& to, const Real weight) const
+    [[nodiscard]] constexpr Vector2 lerp(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
-    [[nodiscard]] Vector2 lerp_clamped(const Vector2& to, const Real weight) const
+    [[nodiscard]] constexpr Vector2 lerp_clamped(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
-    [[nodiscard]] Real dot(const Vector2& other) const
+    [[nodiscard]] constexpr Real dot(const Vector2& other) const
     {
         return x * other.x + y * other.y;
     }
 
-    [[nodiscard]] Real cross(const Vector2& other) const
+    [[nodiscard]] constexpr Real cross(const Vector2& other) const
     {
         return x * other.y - y * other.x;
     }
 
     [[nodiscard]] Matrix2<Real> outer(const Vector2& other) const;
 
-    [[nodiscard]] Vector2 reflect(const Vector2& normal) const
+    [[nodiscard]] constexpr Vector2 reflect(const Vector2& normal) const
     {
         const Real dot = this->dot(normal);
         Vector2 result;
@@ -468,7 +468,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] Vector2 project(const Vector2& onto) const
+    [[nodiscard]] constexpr Vector2 project(const Vector2& onto) const
     {
         const Real onto_length_sqrd = onto.length_sqrd();
         if (onto_length_sqrd == static_cast<Real>(0.0)) {
@@ -478,7 +478,7 @@ public:
         return onto * scale;
     }
 
-    [[nodiscard]] Vector2 inverse() const
+    [[nodiscard]] constexpr Vector2 inverse() const
     {
         return { static_cast<Real>(1.0) / x, static_cast<Real>(1.0) / y };
     }
@@ -507,7 +507,7 @@ public:
 
     [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1.0)) const;
 
-    [[nodiscard]] int max_index() const
+    [[nodiscard]] constexpr int max_index() const
     {
         if (x > y) {
             return 0;
@@ -518,7 +518,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] constexpr int min_index() const
     {
         if (x < y) {
             return 0;
@@ -529,12 +529,12 @@ public:
         return 0;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector2& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Vector2& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
     }
 
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
@@ -583,17 +583,17 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] bool operator==(const Vector2& other) const
+    [[nodiscard]] constexpr bool operator==(const Vector2& other) const
     {
         return x == other.x && y == other.y;
     }
 
-    [[nodiscard]] bool operator!=(const Vector2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Vector2& other) const
     {
         return x != other.x || y != other.y;
     }
 
-    [[nodiscard]] Vector2 operator+(const Vector2& other) const
+    [[nodiscard]] constexpr Vector2 operator+(const Vector2& other) const
     {
         return { x + other.x, y + other.y };
     }
@@ -605,7 +605,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator-(const Vector2& other) const
+    [[nodiscard]] constexpr Vector2 operator-(const Vector2& other) const
     {
         return { x - other.x, y - other.y };
     }
@@ -617,7 +617,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator*(const Vector2& other) const
+    [[nodiscard]] constexpr Vector2 operator*(const Vector2& other) const
     {
         return { x * other.x, y * other.y };
     }
@@ -631,7 +631,7 @@ public:
 
     [[nodiscard]] Vector2 operator*(const Matrix2<Real>& matrix) const;
 
-    [[nodiscard]] Vector2 operator*(const Real value) const
+    [[nodiscard]] constexpr Vector2 operator*(const Real value) const
     {
         return { x * value, y * value };
     }
@@ -643,7 +643,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator/(const Vector2& other) const
+    [[nodiscard]] constexpr Vector2 operator/(const Vector2& other) const
     {
         return { x / other.x, y / other.y };
     }
@@ -655,7 +655,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator/(const Real value) const
+    [[nodiscard]] constexpr Vector2 operator/(const Real value) const
     {
         return { x / value, y / value };
     }
@@ -667,17 +667,17 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2 operator+() const
+    [[nodiscard]] constexpr Vector2 operator+() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] Vector2 operator-() const
+    [[nodiscard]] constexpr Vector2 operator-() const
     {
         return { -x, -y };
     }
 
-    [[nodiscard]] bool operator<(const Vector2& other) const
+    [[nodiscard]] constexpr bool operator<(const Vector2& other) const
     {
         if (x < other.x) {
             return true;
@@ -688,20 +688,20 @@ public:
         return y < other.y;
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] constexpr explicit operator bool() const
     {
         return x != 0.0 || y != 0.0;
     }
 };
 
 template <typename Real = float>
-Vector2<Real> operator*(const Real value, const Vector2<Real>& vector)
+Vector2<Real> constexpr operator*(const Real value, const Vector2<Real>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
 template <typename Real = float>
-Vector2<Real> operator/(const Real value, const Vector2<Real>& vector)
+Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 {
     return { value / vector.x, value / vector.y };
 }
@@ -729,7 +729,7 @@ public:
     {
     }
 
-    Vector2i(const int x, const int y)
+    constexpr Vector2i(const int x, const int y)
         : x(x)
         , y(y)
     {
@@ -4608,7 +4608,7 @@ public:
 };
 
 template <typename Real>
-Vector2<Real>::Vector2(const Vector2i& vector)
+constexpr Vector2<Real>::Vector2(const Vector2i& vector)
     : x(static_cast<Real>(vector.x))
     , y(static_cast<Real>(vector.y))
 {
