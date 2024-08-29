@@ -1,4 +1,5 @@
-#pragma once
+#ifndef NNM_HPP
+#define NNM_HPP
 
 #include <cmath>
 #include <functional>
@@ -4819,3 +4820,5 @@ struct std::hash<nnm::Vector3i> {
         return hash1 ^ hash2 << 1 ^ hash3 << 2;
     }
 };
+
+#endif
