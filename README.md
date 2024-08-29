@@ -1,6 +1,7 @@
 # [nnm] No Nonsense Math
 
-NNM is a "No-Nonsense", C++ 17, header-only Math library geared towards graphics programming. Think of it as a lightweight, more readable alternative to a library like [glm](https://github.com/g-truc/glm).
+NNM is a "No-Nonsense", C++ 17, header-only Math library geared towards graphics programming. Think of it as a
+lightweight, more readable alternative to a library like [glm](https://github.com/g-truc/glm).
 
 ## A Quick Example
 
@@ -30,36 +31,32 @@ nnm::Transform3f calculate_object_transform(
 NNM provides classes for:
 
 * Vectors
-
-  * `Vector2`
-  * `Vector2i`
-  * `Vector3`
-  * `Vector3i`
-  * `Vector4`
+    * `Vector2`
+    * `Vector2i`
+    * `Vector3`
+    * `Vector3i`
+    * `Vector4`
 
 * Matrices
-
-  * `Matrix2`
-
-  * `Matrix3`
-  * `Matrix4`
+    * `Matrix2`
+    * `Matrix3`
+    * `Matrix4`
 
 * Transformations
-
-  * `Basis2`
-  * `Transform2`
-  * `Basis3`
-  * `Transform3`
+    * `Basis2`
+    * `Transform2`
+    * `Basis3`
+    * `Transform3`
 
 * Misc.
+    * `Quaternion`
 
-  * `Quaternion`
+where the trailing number represents the "dimension" of the class. Most of these classes, except for the integer
+variants, are templated for any `Real` value such as `float` or `double`. Aliases are created for those cases for
+example `Vector2f` and `Vector2d` for `float` and `double` respectively.
 
-where the trailing number represents the "dimension" of the class. Most of these classes, except for the integer variants, are templated for any `Real` value such as `float` or `double`. Aliases are created for those cases for example `Vector2f` and `Vector2d` for `float` and `double` respectively.
-
-In addition to these classes, NNM provides for a number of standalone math functions such as `lerp`, `clamp`, `approx_equal`, etc.
-
-
+In addition to these classes, NNM provides for a number of standalone math functions such as `lerp`, `clamp`,
+`approx_equal`, etc.
 
 Other notable features/qualities of NNM include:
 
@@ -67,15 +64,16 @@ Other notable features/qualities of NNM include:
 * Extremely readable. There are almost no macros and light use of templates.
 * Minimal abbreviations. It's the 21st century, we can afford readable function names!
 * Optional bounds checking for accessors with an optional `#define NNM_BOUNDS_CHECK` before including.
-* No external dependencies! Even minimal use of the standard library to just `<cmath>`, `<functional>`, `<optional>`, and `<stdexcept>` if optional bounds checking is enabled.
-* No special SIMD instructions or compiler intrinsics. This makes NNM extremely portable. I personally have faith in modern compilers to auto-vectorize when necessary.
+* No external dependencies! Even minimal use of the standard library to just `<cmath>`, `<functional>`, `<optional>`,
+  and `<stdexcept>` if optional bounds checking is enabled.
+* No special SIMD instructions or compiler intrinsics. This makes NNM extremely portable. I personally have faith in
+  modern compilers to auto-vectorize when necessary.
 * `std::hash` specializations for `Vector2i` and `Vector3i`.
-
-
 
 ## Installation Instructions
 
-The easiest way would be to just copy the `include/nnm/nnm.hpp` file directly into your project and just `#include` it to use! 
+The easiest way would be to just copy the `include/nnm/nnm.hpp` file directly into your project and just `#include` it
+to use!
 
 Another method is to add the project as a CMake submodule by copying the repository to a directory and adding:
 
@@ -83,8 +81,6 @@ Another method is to add the project as a CMake submodule by copying the reposit
 add_subdirectory(external/path/to/nnm)
 target_link_libraries(your_project PRIVATE nnm)
 ```
-
-
 
 ## Compile and Running Tests
 
@@ -96,8 +92,6 @@ mkdir build
 cmake -S . -B build -DNNM_BUILD_TESTS=ON
 cmake --build build
 ```
-
-
 
 ## License
 
