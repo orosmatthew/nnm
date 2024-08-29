@@ -1,7 +1,8 @@
 # [nnm] No Nonsense Math
 
 NNM is a "No-Nonsense", C++ 17, header-only Math library geared towards graphics programming. Think of it as a
-lightweight, more readable alternative to a library like [glm](https://github.com/g-truc/glm).
+lightweight, more readable alternative to a library like [glm](https://github.com/g-truc/glm) and inspired by the OOP
+style of Godot's math library.
 
 ## A Quick Example
 
