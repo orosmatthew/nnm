@@ -82,7 +82,7 @@ add_subdirectory(external/path/to/nnm)
 target_link_libraries(your_project PRIVATE nnm)
 ```
 
-## Compile and Running Tests
+## Compiling and Running Tests
 
 After cloning the repository, configure the project with CMake ensuring to enable building tests:
 
