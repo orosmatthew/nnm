@@ -2719,7 +2719,7 @@ int main()
     {
         test_section("Quaternion()");
         {
-            nnm::Quaternion q;
+            constexpr nnm::Quaternion q;
             ASSERT(q.x == 0.0f);
             ASSERT(q.y == 0.0f);
             ASSERT(q.z == 0.0f);
@@ -2728,8 +2728,8 @@ int main()
 
         test_section("Quaternion(const Quaternion<Other>&)");
         {
-            nnm::QuaternionD q1(1.0, -2.0, 3.0, -4.5);
-            nnm::QuaternionF q2(q1);
+            constexpr nnm::QuaternionD q1(1.0, -2.0, 3.0, -4.5);
+            constexpr nnm::QuaternionF q2(q1);
             ASSERT(q2.x == 1.0f);
             ASSERT(q2.y == -2.0f);
             ASSERT(q2.z == 3.0f);
@@ -2738,7 +2738,7 @@ int main()
 
         test_section("Quaternion(const Vector4&)");
         {
-            nnm::Quaternion q(nnm::Vector4(1.0f, -2.0f, 3.0f, -4.0f));
+            constexpr nnm::Quaternion q(nnm::Vector4(1.0f, -2.0f, 3.0f, -4.0f));
             ASSERT(q.x == 1.0f);
             ASSERT(q.y == -2.0f);
             ASSERT(q.z == 3.0f);
@@ -2747,7 +2747,7 @@ int main()
 
         test_section("Quaternion(float, float, float, float)");
         {
-            nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
             ASSERT(q.x == 1.0f);
             ASSERT(q.y == -2.0f);
             ASSERT(q.z == 3.0f);
@@ -2756,7 +2756,7 @@ int main()
 
         test_section("identity");
         {
-            const auto q = nnm::QuaternionF::identity();
+            constexpr auto q = nnm::QuaternionF::identity();
             ASSERT(q.x == 0.0f);
             ASSERT(q.y == 0.0f);
             ASSERT(q.z == 0.0f);
@@ -2802,24 +2802,26 @@ int main()
 
         test_section("inverse");
         {
-            const auto q = nnm::Quaternion(1.0f, -2.0f, 3.0f, -4.0f).normalize();
-            ASSERT(q.inverse().approx_equal({ -q.x, -q.y, -q.z, q.w }));
+            constexpr auto q = nnm::Quaternion(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr auto result = q.inverse();
+            ASSERT(result.approx_equal({ -q.x, -q.y, -q.z, q.w }));
         }
 
         test_section("length_sqrd");
         {
-            const nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
-            ASSERT(nnm::approx_equal(q.length_sqrd(), 30.0f));
+            constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr auto result = q.length_sqrd();
+            ASSERT(nnm::approx_equal(result, 30.0f));
         }
 
         test_section("length");
         {
-            const nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
             ASSERT(nnm::approx_equal(q.length(), 5.47723f));
         }
 
-        const auto q1 = nnm::QuaternionF::from_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi() / 9.0f);
-        const auto q2 = nnm::QuaternionF::from_axis_angle({ 2.0f, 10.0f, -8.0f }, -nnm::pi() / 2.0f);
+        constexpr auto q1 = nnm::Quaternion(0.151572555f, -0.0757862777f, 0.0378931388f, 0.984807729f);
+        constexpr auto q2 = nnm::Quaternion(-0.109108947f, -0.545544684f, 0.436435789f, 0.707106769f);
 
         test_section("slerp");
         {
@@ -2841,7 +2843,8 @@ int main()
 
         test_section("approx_equal");
         {
-            ASSERT_FALSE(q1.approx_equal(q2));
+            constexpr auto result = q1.approx_equal(q2);
+            ASSERT_FALSE(result);
             ASSERT(q1.approx_equal(q1));
             const nnm::Quaternion q3(0.15157f, -0.07579f, 0.03789f, 0.98481f);
             ASSERT(q1.approx_equal(q3));
@@ -2849,7 +2852,7 @@ int main()
 
         test_section("at");
         {
-            const nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
             ASSERT(q3.at(0) == 1.0f);
             ASSERT(q3.at(1) == -2.0f);
             ASSERT(q3.at(2) == 3.0f);
@@ -2858,7 +2861,7 @@ int main()
 
         test_section("operator[]");
         {
-            const nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
+            constexpr nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
             ASSERT(q3[0] == 1.0f);
             ASSERT(q3[1] == -2.0f);
             ASSERT(q3[2] == 3.0f);
@@ -2867,21 +2870,24 @@ int main()
 
         test_section("operator==");
         {
-            const auto q3 = q1;
-            ASSERT(q1 == q3);
+            constexpr auto q3 = q1;
+            constexpr auto result = q1 == q3;
+            ASSERT(result);
             ASSERT_FALSE(q1 == q2);
         }
 
         test_section("operator!=");
         {
-            const auto q3 = q1;
-            ASSERT_FALSE(q1 != q3);
+            constexpr auto q3 = q1;
+            constexpr auto result = q1 != q3;
+            ASSERT_FALSE(result);
             ASSERT(q1 != q2);
         }
 
         test_section("operator*");
         {
-            ASSERT((q1 * q2).approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
+            constexpr auto result = q1 * q2;
+            ASSERT(result.approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
         }
 
         test_section("operator*=");
@@ -2898,7 +2904,8 @@ int main()
 
         test_section("operator bool");
         {
-            ASSERT(static_cast<bool>(q1));
+            constexpr auto result = static_cast<bool>(q1);
+            ASSERT(result);
             ASSERT_FALSE(static_cast<bool>(nnm::Quaternion(nnm::Vector4f::zero())));
         }
     }

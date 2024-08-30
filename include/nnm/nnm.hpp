@@ -2196,7 +2196,7 @@ public:
         Real data[4] {};
     };
 
-    Quaternion()
+    constexpr Quaternion()
         : x(static_cast<Real>(0.0))
         , y(static_cast<Real>(0.0))
         , z(static_cast<Real>(0.0))
@@ -2205,7 +2205,7 @@ public:
     }
 
     template <typename Other>
-    explicit Quaternion(const Quaternion<Other>& quaternion)
+    explicit constexpr Quaternion(const Quaternion<Other>& quaternion)
         : x(static_cast<Real>(quaternion.x))
         , y(static_cast<Real>(quaternion.y))
         , z(static_cast<Real>(quaternion.z))
@@ -2213,7 +2213,7 @@ public:
     {
     }
 
-    explicit Quaternion(const Vector4<Real>& vector)
+    explicit constexpr Quaternion(const Vector4<Real>& vector)
         : x(vector.x)
         , y(vector.y)
         , z(vector.z)
@@ -2221,7 +2221,7 @@ public:
     {
     }
 
-    Quaternion(const Real x, const Real y, const Real z, const Real w)
+    constexpr Quaternion(const Real x, const Real y, const Real z, const Real w)
         : x(x)
         , y(y)
         , z(z)
@@ -2229,7 +2229,7 @@ public:
     {
     }
 
-    [[nodiscard]] static Quaternion identity()
+    [[nodiscard]] static constexpr Quaternion identity()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
@@ -2286,14 +2286,14 @@ public:
         return 2 * acos(w);
     }
 
-    [[nodiscard]] Quaternion inverse() const
+    [[nodiscard]] constexpr Quaternion inverse() const
     {
         return { -x, -y, -z, w };
     }
 
-    [[nodiscard]] Real length_sqrd() const
+    [[nodiscard]] constexpr Real length_sqrd() const
     {
-        return vector.length_sqrd();
+        return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
     [[nodiscard]] Real length() const
@@ -2323,9 +2323,10 @@ public:
         return by * *this;
     }
 
-    [[nodiscard]] bool approx_equal(const Quaternion& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Quaternion& other) const
     {
-        return vector.approx_equal(other.vector);
+        return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z)
+            && nnm::approx_equal(w, other.w);
     }
 
     [[nodiscard]] Real at(const int index) const
@@ -2352,17 +2353,17 @@ public:
         return vector[index];
     }
 
-    [[nodiscard]] bool operator==(const Quaternion& other) const
+    [[nodiscard]] constexpr bool operator==(const Quaternion& other) const
     {
-        return vector == other.vector;
+        return x == other.x && y == other.y && z == other.z && w == other.w;
     }
 
-    [[nodiscard]] bool operator!=(const Quaternion& other) const
+    [[nodiscard]] constexpr bool operator!=(const Quaternion& other) const
     {
-        return vector != other.vector;
+        return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
-    [[nodiscard]] Quaternion operator*(const Quaternion& other) const
+    [[nodiscard]] constexpr Quaternion operator*(const Quaternion& other) const
     {
         Vector4 vector;
         vector.x = w * other.x + x * other.w + y * other.z - z * other.y;
@@ -2383,9 +2384,10 @@ public:
         return vector < other.vector;
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] explicit constexpr operator bool() const
     {
-        return static_cast<bool>(vector);
+        return x != static_cast<Real>(0.0) || y != static_cast<Real>(0.0) || z != static_cast<Real>(0.0)
+            || w != static_cast<Real>(0.0);
     }
 };
 
