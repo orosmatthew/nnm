@@ -4330,18 +4330,18 @@ class Transform3 {
 public:
     Matrix4<Real> matrix;
 
-    Transform3()
+    constexpr Transform3()
         : matrix(Matrix4<Real>::identity())
     {
     }
 
     template <typename Other>
-    explicit Transform3(const Transform3<Other>& transform)
+    explicit constexpr Transform3(const Transform3<Other>& transform)
         : matrix(Matrix4<Real>(transform.matrix))
     {
     }
 
-    explicit Transform3(const Matrix4<Real>& matrix)
+    explicit constexpr Transform3(const Matrix4<Real>& matrix)
         : matrix(matrix)
     {
     }

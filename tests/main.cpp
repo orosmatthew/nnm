@@ -4796,17 +4796,17 @@ int main()
     {
         test_section("Transform3()");
         {
-            nnm::Transform3 t1;
+            constexpr nnm::Transform3 t1;
             ASSERT(t1.matrix == nnm::Matrix4f::identity());
         }
 
         test_section("Transform3(const Transform3<Other>&)");
         {
-            const nnm::Transform3d t1({ { 1.0, 2.0, 3.0, 4.0 },
-                                        { -0.5, 0.75, 0.6, 0.1 },
-                                        { -100.0, -88.0, 28.0, 0.0 },
-                                        { 1.0, 29.0, -89.0, 67.0 } });
-            const nnm::Transform3f t2(t1);
+            constexpr nnm::Transform3d t1({ { 1.0, 2.0, 3.0, 4.0 },
+                                            { -0.5, 0.75, 0.6, 0.1 },
+                                            { -100.0, -88.0, 28.0, 0.0 },
+                                            { 1.0, 29.0, -89.0, 67.0 } });
+            constexpr nnm::Transform3f t2(t1);
             ASSERT(t2.matrix.col0_row0 == 1.0f);
             ASSERT(t2.matrix.col0_row1 == 2.0f);
             ASSERT(t2.matrix.col0_row2 == 3.0f);
@@ -4827,11 +4827,11 @@ int main()
 
         test_section("Transform3(const Matrix4&)");
         {
-            nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
-                              { 5.0f, 6.0f, 7.0f, 8.0f },
-                              { 9.0f, 10.0f, 11.0f, 12.0f },
-                              { 13.0f, 14.0f, 15.0f, 16.0f } };
-            nnm::Transform3 t2(m1);
+            constexpr nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
+                                        { 5.0f, 6.0f, 7.0f, 8.0f },
+                                        { 9.0f, 10.0f, 11.0f, 12.0f },
+                                        { 13.0f, 14.0f, 15.0f, 16.0f } };
+            constexpr nnm::Transform3 t2(m1);
             ASSERT(t2.matrix == m1);
         }
 
