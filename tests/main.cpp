@@ -4034,14 +4034,14 @@ int main()
     {
         test_section("Basis3()");
         {
-            nnm::Basis3 b1;
+            constexpr nnm::Basis3 b1;
             ASSERT(b1.matrix == nnm::Matrix3f::identity());
         }
 
         test_section("Basis3(const Basis3<Other>&)");
         {
-            const nnm::Basis3d b1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 2.0, 88.0, -101.0 } });
-            const nnm::Basis3f b2(b1);
+            constexpr nnm::Basis3d b1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 2.0, 88.0, -101.0 } });
+            constexpr nnm::Basis3f b2(b1);
             ASSERT(b2.matrix.col0_row0 == 1.0f);
             ASSERT(b2.matrix.col0_row1 == 2.0f);
             ASSERT(b2.matrix.col0_row2 == 3.0f);
@@ -4055,8 +4055,8 @@ int main()
 
         test_section("Basis3(const Matrix3&)");
         {
-            nnm::Matrix3 m1 { { 1.0f, 2.0f, 0.0f }, { 3.0f, 4.0f, 0.0f }, { 3.0f, -8.0f, 1.0f } };
-            nnm::Basis3 b2(m1);
+            constexpr nnm::Matrix3 m1 { { 1.0f, 2.0f, 0.0f }, { 3.0f, 4.0f, 0.0f }, { 3.0f, -8.0f, 1.0f } };
+            constexpr nnm::Basis3 b2(m1);
             ASSERT(b2.matrix == m1);
         }
 
@@ -4073,7 +4073,7 @@ int main()
         {
             auto b = nnm::Basis3f::from_rotation_quaternion(
                 nnm::Quaternion(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f));
-            const nnm::Basis3 expected(
+            constexpr nnm::Basis3 expected(
                 { { 0.9980918f, -0.0213389f, -0.0579437f },
                   {
                       0.0335516f,
@@ -4086,7 +4086,7 @@ int main()
 
         test_section("from_scale");
         {
-            auto b1 = nnm::Basis3f::from_scale({ -1.0f, 2.0f, 3.0f });
+            constexpr auto b1 = nnm::Basis3f::from_scale({ -1.0f, 2.0f, 3.0f });
             ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 0.0f }, { 0.0f, 0.0f, 3.0f } }));
         }
 
@@ -4113,31 +4113,31 @@ int main()
 
         test_section("trace");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             ASSERT(nnm::approx_equal(b.trace(), 12.0f));
         }
 
         test_section("determinant");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             ASSERT(nnm::approx_equal(b.determinant(), -54.925f));
         }
 
         test_section("unchecked_inverse");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            const nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                         { -0.559854f, -0.00455166f, 0.37096f },
-                                         { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
+                                             { -0.559854f, -0.00455166f, 0.37096f },
+                                             { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(b.unchecked_inverse().approx_equal(expected));
         }
 
         test_section("inverse");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            const nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                         { -0.559854f, -0.00455166f, 0.37096f },
-                                         { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
+                                             { -0.559854f, -0.00455166f, 0.37096f },
+                                             { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(b.inverse().has_value() && b.inverse().value().approx_equal(expected));
             ASSERT_FALSE(nnm::Basis3(nnm::Matrix3f::zero()).inverse().has_value());
         }
@@ -4172,21 +4172,21 @@ int main()
 
         test_section("rotate_quaternion");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            const nnm::Basis3 expected({ { 0.956907f, -2.08189f, -0.0085175f },
-                                         { 0.623695f, 5.36143f, 21.7124f },
-                                         { 1.54226f, -0.447372f, 0.843373f } });
+            constexpr nnm::Basis3 expected({ { 0.956907f, -2.08189f, -0.0085175f },
+                                             { 0.623695f, 5.36143f, 21.7124f },
+                                             { 1.54226f, -0.447372f, 0.843373f } });
             ASSERT(b.rotate_quaternion(q).approx_equal(expected));
         }
 
         test_section("rotate_quaternion_local");
         {
-            const nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
+            constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            const nnm::Basis3 expected({ { 0.92718f, -2.19798f, 0.0143242f },
-                                         { -0.369645f, 9.64107f, 19.7394f },
-                                         { 1.67815f, -2.50174f, -3.40654f } });
+            constexpr nnm::Basis3 expected({ { 0.92718f, -2.19798f, 0.0143242f },
+                                             { -0.369645f, 9.64107f, 19.7394f },
+                                             { 1.67815f, -2.50174f, -3.40654f } });
             ASSERT(b.rotate_quaternion_local(q).approx_equal(expected));
         }
 
@@ -4277,8 +4277,8 @@ int main()
             ASSERT(b1.approx_equal(nnm::Basis3()));
         }
 
-        const nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
-        const nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
+        constexpr nnm::Basis3 b1({ { 1.0f, 2.0f, 3.0f }, { 2.0f, -3.0f, 0.1f }, { 1.5f, 0.0f, 1.0f } });
+        constexpr nnm::Basis3 b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
 
         test_section("at");
         {

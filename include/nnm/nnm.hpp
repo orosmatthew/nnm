@@ -3605,18 +3605,18 @@ class Basis3 {
 public:
     Matrix3<Real> matrix;
 
-    Basis3()
+    constexpr Basis3()
         : matrix(Matrix3<Real>::identity())
     {
     }
 
     template <typename Other>
-    explicit Basis3(const Basis3<Other>& basis)
+    explicit constexpr Basis3(const Basis3<Other>& basis)
         : matrix(Matrix3<Real>(basis.matrix))
     {
     }
 
-    explicit Basis3(const Matrix3<Real>& matrix)
+    explicit constexpr Basis3(const Matrix3<Real>& matrix)
         : matrix(matrix)
     {
     }
@@ -3649,7 +3649,7 @@ public:
         return Basis3(matrix);
     }
 
-    static Basis3 from_scale(const Vector3<Real>& factor)
+    static constexpr Basis3 from_scale(const Vector3<Real>& factor)
     {
         return Basis3({ { factor.x, static_cast<Real>(0.0), static_cast<Real>(0.0) },
                         { static_cast<Real>(0.0), factor.y, static_cast<Real>(0.0) },
