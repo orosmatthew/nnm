@@ -603,8 +603,8 @@ int main()
             constexpr auto result = from1.manhattan_distance(to1);
             ASSERT(nnm::approx_equal(result, 2.0f));
 
-            nnm::Vector2 from = nnm::Vector2(-1.0f, -1.0f);
-            nnm::Vector2 to = nnm::Vector2(1.0f, 1.0f);
+            auto from = nnm::Vector2(-1.0f, -1.0f);
+            auto to = nnm::Vector2(1.0f, 1.0f);
             ASSERT(nnm::approx_equal(from.manhattan_distance(to), 4.0f));
 
             from = nnm::Vector2(0.0f, 0.0f);
@@ -1013,14 +1013,14 @@ int main()
     {
         test_section("Vector2i()");
         {
-            const nnm::Vector2i v1;
+            constexpr nnm::Vector2i v1;
             ASSERT(v1.x == 0);
             ASSERT(v1.y == 0);
         }
 
         test_section("Vector2i(const Vector2&)");
         {
-            const nnm::Vector2i v1(nnm::Vector2(1.1f, -10.7f));
+            constexpr nnm::Vector2i v1(nnm::Vector2(1.1f, -10.7f));
             ASSERT(v1.x == 1);
             ASSERT(v1.y == -10);
         }
@@ -1034,57 +1034,60 @@ int main()
 
         test_section("all");
         {
-            const auto all_threes = nnm::Vector2i::all(3);
+            constexpr auto all_threes = nnm::Vector2i::all(3);
             ASSERT(all_threes.x == 3);
             ASSERT(all_threes.y == 3);
         }
 
         test_section("zero");
         {
-            const auto zero = nnm::Vector2i::zero();
+            constexpr auto zero = nnm::Vector2i::zero();
             ASSERT(zero.x == 0);
             ASSERT(zero.y == 0);
         }
 
         test_section("one");
         {
-            const auto one = nnm::Vector2i::one();
+            constexpr auto one = nnm::Vector2i::one();
             ASSERT(one.x == 1);
             ASSERT(one.y == 1);
         }
 
         test_section("axis_x");
         {
-            const auto x = nnm::Vector2i::axis_x();
+            constexpr auto x = nnm::Vector2i::axis_x();
             ASSERT(x.x == 1);
             ASSERT(x.y == 0);
         }
 
         test_section("axis_y");
         {
-            const auto y = nnm::Vector2i::axis_y();
+            constexpr auto y = nnm::Vector2i::axis_y();
             ASSERT(y.x == 0);
             ASSERT(y.y == 1);
         }
 
         test_section("abs");
         {
-            ASSERT(nnm::Vector2i(1, -2).abs() == nnm::Vector2i(1, 2));
+            constexpr auto result = nnm::Vector2i(1, -2).abs();
+            ASSERT(result == nnm::Vector2i(1, 2));
         }
 
         test_section("clamp");
         {
-            ASSERT(nnm::Vector2i(1, -3).clamp({ 1, -2 }, { 2, 2 }) == nnm::Vector2i(1, -2));
+            constexpr auto result = nnm::Vector2i(1, -3).clamp({ 1, -2 }, { 2, 2 });
+            ASSERT(result == nnm::Vector2i(1, -2));
         }
 
         test_section("manhattan_distance");
         {
-            nnm::Vector2i from(1, 1);
-            nnm::Vector2i to(2, 2);
-            ASSERT(from.manhattan_distance(to) == 2);
+            constexpr nnm::Vector2i from1(1, 1);
+            constexpr nnm::Vector2i to1(2, 2);
+            constexpr auto result = from1.manhattan_distance(to1);
+            ASSERT(result == 2);
 
-            from = nnm::Vector2i(-1, -1);
-            to = nnm::Vector2i(1, 1);
+            auto from = nnm::Vector2i(-1, -1);
+            auto to = nnm::Vector2i(1, 1);
             ASSERT(from.manhattan_distance(to) == 4);
 
             from = nnm::Vector2i(0, 0);
@@ -1102,15 +1105,17 @@ int main()
 
         test_section("length_sqrd");
         {
-            ASSERT(nnm::Vector2i(3, 4).length_sqrd() == 25);
+            constexpr auto result = nnm::Vector2i(3, 4).length_sqrd();
+            ASSERT(result == 25);
             ASSERT(nnm::Vector2i(-2, 5).length_sqrd() == 29);
             ASSERT(nnm::Vector2i(0, 0).length_sqrd() == 0);
         }
 
         test_section("max_index");
         {
-            nnm::Vector2i v1(3, 4);
-            ASSERT(v1.max_index() == 1);
+            constexpr nnm::Vector2i v1(3, 4);
+            constexpr auto result = v1.max_index();
+            ASSERT(result == 1);
             nnm::Vector2i v2(2, 5);
             ASSERT(v2.max_index() == 1);
             nnm::Vector2i v3(0, 0);
@@ -1119,8 +1124,9 @@ int main()
 
         test_section("min_index");
         {
-            nnm::Vector2i v1(3, 4);
-            ASSERT(v1.min_index() == 0);
+            constexpr nnm::Vector2i v1(3, 4);
+            constexpr auto result = v1.min_index();
+            ASSERT(result == 0);
             nnm::Vector2i v2(2, 5);
             ASSERT(v2.min_index() == 0);
             nnm::Vector2i v3(0, 0);
@@ -1159,13 +1165,15 @@ int main()
 
         test_section("operator==");
         {
-            ASSERT(v1 == v3);
+            constexpr auto result = v1 == v3;
+            ASSERT(result);
             ASSERT_FALSE(v1 == v2);
         }
 
         test_section("operator!=");
         {
-            ASSERT_FALSE(v1 != v3);
+            constexpr auto result = v1 != v3;
+            ASSERT_FALSE(result);
             ASSERT(v1 != v2);
         }
 
@@ -1174,7 +1182,8 @@ int main()
 
         test_section("operator+(const Vector2i&)");
         {
-            ASSERT(v4 + v5 == nnm::Vector2i(4, 6));
+            constexpr auto result = v4 + v5;
+            ASSERT(result == nnm::Vector2i(4, 6));
         }
 
         test_section("operator+=");
@@ -1185,7 +1194,8 @@ int main()
 
         test_section("operator-(const Vector2i&)");
         {
-            ASSERT(v5 - v4 == nnm::Vector2i(2, 2));
+            constexpr auto result = v5 - v4;
+            ASSERT(result == nnm::Vector2i(2, 2));
         }
 
         test_section("operator-=");
@@ -1196,7 +1206,8 @@ int main()
 
         test_section("operator*(const Vector2i&)");
         {
-            ASSERT(v4 * v5 == nnm::Vector2i(3, 8));
+            constexpr auto result = v4 * v5;
+            ASSERT(result == nnm::Vector2i(3, 8));
         }
 
         test_section("operator*=(const Vector2i&)");
@@ -1207,12 +1218,14 @@ int main()
 
         test_section("operator*(int)");
         {
-            ASSERT(v4 * 2 == nnm::Vector2i(2, 4));
+            constexpr auto result = v4 * 2;
+            ASSERT(result == nnm::Vector2i(2, 4));
         }
 
         test_section("operator*(int, const Vector2i&)");
         {
-            ASSERT(2 * v4 == nnm::Vector2i(2, 4));
+            constexpr auto result = 2 * v4;
+            ASSERT(result == nnm::Vector2i(2, 4));
         }
 
         test_section("operator*=(int)");
@@ -1223,7 +1236,8 @@ int main()
 
         test_section("operator/(const Vector2i&)");
         {
-            ASSERT(v5 / v4 == nnm::Vector2i(3, 2));
+            constexpr auto result = v5 / v4;
+            ASSERT(result == nnm::Vector2i(3, 2));
         }
 
         test_section("operator/=(const Vector2i&)");
@@ -1234,12 +1248,14 @@ int main()
 
         test_section("operator/(int)");
         {
-            ASSERT(v5 / 2 == nnm::Vector2i(1, 2));
+            constexpr auto result = v5 / 2;
+            ASSERT(result == nnm::Vector2i(1, 2));
         }
 
         test_section("operator/(int, const Vector2i&)");
         {
-            ASSERT(2 / v4 == nnm::Vector2i(2, 1));
+            constexpr auto result = 2 / v4;
+            ASSERT(result == nnm::Vector2i(2, 1));
         }
 
         test_section("operator/=(int)");
@@ -1250,7 +1266,8 @@ int main()
 
         test_section("operator%(const Vector2i&)");
         {
-            ASSERT(v4 % v5 == nnm::Vector2i(1, 2));
+            constexpr auto result = v4 % v5;
+            ASSERT(result == nnm::Vector2i(1, 2));
         }
 
         test_section("operator%=(const Vector2i&)");
@@ -1261,12 +1278,14 @@ int main()
 
         test_section("operator%(int)");
         {
-            ASSERT(v4 % 2 == nnm::Vector2i(1, 0));
+            constexpr auto result = v4 % 2;
+            ASSERT(result == nnm::Vector2i(1, 0));
         }
 
         test_section("operator%(int, const Vector2i&)");
         {
-            ASSERT(3 % nnm::Vector2i(2, 5) == nnm::Vector2i(1, 3));
+            constexpr auto result = 3 % nnm::Vector2i(2, 5);
+            ASSERT(result == nnm::Vector2i(1, 3));
         }
 
         test_section("operator%=(int)");
@@ -1277,26 +1296,30 @@ int main()
 
         test_section("operator+");
         {
-            ASSERT(+v4 == v4);
+            constexpr auto result = +v4;
+            ASSERT(result == v4);
         }
 
         test_section("operator-");
         {
-            ASSERT(-v4 == nnm::Vector2i(-1, -2));
+            constexpr auto result = -v4;
+            ASSERT(result == nnm::Vector2i(-1, -2));
         }
 
         test_section("operator<");
         {
             constexpr nnm::Vector2i v7(1, 2);
             constexpr nnm::Vector2i v8(3, 4);
-            ASSERT(v7 < v8);
+            constexpr auto result = v7 < v8;
+            ASSERT(result);
             ASSERT_FALSE(v8 < v7);
         }
 
         test_section("operator bool");
         {
             constexpr nnm::Vector2i v7(1, 2);
-            ASSERT(static_cast<bool>(v7));
+            constexpr auto result = static_cast<bool>(v7);
+            ASSERT(result);
             ASSERT_FALSE(static_cast<bool>(nnm::Vector2i(0, 0)));
         }
     }

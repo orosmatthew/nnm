@@ -311,10 +311,10 @@ public:
     {
     }
 
-    constexpr explicit Vector2(const Vector2i& vector);
+    explicit constexpr Vector2(const Vector2i& vector);
 
     template <typename Other>
-    constexpr explicit Vector2(const Vector2<Other>& vector)
+    explicit constexpr Vector2(const Vector2<Other>& vector)
         : x(static_cast<Real>(vector.x))
         , y(static_cast<Real>(vector.y))
     {
@@ -326,27 +326,27 @@ public:
     {
     }
 
-    constexpr static Vector2 all(const Real value)
+    static constexpr Vector2 all(const Real value)
     {
         return { value, value };
     }
 
-    constexpr static Vector2 zero()
+    static constexpr Vector2 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    constexpr static Vector2 one()
+    static constexpr Vector2 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    constexpr static Vector2 axis_x()
+    static constexpr Vector2 axis_x()
     {
         return { static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
-    constexpr static Vector2 axis_y()
+    static constexpr Vector2 axis_y()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
@@ -688,7 +688,7 @@ public:
         return y < other.y;
     }
 
-    [[nodiscard]] constexpr explicit operator bool() const
+    [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != 0.0 || y != 0.0;
     }
@@ -716,14 +716,14 @@ public:
         int data[2] {};
     };
 
-    Vector2i()
+    constexpr Vector2i()
         : x(0)
         , y(0)
     {
     }
 
     template <typename Real = float>
-    explicit Vector2i(const Vector2<Real>& vector)
+    explicit constexpr Vector2i(const Vector2<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
     {
@@ -735,52 +735,52 @@ public:
     {
     }
 
-    static Vector2i all(int value)
+    static constexpr Vector2i all(int value)
     {
         return { value, value };
     }
 
-    static Vector2i zero()
+    static constexpr Vector2i zero()
     {
         return { 0, 0 };
     }
 
-    static Vector2i one()
+    static constexpr Vector2i one()
     {
         return { 1, 1 };
     }
 
-    static Vector2i axis_x()
+    static constexpr Vector2i axis_x()
     {
         return { 1, 0 };
     }
 
-    static Vector2i axis_y()
+    static constexpr Vector2i axis_y()
     {
         return { 0, 1 };
     }
 
-    [[nodiscard]] Vector2i abs() const
+    [[nodiscard]] constexpr Vector2i abs() const
     {
         return { nnm::abs(x), nnm::abs(y) };
     }
 
-    [[nodiscard]] Vector2i clamp(const Vector2i& min, const Vector2i& max) const
+    [[nodiscard]] constexpr Vector2i clamp(const Vector2i& min, const Vector2i& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
-    [[nodiscard]] int manhattan_distance(const Vector2i& to) const
+    [[nodiscard]] constexpr int manhattan_distance(const Vector2i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    [[nodiscard]] int length_sqrd() const
+    [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
-    [[nodiscard]] int max_index() const
+    [[nodiscard]] constexpr int max_index() const
     {
         if (x > y) {
             return 0;
@@ -791,7 +791,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] constexpr int min_index() const
     {
         if (x < y) {
             return 0;
@@ -846,17 +846,17 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] bool operator==(const Vector2i& other) const
+    [[nodiscard]] constexpr bool operator==(const Vector2i& other) const
     {
         return x == other.x && y == other.y;
     }
 
-    [[nodiscard]] bool operator!=(const Vector2i& other) const
+    [[nodiscard]] constexpr bool operator!=(const Vector2i& other) const
     {
         return x != other.x || y != other.y;
     }
 
-    [[nodiscard]] Vector2i operator+(const Vector2i& other) const
+    [[nodiscard]] constexpr Vector2i operator+(const Vector2i& other) const
     {
         return { x + other.x, y + other.y };
     }
@@ -868,7 +868,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator-(const Vector2i& other) const
+    [[nodiscard]] constexpr Vector2i operator-(const Vector2i& other) const
     {
         return { x - other.x, y - other.y };
     }
@@ -881,7 +881,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator*(const Vector2i& other) const
+    [[nodiscard]] constexpr Vector2i operator*(const Vector2i& other) const
     {
         return { x * other.x, y * other.y };
     }
@@ -893,7 +893,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator*(const int value) const
+    [[nodiscard]] constexpr Vector2i operator*(const int value) const
     {
         return { x * value, y * value };
     }
@@ -905,7 +905,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator/(const Vector2i& other) const
+    [[nodiscard]] constexpr Vector2i operator/(const Vector2i& other) const
     {
         return { x / other.x, y / other.y };
     }
@@ -917,7 +917,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator/(const int value) const
+    [[nodiscard]] constexpr Vector2i operator/(const int value) const
     {
         return { x / value, y / value };
     }
@@ -929,7 +929,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator%(const Vector2i& other) const
+    [[nodiscard]] constexpr Vector2i operator%(const Vector2i& other) const
     {
         return { x % other.x, y % other.y };
     }
@@ -941,7 +941,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator%(const int value) const
+    [[nodiscard]] constexpr Vector2i operator%(const int value) const
     {
         return { x % value, y % value };
     }
@@ -953,17 +953,17 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector2i operator+() const
+    [[nodiscard]] constexpr Vector2i operator+() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] Vector2i operator-() const
+    [[nodiscard]] constexpr Vector2i operator-() const
     {
         return { -x, -y };
     }
 
-    [[nodiscard]] bool operator<(const Vector2i& other) const
+    [[nodiscard]] constexpr bool operator<(const Vector2i& other) const
     {
         if (x < other.x) {
             return true;
@@ -974,23 +974,23 @@ public:
         return y < other.y;
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != 0 || y != 0;
     }
 };
 
-inline Vector2i operator*(const int value, const Vector2i& vector)
+constexpr Vector2i operator*(const int value, const Vector2i& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
-inline Vector2i operator/(const int value, const Vector2i& vector)
+constexpr Vector2i operator/(const int value, const Vector2i& vector)
 {
     return { value / vector.x, value / vector.y };
 }
 
-inline Vector2i operator%(const int value, const Vector2i& vector)
+constexpr Vector2i operator%(const int value, const Vector2i& vector)
 {
     return { value % vector.x, value % vector.y };
 }
