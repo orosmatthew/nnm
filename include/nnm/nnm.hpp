@@ -2764,18 +2764,18 @@ class Basis2 {
 public:
     Matrix2<Real> matrix;
 
-    Basis2()
+    constexpr Basis2()
         : matrix(Matrix2<Real>::identity())
     {
     }
 
     template <typename Other>
-    explicit Basis2(const Basis2<Other>& basis)
+    explicit constexpr Basis2(const Basis2<Other>& basis)
         : matrix(Matrix2<Real>(basis.matrix))
     {
     }
 
-    explicit Basis2(const Matrix2<Real>& matrix)
+    explicit constexpr Basis2(const Matrix2<Real>& matrix)
         : matrix(matrix)
     {
     }
@@ -2785,7 +2785,7 @@ public:
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
-    static Basis2 from_scale(const Vector2<Real>& factor)
+    static constexpr Basis2 from_scale(const Vector2<Real>& factor)
     {
         return Basis2({ { factor.x, static_cast<Real>(0.0) }, { static_cast<Real>(0.0), factor.y } });
     }
