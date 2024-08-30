@@ -92,7 +92,6 @@ After cloning the repository, configure the project with CMake ensuring to enabl
 
 ```bash
 cd nnm
-mkdir build
 cmake -S . -B build -DNNM_BUILD_TESTS=ON
 cmake --build build
 ```
