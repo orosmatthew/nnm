@@ -2405,7 +2405,7 @@ public:
         Real data[4] {};
     };
 
-    Matrix2()
+    constexpr Matrix2()
         : col0_row0(static_cast<Real>(1.0))
         , col0_row1(static_cast<Real>(0.0))
         , col1_row0(static_cast<Real>(0.0))
@@ -2414,7 +2414,7 @@ public:
     }
 
     template <typename Other>
-    explicit Matrix2(const Matrix2<Other>& matrix)
+    explicit constexpr Matrix2(const Matrix2<Other>& matrix)
         : col0_row0(static_cast<Real>(matrix.col0_row0))
         , col0_row1(static_cast<Real>(matrix.col0_row1))
         , col1_row0(static_cast<Real>(matrix.col1_row0))
@@ -2422,15 +2422,15 @@ public:
     {
     }
 
-    Matrix2(const Vector2<Real>& column0, const Vector2<Real>& column1)
-        : col0_row0(column0.at(0))
-        , col0_row1(column0.at(1))
-        , col1_row0(column1.at(0))
-        , col1_row1(column1.at(1))
+    constexpr Matrix2(const Vector2<Real>& column0, const Vector2<Real>& column1)
+        : col0_row0(column0.x)
+        , col0_row1(column0.y)
+        , col1_row0(column1.x)
+        , col1_row1(column1.y)
     {
     }
 
-    Matrix2(const Real col0_row0, const Real col0_row1, const Real col1_row0, const Real col1_row1)
+    constexpr Matrix2(const Real col0_row0, const Real col0_row1, const Real col1_row0, const Real col1_row1)
         : col0_row0(col0_row0)
         , col0_row1(col0_row1)
         , col1_row0(col1_row0)
@@ -2438,22 +2438,22 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix2 all(const Real value)
+    [[nodiscard]] static constexpr Matrix2 all(const Real value)
     {
         return { { value, value }, { value, value } };
     }
 
-    [[nodiscard]] static Matrix2 zero()
+    [[nodiscard]] static constexpr Matrix2 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    [[nodiscard]] static Matrix2 one()
+    [[nodiscard]] static constexpr Matrix2 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    [[nodiscard]] static Matrix2 identity()
+    [[nodiscard]] static constexpr Matrix2 identity()
     {
         return { { static_cast<Real>(1.0), static_cast<Real>(0.0) },
                  { static_cast<Real>(0.0), static_cast<Real>(1.0) } };
