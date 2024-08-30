@@ -1007,68 +1007,68 @@ public:
         Real data[3] {};
     };
 
-    Vector3()
+    constexpr Vector3()
         : x(static_cast<Real>(0.0))
         , y(static_cast<Real>(0.0))
         , z(static_cast<Real>(0.0))
     {
     }
 
-    explicit Vector3(const Vector3i& vector);
+    explicit constexpr Vector3(const Vector3i& vector);
 
     template <typename Other>
-    explicit Vector3(const Vector3<Other>& vector)
+    explicit constexpr Vector3(const Vector3<Other>& vector)
         : x(static_cast<Real>(vector.x))
         , y(static_cast<Real>(vector.y))
         , z(static_cast<Real>(vector.z))
     {
     }
 
-    Vector3(const Vector2<Real>& vector, const Real z)
+    constexpr Vector3(const Vector2<Real>& vector, const Real z)
         : x(vector.x)
         , y(vector.y)
         , z(z)
     {
     }
 
-    Vector3(const Real x, const Real y, const Real z)
+    constexpr Vector3(const Real x, const Real y, const Real z)
         : x(x)
         , y(y)
         , z(z)
     {
     }
 
-    static Vector3 all(Real value)
+    static constexpr Vector3 all(Real value)
     {
         return { value, value, value };
     }
 
-    static Vector3 zero()
+    static constexpr Vector3 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    static Vector3 one()
+    static constexpr Vector3 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    static Vector3 axis_x()
+    static constexpr Vector3 axis_x()
     {
         return { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
-    static Vector3 axis_y()
+    static constexpr Vector3 axis_y()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
-    static Vector3 axis_z()
+    static constexpr Vector3 axis_z()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
-    [[nodiscard]] Vector3 abs() const
+    [[nodiscard]] constexpr Vector3 abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
     }
@@ -1088,7 +1088,7 @@ public:
         return { nnm::round(x), nnm::round(y), nnm::round(z) };
     }
 
-    [[nodiscard]] Vector3 clamp(const Vector3& min, const Vector3& max) const
+    [[nodiscard]] constexpr Vector3 clamp(const Vector3& min, const Vector3& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
@@ -1098,7 +1098,7 @@ public:
         return (to - *this).normalize();
     }
 
-    [[nodiscard]] Real distance_sqrd(const Vector3& to) const
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3& to) const
     {
         const Real diff_x = to.x - x;
         const Real diff_y = to.y - y;
@@ -1111,12 +1111,12 @@ public:
         return sqrt(this->distance_sqrd(to));
     }
 
-    [[nodiscard]] Real manhattan_distance(const Vector3& to) const
+    [[nodiscard]] constexpr Real manhattan_distance(const Vector3& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
-    [[nodiscard]] Real length_sqrd() const
+    [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
@@ -1150,31 +1150,31 @@ public:
         return zero();
     }
 
-    [[nodiscard]] Vector3 lerp(const Vector3& to, const Real weight) const
+    [[nodiscard]] constexpr Vector3 lerp(const Vector3& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight), nnm::lerp(z, to.z, weight) };
     }
 
-    [[nodiscard]] Vector3 lerp_clamped(const Vector3& to, const Real weight) const
+    [[nodiscard]] constexpr Vector3 lerp_clamped(const Vector3& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight),
                  nnm::lerp_clamped(y, to.y, weight),
                  nnm::lerp_clamped(z, to.z, weight) };
     }
 
-    [[nodiscard]] Real dot(const Vector3& other) const
+    [[nodiscard]] constexpr Real dot(const Vector3& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
 
-    [[nodiscard]] Vector3 cross(const Vector3& other) const
+    [[nodiscard]] constexpr Vector3 cross(const Vector3& other) const
     {
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
     }
 
     [[nodiscard]] Matrix3<Real> outer(const Vector3& other) const;
 
-    [[nodiscard]] Vector3 reflect(const Vector3& normal) const
+    [[nodiscard]] constexpr Vector3 reflect(const Vector3& normal) const
     {
         Vector3 result;
         const Real dot = this->dot(normal);
@@ -1184,7 +1184,7 @@ public:
         return result;
     }
 
-    [[nodiscard]] Vector3 project(const Vector3& onto) const
+    [[nodiscard]] constexpr Vector3 project(const Vector3& onto) const
     {
         const Real onto_length_sqrd = onto.length_sqrd();
         if (onto_length_sqrd == static_cast<Real>(0.0)) {
@@ -1194,7 +1194,7 @@ public:
         return onto * scale;
     }
 
-    [[nodiscard]] Vector3 inverse() const
+    [[nodiscard]] constexpr Vector3 inverse() const
     {
         return { static_cast<Real>(1.0) / x, static_cast<Real>(1.0) / y, static_cast<Real>(1.0) / z };
     }
@@ -1224,7 +1224,7 @@ public:
 
     [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1.0)) const;
 
-    [[nodiscard]] int max_index() const
+    [[nodiscard]] constexpr int max_index() const
     {
         Real max_val = x;
         auto max_axis = 0;
@@ -1238,7 +1238,7 @@ public:
         return max_axis;
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] constexpr int min_index() const
     {
         Real min_val = x;
         auto min_axis = 0;
@@ -1252,17 +1252,17 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector3& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Vector3& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z);
     }
 
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z);
     }
 
-    [[nodiscard]] Vector2<Real> xy() const
+    [[nodiscard]] constexpr Vector2<Real> xy() const
     {
         return { x, y };
     }
@@ -1311,17 +1311,17 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] bool operator==(const Vector3& other) const
+    [[nodiscard]] constexpr bool operator==(const Vector3& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
 
-    [[nodiscard]] bool operator!=(const Vector3& other) const
+    [[nodiscard]] constexpr bool operator!=(const Vector3& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
-    [[nodiscard]] Vector3 operator+(const Vector3& other) const
+    [[nodiscard]] constexpr Vector3 operator+(const Vector3& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
     }
@@ -1335,7 +1335,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator-(const Vector3& other) const
+    [[nodiscard]] constexpr Vector3 operator-(const Vector3& other) const
     {
         return { x - other.x, y - other.y, z - other.z };
     }
@@ -1348,7 +1348,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator*(const Vector3& other) const
+    [[nodiscard]] constexpr Vector3 operator*(const Vector3& other) const
     {
         return { x * other.x, y * other.y, z * other.z };
     }
@@ -1363,7 +1363,7 @@ public:
 
     [[nodiscard]] Vector3 operator*(const Matrix3<Real>& matrix) const;
 
-    [[nodiscard]] Vector3 operator*(const Real value) const
+    [[nodiscard]] constexpr Vector3 operator*(const Real value) const
     {
         return { x * value, y * value, z * value };
     }
@@ -1376,7 +1376,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator/(const Vector3& other) const
+    [[nodiscard]] constexpr Vector3 operator/(const Vector3& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
     }
@@ -1390,7 +1390,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator/(const Real value) const
+    [[nodiscard]] constexpr Vector3 operator/(const Real value) const
     {
         return { x / value, y / value, z / value };
     }
@@ -1403,12 +1403,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3 operator+() const
+    [[nodiscard]] constexpr Vector3 operator+() const
     {
         return { x, y, z };
     }
 
-    [[nodiscard]] Vector3 operator-() const
+    [[nodiscard]] constexpr Vector3 operator-() const
     {
         return { -x, -y, -z };
     }
@@ -1426,20 +1426,20 @@ public:
         return false;
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != static_cast<Real>(0.0) || y != static_cast<Real>(0.0) || z != static_cast<Real>(0.0);
     }
 };
 
 template <typename Real = float>
-Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
+constexpr Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
 template <typename Real = float>
-Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
+constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
 }
@@ -1477,7 +1477,7 @@ public:
     {
     }
 
-    Vector3i(const int x, const int y, const int z)
+    constexpr Vector3i(const int x, const int y, const int z)
         : x(x)
         , y(y)
         , z(z)
@@ -4683,7 +4683,7 @@ Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 }
 
 template <typename Real>
-Vector3<Real>::Vector3(const Vector3i& vector)
+constexpr Vector3<Real>::Vector3(const Vector3i& vector)
     : x(static_cast<Real>(vector.x))
     , y(static_cast<Real>(vector.y))
     , z(static_cast<Real>(vector.z))

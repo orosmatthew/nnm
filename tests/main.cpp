@@ -1328,14 +1328,14 @@ int main()
     {
         test_section("Vector3()");
         {
-            const nnm::Vector3 v1;
+            constexpr nnm::Vector3 v1;
             ASSERT(v1.x == 0.0f);
             ASSERT(v1.y == 0.0f);
         }
 
         test_section("Vector3(const Vector3i&)");
         {
-            const nnm::Vector3 v2(nnm::Vector3i(1, 2, 3));
+            constexpr nnm::Vector3 v2(nnm::Vector3i(1, 2, 3));
             ASSERT(v2.x == 1.0f);
             ASSERT(v2.y == 2.0f);
             ASSERT(v2.z == 3.0f);
@@ -1343,8 +1343,8 @@ int main()
 
         test_section("Vector3(const Vector3<Other>&)");
         {
-            const nnm::Vector3d v1(1.0, -2.0, 0.5);
-            const nnm::Vector3f v2(v1);
+            constexpr nnm::Vector3d v1(1.0, -2.0, 0.5);
+            constexpr nnm::Vector3f v2(v1);
             ASSERT(v2.x == 1.0f);
             ASSERT(v2.y == -2.0f);
             ASSERT(v2.z == 0.5f);
@@ -1352,7 +1352,7 @@ int main()
 
         test_section("Vector3(const Vector2&, float)");
         {
-            const nnm::Vector3 v(nnm::Vector2(1.0f, 2.0f), 3.0f);
+            constexpr nnm::Vector3 v(nnm::Vector2(1.0f, 2.0f), 3.0f);
             ASSERT(v.x == 1.0f);
             ASSERT(v.y == 2.0f);
             ASSERT(v.z == 3.0f);
@@ -1360,7 +1360,7 @@ int main()
 
         test_section("Vector3(float, float, float)");
         {
-            const nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
+            constexpr nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
             ASSERT(v3.x == 1.0f);
             ASSERT(v3.y == 2.0f);
             ASSERT(v3.z == 3.0f);
@@ -1368,7 +1368,7 @@ int main()
 
         test_section("all");
         {
-            const auto v1 = nnm::Vector3f::all(3.0f);
+            constexpr auto v1 = nnm::Vector3f::all(3.0f);
             ASSERT(v1.x == 3.0f);
             ASSERT(v1.y == 3.0f);
             ASSERT(v1.z == 3.0f);
@@ -1376,7 +1376,7 @@ int main()
 
         test_section("zero");
         {
-            const auto v2 = nnm::Vector3f::zero();
+            constexpr auto v2 = nnm::Vector3f::zero();
             ASSERT(v2.x == 0.0f);
             ASSERT(v2.y == 0.0f);
             ASSERT(v2.z == 0.0f);
@@ -1384,7 +1384,7 @@ int main()
 
         test_section("one");
         {
-            const auto v3 = nnm::Vector3f::one();
+            constexpr auto v3 = nnm::Vector3f::one();
             ASSERT(v3.x == 1.0f);
             ASSERT(v3.y == 1.0f);
             ASSERT(v3.z == 1.0f);
@@ -1392,7 +1392,7 @@ int main()
 
         test_section("axis_x");
         {
-            const auto x = nnm::Vector3f::axis_x();
+            constexpr auto x = nnm::Vector3f::axis_x();
             ASSERT(x.x == 1.0f);
             ASSERT(x.y == 0.0f);
             ASSERT(x.z == 0.0f);
@@ -1400,7 +1400,7 @@ int main()
 
         test_section("axis_y");
         {
-            const auto y = nnm::Vector3f::axis_y();
+            constexpr auto y = nnm::Vector3f::axis_y();
             ASSERT(y.x == 0.0f);
             ASSERT(y.y == 1.0f);
             ASSERT(y.z == 0.0f);
@@ -1408,7 +1408,7 @@ int main()
 
         test_section("axis_z");
         {
-            const auto z = nnm::Vector3f::axis_z();
+            constexpr auto z = nnm::Vector3f::axis_z();
             ASSERT(z.x == 0.0f);
             ASSERT(z.y == 0.0f);
             ASSERT(z.z == 1.0f);
@@ -1416,7 +1416,8 @@ int main()
 
         test_section("abs");
         {
-            ASSERT(nnm::Vector3(0.0f, 1.0f, -2.0f).abs() == nnm::Vector3(0.0f, 1.0f, 2.0f));
+            constexpr auto result = nnm::Vector3(0.0f, 1.0f, -2.0f).abs();
+            ASSERT(result == nnm::Vector3(0.0f, 1.0f, 2.0f));
         }
 
         test_section("ceil");
@@ -1431,16 +1432,17 @@ int main()
 
         test_section("round");
         {
-            const nnm::Vector3 v(1.1f, -2.8f, 0.0f);
+            constexpr nnm::Vector3 v(1.1f, -2.8f, 0.0f);
             ASSERT(v.round() == nnm::Vector3(1.0f, -3.0f, 0.0f));
         }
 
         test_section("clamp");
         {
-            const nnm::Vector3 v(0.0f, 10.0f, -2.0f);
-            const nnm::Vector3 min(-1.0f, 12.0f, -5.0f);
-            const nnm::Vector3 max(1.0f, 12.0f, -3.0f);
-            ASSERT(v.clamp(min, max) == nnm::Vector3(0.0f, 12.0f, -3.0f));
+            constexpr nnm::Vector3 v(0.0f, 10.0f, -2.0f);
+            constexpr nnm::Vector3 min(-1.0f, 12.0f, -5.0f);
+            constexpr nnm::Vector3 max(1.0f, 12.0f, -3.0f);
+            constexpr auto result = v.clamp(min, max);
+            ASSERT(result == nnm::Vector3(0.0f, 12.0f, -3.0f));
         }
 
         test_section("direction");
@@ -1486,12 +1488,13 @@ int main()
 
         test_section("distance_sqrd");
         {
-            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 to(2.0f, 2.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from.distance_sqrd(to), 3.0f));
+            constexpr nnm::Vector3 from1(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 to1(2.0f, 2.0f, 2.0f);
+            constexpr auto result = from1.distance_sqrd(to1);
+            ASSERT(nnm::approx_equal(result, 3.0f));
 
-            from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-            to = nnm::Vector3(1.0f, 1.0f, 1.0f);
+            auto from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
+            auto to = nnm::Vector3(1.0f, 1.0f, 1.0f);
             ASSERT(nnm::approx_equal(from.distance_sqrd(to), 12.0f));
 
             from = nnm::Vector3(0.0f, 0.0f, 0.0f);
@@ -1532,12 +1535,13 @@ int main()
 
         test_section("manhattan_distance");
         {
-            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 to(2.0f, 2.0f, 2.0f);
-            ASSERT(nnm::approx_equal(from.manhattan_distance(to), 3.0f));
+            constexpr nnm::Vector3 from1(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 to1(2.0f, 2.0f, 2.0f);
+            constexpr auto result = from1.manhattan_distance(to1);
+            ASSERT(nnm::approx_equal(result, 3.0f));
 
-            from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-            to = nnm::Vector3(1.0f, 1.0f, 1.0f);
+            auto from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
+            auto to = nnm::Vector3(1.0f, 1.0f, 1.0f);
             ASSERT(nnm::approx_equal(from.manhattan_distance(to), 6.0f));
 
             from = nnm::Vector3(0.0f, 0.0f, 0.0f);
@@ -1555,19 +1559,20 @@ int main()
 
         test_section("length_sqrd");
         {
-            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
-            ASSERT(nnm::approx_equal(v.length_sqrd(), 14.0f));
+            constexpr nnm::Vector3 v(1.0f, 2.0f, 3.0f);
+            constexpr auto result = v.length_sqrd();
+            ASSERT(nnm::approx_equal(result, 14.0f));
         }
 
         test_section("length");
         {
-            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
+            constexpr nnm::Vector3 v(1.0f, 2.0f, 3.0f);
             ASSERT(nnm::approx_equal(v.length(), nnm::sqrt(14.0f)));
         }
 
         test_section("clamp_length");
         {
-            const nnm::Vector3 v(1.0f, 2.0f, 3.0f);
+            constexpr nnm::Vector3 v(1.0f, 2.0f, 3.0f);
             ASSERT(v.clamp_length(2.0f, 5.0f).approx_equal(nnm::Vector3(1.0f, 2.0f, 3.0f)));
             ASSERT(v.clamp_length(2.0f, 3.0f).approx_equal(nnm::Vector3(0.80178f, 1.603566f, 2.405352f)));
             ASSERT(v.clamp_length(10.0f, 100.0f).approx_equal(nnm::Vector3(2.67261f, 5.34522f, 8.01784f)));
@@ -1575,15 +1580,16 @@ int main()
 
         test_section("normalize");
         {
-            const nnm::Vector3 v(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 v(1.0f, -2.0f, 3.0f);
             ASSERT(v.normalize().approx_equal(nnm::Vector3(0.267261f, -0.534522f, 0.801784f)));
         }
 
         test_section("lerp");
         {
-            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 to(3.0f, 5.0f, -2.0f);
-            ASSERT(from.lerp(to, 0.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            constexpr nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 to(3.0f, 5.0f, -2.0f);
+            constexpr auto result = from.lerp(to, 0.0f);
+            ASSERT(result == nnm::Vector3(1.0f, 1.0f, 1.0f));
             ASSERT(from.lerp(to, 1.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
             ASSERT(from.lerp(to, 0.5f) == nnm::Vector3(2.0f, 3.0f, -0.5f));
             ASSERT(from.lerp(to, 0.25f) == nnm::Vector3(1.5f, 2.0f, 0.25f));
@@ -1592,9 +1598,10 @@ int main()
 
         test_section("lerp_clamped");
         {
-            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 to(3.0f, 5.0f, -2.0f);
-            ASSERT(from.lerp_clamped(to, 0.0f) == nnm::Vector3(1.0f, 1.0f, 1.0f));
+            constexpr nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 to(3.0f, 5.0f, -2.0f);
+            constexpr auto result = from.lerp_clamped(to, 0.0f);
+            ASSERT(result == nnm::Vector3(1.0f, 1.0f, 1.0f));
             ASSERT(from.lerp_clamped(to, 1.0f) == nnm::Vector3(3.0f, 5.0f, -2.0f));
             ASSERT(from.lerp_clamped(to, 0.5f) == nnm::Vector3(2.0f, 3.0f, -0.5f));
             ASSERT(from.lerp_clamped(to, 0.25f) == nnm::Vector3(1.5f, 2.0f, 0.25f));
@@ -1605,48 +1612,53 @@ int main()
 
         test_section("dot");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
-            ASSERT(v1.dot(v2) == -28.0f);
+            constexpr nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            constexpr auto result = v1.dot(v2);
+            ASSERT(result == -28.0f);
         }
 
         test_section("cross");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
-            ASSERT(v1.cross(v2) == nnm::Vector3f::zero());
-            const nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
-            const nnm::Vector3 v4(-2.0f, 4.0f, 6.0f);
+            constexpr nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            constexpr auto result = v1.cross(v2);
+            ASSERT(result == nnm::Vector3f::zero());
+            constexpr nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
+            constexpr nnm::Vector3 v4(-2.0f, 4.0f, 6.0f);
             ASSERT(v3.cross(v4) == nnm::Vector3(0.0f, -12.0f, 8.0f));
         }
 
         test_section("outer");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
-            const nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
+            constexpr nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 v2(-2.0f, 4.0f, -6.0f);
             const nnm::Matrix3 expected { { -2.0f, 4.0f, -6.0f }, { 4.0f, -8.0f, 12.0f }, { -6.0f, 12.0f, -18.0f } };
             ASSERT(v1.outer(v2).approx_equal(expected));
         }
 
         test_section("reflect");
         {
-            nnm::Vector3 incident(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 normal(0.0f, 1.0f, 0.0f);
-            ASSERT(incident.reflect(normal) == nnm::Vector3(1.0f, -1.0f, 1.0f));
+            constexpr nnm::Vector3 incident(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 normal(0.0f, 1.0f, 0.0f);
+            constexpr auto result = incident.reflect(normal);
+            ASSERT(result == nnm::Vector3(1.0f, -1.0f, 1.0f));
         }
 
         test_section("project");
         {
-            nnm::Vector3 v(1.0f, 2.0f, -3.0f);
-            nnm::Vector3 onto(-4.0f, 0.5f, 10.0f);
-            nnm::Vector3 expected(1.135483870967742f, -0.141935483870968f, -2.838709677419355f);
-            ASSERT(v.project(onto).approx_equal(expected));
+            constexpr nnm::Vector3 v(1.0f, 2.0f, -3.0f);
+            constexpr nnm::Vector3 onto(-4.0f, 0.5f, 10.0f);
+            constexpr nnm::Vector3 expected(1.135483870967742f, -0.141935483870968f, -2.838709677419355f);
+            constexpr auto result = v.project(onto);
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
         {
-            nnm::Vector3 v(1.0f, 2.0f, -3.0f);
-            ASSERT(v.inverse().approx_equal(nnm::Vector3(1.0f, 0.5f, -1.0f / 3.0f)));
+            constexpr nnm::Vector3 v(1.0f, 2.0f, -3.0f);
+            constexpr auto result = v.inverse();
+            ASSERT(result.approx_equal(nnm::Vector3(1.0f, 0.5f, -1.0f / 3.0f)));
         }
 
         test_section("angle");
@@ -1729,8 +1741,9 @@ int main()
 
         test_section("max_index");
         {
-            nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
-            ASSERT(v1.max_index() == 1);
+            constexpr nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
+            constexpr auto result = v1.max_index();
+            ASSERT(result == 1);
             nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
             ASSERT(v2.max_index() == 2);
             nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
@@ -1739,8 +1752,9 @@ int main()
 
         test_section("min_index");
         {
-            nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
-            ASSERT(v1.min_index() == 2);
+            constexpr nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
+            constexpr auto result = v1.min_index();
+            ASSERT(result == 2);
             nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
             ASSERT(v2.min_index() == 0);
             nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
@@ -1749,9 +1763,10 @@ int main()
 
         test_section("approx_equal");
         {
-            nnm::Vector3 v1(1.0f, 1.0f, 1.0f);
-            nnm::Vector3 v2(1.0f + nnm::epsilon() / 2.0f, 1.0f, 1.0f);
-            ASSERT(v1.approx_equal(v2));
+            constexpr nnm::Vector3 v1(1.0f, 1.0f, 1.0f);
+            constexpr nnm::Vector3 v2(1.0f + nnm::epsilon() / 2.0f, 1.0f, 1.0f);
+            constexpr auto result = v1.approx_equal(v2);
+            ASSERT(result);
             nnm::Vector3 v3(1.0f, 1.0f, 1.0f);
             nnm::Vector3 v4(1.0f + 2.0f * nnm::epsilon(), 1.0f, 1.0f);
             ASSERT_FALSE(v3.approx_equal(v4));
@@ -1759,8 +1774,9 @@ int main()
 
         test_section("approx_zero");
         {
-            nnm::Vector3 v1(0.0f, 0.0f, 0.0f);
-            ASSERT(v1.approx_zero());
+            constexpr nnm::Vector3 v1(0.0f, 0.0f, 0.0f);
+            constexpr auto result = v1.approx_zero();
+            ASSERT(result);
             nnm::Vector3 v2(nnm::epsilon(), 0.0f, 0.0f);
             ASSERT(v2.approx_zero());
             nnm::Vector3 v3(0.0f, nnm::epsilon(), nnm::epsilon());
@@ -1771,8 +1787,9 @@ int main()
 
         test_section("xy");
         {
-            nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-            ASSERT(v1.xy() == nnm::Vector2(1.0f, 2.0f));
+            constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
+            constexpr auto result = v1.xy();
+            ASSERT(result == nnm::Vector2(1.0f, 2.0f));
         }
 
         test_section("begin");
@@ -1803,25 +1820,28 @@ int main()
             ASSERT(v1[2] == 4.0f);
         }
 
-        nnm::Vector3 v1(1.0f, 2.0f, 3.0f);
-        nnm::Vector3 v2(3.0f, 4.0f, -2.0f);
-        nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
+        constexpr nnm::Vector3 v1(1.0f, 2.0f, 3.0f);
+        constexpr nnm::Vector3 v2(3.0f, 4.0f, -2.0f);
+        constexpr nnm::Vector3 v3(1.0f, 2.0f, 3.0f);
 
         test_section("operator==");
         {
-            ASSERT(v1 == v3);
+            constexpr auto result = v1 == v3;
+            ASSERT(result);
             ASSERT_FALSE(v1 == v2);
         }
 
         test_section("operator!=");
         {
-            ASSERT_FALSE(v1 != v3);
+            constexpr auto result = v1 != v3;
+            ASSERT_FALSE(result);
             ASSERT(v1 != v2);
         }
 
         test_section("operator+(const Vector3&)");
         {
-            ASSERT(v1 + v2 == nnm::Vector3(4.0f, 6.0f, 1.0f));
+            constexpr auto result = v1 + v2;
+            ASSERT(result == nnm::Vector3(4.0f, 6.0f, 1.0f));
         }
 
         test_section("operator+=");
@@ -1832,7 +1852,8 @@ int main()
 
         test_section("operator-(const Vector3&)");
         {
-            ASSERT(v2 - v1 == nnm::Vector3(2.0f, 2.0f, -5.0f));
+            constexpr auto result = v2 - v1;
+            ASSERT(result == nnm::Vector3(2.0f, 2.0f, -5.0f));
         }
 
         test_section("operator-=");
@@ -1843,7 +1864,8 @@ int main()
 
         test_section("operator*(const Vector3&)");
         {
-            ASSERT(v1 * v2 == nnm::Vector3(3.0f, 8.0f, -6.0f));
+            constexpr auto result = v1 * v2;
+            ASSERT(result == nnm::Vector3(3.0f, 8.0f, -6.0f));
         }
 
         test_section("operator*=(const Vector3&)");
@@ -1860,12 +1882,14 @@ int main()
 
         test_section("operator*(float)");
         {
-            ASSERT(v1 * 2.0f == nnm::Vector3(2.0f, 4.0f, 6.0f));
+            constexpr auto result = v1 * 2.0f;
+            ASSERT(result == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
         test_section("operator*(float, const Vector3&)");
         {
-            ASSERT(2.0f * v1 == nnm::Vector3(2.0f, 4.0f, 6.0f));
+            constexpr auto result = 2.0f * v1;
+            ASSERT(result == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
         test_section("operator*=(float)");
@@ -1876,7 +1900,8 @@ int main()
 
         test_section("operator/(const Vector3&)");
         {
-            ASSERT(v2 / v1 == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
+            constexpr auto result = v2 / v1;
+            ASSERT(result == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
         }
 
         test_section("operator/=(const Vector3&)");
@@ -1887,12 +1912,14 @@ int main()
 
         test_section("operator/(float)");
         {
-            ASSERT(v2 / 2.0f == nnm::Vector3(1.5f, 2.0f, -1.0f));
+            constexpr auto result = v2 / 2.0f;
+            ASSERT(result == nnm::Vector3(1.5f, 2.0f, -1.0f));
         }
 
         test_section("operator/(float, const Vector3&)");
         {
-            ASSERT(2.0f / v2 == nnm::Vector3(0.66666666f, 0.5f, -1.0f));
+            constexpr auto result = 2.0f / v2;
+            ASSERT(result == nnm::Vector3(0.66666666f, 0.5f, -1.0f));
         }
 
         test_section("operator/=(float)");
@@ -1903,12 +1930,14 @@ int main()
 
         test_section("operator+");
         {
-            ASSERT(+v1 == v1);
+            constexpr auto result = +v1;
+            ASSERT(result == v1);
         }
 
         test_section("operator-");
         {
-            ASSERT(-v1 == nnm::Vector3(-1.0f, -2.0f, -3.0f));
+            constexpr auto result = -v1;
+            ASSERT(result == nnm::Vector3(-1.0f, -2.0f, -3.0f));
         }
 
         test_section("operator<");
@@ -1919,7 +1948,8 @@ int main()
 
         test_section("operator bool");
         {
-            ASSERT(static_cast<bool>(v1));
+            constexpr auto result = static_cast<bool>(v1);
+            ASSERT(result);
             ASSERT_FALSE(static_cast<bool>(nnm::Vector3(0.0f, 0.0f, 0.0f)));
         }
     }
@@ -1952,7 +1982,7 @@ int main()
 
         test_section("Vector3i(int, int, int)");
         {
-            const nnm::Vector3i v_with_params(1, -2, 3);
+            constexpr nnm::Vector3i v_with_params(1, -2, 3);
             ASSERT(v_with_params.x == 1);
             ASSERT(v_with_params.y == -2);
             ASSERT(v_with_params.z == 3);
@@ -2099,9 +2129,9 @@ int main()
             ASSERT(v[2] == 3);
         }
 
-        const nnm::Vector3i v1(1, 2, -3);
-        const nnm::Vector3i v2(-3, 4, 100);
-        const nnm::Vector3i v3(1, 2, -3);
+        constexpr nnm::Vector3i v1(1, 2, -3);
+        constexpr nnm::Vector3i v2(-3, 4, 100);
+        constexpr nnm::Vector3i v3(1, 2, -3);
 
         test_section("operator==");
         {
@@ -2699,7 +2729,7 @@ int main()
 
         test_section("from_vector_to_vector");
         {
-            const nnm::Vector3 from(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 from(1.0f, -2.0f, 3.0f);
             const auto to = from.rotate_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi() / 9.0f);
             const auto q = nnm::QuaternionF::from_vector_to_vector(from, to);
             const auto rotated_from = from.rotate_quaternion(q);
@@ -3597,7 +3627,7 @@ int main()
 
         test_section("operator*(const Vector3&)");
         {
-            const nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
+            constexpr nnm::Vector3 v1(1.0f, -2.0f, 3.0f);
             ASSERT((m1 * v1).approx_equal({ 13.0f, -6.0f, 23.0f }));
         }
 
