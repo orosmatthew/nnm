@@ -4881,7 +4881,7 @@ int main()
         {
             auto t = nnm::Transform3f::from_rotation_quaternion(
                 nnm::Quaternion(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f));
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 0.9980918f, -0.0213389f, -0.0579437f, 0.0f },
                   { 0.0335516f, 0.9751930f, 0.2187989f, 0.0f },
                   { 0.0518374f, -0.2203254f, 0.9740480f, 0.0f },
@@ -4932,7 +4932,7 @@ int main()
         test_section("from_projection_perspective");
         {
             const auto t = nnm::Transform3f::from_projection_perspective(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 0.5625f, 0.0f, 0.0f, 0.0f },
                   { 0.0f, 1.0f, 0.0f, 0.0f },
                   { 0.0f, 0.0f, -1.002f, -1.0f },
@@ -4943,7 +4943,7 @@ int main()
         test_section("from_projection_orthographic");
         {
             const auto t = nnm::Transform3f::from_projection_orthographic(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 0.25f, 0.0f, 0.0f, 0.0f },
                   { 0.0f, 0.3333333f, 0.0f, 0.0f },
                   { 0.0f, 0.0f, -0.0404040404f, 0.0f },
@@ -4973,7 +4973,7 @@ int main()
 
         test_section("unchecked_inverse");
         {
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 0.666666f, -0.6666666f, 0.0f, 0.0f },
                   { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
                   { 0.0f, 0.0f, 0.5f, 0.0f },
@@ -4983,7 +4983,7 @@ int main()
 
         test_section("inverse");
         {
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 0.666666f, -0.6666666f, 0.0f, 0.0f },
                   { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
                   { 0.0f, 0.0f, 0.5f, 0.0f },
@@ -5063,7 +5063,7 @@ int main()
         test_section("rotate_quaternion");
         {
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 1.22071f, 1.26807f, 3.3018f, 4.0f },
                   { -0.27643f, 1.30008f, 3.38871f, -3.0f },
                   { 0.103675f, -0.440651f, 1.9481f, 0.0f },
@@ -5074,7 +5074,7 @@ int main()
         test_section("rotate_quaternion_local");
         {
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            const nnm::Transform3 expected(
+            constexpr nnm::Transform3 expected(
                 { { 1.00876f, 1.95351f, 2.81437f, 4.05638f },
                   { -0.454045f, 2.01749f, 3.46383f, -2.79137f },
                   { 0.162f, -0.336976f, 1.44263f, 0.868326f },
