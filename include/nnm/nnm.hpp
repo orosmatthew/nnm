@@ -1778,7 +1778,7 @@ public:
         Real data[4] {};
     };
 
-    Vector4()
+    constexpr Vector4()
         : x(static_cast<Real>(0.0))
         , y(static_cast<Real>(0.0))
         , z(static_cast<Real>(0.0))
@@ -1787,7 +1787,7 @@ public:
     }
 
     template <typename Other>
-    explicit Vector4(const Vector4<Other>& vector)
+    explicit constexpr Vector4(const Vector4<Other>& vector)
         : x(static_cast<Real>(vector.x))
         , y(static_cast<Real>(vector.y))
         , z(static_cast<Real>(vector.z))
@@ -1795,7 +1795,7 @@ public:
     {
     }
 
-    Vector4(const Vector2<Real>& vector, const Real z, const Real w)
+    constexpr Vector4(const Vector2<Real>& vector, const Real z, const Real w)
         : x(vector.x)
         , y(vector.y)
         , z(z)
@@ -1803,7 +1803,7 @@ public:
     {
     }
 
-    Vector4(const Vector3<Real>& vector, const Real w)
+    constexpr Vector4(const Vector3<Real>& vector, const Real w)
         : x(vector.x)
         , y(vector.y)
         , z(vector.z)
@@ -1811,7 +1811,7 @@ public:
     {
     }
 
-    Vector4(const Real x, const Real y, const Real z, const Real w)
+    constexpr Vector4(const Real x, const Real y, const Real z, const Real w)
         : x(x)
         , y(y)
         , z(z)
@@ -1819,42 +1819,42 @@ public:
     {
     }
 
-    static Vector4 all(const Real value)
+    static constexpr Vector4 all(const Real value)
     {
         return { value, value, value, value };
     }
 
-    static Vector4 zero()
+    static constexpr Vector4 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    static Vector4 one()
+    static constexpr Vector4 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    static Vector4 axis_x()
+    static constexpr Vector4 axis_x()
     {
         return { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
-    static Vector4 axis_y()
+    static constexpr Vector4 axis_y()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) };
     }
 
-    static Vector4 axis_z()
+    static constexpr Vector4 axis_z()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) };
     }
 
-    static Vector4 axis_w()
+    static constexpr Vector4 axis_w()
     {
         return { static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(1.0) };
     }
 
-    [[nodiscard]] Vector4 abs() const
+    [[nodiscard]] constexpr Vector4 abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z), nnm::abs(w) };
     }
@@ -1874,7 +1874,7 @@ public:
         return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
     }
 
-    [[nodiscard]] Vector4 clamp(const Vector4& min, const Vector4& max) const
+    [[nodiscard]] constexpr Vector4 clamp(const Vector4& min, const Vector4& max) const
     {
         return { nnm::clamp(x, min.x, max.x),
                  nnm::clamp(y, min.y, max.y),
@@ -1882,7 +1882,7 @@ public:
                  nnm::clamp(w, min.w, max.w) };
     }
 
-    [[nodiscard]] Real length_sqrd() const
+    [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
@@ -1916,7 +1916,7 @@ public:
         return zero();
     }
 
-    [[nodiscard]] Vector4 lerp(const Vector4& to, const Real weight) const
+    [[nodiscard]] constexpr Vector4 lerp(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight),
                  nnm::lerp(y, to.y, weight),
@@ -1924,7 +1924,7 @@ public:
                  nnm::lerp(w, to.w, weight) };
     }
 
-    [[nodiscard]] Vector4 lerp_clamped(const Vector4& to, const Real weight) const
+    [[nodiscard]] constexpr Vector4 lerp_clamped(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight),
                  nnm::lerp_clamped(y, to.y, weight),
@@ -1932,14 +1932,14 @@ public:
                  nnm::lerp_clamped(w, to.w, weight) };
     }
 
-    [[nodiscard]] Real dot(const Vector4& other) const
+    [[nodiscard]] constexpr Real dot(const Vector4& other) const
     {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
     [[nodiscard]] Matrix4<Real> outer(const Vector4& other) const;
 
-    [[nodiscard]] Vector4 inverse() const
+    [[nodiscard]] constexpr Vector4 inverse() const
     {
         return { static_cast<Real>(1.0) / x,
                  static_cast<Real>(1.0) / y,
@@ -1979,23 +1979,23 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] bool approx_equal(const Vector4& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Vector4& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z)
             && nnm::approx_equal(w, other.w);
     }
 
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z) && nnm::approx_zero(w);
     }
 
-    [[nodiscard]] Vector2<Real> xy() const
+    [[nodiscard]] constexpr Vector2<Real> xy() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] Vector3<Real> xyz() const
+    [[nodiscard]] constexpr Vector3<Real> xyz() const
     {
         return { x, y, z };
     }
@@ -2044,17 +2044,17 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] bool operator==(const Vector4& other) const
+    [[nodiscard]] constexpr bool operator==(const Vector4& other) const
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
 
-    [[nodiscard]] bool operator!=(const Vector4& other) const
+    [[nodiscard]] constexpr bool operator!=(const Vector4& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
-    [[nodiscard]] Vector4 operator+(const Vector4& other) const
+    [[nodiscard]] constexpr Vector4 operator+(const Vector4& other) const
     {
         return { x + other.x, y + other.y, z + other.z, w + other.w };
     }
@@ -2068,7 +2068,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator-(const Vector4& other) const
+    [[nodiscard]] constexpr Vector4 operator-(const Vector4& other) const
     {
         return { x - other.x, y - other.y, z - other.z, w - other.w };
     }
@@ -2082,7 +2082,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator*(const Vector4& other) const
+    [[nodiscard]] constexpr Vector4 operator*(const Vector4& other) const
     {
         return { x * other.x, y * other.y, z * other.z, w * other.w };
     }
@@ -2098,7 +2098,7 @@ public:
 
     [[nodiscard]] Vector4 operator*(const Matrix4<Real>& matrix) const;
 
-    [[nodiscard]] Vector4 operator*(const Real value) const
+    [[nodiscard]] constexpr Vector4 operator*(const Real value) const
     {
         return { x * value, y * value, z * value, w * value };
     }
@@ -2112,7 +2112,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator/(const Vector4& other) const
+    [[nodiscard]] Vector4 constexpr operator/(const Vector4& other) const
     {
         return { x / other.x, y / other.y, z / other.z, w / other.w };
     }
@@ -2126,7 +2126,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector4 operator/(const Real value) const
+    [[nodiscard]] constexpr Vector4 operator/(const Real value) const
     {
         return { x / value, y / value, z / value, w / value };
     }
@@ -2153,17 +2153,17 @@ public:
         return false;
     }
 
-    [[nodiscard]] Vector4 operator+() const
+    [[nodiscard]] constexpr Vector4 operator+() const
     {
         return { x, y, z, w };
     }
 
-    [[nodiscard]] Vector4 operator-() const
+    [[nodiscard]] constexpr Vector4 operator-() const
     {
         return { -x, -y, -z, -w };
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != static_cast<Real>(0.0) || y != static_cast<Real>(0.0) || z != static_cast<Real>(0.0)
             || w != static_cast<Real>(0.0);
@@ -2171,13 +2171,13 @@ public:
 };
 
 template <typename Real = float>
-Vector4<Real> operator*(const Real value, const Vector4<Real>& vector)
+Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
 
 template <typename Real = float>
-Vector4<Real> operator/(const Real value, const Vector4<Real>& vector)
+Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
 }
