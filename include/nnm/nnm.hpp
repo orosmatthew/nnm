@@ -3858,7 +3858,7 @@ public:
         Real data[16] {};
     };
 
-    Matrix4()
+    constexpr Matrix4()
         : col0_row0(static_cast<Real>(1.0))
         , col0_row1(static_cast<Real>(0.0))
         , col0_row2(static_cast<Real>(0.0))
@@ -3879,7 +3879,7 @@ public:
     }
 
     template <typename Other>
-    explicit Matrix4(const Matrix4<Other>& matrix)
+    explicit constexpr Matrix4(const Matrix4<Other>& matrix)
         : col0_row0(static_cast<Real>(matrix.col0_row0))
         , col0_row1(static_cast<Real>(matrix.col0_row1))
         , col0_row2(static_cast<Real>(matrix.col0_row2))
@@ -3899,31 +3899,31 @@ public:
     {
     }
 
-    Matrix4(
+    constexpr Matrix4(
         const Vector4<Real>& column0,
         const Vector4<Real>& column1,
         const Vector4<Real>& column2,
         const Vector4<Real>& column3)
-        : col0_row0(column0.at(0))
-        , col0_row1(column0.at(1))
-        , col0_row2(column0.at(2))
-        , col0_row3(column0.at(3))
-        , col1_row0(column1.at(0))
-        , col1_row1(column1.at(1))
-        , col1_row2(column1.at(2))
-        , col1_row3(column1.at(3))
-        , col2_row0(column2.at(0))
-        , col2_row1(column2.at(1))
-        , col2_row2(column2.at(2))
-        , col2_row3(column2.at(3))
-        , col3_row0(column3.at(0))
-        , col3_row1(column3.at(1))
-        , col3_row2(column3.at(2))
-        , col3_row3(column3.at(3))
+        : col0_row0(column0.x)
+        , col0_row1(column0.y)
+        , col0_row2(column0.z)
+        , col0_row3(column0.w)
+        , col1_row0(column1.x)
+        , col1_row1(column1.y)
+        , col1_row2(column1.z)
+        , col1_row3(column1.w)
+        , col2_row0(column2.x)
+        , col2_row1(column2.y)
+        , col2_row2(column2.z)
+        , col2_row3(column2.w)
+        , col3_row0(column3.x)
+        , col3_row1(column3.y)
+        , col3_row2(column3.z)
+        , col3_row3(column3.w)
     {
     }
 
-    Matrix4(
+    constexpr Matrix4(
         const Real col0_row0,
         const Real col0_row1,
         const Real col0_row2,
@@ -3959,7 +3959,7 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix4 all(const Real value)
+    [[nodiscard]] static constexpr Matrix4 all(const Real value)
     {
         return { { value, value, value, value },
                  { value, value, value, value },
@@ -3967,17 +3967,17 @@ public:
                  { value, value, value, value } };
     }
 
-    [[nodiscard]] static Matrix4 zero()
+    [[nodiscard]] static constexpr Matrix4 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    [[nodiscard]] static Matrix4 one()
+    [[nodiscard]] static constexpr Matrix4 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    [[nodiscard]] static Matrix4 identity()
+    [[nodiscard]] static constexpr Matrix4 identity()
     {
         return { { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
                  { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
