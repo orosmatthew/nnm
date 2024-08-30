@@ -1455,7 +1455,7 @@ public:
         int data[3] {};
     };
 
-    Vector3i()
+    constexpr Vector3i()
         : x(0)
         , y(0)
         , z(0)
@@ -1463,14 +1463,14 @@ public:
     }
 
     template <typename Real = float>
-    explicit Vector3i(const Vector3<Real>& vector)
+    explicit constexpr Vector3i(const Vector3<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
         , z(static_cast<int>(vector.z))
     {
     }
 
-    Vector3i(const Vector2i& vector, const int z)
+    constexpr Vector3i(const Vector2i& vector, const int z)
         : x(vector.x)
         , y(vector.y)
         , z(z)
@@ -1484,52 +1484,52 @@ public:
     {
     }
 
-    static Vector3i all(const int value)
+    static constexpr Vector3i all(const int value)
     {
         return { value, value, value };
     }
 
-    static Vector3i zero()
+    static constexpr Vector3i zero()
     {
         return { 0, 0, 0 };
     }
 
-    static Vector3i one()
+    static constexpr Vector3i one()
     {
         return { 1, 1, 1 };
     }
 
-    static Vector3i axis_x()
+    static constexpr Vector3i axis_x()
     {
         return { 1, 0, 0 };
     }
 
-    static Vector3i axis_y()
+    static constexpr Vector3i axis_y()
     {
         return { 0, 1, 0 };
     }
 
-    static Vector3i axis_z()
+    static constexpr Vector3i axis_z()
     {
         return { 0, 0, 1 };
     }
 
-    [[nodiscard]] Vector3i abs() const
+    [[nodiscard]] constexpr Vector3i abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
     }
 
-    [[nodiscard]] Vector3i clamp(const Vector3i& min, const Vector3i& max) const
+    [[nodiscard]] constexpr Vector3i clamp(const Vector3i& min, const Vector3i& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
-    [[nodiscard]] int manhattan_distance(const Vector3i& to) const
+    [[nodiscard]] constexpr int manhattan_distance(const Vector3i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
-    [[nodiscard]] int length_sqrd() const
+    [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
@@ -1558,7 +1558,7 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] Vector2i xy() const
+    [[nodiscard]] constexpr Vector2i xy() const
     {
         return { x, y };
     }
@@ -1607,17 +1607,17 @@ public:
         return data[index];
     }
 
-    [[nodiscard]] bool operator==(const Vector3i& other) const
+    [[nodiscard]] constexpr bool operator==(const Vector3i& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
 
-    [[nodiscard]] bool operator!=(const Vector3i& other) const
+    [[nodiscard]] constexpr bool operator!=(const Vector3i& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
-    [[nodiscard]] Vector3i operator+(const Vector3i& other) const
+    [[nodiscard]] constexpr Vector3i operator+(const Vector3i& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
     }
@@ -1630,7 +1630,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator-(const Vector3i& other) const
+    [[nodiscard]] constexpr Vector3i operator-(const Vector3i& other) const
     {
         return { x - other.x, y - other.y, z - other.z };
     }
@@ -1643,7 +1643,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator*(const Vector3i& other) const
+    [[nodiscard]] constexpr Vector3i operator*(const Vector3i& other) const
     {
         return { x * other.x, y * other.y, z * other.z };
     }
@@ -1656,7 +1656,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator*(const int value) const
+    [[nodiscard]] constexpr Vector3i operator*(const int value) const
     {
         return { x * value, y * value, z * value };
     }
@@ -1669,7 +1669,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator/(const Vector3i& other) const
+    [[nodiscard]] constexpr Vector3i operator/(const Vector3i& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
     }
@@ -1682,7 +1682,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator/(const int value) const
+    [[nodiscard]] constexpr Vector3i operator/(const int value) const
     {
         return { x / value, y / value, z / value };
     }
@@ -1695,7 +1695,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator%(const Vector3i& other) const
+    [[nodiscard]] constexpr Vector3i operator%(const Vector3i& other) const
     {
         return { x % other.x, y % other.y, z % other.z };
     }
@@ -1708,7 +1708,7 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator%(const int value) const
+    [[nodiscard]] constexpr Vector3i operator%(const int value) const
     {
         return { x % value, y % value, z % value };
     }
@@ -1721,12 +1721,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] Vector3i operator+() const
+    [[nodiscard]] constexpr Vector3i operator+() const
     {
         return { x, y, z };
     }
 
-    [[nodiscard]] Vector3i operator-() const
+    [[nodiscard]] constexpr Vector3i operator-() const
     {
         return { -x, -y, -z };
     }
@@ -1744,23 +1744,23 @@ public:
         return false;
     }
 
-    [[nodiscard]] explicit operator bool() const
+    [[nodiscard]] constexpr explicit operator bool() const
     {
         return x != 0 || y != 0 || z != 0;
     }
 };
 
-inline Vector3i operator*(const int value, const Vector3i& vector)
+constexpr Vector3i operator*(const int value, const Vector3i& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
-inline Vector3i operator/(const int value, const Vector3i& vector)
+constexpr Vector3i operator/(const int value, const Vector3i& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
 }
 
-inline Vector3i operator%(const int value, const Vector3i& vector)
+constexpr Vector3i operator%(const int value, const Vector3i& vector)
 {
     return { value % vector.x, value % vector.y, value % vector.z };
 }
