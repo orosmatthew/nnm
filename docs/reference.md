@@ -649,7 +649,9 @@ Quaternion inverse() const;
 Real length_sqrd() const;
 Real length() const;
 Quaternion slerp(const Quaternion& to, Real weight) const;
-bool is_equal_approx(const Quaternion& other) const;
+Quaternion rotate_axis_angle(const Vector3& axis, Real angle) const;
+Quaternion rotate_quaternion(const Quaternion& by) const;
+bool approx_equal(const Quaternion& other) const;
 Real at(int index) const;
 Real& at(int index);
 ```
@@ -661,7 +663,10 @@ Real operator[](int index) const;
 Real& operator[](int index);
 bool operator==(const Quaternion& other) const;
 bool operator!=(const Quaternion& other) const;
+Quaternion operator*(const Quaternion& other) const;
+Quaternion& operator*=(const Quaternion& other);
 bool operator<(const Quaternion& other) const;
+explicit operator bool() const;
 ```
 
 ## Matrix2
