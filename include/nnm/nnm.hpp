@@ -2959,7 +2959,7 @@ public:
         Real data[9] {};
     };
 
-    Matrix3()
+    constexpr Matrix3()
         : col0_row0(static_cast<Real>(1.0))
         , col0_row1(static_cast<Real>(0.0))
         , col0_row2(static_cast<Real>(0.0))
@@ -2973,7 +2973,7 @@ public:
     }
 
     template <typename Other>
-    explicit Matrix3(const Matrix3<Other>& matrix)
+    explicit constexpr Matrix3(const Matrix3<Other>& matrix)
         : col0_row0(static_cast<Real>(matrix.col0_row0))
         , col0_row1(static_cast<Real>(matrix.col0_row1))
         , col0_row2(static_cast<Real>(matrix.col0_row2))
@@ -2985,20 +2985,21 @@ public:
         , col2_row2(static_cast<Real>(matrix.col2_row2))
     {
     }
-    Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
-        : col0_row0(column0.at(0))
-        , col0_row1(column0.at(1))
-        , col0_row2(column0.at(2))
-        , col1_row0(column1.at(0))
-        , col1_row1(column1.at(1))
-        , col1_row2(column1.at(2))
-        , col2_row0(column2.at(0))
-        , col2_row1(column2.at(1))
-        , col2_row2(column2.at(2))
+
+    constexpr Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
+        : col0_row0(column0.x)
+        , col0_row1(column0.y)
+        , col0_row2(column0.z)
+        , col1_row0(column1.x)
+        , col1_row1(column1.y)
+        , col1_row2(column1.z)
+        , col2_row0(column2.x)
+        , col2_row1(column2.y)
+        , col2_row2(column2.z)
     {
     }
 
-    Matrix3(
+    constexpr Matrix3(
         const Real col0_row0,
         const Real col0_row1,
         const Real col0_row2,
@@ -3020,22 +3021,22 @@ public:
     {
     }
 
-    [[nodiscard]] static Matrix3 all(const Real value)
+    [[nodiscard]] static constexpr Matrix3 all(const Real value)
     {
         return { { value, value, value }, { value, value, value }, { value, value, value } };
     }
 
-    [[nodiscard]] static Matrix3 zero()
+    [[nodiscard]] static constexpr Matrix3 zero()
     {
         return all(static_cast<Real>(0.0));
     }
 
-    [[nodiscard]] static Matrix3 one()
+    [[nodiscard]] static constexpr Matrix3 one()
     {
         return all(static_cast<Real>(1.0));
     }
 
-    [[nodiscard]] static Matrix3 identity()
+    [[nodiscard]] static constexpr Matrix3 identity()
     {
         return { { static_cast<Real>(1.0), static_cast<Real>(0.0), static_cast<Real>(0.0) },
                  { static_cast<Real>(0.0), static_cast<Real>(1.0), static_cast<Real>(0.0) },
