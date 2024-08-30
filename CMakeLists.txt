@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(nnm VERSION 0.1.1)
+project(nnm VERSION 0.2.0)
 
 option(NNM_BUILD_TESTS "NNM Build Tests" OFF)
 
