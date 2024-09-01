@@ -1,3 +1,8 @@
+/* NNM - "No Nonsense Math"
+ * v0.3.0
+ * Copyright (c) 2024-present Matthew Oros
+ */
+
 #ifndef NNM_HPP
 #define NNM_HPP
 
