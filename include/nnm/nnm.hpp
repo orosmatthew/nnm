@@ -4466,16 +4466,55 @@ public:
         return Transform3(matrix);
     }
 
-    static Transform3 from_projection_orthographic(
+    static Transform3 from_orthographic_left_hand_neg1to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
     {
         auto matrix = Matrix4<Real>::identity();
         matrix.at(0, 0) = static_cast<Real>(2.0) / (right - left);
         matrix.at(1, 1) = static_cast<Real>(2.0) / (top - bottom);
         matrix.at(2, 2) = -static_cast<Real>(2.0) / (far - near);
-        matrix.at(3, 0) = -((right + left) / (right - left));
-        matrix.at(3, 1) = -((top + bottom) / (top - bottom));
-        matrix.at(3, 2) = -((far + near) / (far - near));
+        matrix.at(3, 0) = -(right + left) / (right - left);
+        matrix.at(3, 1) = -(top + bottom) / (top - bottom);
+        matrix.at(3, 2) = -(far + near) / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_orthographic_left_hand_0to1(
+        const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::identity();
+        matrix.at(0, 0) = static_cast<Real>(2.0) / (right - left);
+        matrix.at(1, 1) = static_cast<Real>(2.0) / (top - bottom);
+        matrix.at(2, 2) = -static_cast<Real>(1.0) / (far - near);
+        matrix.at(3, 0) = -(right + left) / (right - left);
+        matrix.at(3, 1) = -(top + bottom) / (top - bottom);
+        matrix.at(3, 2) = -near / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_orthographic_right_hand_neg1to1(
+        const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::identity();
+        matrix.at(0, 0) = static_cast<Real>(2.0) / (right - left);
+        matrix.at(1, 1) = static_cast<Real>(2.0) / (top - bottom);
+        matrix.at(2, 2) = static_cast<Real>(2.0) / (far - near);
+        matrix.at(3, 0) = -(right + left) / (right - left);
+        matrix.at(3, 1) = -(top + bottom) / (top - bottom);
+        matrix.at(3, 2) = -(far + near) / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_orthographic_right_hand_0to1(
+        const Real left, const Real right, const Real bottom, const Real top, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::identity();
+        matrix.at(0, 0) = static_cast<Real>(2.0) / (right - left);
+        matrix.at(1, 1) = static_cast<Real>(2.0) / (top - bottom);
+        matrix.at(2, 2) = static_cast<Real>(1.0) / (far - near);
+        matrix.at(3, 0) = -(right + left) / (right - left);
+        matrix.at(3, 1) = -(top + bottom) / (top - bottom);
+        matrix.at(3, 2) = -near / (far - near);
         return Transform3(matrix);
     }
 

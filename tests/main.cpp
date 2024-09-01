@@ -4979,14 +4979,48 @@ int main()
             ASSERT(t.approx_equal(expected));
         }
 
-        test_section("from_projection_orthographic");
+        test_section("from_orthographic_left_hand_neg1to1");
         {
-            const auto t = nnm::Transform3f::from_projection_orthographic(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
-            constexpr nnm::Transform3 expected(
+            const auto t = nnm::Transform3f::from_orthographic_left_hand_neg1to1(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
+            constexpr nnm::Transform3f expected(
                 { { 0.25f, 0.0f, 0.0f, 0.0f },
                   { 0.0f, 0.3333333f, 0.0f, 0.0f },
-                  { 0.0f, 0.0f, -0.0404040404f, 0.0f },
-                  { -0.25f, -0.333333f, -1.0202f, 1.0f } });
+                  { 0.0f, 0.0f, -0.040404f, 0.0f },
+                  { -0.25f, -0.333333f, -1.020202f, 1.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_orthographic_left_hand_0to1");
+        {
+            const auto t = nnm::Transform3f::from_orthographic_left_hand_0to1(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.25f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.3333333f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, -0.020202f, 0.0f },
+                  { -0.25f, -0.333333f, -0.010101f, 1.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_orthographic_right_hand_neg1to1");
+        {
+            const auto t
+                = nnm::Transform3f::from_orthographic_right_hand_neg1to1(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.25f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.333333f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, 0.040404f, 0.0f },
+                  { -0.25f, -0.3333333f, -1.020202f, 1.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_orthographic_right_hand_0to1");
+        {
+            const auto t = nnm::Transform3f::from_orthographic_right_hand_0to1(-3.0f, 5.0f, -2.0f, 4.0f, 0.5f, 50.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.25f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.333333f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, 0.020202f, 0.0f },
+                  { -0.25f, -0.3333333f, -0.010101f, 1.0f } });
             ASSERT(t.approx_equal(expected));
         }
 
