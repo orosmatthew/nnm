@@ -86,6 +86,20 @@ add_subdirectory(external/path/to/nnm)
 target_link_libraries(your_project PRIVATE nnm)
 ```
 
+## Projection Matrices
+
+You might be asking, "What is up with all these variations of perspective/orthographic projection methods? Which one do I use??" This depends on the graphics API you are using as well as the coordinate system you choose for your application. There are two considerations to be aware of, the handedness and the normalization of the graphics API. Here is a short list of common graphics APIs' normalized device coordinate (NDC) conventions:
+
+* OpenGL/WebGL/WebGPU/Metal: left-handed, -1 to 1
+* DirectX: left-handed, 0 to 1
+* Vulkan: right-handed, 0 to 1
+
+This means if your application and graphics API use the same coordinate system, you just need to choose the method with the correct handedness and normalization corresponding to that graphics API. However, if your application and chosen graphics API have mismatching handedness, you must flip the z-axis. For example, if you are using OpenGL (which is left-handed) but wish to use right-handed coordinates in your application, you would still use the projection method corresponding with OpenGL's convention of left-handed and -1 to 1 normalization but just need to flip the z-axis to account for the switched handedness:
+
+```cpp
+const auto prog = nnm::Transform3f::from_perspective_left_hand_neg1to1(...).scale({1, 1, -1});
+```
+
 ## Compiling and Running Tests
 
 After cloning the repository, configure the project with CMake ensuring to enable building tests:
