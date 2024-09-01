@@ -1235,7 +1235,7 @@ static Transform3 from_perspective_right_hand_0to1(Real fov, Real aspect_ratio, 
 static Transform3 from_orthographic_left_hand_neg1to1(Real left, Real right, Real bottom, Real top, Real near_clip, Real far_clip);
 static Transform3 from_orthographic_left_hand_0to1(Real left, Real right, Real bottom, Real top, Real near_clip, Real far_clip);
 static Transform3 from_orthographic_right_hand_neg1to1(Real left, Real right, Real bottom, Real top, Real near_clip, Real far_clip);
-static Transform3 from_orthographic_left_hand_0to1(Real left, Real right, Real bottom, Real top, Real near_clip, Real far_clip);
+static Transform3 from_orthographic_right_hand_0to1(Real left, Real right, Real bottom, Real top, Real near_clip, Real far_clip);
 ```
 
 ### Methods
