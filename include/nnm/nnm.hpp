@@ -1,6 +1,7 @@
 /* NNM - "No Nonsense Math"
  * v0.3.0
  * Copyright (c) 2024-present Matthew Oros
+ * MIT licensed
  */
 
 #ifndef NNM_HPP
