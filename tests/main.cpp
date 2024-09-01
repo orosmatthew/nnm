@@ -4929,14 +4929,51 @@ int main()
             ASSERT(t1.matrix.approx_equal(expected1));
         }
 
-        test_section("from_projection_perspective");
+        test_section("from_perspective_left_hand_neg1to1");
         {
-            const auto t = nnm::Transform3f::from_projection_perspective(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
-            constexpr nnm::Transform3 expected(
+            const auto t
+                = nnm::Transform3f::from_perspective_left_hand_neg1to1(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+            constexpr nnm::Transform3f expected(
                 { { 0.5625f, 0.0f, 0.0f, 0.0f },
                   { 0.0f, 1.0f, 0.0f, 0.0f },
                   { 0.0f, 0.0f, -1.002f, -1.0f },
                   { 0.0f, 0.0f, -0.2002f, 0.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_perspective_left_hand_0to1");
+        {
+            const auto t
+                = nnm::Transform3f::from_perspective_left_hand_0to1(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.5625f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 1.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, -1.001f, -1.0f },
+                  { 0.0f, 0.0f, -0.1001f, 0.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_perspective_right_hand_neg1to1");
+        {
+            const auto t
+                = nnm::Transform3f::from_perspective_right_hand_neg1to1(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.5625f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 1.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, 1.002f, 1.0f },
+                  { 0.0f, 0.0f, -0.2002f, 0.0f } });
+            ASSERT(t.approx_equal(expected));
+        }
+
+        test_section("from_perspective_right_hand_0to1");
+        {
+            const auto t
+                = nnm::Transform3f::from_perspective_right_hand_0to1(nnm::pi() / 2.0f, 16.0f / 9.0f, 0.1f, 100.0f);
+            constexpr nnm::Transform3f expected(
+                { { 0.5625f, 0.0f, 0.0f, 0.0f },
+                  { 0.0f, 1.0f, 0.0f, 0.0f },
+                  { 0.0f, 0.0f, 1.001f, 1.0f },
+                  { 0.0f, 0.0f, -0.1001f, 0.0f } });
             ASSERT(t.approx_equal(expected));
         }
 

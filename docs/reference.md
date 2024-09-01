@@ -1228,7 +1228,10 @@ static Transform3 from_scale(const Vector3& factor);
 static Transform3 from_shear_x(Real angle_y, Real angle_z);
 static Transform3 from_shear_y(Real angle_x, Real angle_z);
 static Transform3 from_shear_z(Real angle_x, Real angle_y);
-static Transform3 from_projection_perspective(Real fov, Real aspect_ratio, Real near, Real far);
+static Transform3 from_perspective_left_hand_neg1to1(Real fov, Real aspect_ratio, Real near, Real far);
+static Transform3 from_perspective_left_hand_0to1(Real fov, Real aspect_ratio, Real near, Real far);
+static Transform3 from_perspective_right_hand_neg1to1(Real fov, Real aspect_ratio, Real near, Real far);
+static Transform3 from_perspective_right_hand_0to1(Real fov, Real aspect_ratio, Real near, Real far);
 static Transform3 from_projection_orthographic(Real left, Real right, Real bottom, Real top, Real near, Real far);
 ```
 

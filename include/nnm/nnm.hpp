@@ -4402,17 +4402,55 @@ public:
         return from_basis(Basis3<Real>::from_shear_z(angle_x, angle_y));
     }
 
-    static Transform3 from_projection_perspective(
+    static Transform3 from_perspective_left_hand_neg1to1(
         const Real fov, const Real aspect_ratio, const Real near, const Real far)
     {
-        Matrix4 matrix;
+        auto matrix = Matrix4<Real>::zero();
         const Real tan_half_fov = tan(fov / static_cast<Real>(2.0));
         matrix.at(0, 0) = static_cast<Real>(1.0) / (aspect_ratio * tan_half_fov);
         matrix.at(1, 1) = static_cast<Real>(1.0) / tan_half_fov;
-        matrix.at(2, 2) = (far + near) / (near - far);
+        matrix.at(2, 2) = -(far + near) / (far - near);
         matrix.at(2, 3) = -static_cast<Real>(1.0);
-        matrix.at(3, 2) = static_cast<Real>(2.0) * far * near / (near - far);
-        matrix.at(3, 3) = static_cast<Real>(0.0);
+        matrix.at(3, 2) = -(static_cast<Real>(2.0) * far * near) / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_perspective_left_hand_0to1(
+        const Real fov, const Real aspect_ratio, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::zero();
+        const Real tan_half_fov = tan(fov / static_cast<Real>(2.0));
+        matrix.at(0, 0) = static_cast<Real>(1.0) / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = static_cast<Real>(1.0) / tan_half_fov;
+        matrix.at(2, 2) = -far / (far - near);
+        matrix.at(2, 3) = -static_cast<Real>(1.0);
+        matrix.at(3, 2) = -(far * near) / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_perspective_right_hand_neg1to1(
+        const Real fov, const Real aspect_ratio, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::zero();
+        const Real tan_half_fov = tan(fov / static_cast<Real>(2.0));
+        matrix.at(0, 0) = static_cast<Real>(1.0) / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = static_cast<Real>(1.0) / tan_half_fov;
+        matrix.at(2, 2) = (far + near) / (far - near);
+        matrix.at(2, 3) = static_cast<Real>(1.0);
+        matrix.at(3, 2) = -(static_cast<Real>(2.0) * far * near) / (far - near);
+        return Transform3(matrix);
+    }
+
+    static Transform3 from_perspective_right_hand_0to1(
+        const Real fov, const Real aspect_ratio, const Real near, const Real far)
+    {
+        auto matrix = Matrix4<Real>::zero();
+        const Real tan_half_fov = tan(fov / static_cast<Real>(2.0));
+        matrix.at(0, 0) = static_cast<Real>(1.0) / (aspect_ratio * tan_half_fov);
+        matrix.at(1, 1) = static_cast<Real>(1.0) / tan_half_fov;
+        matrix.at(2, 2) = far / (far - near);
+        matrix.at(2, 3) = static_cast<Real>(1.0);
+        matrix.at(3, 2) = -(far * near) / (far - near);
         return Transform3(matrix);
     }
 
