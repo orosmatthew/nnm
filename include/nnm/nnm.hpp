@@ -67,12 +67,18 @@ constexpr int abs(const int value)
 template <typename Real = float>
 constexpr Real max(const Real a, const Real b)
 {
-    return std::max(a, b);
+    if (a > b) {
+        return a;
+    }
+    return b;
 }
 
 constexpr int max(const int a, const int b)
 {
-    return std::max(a, b);
+    if (a > b) {
+        return a;
+    }
+    return b;
 }
 
 template <typename Real = float>
@@ -233,12 +239,18 @@ Real acos(const Real value)
 template <typename Real = float>
 constexpr Real min(const Real a, const Real b)
 {
-    return std::min(a, b);
+    if (a < b) {
+        return a;
+    }
+    return b;
 }
 
 constexpr int min(const int a, const int b)
 {
-    return std::min(a, b);
+    if (a < b) {
+        return a;
+    }
+    return b;
 }
 
 template <typename Real = float>

@@ -388,11 +388,13 @@ int main()
         ASSERT(result1 == 1);
         ASSERT(nnm::min(5, 3) == 3);
         ASSERT(nnm::min(-1, -5) == -5);
+        ASSERT(nnm::min(3, 3) == 3);
 
         constexpr auto result2 = nnm::min(1.0f, 2.0f);
         ASSERT(result2 == 1.0f);
         ASSERT(nnm::min(5.5f, 3.5f) == 3.5f);
         ASSERT(nnm::min(-1.0f, -5.0f) == -5.0f);
+        ASSERT(nnm::min(3.0f, 3.0f) == 3.0f);
 
         ASSERT(nnm::min('a', 'b') == 'a');
         ASSERT(nnm::min(3.14f, 2.71f) == 2.71f);
