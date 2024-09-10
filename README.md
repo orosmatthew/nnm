@@ -13,11 +13,12 @@ style of [Godot's](https://github.com/godotengine/godot) math library.
 // Compute transform of an object in 3d space
 nnm::Transform3f calculate_object_transform(
     const nnm::Vector3f& position, const nnm::Vector2f& rotation)
-{	
-    const float aspect_ratio = nnm::Vector2(16.0f, 9.0f).aspect_ratio();
-    const float fov = nnm::radians(90.0f);
-    const auto projection = nnm::Transform3f::from_projection_perspective(
-        fov, aspect_ratio, 0.1f, 100.0f);
+{
+    constexpr float aspect_ratio = nnm::Vector2(16.0f, 9.0f).aspect_ratio();
+    constexpr float fov = nnm::radians(90.0f);
+    const auto projection
+        = nnm::Transform3f::from_perspective_left_hand_neg1to1(
+            fov, aspect_ratio, 0.1f, 100.0f);
     const auto view
         = nnm::Transform3f::from_translation(position)
               .rotate_axis_angle(nnm::Vector3f::axis_y(), rotation.y)
