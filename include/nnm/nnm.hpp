@@ -1,5 +1,5 @@
 /* NNM - "No Nonsense Math"
- * v0.3.0
+ * v0.3.1
  * Copyright (c) 2024-present Matthew Oros
  * Licensed under MIT
  */
@@ -895,7 +895,6 @@ public:
     {
         x -= other.x;
         y -= other.y;
-
         return *this;
     }
 
@@ -1349,7 +1348,6 @@ public:
         x += other.x;
         y += other.y;
         z += other.z;
-
         return *this;
     }
 
@@ -1404,7 +1402,6 @@ public:
         x /= other.x;
         y /= other.y;
         z /= other.z;
-
         return *this;
     }
 
@@ -2253,9 +2250,9 @@ public:
 
     [[nodiscard]] static Quaternion from_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
-        const Vector3 norm = axis.normalize();
+        const Vector3<Real> norm = axis.normalize();
         const Real half_sin = sin(angle / static_cast<Real>(2));
-        Quaternion result;
+        Quaternion<Real> result;
         result.x = norm.x * half_sin;
         result.y = norm.y * half_sin;
         result.z = norm.z * half_sin;
@@ -2265,9 +2262,9 @@ public:
 
     [[nodiscard]] static Quaternion from_vector_to_vector(const Vector3<Real>& from, const Vector3<Real>& to)
     {
-        const Vector3 from_norm = from.normalize();
-        const Vector3 to_norm = to.normalize();
-        const Vector3 axis = from_norm.cross(to_norm).normalize();
+        const Vector3<Real> from_norm = from.normalize();
+        const Vector3<Real> to_norm = to.normalize();
+        const Vector3<Real> axis = from_norm.cross(to_norm).normalize();
         const Real dot = clamp(from_norm.dot(to_norm), static_cast<Real>(-1), static_cast<Real>(1));
         const Real angle = acos(dot);
         return from_axis_angle(axis, angle);
@@ -2280,7 +2277,7 @@ public:
 
     [[nodiscard]] Vector3<Real> axis(const Quaternion& to) const
     {
-        const Vector3 cross = vector.xyz().cross(to.vector.xyz());
+        const Vector3<Real> cross = vector.xyz().cross(to.vector.xyz());
         return cross.normalize();
     }
 
@@ -2382,7 +2379,7 @@ public:
 
     [[nodiscard]] constexpr Quaternion operator*(const Quaternion& other) const
     {
-        Vector4 vector;
+        Vector4<Real> vector;
         vector.x = w * other.x + x * other.w + y * other.z - z * other.y;
         vector.y = w * other.y - x * other.z + y * other.w + z * other.x;
         vector.z = w * other.z + x * other.y - y * other.x + z * other.w;
@@ -2694,7 +2691,7 @@ public:
 
     [[nodiscard]] Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
-        Vector2 result;
+        Vector2<Real> result;
         for (int r = 0; r < 2; ++r) {
             result.at(r) = at(0, r) * vector.at(0) + at(1, r) * vector.at(1);
         }
@@ -3076,7 +3073,7 @@ public:
 
     [[nodiscard]] Matrix2<Real> minor_matrix_at(const int column, const int row) const
     {
-        Matrix2 minor_matrix;
+        Matrix2<Real> minor_matrix;
         int minor_col = 0;
         for (int c = 0; c < 3; ++c) {
             if (c == column) {
@@ -3414,7 +3411,7 @@ public:
 
     static Transform2 from_basis_translation(const Basis2<Real>& basis, const Vector2<Real>& translation)
     {
-        Matrix3 matrix;
+        Matrix3<Real> matrix;
         for (int c = 0; c < 2; ++c) {
             for (int r = 0; r < 2; ++r) {
                 matrix.at(c, r) = basis.at(c, r);
@@ -3432,27 +3429,27 @@ public:
 
     static Transform2 from_translation(const Vector2<Real>& pos)
     {
-        return from_basis_translation(Basis2(), pos);
+        return from_basis_translation(Basis2<Real>(), pos);
     }
 
     static Transform2 from_rotation(const Real angle)
     {
-        return from_basis_translation(Basis2<Real>::from_rotation(angle), Vector2());
+        return from_basis_translation(Basis2<Real>::from_rotation(angle), Vector2<Real>());
     }
 
     static Transform2 from_scale(const Vector2<Real>& factor)
     {
-        return from_basis_translation(Basis2<Real>::from_scale(factor), Vector2());
+        return from_basis_translation(Basis2<Real>::from_scale(factor), Vector2<Real>());
     }
 
     static Transform2 from_shear_x(const Real angle_y)
     {
-        return from_basis_translation(Basis2<Real>::from_shear_x(angle_y), Vector2());
+        return from_basis_translation(Basis2<Real>::from_shear_x(angle_y), Vector2<Real>());
     }
 
     static Transform2 from_shear_y(const Real angle_x)
     {
-        return from_basis_translation(Basis2<Real>::from_shear_y(angle_x), Vector2());
+        return from_basis_translation(Basis2<Real>::from_shear_y(angle_x), Vector2<Real>());
     }
 
     [[nodiscard]] Real trace() const
@@ -3639,12 +3636,12 @@ public:
 
     static Basis3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
-        const Vector3 norm = axis.normalize();
+        const Vector3<Real> norm = axis.normalize();
         // Rodrigues' formula
-        const Matrix3 k_matrix { { static_cast<Real>(0), norm.z, -norm.y },
-                                 { -norm.z, static_cast<Real>(0), norm.x },
-                                 { norm.y, -norm.x, static_cast<Real>(0) } };
-        const Matrix3 r_matrix
+        const Matrix3<Real> k_matrix { { static_cast<Real>(0), norm.z, -norm.y },
+                                       { -norm.z, static_cast<Real>(0), norm.x },
+                                       { norm.y, -norm.x, static_cast<Real>(0) } };
+        const Matrix3<Real> r_matrix
             = Matrix3<Real>::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
         return Basis3(r_matrix);
     }
@@ -3652,7 +3649,7 @@ public:
     static Basis3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
         const Quaternion<Real>& q = quaternion;
-        Matrix3 matrix;
+        Matrix3<Real> matrix;
         matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
         matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
         matrix.at(0, 2) = 2 * (q.x * q.z - q.y * q.w);
@@ -4019,7 +4016,7 @@ public:
     [[nodiscard]] Matrix3<Real> minor_matrix_at(const int column, const int row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
-        Matrix3 minor_matrix;
+        Matrix3<Real> minor_matrix;
         int minor_col = 0;
         for (int c = 0; c < 4; ++c) {
             if (c == column) {
@@ -4383,7 +4380,7 @@ public:
 
     static Transform3 from_translation(const Vector3<Real>& translation)
     {
-        return from_basis_translation(Basis3(), translation);
+        return from_basis_translation(Basis3<Real>(), translation);
     }
 
     static Transform3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
@@ -4766,7 +4763,7 @@ Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
 template <typename Real>
 Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
 {
-    return Vector3(*this, z).transform(by).xy();
+    return Vector3<Real>(*this, z).transform(by).xy();
 }
 
 template <typename Real>
@@ -4862,7 +4859,7 @@ Vector3<Real> Vector3<Real>::transform(const Transform2<Real>& by) const
 template <typename Real>
 Vector3<Real> Vector3<Real>::transform(const Transform3<Real>& by, const Real w) const
 {
-    return Vector4(*this, w).transform(by).xyz();
+    return Vector4<Real>(*this, w).transform(by).xyz();
 }
 
 template <typename Real>
@@ -4880,7 +4877,7 @@ Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
 template <typename Real>
 Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
 {
-    Matrix4 result;
+    Matrix4<Real> result;
     for (int c = 0; c < 4; ++c) {
         for (int r = 0; r < 4; ++r) {
             result.at(c, r) = at(c) * other.at(r);
