@@ -14,111 +14,96 @@ namespace nnm {
 template <typename Real = float>
 class Line2 {
 public:
-    Real a;
-    Real b;
-    Real c;
+    Vector2<Real> origin;
+    Vector2<Real> direction;
 
     constexpr Line2()
-        : a { static_cast<Real>(0) }
-        , b { static_cast<Real>(0) }
-        , c { static_cast<Real>(0) }
+        : origin { Vector2<Real>::zero() }
+        , direction { static_cast<Real>(1), static_cast<Real>(0) }
     {
     }
 
-    constexpr Line2(const Real a, const Real b, const Real c)
-        : a { a }
-        , b { b }
-        , c { c }
+    constexpr Line2(const Vector2<Real>& origin, const Vector2<Real>& direction)
+        : origin { origin }
+        , direction { direction.normalize() }
     {
-    }
-
-    static Line2 from_point_direction(const Vector2<Real>& point, const Vector2<Real>& direction)
-    {
-        const Vector2<Real> norm_dir = direction.normalize();
-        const Line2 line { -norm_dir.y, norm_dir.x, -(-norm_dir.y * point.x + norm_dir.x * point.y) };
-        return line.normalize();
-    }
-
-    static Line2 from_point_parallel(const Vector2<Real>& point, const Line2& line)
-    {
-        const Line2 result { line.a, line.b, -(line.a * point.x + line.b * point.y) };
-        return result.normalize();
     }
 
     static Line2 from_points(const Vector2<Real>& point1, const Vector2<Real>& point2)
     {
-        const Line2 line { point2.y - point1.y, point1.x - point2.x, point2.x * point1.y - point1.x * point2.y };
-        return line.normalize();
+        return { point1, point1.direction(point2) };
     }
 
-    static Line2 from_point_perpendicular(const Vector2<Real>& point, const Line2& line)
+    [[nodiscard]] Line2 parallel_contains(const Vector2<Real>& point)
     {
-        const Line2 result { line.b, -line.a, -(line.b * point.x + -line.a * point.y) };
-        return result.normalize();
+        return { point, direction };
+    }
+
+    [[nodiscard]] Line2 perpendicular_contains(const Vector2<Real>& point)
+    {
+        return { point, { -direction.y, direction.x } };
     }
 
     [[nodiscard]] Line2 normalize() const
     {
-        const Real norm = sqrt(sqrd(a) + sqrd(b));
-        if (norm != static_cast<Real>(0)) {
-            return { a / norm, b / norm, c / norm };
-        }
-        return { a, b, c };
+        return { origin, direction.normalize() };
     }
 
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
-        return approx_zero(a * point.x + b * point.y + c);
+        const Vector2<Real> t = (point - origin) / direction;
+        return approx_zero(t.x - t.y);
     }
 
     [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
     {
-        return abs(a * point.x + b * point.y + c);
+        return abs(direction.cross(point - origin));
     }
 
     [[nodiscard]] constexpr Real signed_distance(const Vector2<Real>& point) const
     {
-        return a * point.x + b * point.y + c;
+        return direction.cross(point - origin);
     }
 
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
-        return approx_zero(a * other.b - b * other.a);
+        return approx_zero(direction.cross(other.direction));
     }
 
     [[nodiscard]] constexpr Vector2<Real> unchecked_intersection(const Line2& other) const
     {
-        const Real det = a * other.b - other.a * b;
-        const Real x = (other.b * c - b * other.c) / det;
-        const Real y = (a * other.c - other.a * c) / det;
-        return { x, y };
+        const Real denom = direction.cross(other.direction);
+        const Vector2<Real> diff = other.origin - origin;
+        const Real t = diff.cross(other.direction) / denom;
+        return origin + direction * t;
     }
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2& other) const
     {
-        const Real det = a * other.b - other.a * b;
-        if (det == static_cast<Real>(0)) {
+        const Real denom = direction.cross(other.direction);
+        if (approx_zero(denom)) {
             return std::nullopt;
         }
-        const Real x = (other.b * c - b * other.c) / det;
-        const Real y = (a * other.c - other.a * c) / det;
-        return { x, y };
+        const Vector2<Real> diff = other.origin - origin;
+        const Real t = diff.cross(other.direction) / denom;
+        return origin + direction * t;
     }
 
     [[nodiscard]] constexpr Vector2<Real> project(const Vector2<Real>& point) const
     {
-        Real t = (a * point.x + b * point.y + c) / (sqrd(a) + sqrd(b));
-        return { point.x - a * t, point.y - b * t };
+        const Vector2<Real> diff = point - origin;
+        const Real t = diff.dot(direction) / direction.dot(direction);
+        return origin + direction * t;
     }
 
     [[nodiscard]] constexpr Real unchecked_slope() const
     {
-        return -a / b;
+        return direction.y / direction.x;
     }
 
     [[nodiscard]] constexpr std::optional<Real> slope() const
     {
-        if (b == static_cast<Real>(0)) {
+        if (direction.x == static_cast<Real>(0)) {
             return std::nullopt;
         }
         return unchecked_slope();
@@ -126,12 +111,13 @@ public:
 
     [[nodiscard]] constexpr Real unchecked_intercept_x() const
     {
-        return -c / a;
+        const Real t = -origin.y / direction.y;
+        return origin.x + direction.x * t;
     }
 
     [[nodiscard]] constexpr std::optional<Real> intercept_x() const
     {
-        if (a == static_cast<Real>(0)) {
+        if (direction.y == static_cast<Real>(0)) {
             return std::nullopt;
         }
         return unchecked_intercept_x();
@@ -139,35 +125,99 @@ public:
 
     [[nodiscard]] Real unchecked_intercept_y() const
     {
-        return -c / b;
+        const Real t = -origin.x / direction.x;
+        return origin.y + direction.y * t;
     }
 
     [[nodiscard]] constexpr std::optional<Real> intercept_y() const
     {
-        if (b == static_cast<Real>(0)) {
+        if (direction.x == static_cast<Real>(0)) {
             return std::nullopt;
         }
         return unchecked_intercept_y();
     }
 
-    [[nodiscard]] constexpr bool horizontal() const
+    [[nodiscard]] Line2 origin_to_center() const
     {
-        return a == static_cast<Real>(0);
+        return { Vector2<Real>::zero(), direction };
     }
 
-    [[nodiscard]] constexpr bool approx_horizontal() const
+    [[nodiscard]] Line2 transform(const Basis2<Real>& by) const
     {
-        return approx_zero(a);
+        return { origin.transform(by), direction.transform(by).normalize() };
     }
 
-    [[nodiscard]] constexpr bool vertical() const
+    [[nodiscard]] Line2 transform_local(const Basis2<Real>& by) const
     {
-        return b == static_cast<Real>(0);
+        const Vector2<Real> saved_origin = origin;
+        return transform(by).translate(saved_origin);
     }
 
-    [[nodiscard]] constexpr bool approx_vertical() const
+    [[nodiscard]] Line2 transform(const Transform2<Real>& by) const
     {
-        return approx_zero(b);
+        return { origin.transform(by), direction.transform(by).normalize() };
+    }
+
+    [[nodiscard]] Line2 transform_local(const Transform2<Real>& by) const
+    {
+        const Vector2<Real> saved_origin = origin;
+        return transform(by).translate(saved_origin);
+    }
+
+    [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
+    {
+        return transform(Transform2<Real>::from_translation(by));
+    }
+
+    [[nodiscard]] Line2 scale(const Vector2<Real>& by) const
+    {
+        return transform(Basis2<Real>::from_scale(by));
+    }
+
+    [[nodiscard]] Line2 scale_local(const Vector2<Real>& by) const
+    {
+        return transform_local(Basis2<Real>::from_scale(by));
+    }
+
+    [[nodiscard]] Line2 rotate(const Real angle) const
+    {
+        return transform(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Line2 rotate_local(const Real angle) const
+    {
+        return transform(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Line2 shear_x(const Real angle_y) const
+    {
+        return transform(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Line2 shear_x_local(const Real angle_y) const
+    {
+        return transform_local(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Line2 shear_y(const Real angle_x) const
+    {
+        return transform(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] Line2 shear_y_local(const Real angle_x) const
+    {
+        return transform_local(Basis2<Real>::from_shear_y(angle_x));
+    }
+};
+
+template <typename Real = float>
+class Ray2 {
+public:
+    Vector2<Real> origin;
+    Vector2<Real> direction;
+
+    Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
+    {
     }
 };
 
