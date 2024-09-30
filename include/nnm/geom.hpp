@@ -57,7 +57,7 @@ public:
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> t = (point - origin) / direction;
-        return approx_zero(t.x - t.y);
+        return approx_equal(t.x, t.y);
     }
 
     [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
