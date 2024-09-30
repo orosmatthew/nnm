@@ -12,6 +12,11 @@
 namespace nnm {
 
 template <typename Real = float>
+class Line2;
+using Line2f = Line2<>;
+using Line2d = Line2<double>;
+
+template <typename Real>
 class Line2 {
 public:
     Vector2<Real> origin;
@@ -25,7 +30,7 @@ public:
 
     constexpr Line2(const Vector2<Real>& origin, const Vector2<Real>& direction)
         : origin { origin }
-        , direction { direction.normalize() }
+        , direction { direction }
     {
     }
 
@@ -34,12 +39,12 @@ public:
         return { point1, point1.direction(point2) };
     }
 
-    [[nodiscard]] Line2 parallel_contains(const Vector2<Real>& point)
+    [[nodiscard]] constexpr Line2 parallel_contains(const Vector2<Real>& point) const
     {
         return { point, direction };
     }
 
-    [[nodiscard]] Line2 perpendicular_contains(const Vector2<Real>& point)
+    [[nodiscard]] constexpr Line2 perpendicular_contains(const Vector2<Real>& point) const
     {
         return { point, { -direction.y, direction.x } };
     }
@@ -68,6 +73,11 @@ public:
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Line2& other) const
+    {
+        return approx_zero(direction.dot(other.direction));
     }
 
     [[nodiscard]] constexpr Vector2<Real> unchecked_intersection(const Line2& other) const
@@ -123,7 +133,7 @@ public:
         return unchecked_intercept_x();
     }
 
-    [[nodiscard]] Real unchecked_intercept_y() const
+    [[nodiscard]] constexpr Real unchecked_intercept_y() const
     {
         const Real t = -origin.x / direction.x;
         return origin.y + direction.y * t;
@@ -137,7 +147,7 @@ public:
         return unchecked_intercept_y();
     }
 
-    [[nodiscard]] Line2 origin_to_center() const
+    [[nodiscard]] constexpr Line2 origin_to_center() const
     {
         return { Vector2<Real>::zero(), direction };
     }

@@ -11,5 +11,6 @@
 int main()
 {
     nnm_tests();
+    geom_tests();
     END_TESTS
 }
