@@ -10,7 +10,6 @@ add_library(nnm INTERFACE)
 target_include_directories(nnm INTERFACE include)
 
 if (NNM_BUILD_TESTS)
-    add_executable(nnm_tests tests/main.cpp
-            tests/test.hpp)
+    add_executable(nnm_tests tests/main.cpp)
     target_link_libraries(nnm_tests PRIVATE nnm)
 endif ()
