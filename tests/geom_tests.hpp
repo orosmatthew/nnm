@@ -177,9 +177,9 @@ inline void geom_tests()
             ASSERT_FALSE(line4.intercept_y().has_value());
         }
 
-        test_section("origin_to_center");
+        test_section("translate_to_origin");
         {
-            constexpr auto result = line2.origin_to_center();
+            constexpr auto result = line2.translate_to_origin();
             ASSERT(result.origin == nnm::Vector2f::zero());
             ASSERT(result.direction == line2.direction);
         }

@@ -147,7 +147,7 @@ public:
         return unchecked_intercept_y();
     }
 
-    [[nodiscard]] constexpr Line2 origin_to_center() const
+    [[nodiscard]] constexpr Line2 translate_to_origin() const
     {
         return { Vector2<Real>::zero(), direction };
     }
@@ -160,7 +160,7 @@ public:
     [[nodiscard]] Line2 transform_local(const Basis2<Real>& by) const
     {
         const Vector2<Real> saved_origin = origin;
-        return transform(by).translate(saved_origin);
+        return translate_to_origin().transform(by).translate(saved_origin);
     }
 
     [[nodiscard]] Line2 transform(const Transform2<Real>& by) const
@@ -171,7 +171,7 @@ public:
     [[nodiscard]] Line2 transform_local(const Transform2<Real>& by) const
     {
         const Vector2<Real> saved_origin = origin;
-        return transform(by).translate(saved_origin);
+        return translate_to_origin().transform(by).translate(saved_origin);
     }
 
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
