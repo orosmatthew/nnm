@@ -177,11 +177,112 @@ inline void geom_tests()
             ASSERT_FALSE(line4.intercept_y().has_value());
         }
 
-        test_section("translate_to_origin");
+        test_section("approx_coincident");
         {
-            constexpr auto result = line2.translate_to_origin();
-            ASSERT(result.origin == nnm::Vector2f::zero());
-            ASSERT(result.direction == line2.direction);
+            ASSERT_FALSE(line1.approx_coincident(line2));
+            constexpr nnm::Line2f line3 { { 0.0f, -3.0f }, { -0.70710678f, -0.70710678f } };
+            ASSERT(line2.approx_coincident(line3));
+        }
+
+        constexpr nnm::Line2f line3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
+
+        test_section("transform(const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
+            const nnm::Line2f result = line3.transform(basis);
+            ASSERT(result.origin.approx_equal({ 6.0f, 2.0f }));
+            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+        }
+
+        test_section("transform_local(const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
+            const nnm::Line2f result = line3.transform_local(basis);
+            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+        }
+
+        test_section("transform(const Transform2&)");
+        {
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const nnm::Line2f result = line3.transform(t);
+            ASSERT(result.origin.approx_equal({ 0.0f, 14.0f }));
+            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
+        }
+
+        test_section("transform_local(const Transform2&)");
+        {
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const nnm::Line2f result = line3.transform_local(t);
+            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
+        }
+
+        test_section("translate");
+        {
+            const nnm::Line2f result = line3.translate({ -2.0f, 3.0f });
+            ASSERT(result.origin.approx_equal({ 1.0f, 2.0f }));
+            ASSERT(result.direction.approx_equal(line3.direction));
+        }
+
+        test_section("scale");
+        {
+            const nnm::Line2f result = line3.scale({ -2.0f, 3.0f });
+            ASSERT(result.origin.approx_equal({ -6.0f, -3.0f }));
+            ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
+        }
+
+        test_section("scale_local");
+        {
+            const nnm::Line2f result = line3.scale_local({ -2.0f, 3.0f });
+            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
+        }
+
+        test_section("shear_x");
+        {
+            const nnm::Line2f result = line3.shear_x(nnm::pi() / 3.0f);
+            ASSERT(result.origin.approx_equal({ 1.26794919f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+        }
+
+        test_section("shear_x_local");
+        {
+            const nnm::Line2f result = line3.shear_x_local(nnm::pi() / 3.0f);
+            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+        }
+
+        test_section("shear_y");
+        {
+            const nnm::Line2f result = line3.shear_y(-nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.0f, -3.17963f }));
+            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
+        }
+
+        test_section("shear_y_local");
+        {
+            const nnm::Line2f result = line3.shear_y_local(-nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(line1 < line2);
+            ASSERT_FALSE(line2 < line1);
+        }
+
+        test_section("operator==");
+        {
+            ASSERT_FALSE(line1 == line2);
+            ASSERT(line1 == line1);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT(line1 != line2);
+            ASSERT_FALSE(line1 != line1);
         }
     }
 }

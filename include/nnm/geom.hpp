@@ -147,9 +147,13 @@ public:
         return unchecked_intercept_y();
     }
 
-    [[nodiscard]] constexpr Line2 translate_to_origin() const
+    [[nodiscard]] bool approx_coincident(const Line2& other) const
     {
-        return { Vector2<Real>::zero(), direction };
+        if (!approx_parallel(other)) {
+            return false;
+        }
+        const Vector2<Real> diff = origin - other.origin;
+        return approx_zero(diff.cross(other.direction));
     }
 
     [[nodiscard]] Line2 transform(const Basis2<Real>& by) const
@@ -159,19 +163,17 @@ public:
 
     [[nodiscard]] Line2 transform_local(const Basis2<Real>& by) const
     {
-        const Vector2<Real> saved_origin = origin;
-        return translate_to_origin().transform(by).translate(saved_origin);
+        return { origin, direction.transform(by).normalize() };
     }
 
     [[nodiscard]] Line2 transform(const Transform2<Real>& by) const
     {
-        return { origin.transform(by), direction.transform(by).normalize() };
+        return { origin.transform(by), direction.transform(by, static_cast<Real>(0)).normalize() };
     }
 
     [[nodiscard]] Line2 transform_local(const Transform2<Real>& by) const
     {
-        const Vector2<Real> saved_origin = origin;
-        return translate_to_origin().transform(by).translate(saved_origin);
+        return { origin, direction.transform(by, static_cast<Real>(0)).normalize() };
     }
 
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
@@ -217,6 +219,21 @@ public:
     [[nodiscard]] Line2 shear_y_local(const Real angle_x) const
     {
         return transform_local(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] bool operator==(const Line2& other) const
+    {
+        return origin == other.origin && direction == other.direction;
+    }
+
+    [[nodiscard]] bool operator!=(const Line2& other) const
+    {
+        return origin != other.origin || direction != other.direction;
+    }
+
+    [[nodiscard]] bool operator<(const Line2& other) const
+    {
+        return origin < other.origin && direction < other.direction;
     }
 };
 
