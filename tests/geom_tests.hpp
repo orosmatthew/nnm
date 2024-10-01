@@ -179,7 +179,8 @@ inline void geom_tests()
 
         test_section("approx_coincident");
         {
-            ASSERT_FALSE(line1.approx_coincident(line2));
+            constexpr auto result = line1.approx_coincident(line2);
+            ASSERT_FALSE(result);
             constexpr nnm::Line2f line3 { { 0.0f, -3.0f }, { -0.70710678f, -0.70710678f } };
             ASSERT(line2.approx_coincident(line3));
         }

@@ -147,7 +147,7 @@ public:
         return unchecked_intercept_y();
     }
 
-    [[nodiscard]] bool approx_coincident(const Line2& other) const
+    [[nodiscard]] constexpr bool approx_coincident(const Line2& other) const
     {
         if (!approx_parallel(other)) {
             return false;
