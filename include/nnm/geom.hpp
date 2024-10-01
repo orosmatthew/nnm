@@ -19,6 +19,10 @@ template <typename Real = float>
 class Ray2;
 using Ray2f = Ray2<>;
 using Ray2d = Ray2<double>;
+template <typename Real = float>
+class Segment2;
+using Segment2f = Segment2<>;
+using Segment2d = Segment2<double>;
 
 template <typename Real>
 class Line2 {
@@ -438,6 +442,44 @@ public:
             return origin < other.origin;
         }
         return direction < other.direction;
+    }
+};
+
+template <typename Real>
+class Segment2 {
+public:
+    Vector2<Real> from;
+    Vector2<Real> to;
+
+    constexpr Segment2()
+        : from { Vector2<Real>::zero() }
+        , to { Vector2<Real>::zero() }
+    {
+    }
+
+    constexpr Segment2(const Vector2<Real>& from, const Vector2<Real>& to)
+        : from { from }
+        , to { to }
+    {
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> diff1 = point - from;
+        const Vector2<Real> diff2 = to - from;
+        return approx_zero(diff1.cross(diff2));
+    }
+
+    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point)
+    {
+        const Vector2<Real> diff1 = point - from;
+        const Vector2<Real> diff2 = to - from;
+        if (!approx_zero(diff1.cross(diff2))) {
+            return false;
+        }
+        const Real dot = diff1.dot(diff2);
+        const Real length_sqrd = diff2.dot(diff2);
+        return dot >= static_cast<Real>(0) && dot <= length_sqrd;
     }
 };
 
