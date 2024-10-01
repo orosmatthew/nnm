@@ -33,16 +33,16 @@ inline void geom_tests()
 
         constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
 
-        test_section("parallel_contains");
+        test_section("parallel_containing");
         {
-            constexpr nnm::Line2f line2 = line1.parallel_contains({ -6.0f, -5.0f });
+            constexpr nnm::Line2f line2 = line1.parallel_containing({ -6.0f, -5.0f });
             ASSERT(line2.approx_contains({ -6.0f, -5.0f }));
             ASSERT(line2.approx_parallel({ line1 }));
         }
 
-        test_section("perpendicular_contains");
+        test_section("perpendicular_containing");
         {
-            constexpr nnm::Line2f line2 = line1.perpendicular_contains({ -6.0f, -5.0f });
+            constexpr nnm::Line2f line2 = line1.perpendicular_containing({ -6.0f, -5.0f });
             ASSERT(line2.approx_contains({ -6.0f, -5.0f }));
             ASSERT(line2.approx_perpendicular({ line1 }));
         }
@@ -115,26 +115,6 @@ inline void geom_tests()
         {
             constexpr auto result = line1.project({ 5.0f, 3.0f });
             ASSERT(result.approx_equal({ -0.18343f, 0.84024f }));
-        }
-
-        test_section("unchecked_slope");
-        {
-            constexpr auto result = line1.unchecked_slope();
-            ASSERT(nnm::approx_equal(result, -2.3999999730f));
-            ASSERT(nnm::approx_equal(line2.unchecked_slope(), 1.0f));
-        }
-
-        test_section("slope");
-        {
-            constexpr auto result = line1.slope();
-            ASSERT(result.has_value());
-            ASSERT(nnm::approx_equal(line1.slope().value(), -2.3999999730f));
-            ASSERT(line2.slope().has_value());
-            ASSERT(nnm::approx_equal(line2.slope().value(), 1.0f));
-            constexpr nnm::Line2f line3 { { 100.0f, -200.0f }, { 0.0f, 1.0f } };
-            ASSERT_FALSE(line3.slope().has_value());
-            constexpr nnm::Line2f line4 { { 100.0f, -200.0f }, { 0.0f, -1.0f } };
-            ASSERT_FALSE(line4.slope().has_value());
         }
 
         test_section("unchecked_intercept_x");

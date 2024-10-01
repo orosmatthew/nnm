@@ -15,6 +15,10 @@ template <typename Real = float>
 class Line2;
 using Line2f = Line2<>;
 using Line2d = Line2<double>;
+template <typename Real = float>
+class Ray2;
+using Ray2f = Line2<>;
+using Ray2d = Line2<double>;
 
 template <typename Real>
 class Line2 {
@@ -39,12 +43,12 @@ public:
         return { point1, point1.direction(point2) };
     }
 
-    [[nodiscard]] constexpr Line2 parallel_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Line2 parallel_containing(const Vector2<Real>& point) const
     {
         return { point, direction };
     }
 
-    [[nodiscard]] constexpr Line2 perpendicular_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Line2 perpendicular_containing(const Vector2<Real>& point) const
     {
         return { point, { -direction.y, direction.x } };
     }
@@ -90,14 +94,18 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2& other) const
     {
-        const Real denom = direction.cross(other.direction);
-        if (approx_zero(denom)) {
+        const Real dir_cross = direction.cross(other.direction);
+        if (dir_cross == static_cast<Real>(0)) {
             return std::nullopt;
         }
         const Vector2<Real> diff = other.origin - origin;
-        const Real t = diff.cross(other.direction) / denom;
+        const Real t = diff.cross(other.direction) / dir_cross;
         return origin + direction * t;
     }
+
+    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const;
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const;
 
     [[nodiscard]] constexpr Vector2<Real> project(const Vector2<Real>& point) const
     {
@@ -233,18 +241,197 @@ public:
 
     [[nodiscard]] bool operator<(const Line2& other) const
     {
-        return origin < other.origin && direction < other.direction;
+        if (origin != other.origin) {
+            return origin < other.origin;
+        }
+        return direction < other.direction;
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 class Ray2 {
 public:
     Vector2<Real> origin;
     Vector2<Real> direction;
 
     Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
+        : origin { origin }
+        , direction { direction }
     {
+    }
+
+    static Ray2 from_point_to_point(const Vector2<Real>& point1, const Vector2<Real>& point2)
+    {
+        return { point1, point1.direction(point2) };
+    }
+
+    [[nodiscard]] Ray2 normalize() const
+    {
+        return { origin, direction.normalize() };
+    }
+
+    [[nodiscard]] constexpr Ray2 approx_contains(const Vector2<Real>& point) const
+    {
+        constexpr Vector2<Real> diff = point - origin;
+        if (diff.dot(direction) < static_cast<Real>(0)) {
+            return false;
+        }
+        constexpr Vector2<Real> t = diff / direction;
+        return approx_equal(t.x, t.y);
+    }
+
+    [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
+    {
+        constexpr Vector2<Real> diff = point - origin;
+        if (diff.dot(direction) < static_cast<Real>(0)) {
+            return diff.length();
+        }
+        return abs(direction.cross(diff));
+    }
+
+    [[nodiscard]] constexpr bool approx_parallel(const Ray2& other) const
+    {
+        return approx_zero(direction.cross(other.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2& other) const
+    {
+        return approx_zero(direction.dot(other.direction));
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray2& other)
+    {
+        const Real dir_cross = direction.cross(other.direction);
+        if (approx_zero(dir_cross)) {
+            return false;
+        }
+        const Vector2<Real> diff = other.origin - origin;
+        const Real t1 = diff.cross(other.direction) / dir_cross;
+        const Real t2 = diff.cross(direction) / dir_cross;
+        return t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2& other) const
+    {
+        const Real dir_cross = direction.cross(other.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = other.origin - origin;
+        const Real t1 = diff.cross(other.direction) / dir_cross;
+        const Real t2 = diff.cross(direction) / dir_cross;
+        if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
+            return origin + direction * t1;
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
+    {
+        const Real dir_cross = direction.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = line.origin - origin;
+        const Real t_ray = diff.cross(line.direction) / dir_cross;
+        return t_ray >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
+    {
+        const Real dir_cross = direction.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = line.origin - origin;
+        const Real t_ray = diff.cross(line.direction) / dir_cross;
+        if (t_ray >= static_cast<Real>(0)) {
+            return origin + direction * t_ray;
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Ray2 transform(const Basis2<Real>& by) const
+    {
+        return { origin.transform(by), direction.transform(by).normalize() };
+    }
+
+    [[nodiscard]] Ray2 transform_local(const Basis2<Real>& by) const
+    {
+        return { origin, direction.transform(by).normalize() };
+    }
+
+    [[nodiscard]] Ray2 transform(const Transform2<Real>& by) const
+    {
+        return { origin.transform(by), direction.transform(by, static_cast<Real>(0)).normalize() };
+    }
+
+    [[nodiscard]] Ray2 transform_local(const Transform2<Real>& by) const
+    {
+        return { origin, direction.transform(by, static_cast<Real>(0)).normalize() };
+    }
+
+    [[nodiscard]] Ray2 translate(const Vector2<Real>& by) const
+    {
+        return transform(Transform2<Real>::from_translation(by));
+    }
+
+    [[nodiscard]] Ray2 scale(const Vector2<Real>& by) const
+    {
+        return transform(Basis2<Real>::from_scale(by));
+    }
+
+    [[nodiscard]] Ray2 scale_local(const Vector2<Real>& by) const
+    {
+        return transform_local(Basis2<Real>::from_scale(by));
+    }
+
+    [[nodiscard]] Ray2 rotate(const Real angle) const
+    {
+        return transform(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Ray2 rotate_local(const Real angle) const
+    {
+        return transform(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Ray2 shear_x(const Real angle_y) const
+    {
+        return transform(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Ray2 shear_x_local(const Real angle_y) const
+    {
+        return transform_local(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Ray2 shear_y(const Real angle_x) const
+    {
+        return transform(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] Ray2 shear_y_local(const Real angle_x) const
+    {
+        return transform_local(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] bool operator==(const Ray2& other) const
+    {
+        return origin == other.origin && direction == other.direction;
+    }
+
+    [[nodiscard]] bool operator!=(const Ray2& other) const
+    {
+        return origin != other.origin || direction != other.direction;
+    }
+
+    [[nodiscard]] bool operator<(const Ray2& other) const
+    {
+        if (origin != other.origin) {
+            return origin < other.origin;
+        }
+        return direction < other.direction;
     }
 };
 
@@ -409,6 +596,18 @@ public:
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }
 };
+
+template <typename Real>
+constexpr bool Line2<Real>::intersects(const Ray2<Real>& ray) const
+{
+    return ray.intersects(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Ray2<Real>& ray) const
+{
+    return ray.intersection(*this);
+}
 
 }
 
