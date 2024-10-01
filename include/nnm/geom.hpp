@@ -17,8 +17,8 @@ using Line2f = Line2<>;
 using Line2d = Line2<double>;
 template <typename Real = float>
 class Ray2;
-using Ray2f = Line2<>;
-using Ray2d = Line2<double>;
+using Ray2f = Ray2<>;
+using Ray2d = Ray2<double>;
 
 template <typename Real>
 class Line2 {
@@ -107,7 +107,7 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const;
 
-    [[nodiscard]] constexpr Vector2<Real> project(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
         const Real t = diff.dot(direction) / direction.dot(direction);
@@ -254,7 +254,13 @@ public:
     Vector2<Real> origin;
     Vector2<Real> direction;
 
-    Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
+    constexpr Ray2()
+        : origin { Vector2<Real>::zero() }
+        , direction { static_cast<Real>(1), static_cast<Real>(0) }
+    {
+    }
+
+    constexpr Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
         : origin { origin }
         , direction { direction }
     {
@@ -270,19 +276,19 @@ public:
         return { origin, direction.normalize() };
     }
 
-    [[nodiscard]] constexpr Ray2 approx_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
-        constexpr Vector2<Real> diff = point - origin;
+        const Vector2<Real> diff = point - origin;
         if (diff.dot(direction) < static_cast<Real>(0)) {
             return false;
         }
-        constexpr Vector2<Real> t = diff / direction;
+        const Vector2<Real> t = diff / direction;
         return approx_equal(t.x, t.y);
     }
 
-    [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
-        constexpr Vector2<Real> diff = point - origin;
+        const Vector2<Real> diff = point - origin;
         if (diff.dot(direction) < static_cast<Real>(0)) {
             return diff.length();
         }
@@ -299,7 +305,7 @@ public:
         return approx_zero(direction.dot(other.direction));
     }
 
-    [[nodiscard]] constexpr bool intersects(const Ray2& other)
+    [[nodiscard]] constexpr bool intersects(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
         if (approx_zero(dir_cross)) {
