@@ -506,7 +506,7 @@ public:
         return approx_zero(diff.cross(ray.direction));
     }
 
-    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& other) const
+    [[nodiscard]] constexpr bool approx_collinear(const Segment2& other) const
     {
         if (!approx_parallel(other)) {
             return false;
@@ -515,7 +515,7 @@ public:
         return approx_zero(diff.cross(other.to - other.from));
     }
 
-    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point)
+    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff1 = point - from;
         const Vector2<Real> diff2 = to - from;

@@ -493,4 +493,108 @@ inline void geom_tests()
             ASSERT_FALSE(ray1 != ray1);
         }
     }
+
+    test_case("Segment2");
+    {
+        test_section("Segment2()");
+        {
+            constexpr nnm::Segment2 s {};
+            ASSERT(s.from == nnm::Vector2f::zero());
+            ASSERT(s.to == nnm::Vector2f::zero());
+        }
+
+        test_section("Segment2(const Vector2&, const Vector2&)");
+        {
+            constexpr nnm::Segment2 s { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            ASSERT(s.from == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(s.to == nnm::Vector2f(-3.0f, 4.0f));
+        }
+
+        constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+
+        test_section("approx_collinear(const Vector2&)");
+        {
+            constexpr auto result = s1.approx_collinear({ 0.0f, -0.5f });
+            ASSERT(result);
+            ASSERT_FALSE(s1.approx_collinear({ 0.0f, 0.0f }));
+            ASSERT(s1.approx_collinear({ -5.0f, 7.0f }));
+            ASSERT(s1.approx_collinear({ 3.0f, -5.0f }));
+        }
+
+        test_section("approx_collinear(const Line2&)");
+        {
+            constexpr nnm::Line2 line1 { { 0.0f, -0.5f }, { -0.5547f, 0.83205f } };
+            constexpr auto result = s1.approx_collinear(line1);
+            ASSERT(result);
+            constexpr nnm::Line2 line2 { { 3.0f, -0.5f }, { -0.5547f, 0.83205f } };
+            ASSERT_FALSE(s1.approx_collinear(line2));
+        }
+
+        test_section("approx_collinear(const Ray2&)");
+        {
+            constexpr nnm::Ray2 ray1 { { 3.0f, -5.0f }, { -0.5547f, 0.83205f } };
+            constexpr auto result = s1.approx_collinear(ray1);
+            ASSERT(result);
+            constexpr nnm::Ray2 ray2 { { 0.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            ASSERT(s1.approx_collinear(ray2));
+            constexpr nnm::Ray2 ray3 { { 3.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            ASSERT_FALSE(s1.approx_collinear(ray3));
+        }
+
+        test_section("approx_collinear(const Segment2&)");
+        {
+            constexpr nnm::Segment2 s2 { { -0.3333333f, 0.0f }, { 0.0f, -0.5f } };
+            constexpr auto result = s1.approx_collinear(s2);
+            ASSERT(result);
+            constexpr nnm::Segment2 s3 { { 7.0f, -11.0f }, { 3.0f, -5.0f } };
+            ASSERT(s1.approx_collinear(s3));
+            constexpr nnm::Segment2 s4 { { 6.0f, -10.0f }, { 5.0f, -5.0f } };
+            ASSERT_FALSE(s1.approx_collinear(s4));
+        }
+
+        test_section("approx_contains");
+        {
+            constexpr auto result = s1.approx_contains({ 0.0f, -0.5f });
+            ASSERT(result);
+            ASSERT(s1.approx_contains({ 1.0f, -2.0f }));
+            ASSERT(s1.approx_contains({ -3.0f, 4.0f }));
+            ASSERT(s1.approx_contains({ 0.0f, -0.5f }));
+            ASSERT_FALSE(s1.approx_contains({ 1.0f, 1.0f }));
+            ASSERT_FALSE(s1.approx_contains({ 3.0f, -5.0f }));
+            ASSERT_FALSE(s1.approx_contains({ -5.0f, 7.0f }));
+        }
+
+        test_section("distance");
+        {
+            ASSERT(nnm::approx_equal(s1.distance({ 2.0f, 3.0f }), 3.6055512755f));
+            ASSERT(nnm::approx_equal(s1.distance({ 3.0f, -5.0f }), 3.6055512755f));
+            ASSERT(nnm::approx_equal(s1.distance({ -4.0f, 4.0f }), 1.0f));
+        }
+
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_equal(s1.signed_distance({ 2.0f, 3.0f }), -3.6055512755f));
+            ASSERT(nnm::approx_equal(s1.signed_distance({ 3.0f, -5.0f }), 3.6055512755f));
+            ASSERT(nnm::approx_equal(s1.signed_distance({ -4.0f, 4.0f }), 1.0f));
+        }
+
+        test_section("direction");
+        {
+            ASSERT(s1.direction().approx_equal({ -0.5547f, 0.83205f }));
+        }
+
+        constexpr nnm::Segment2 s2 { { 0.0f, 4.0f }, { 4.0f, -2.0f } };
+        constexpr nnm::Segment2 s3 { { 5.0f, 5.0f }, { 5.0f, 0.0f } };
+
+        test_section("approx_parallel(const Line2&)");
+        {
+            constexpr auto result = s1.approx_parallel(s2);
+            ASSERT(result);
+            ASSERT_FALSE(s1.approx_parallel(s3));
+        }
+
+        test_section("approx_parallel(const Ray2&)");
+        {
+        }
+    }
 }
