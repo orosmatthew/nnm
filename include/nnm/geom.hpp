@@ -111,6 +111,10 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const;
 
+    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -309,6 +313,31 @@ public:
         return approx_zero(direction.dot(other.direction));
     }
 
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
+    {
+        const Real dir_cross = direction.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = line.origin - origin;
+        const Real t_ray = diff.cross(line.direction) / dir_cross;
+        return t_ray >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
+    {
+        const Real dir_cross = direction.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = line.origin - origin;
+        const Real t_ray = diff.cross(line.direction) / dir_cross;
+        if (t_ray >= static_cast<Real>(0)) {
+            return origin + direction * t_ray;
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] constexpr bool intersects(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -336,29 +365,18 @@ public:
         return std::nullopt;
     }
 
-    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
-    {
-        const Real dir_cross = direction.cross(line.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return false;
-        }
-        const Vector2<Real> diff = line.origin - origin;
-        const Real t_ray = diff.cross(line.direction) / dir_cross;
-        return t_ray >= static_cast<Real>(0);
-    }
+    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const;
 
-    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
+    [[nodiscard]] std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+
+    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
     {
-        const Real dir_cross = direction.cross(line.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return std::nullopt;
+        const Vector2<Real> diff = point - origin;
+        Real t = diff.dot(direction);
+        if (t < static_cast<Real>(0)) {
+            return origin;
         }
-        const Vector2<Real> diff = line.origin - origin;
-        const Real t_ray = diff.cross(line.direction) / dir_cross;
-        if (t_ray >= static_cast<Real>(0)) {
-            return origin + direction * t_ray;
-        }
-        return std::nullopt;
+        return origin + direction * t;
     }
 
     [[nodiscard]] Ray2 transform(const Basis2<Real>& by) const
@@ -470,6 +488,33 @@ public:
         return approx_zero(diff1.cross(diff2));
     }
 
+    [[nodiscard]] constexpr bool approx_collinear(const Line2<Real>& line) const
+    {
+        if (!approx_parallel(line)) {
+            return false;
+        }
+        const Vector2<Real> diff = from - line.origin;
+        return approx_zero(diff.cross(line.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Ray2<Real>& ray) const
+    {
+        if (!approx_parallel(ray)) {
+            return false;
+        }
+        const Vector2<Real> diff = from - ray.origin;
+        return approx_zero(diff.cross(ray.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& other) const
+    {
+        if (!approx_parallel(other)) {
+            return false;
+        }
+        const Vector2<Real> diff = from - other.from;
+        return approx_zero(diff.cross(other.to - other.from));
+    }
+
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point)
     {
         const Vector2<Real> diff1 = point - from;
@@ -480,6 +525,300 @@ public:
         const Real dot = diff1.dot(diff2);
         const Real length_sqrd = diff2.dot(diff2);
         return dot >= static_cast<Real>(0) && dot <= length_sqrd;
+    }
+
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Vector2<Real> diff = point - from;
+        Real t = diff.dot(dir) / dir.dot(dir);
+        if (t < static_cast<Real>(0)) {
+            return diff.length();
+        }
+        if (t > static_cast<Real>(1)) {
+            return (point - to).length();
+        }
+        Vector2<Real> proj = from + dir * t;
+        return (point - proj).length();
+    }
+
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Vector2<Real> diff = point - from;
+        Real t = diff.dot(dir) / dir.dot(dir);
+        Vector2<Real> closest;
+        if (t < static_cast<Real>(0)) {
+            closest = from;
+        }
+        else if (t > static_cast<Real>(1)) {
+            closest = to;
+        }
+        else {
+            closest = from + dir * t;
+        }
+        const Real dist = (point - closest).length();
+        const Real sign = dir.cross(point - from) < static_cast<Real>(0) ? -1 : 1;
+        return sign * dist;
+    }
+
+    [[nodiscard]] Vector2<Real> direction() const
+    {
+        return (to - from).normalize();
+    }
+
+    [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
+    {
+        return approx_zero((to - from).cross(line.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_parallel(const Ray2<Real>& ray) const
+    {
+        return approx_zero((to - from).cross(ray.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_parallel(const Segment2& other) const
+    {
+        return approx_zero((to - from).cross(other.to - other.from));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2& other) const
+    {
+        return approx_zero((to - from).dot(other.to - other.from));
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Segment2& other) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir_other = other.to - other.from;
+        const Real dir_cross = dir.cross(dir_other);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = other.from - from;
+        const Real t = diff.cross(dir_other) / dir_cross;
+        const Real t_other = diff.cross(dir) / dir_cross;
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_other >= static_cast<Real>(0)
+            && t_other <= static_cast<Real>(1);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2& other) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir_other = other.to - other.from;
+        const Real dir_cross = dir.cross(dir_other);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = other.from - from;
+        const Real t = diff.cross(dir_other) / dir_cross;
+        const Real t_other = diff.cross(dir) / dir_cross;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_other < static_cast<Real>(0)
+            || t_other > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
+        return from + dir * t;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(ray.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = ray.origin - from;
+        const Real t = diff.cross(ray.direction) / dir_cross;
+        const Real t_ray = diff.cross(dir) / dir_cross;
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_ray >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(ray.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = ray.origin - from;
+        const Real t = diff.cross(ray.direction) / dir_cross;
+        const Real t_ray = diff.cross(dir) / dir_cross;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_ray < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        return from + dir * t;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = line.origin - from;
+        const Real t = diff.cross(line.direction) / dir_cross;
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = line.origin - from;
+        const Real t = diff.cross(line.direction) / dir_cross;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
+        return from + dir * t;
+    }
+
+    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real length_sqrd = dir.dot(dir);
+        if (length_sqrd == static_cast<Real>(0)) {
+            return from;
+        }
+        const Real t = (point - from).dot(dir) / length_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return from;
+        }
+        if (t > static_cast<Real>(1)) {
+            return to;
+        }
+        return from + dir * t;
+    }
+
+    [[nodiscard]] constexpr Real unchecked_slope() const
+    {
+        return (to.y - from.y) / (to.x - from.x);
+    }
+
+    [[nodiscard]] std::optional<Real> slope() const
+    {
+        const Real denom = to.x - from.x;
+        if (denom == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        return (to.y - from.y) / denom;
+    }
+
+    [[nodiscard]] Segment2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
+    {
+        return { (from - basis_origin).transform(by) + basis_origin, (to - basis_origin).transform(by) + basis_origin };
+    }
+
+    [[nodiscard]] Segment2 transform(const Basis2<Real>& by) const
+    {
+        return transform_at(Vector2<Real>::zero(), by);
+    }
+
+    [[nodiscard]] Segment2 transform_local(const Basis2<Real>& by) const
+    {
+        return transform_at(from, by);
+    }
+
+    [[nodiscard]] Segment2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
+    {
+        return { (from - transform_origin).transform(by) + transform_origin,
+                 (to - transform_origin).transform(by) + transform_origin };
+    }
+
+    [[nodiscard]] Segment2 transform(const Transform2<Real>& by) const
+    {
+        return transform_at(Vector2<Real>::zero(), by);
+    }
+
+    [[nodiscard]] Segment2 transform_local(const Transform2<Real>& by) const
+    {
+        return transform_at(from, by);
+    }
+
+    [[nodiscard]] Segment2 translate(const Vector2<Real>& by) const
+    {
+        return transform(Transform2<Real>::from_translation(by));
+    }
+
+    [[nodiscard]] Segment2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    {
+        return transform_at(scale_origin, Basis2<Real>::from_scale(by));
+    }
+
+    [[nodiscard]] Segment2 scale(const Vector2<Real>& by) const
+    {
+        return transform(by);
+    }
+
+    [[nodiscard]] Segment2 scale_local(const Vector2<Real>& by) const
+    {
+        return transform(from, by);
+    }
+
+    [[nodiscard]] Segment2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return transform_at(rotate_origin, Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Segment2 rotate(const Real angle) const
+    {
+        return transform(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Segment2 rotate_local(const Real angle) const
+    {
+        return transform_local(Basis2<Real>::from_rotation(angle));
+    }
+
+    [[nodiscard]] Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
+    {
+        return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Segment2 shear_x(const Real angle_y) const
+    {
+        return transform(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Segment2 shear_x_local(const Real angle_y) const
+    {
+        return transform_local(Basis2<Real>::from_shear_x(angle_y));
+    }
+
+    [[nodiscard]] Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    {
+        return transform_at(shear_origin, Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] Segment2 shear_y(const Real angle_x) const
+    {
+        return transform(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] Segment2 shear_y_local(const Real angle_x) const
+    {
+        return transform_local(Basis2<Real>::from_shear_y(angle_x));
+    }
+
+    [[nodiscard]] bool operator==(const Segment2& other) const
+    {
+        return from == other.from && to == other.to;
+    }
+
+    [[nodiscard]] bool operator!=(const Segment2& other) const
+    {
+        return from != other.from || to != other.to;
+    }
+
+    [[nodiscard]] bool operator<(const Segment2& other) const
+    {
+        if (from != other.from) {
+            return from < other.from;
+        }
+        return to < other.to;
     }
 };
 
@@ -655,6 +994,30 @@ template <typename Real>
 constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Ray2<Real>& ray) const
 {
     return ray.intersection(*this);
+}
+
+template <typename Real>
+bool Line2<Real>::intersects(const Segment2<Real>& segment) const
+{
+    return segment.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Line2<Real>::intersection(const Segment2<Real>& segment) const
+{
+    return segment.intersection(*this);
+}
+
+template <typename Real>
+bool Ray2<Real>::intersects(const Segment2<Real>& segment) const
+{
+    return segment.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<Real>& segment) const
+{
+    return segment.intersection(*this);
 }
 
 }

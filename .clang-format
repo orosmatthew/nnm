@@ -13,4 +13,5 @@ PointerAlignment: Left
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakTemplateDeclarations: Yes
 AlignEscapedNewlines: Left
+SeparateDefinitionBlocks: Always
 ...
