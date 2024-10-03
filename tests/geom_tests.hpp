@@ -813,6 +813,25 @@ inline void geom_tests()
             ASSERT_FALSE(s3.slope().has_value());
         }
 
+        test_section("length_sqrd");
+        {
+            constexpr auto result = s1.length_sqrd();
+            ASSERT(nnm::approx_equal(result, 52.0f));
+            ASSERT(nnm::approx_equal(s3.length_sqrd(), 25.0f));
+        }
+
+        test_section("length");
+        {
+            ASSERT(nnm::approx_equal(s1.length(), 7.2111025509f));
+            ASSERT(nnm::approx_equal(s3.length(), 5.0f));
+        }
+
+        test_section("midpoint");
+        {
+            ASSERT(s1.midpoint().approx_equal({ -1.0f, 1.0f }));
+            ASSERT(s3.midpoint().approx_equal({ 5.0f, 2.5f }));
+        }
+
         test_section("transform_at(const Basis2&)");
         {
             constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };

@@ -744,6 +744,21 @@ public:
         return (to.y - from.y) / denom;
     }
 
+    [[nodiscard]] constexpr Real length_sqrd() const
+    {
+        return sqrd(from.x - to.x) + sqrd(from.y - to.y);
+    }
+
+    [[nodiscard]] Real length() const
+    {
+        return sqrt(length_sqrd());
+    }
+
+    [[nodiscard]] Vector2<Real> midpoint() const
+    {
+        return (to + from) / static_cast<Real>(2);
+    }
+
     [[nodiscard]] Segment2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
     {
         return { (from - basis_origin).transform(by) + basis_origin, (to - basis_origin).transform(by) + basis_origin };
