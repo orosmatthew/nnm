@@ -429,19 +429,9 @@ public:
         return transform(Basis2<Real>::from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Ray2 shear_x_local(const Real angle_y) const
-    {
-        return transform_local(Basis2<Real>::from_shear_x(angle_y));
-    }
-
     [[nodiscard]] Ray2 shear_y(const Real angle_x) const
     {
         return transform(Basis2<Real>::from_shear_y(angle_x));
-    }
-
-    [[nodiscard]] Ray2 shear_y_local(const Real angle_x) const
-    {
-        return transform_local(Basis2<Real>::from_shear_y(angle_x));
     }
 
     [[nodiscard]] bool operator==(const Ray2& other) const
@@ -727,11 +717,6 @@ public:
         return transform_at(Vector2<Real>::zero(), by);
     }
 
-    [[nodiscard]] Segment2 transform_local(const Basis2<Real>& by) const
-    {
-        return transform_at(from, by);
-    }
-
     [[nodiscard]] Segment2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
     {
         return { (from - transform_origin).transform(by) + transform_origin,
@@ -741,11 +726,6 @@ public:
     [[nodiscard]] Segment2 transform(const Transform2<Real>& by) const
     {
         return transform_at(Vector2<Real>::zero(), by);
-    }
-
-    [[nodiscard]] Segment2 transform_local(const Transform2<Real>& by) const
-    {
-        return transform_at(from, by);
     }
 
     [[nodiscard]] Segment2 translate(const Vector2<Real>& by) const
@@ -778,11 +758,6 @@ public:
         return transform(Basis2<Real>::from_rotation(angle));
     }
 
-    [[nodiscard]] Segment2 rotate_local(const Real angle) const
-    {
-        return transform_local(Basis2<Real>::from_rotation(angle));
-    }
-
     [[nodiscard]] Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
         return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
@@ -791,11 +766,6 @@ public:
     [[nodiscard]] Segment2 shear_x(const Real angle_y) const
     {
         return transform(Basis2<Real>::from_shear_x(angle_y));
-    }
-
-    [[nodiscard]] Segment2 shear_x_local(const Real angle_y) const
-    {
-        return transform_local(Basis2<Real>::from_shear_x(angle_y));
     }
 
     [[nodiscard]] Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
@@ -808,22 +778,17 @@ public:
         return transform(Basis2<Real>::from_shear_y(angle_x));
     }
 
-    [[nodiscard]] Segment2 shear_y_local(const Real angle_x) const
-    {
-        return transform_local(Basis2<Real>::from_shear_y(angle_x));
-    }
-
-    [[nodiscard]] bool operator==(const Segment2& other) const
+    [[nodiscard]] constexpr bool operator==(const Segment2& other) const
     {
         return from == other.from && to == other.to;
     }
 
-    [[nodiscard]] bool operator!=(const Segment2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Segment2& other) const
     {
         return from != other.from || to != other.to;
     }
 
-    [[nodiscard]] bool operator<(const Segment2& other) const
+    [[nodiscard]] constexpr bool operator<(const Segment2& other) const
     {
         if (from != other.from) {
             return from < other.from;

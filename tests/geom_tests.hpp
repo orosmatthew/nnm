@@ -4,6 +4,8 @@
 
 #include "test.hpp"
 
+// ReSharper disable CppDFATimeOver
+
 inline void geom_tests()
 {
     test_case("Line2");
@@ -454,24 +456,10 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
         }
 
-        test_section("shear_x_local");
-        {
-            const nnm::Ray2f result = ray3.shear_x_local(nnm::pi() / 3.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
-        }
-
         test_section("shear_y");
         {
             const nnm::Ray2f result = ray3.shear_y(-nnm::pi() / 5.0f);
             ASSERT(result.origin.approx_equal({ 3.0f, -3.17963f }));
-            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
-        }
-
-        test_section("shear_y_local");
-        {
-            const nnm::Ray2f result = ray3.shear_y_local(-nnm::pi() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
             ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
         }
 
@@ -730,14 +718,6 @@ inline void geom_tests()
             ASSERT(result.to.approx_equal({ -15.0f, 22.0f }));
         }
 
-        test_section("transform_local(const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
-            const auto result = s1.transform_local(basis);
-            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -21.0f, 30.0f }))
-        }
-
         test_section("transform_at(const Transform2&)");
         {
             constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
@@ -752,14 +732,6 @@ inline void geom_tests()
             const auto result = s1.transform(t);
             ASSERT(result.from.approx_equal({ -6.0f, 20.0f }));
             ASSERT(result.to.approx_equal({ 14.0f, -48.0f }));
-        }
-
-        test_section("transform_local(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const auto result = s1.transform_local(t);
-            ASSERT(result.from.approx_equal({ 2.0f, -4.0f }));
-            ASSERT(result.to.approx_equal({ 22.0f, -72.0f }));
         }
 
         test_section("translate");
@@ -795,6 +767,62 @@ inline void geom_tests()
             const auto result = s1.rotate_at({ 1.0f, 2.0f }, nnm::pi() / 5.0f);
             ASSERT(result.from.approx_equal({ 3.35115f, -1.23607f }));
             ASSERT(result.to.approx_equal({ -3.41164f, 1.266893f }));
+        }
+
+        test_section("rotate");
+        {
+            const auto result = s1.rotate(nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ 1.98459f, -1.03025f }));
+            ASSERT(result.to.approx_equal({ -4.77819f, 1.47271f }));
+        }
+
+        test_section("shear_x_at");
+        {
+            const auto result = s1.shear_x_at({ 1.0f, 2.0f }, nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ -1.90617f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -1.54691f, 4.0f }));
+        }
+
+        test_section("shear_x");
+        {
+            const auto result = s1.shear_x(nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ -0.453085f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -0.0938299f, 4.0f }));
+        }
+
+        test_section("shear_y_at");
+        {
+            const auto result = s1.shear_y_at({ 1.0f, 2.0f }, nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -3.0f, 1.09383f }));
+        }
+
+        test_section("shear_y");
+        {
+            const auto result = s1.shear_y(nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ 1.0f, -1.27346f }));
+            ASSERT(result.to.approx_equal({ -3.0f, 1.82037f }));
+        }
+
+        test_section("operator==");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = s1 == s1;
+            ASSERT(result);
+            ASSERT_FALSE(s1 == s2);
+        }
+
+        test_section("operator!=");
+        {
+            constexpr auto result = s1 != s2;
+            ASSERT(result);
+            ASSERT_FALSE(s2 != s2);
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(s2 < s1);
+            ASSERT_FALSE(s1 < s2);
         }
     }
 }
