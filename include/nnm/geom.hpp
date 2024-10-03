@@ -47,6 +47,31 @@ public:
         return { point1, point1.direction(point2) };
     }
 
+    static constexpr Line2 axis_x()
+    {
+        return { Vector2<Real>::zero(), Vector2<Real>::axis_x() };
+    }
+
+    static constexpr Line2 axis_y()
+    {
+        return { Vector2<Real>::zero(), Vector2<Real>::axis_y() };
+    }
+
+    static constexpr Line2 axis_x_offset(const Real y)
+    {
+        return { { static_cast<Real>(0), y }, Vector2<Real>::axis_x() };
+    }
+
+    static constexpr Line2 axis_y_offset(const Real x)
+    {
+        return { { x, static_cast<Real>(0) }, Vector2<Real>::axis_y() };
+    }
+
+    static Line2 from_point_slope(const Vector2<Real>& point, const Real slope)
+    {
+        return { point, nnm::Vector2<Real> { 1.0f, slope }.normalize() };
+    }
+
     [[nodiscard]] constexpr Line2 parallel_containing(const Vector2<Real>& point) const
     {
         return { point, direction };

@@ -33,6 +33,41 @@ inline void geom_tests()
             ASSERT(line.approx_contains(p2));
         }
 
+        test_section("axis_x");
+        {
+            constexpr auto line = nnm::Line2f::axis_x();
+            ASSERT(line.origin == nnm::Vector2f::zero());
+            ASSERT(line.direction == nnm::Vector2f::axis_x());
+        }
+
+        test_section("axis_y");
+        {
+            constexpr auto line = nnm::Line2f::axis_y();
+            ASSERT(line.origin == nnm::Vector2f::zero());
+            ASSERT(line.direction == nnm::Vector2f::axis_y());
+        }
+
+        test_section("axis_x_offset");
+        {
+            constexpr auto line = nnm::Line2f::axis_x_offset(3.0f);
+            ASSERT(line.origin.approx_equal({ 0.0f, 3.0f }));
+            ASSERT(line.direction.approx_equal(nnm::Vector2f::axis_x()));
+        }
+
+        test_section("axis_y_offset");
+        {
+            constexpr auto line = nnm::Line2f::axis_y_offset(-2.0f);
+            ASSERT(line.origin.approx_equal({ -2.0f, 0.0f }));
+            ASSERT(line.direction.approx_equal(nnm::Vector2f::axis_y()));
+        }
+
+        test_section("from_point_slope");
+        {
+            const auto line = nnm::Line2f::from_point_slope({ 1.0f, -2.0f }, -1.5f);
+            ASSERT(line.origin == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(line.direction.approx_equal({ 0.5547f, -0.83205f }));
+        }
+
         constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
 
         test_section("parallel_containing");
