@@ -190,6 +190,14 @@ inline void geom_tests()
 
         constexpr nnm::Line2f line3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
 
+        test_section("transform_at(const Vector2&, const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
+            const auto result = line3.transform_at({ -2.0f, 3.0f }, basis);
+            ASSERT(result.origin.approx_equal({ 15.0f, -3.0f }));
+            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+        }
+
         test_section("transform(const Basis2&)");
         {
             constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
@@ -198,12 +206,12 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
         }
 
-        test_section("transform_local(const Basis2&)");
+        test_section("transform_at(const Vector2&, const Transform2&)");
         {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const nnm::Line2f result = line3.transform_local(basis);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const auto result = line3.transform_at({ -2.0f, 3.0f }, t);
+            ASSERT(result.origin.approx_equal({ -12.0f, 51.0f }));
+            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
         }
 
         test_section("transform(const Transform2&)");
@@ -214,19 +222,18 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
         }
 
-        test_section("transform_local(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const nnm::Line2f result = line3.transform_local(t);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
-
         test_section("translate");
         {
             const nnm::Line2f result = line3.translate({ -2.0f, 3.0f });
             ASSERT(result.origin.approx_equal({ 1.0f, 2.0f }));
             ASSERT(result.direction.approx_equal(line3.direction));
+        }
+
+        test_section("scale_at");
+        {
+            const auto result = line3.scale_at({ -2.0f, 3.0f }, { 3.0f, -0.5f });
+            ASSERT(result.origin.approx_equal({ 13.0f, 5.0f }));
+            ASSERT(result.direction.approx_equal({ 0.986394f, -0.164399f }));
         }
 
         test_section("scale");
@@ -236,11 +243,11 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
         }
 
-        test_section("scale_local");
+        test_section("shear_x_at");
         {
-            const nnm::Line2f result = line3.scale_local({ -2.0f, 3.0f });
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
+            const auto result = line3.shear_x_at({ -2.0f, 3.0f }, nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 0.09383f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.865334f, 0.501195f }))
         }
 
         test_section("shear_x");
@@ -250,24 +257,17 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
         }
 
-        test_section("shear_x_local");
+        test_section("shear_y_at");
         {
-            const nnm::Line2f result = line3.shear_x_local(nnm::pi() / 3.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+            const auto result = line3.shear_y_at({ -2.0f, 3.0f }, nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.0f, 2.632713f }));
+            ASSERT(result.direction.approx_equal({ 0.501195f, 0.865334f }));
         }
 
         test_section("shear_y");
         {
             const nnm::Line2f result = line3.shear_y(-nnm::pi() / 5.0f);
             ASSERT(result.origin.approx_equal({ 3.0f, -3.17963f }));
-            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
-        }
-
-        test_section("shear_y_local");
-        {
-            const nnm::Line2f result = line3.shear_y_local(-nnm::pi() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
             ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
         }
 

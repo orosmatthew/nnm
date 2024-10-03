@@ -172,24 +172,25 @@ public:
         return approx_zero(diff.cross(other.direction));
     }
 
-    [[nodiscard]] Line2 transform(const Basis2<Real>& by) const
+    [[nodiscard]] Line2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
     {
-        return { origin.transform(by), direction.transform(by).normalize() };
+        return { (origin - basis_origin).transform(by) + basis_origin, direction.transform(by).normalize() };
     }
 
-    [[nodiscard]] Line2 transform_local(const Basis2<Real>& by) const
+    [[nodiscard]] Line2 transform(const Basis2<Real>& by) const
     {
-        return { origin, direction.transform(by).normalize() };
+        return transform_at(Vector2<Real>::zero(), by);
+    }
+
+    [[nodiscard]] Line2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
+    {
+        return { (origin - transform_origin).transform(by) + transform_origin,
+                 direction.transform(by, static_cast<Real>(0)).normalize() };
     }
 
     [[nodiscard]] Line2 transform(const Transform2<Real>& by) const
     {
-        return { origin.transform(by), direction.transform(by, static_cast<Real>(0)).normalize() };
-    }
-
-    [[nodiscard]] Line2 transform_local(const Transform2<Real>& by) const
-    {
-        return { origin, direction.transform(by, static_cast<Real>(0)).normalize() };
+        return transform_at(Vector2<Real>::zero(), by);
     }
 
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
@@ -197,14 +198,14 @@ public:
         return transform(Transform2<Real>::from_translation(by));
     }
 
+    [[nodiscard]] Line2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    {
+        return transform_at(scale_origin, Basis2<Real>::from_scale(by));
+    }
+
     [[nodiscard]] Line2 scale(const Vector2<Real>& by) const
     {
         return transform(Basis2<Real>::from_scale(by));
-    }
-
-    [[nodiscard]] Line2 scale_local(const Vector2<Real>& by) const
-    {
-        return transform_local(Basis2<Real>::from_scale(by));
     }
 
     [[nodiscard]] Line2 rotate(const Real angle) const
@@ -212,9 +213,9 @@ public:
         return transform(Basis2<Real>::from_rotation(angle));
     }
 
-    [[nodiscard]] Line2 rotate_local(const Real angle) const
+    [[nodiscard]] Line2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
-        return transform(Basis2<Real>::from_rotation(angle));
+        return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
     }
 
     [[nodiscard]] Line2 shear_x(const Real angle_y) const
@@ -222,19 +223,14 @@ public:
         return transform(Basis2<Real>::from_shear_x(angle_y));
     }
 
-    [[nodiscard]] Line2 shear_x_local(const Real angle_y) const
+    [[nodiscard]] Line2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
-        return transform_local(Basis2<Real>::from_shear_x(angle_y));
+        return transform_at(shear_origin, Basis2<Real>::from_shear_y(angle_x));
     }
 
     [[nodiscard]] Line2 shear_y(const Real angle_x) const
     {
         return transform(Basis2<Real>::from_shear_y(angle_x));
-    }
-
-    [[nodiscard]] Line2 shear_y_local(const Real angle_x) const
-    {
-        return transform_local(Basis2<Real>::from_shear_y(angle_x));
     }
 
     [[nodiscard]] bool operator==(const Line2& other) const
