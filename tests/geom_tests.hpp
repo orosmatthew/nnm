@@ -396,6 +396,14 @@ inline void geom_tests()
 
         constexpr nnm::Ray2f ray3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
 
+        test_section("transform_at(const Vector2&, const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
+            const auto result = ray3.transform_at({ 2.0f, -1.5f }, basis);
+            ASSERT(result.origin.approx_equal({ 1.5f, 2.5f }));
+            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+        }
+
         test_section("transform(const Basis2&)");
         {
             constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
@@ -404,12 +412,12 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
         }
 
-        test_section("transform_local(const Basis2&)");
+        test_section("transform_at(const Vector2&, const Transform2&)");
         {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const nnm::Ray2f result = ray3.transform_local(basis);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const auto result = ray3.transform_at({ 2.0f, -1.5f }, t);
+            ASSERT(result.origin.approx_equal({ 6.0f, -6.5f }));
+            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
         }
 
         test_section("transform(const Transform2&)");
@@ -420,19 +428,17 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
         }
 
-        test_section("transform_local(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const nnm::Ray2f result = ray3.transform_local(t);
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
-
         test_section("translate");
         {
             const nnm::Ray2f result = ray3.translate({ -2.0f, 3.0f });
             ASSERT(result.origin.approx_equal({ 1.0f, 2.0f }));
             ASSERT(result.direction.approx_equal(ray3.direction));
+        }
+        test_section("scale_at");
+        {
+            const auto result = ray3.scale_at({ 2.0f, -1.5f }, { -2.0f, 0.7f });
+            ASSERT(result.origin.approx_equal({ 0.0f, -1.15f }));
+            ASSERT(result.direction.approx_equal({ -0.943858f, 0.330351f }));
         }
 
         test_section("scale");
@@ -442,11 +448,25 @@ inline void geom_tests()
             ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
         }
 
-        test_section("scale_local");
+        test_section("rotate_at");
         {
-            const nnm::Ray2f result = ray3.scale_local({ -2.0f, 3.0f });
-            ASSERT(result.origin.approx_equal({ 3.0f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
+            const auto result = ray3.rotate_at({ 2.0f, -1.5f }, nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 2.515124f, -0.507706f }));
+            ASSERT(result.direction.approx_equal({ 0.156434f, 0.987688f }));
+        }
+
+        test_section("rotate");
+        {
+            const auto result = ray3.rotate(nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.01484f, 0.954339f }));
+            ASSERT(result.direction.approx_equal({ 0.156434f, 0.987688f }));
+        }
+
+        test_section("shear_x_at");
+        {
+            const auto result = ray3.shear_x_at({ 2.0f, -1.5f }, nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.36327f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.865334f, 0.501195f }));
         }
 
         test_section("shear_x");
@@ -454,6 +474,13 @@ inline void geom_tests()
             const nnm::Ray2f result = ray3.shear_x(nnm::pi() / 3.0f);
             ASSERT(result.origin.approx_equal({ 1.26794919f, -1.0f }));
             ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+        }
+
+        test_section("shear_y_at");
+        {
+            const auto result = ray3.shear_y_at({ 2.0f, -1.5f }, nnm::pi() / 5.0f);
+            ASSERT(result.origin.approx_equal({ 3.0f, -0.27346f }));
+            ASSERT(result.direction.approx_equal({ 0.501195f, 0.865334f }));
         }
 
         test_section("shear_y");
@@ -753,13 +780,6 @@ inline void geom_tests()
             const auto result = s1.scale({ -1.0f, 3.0f });
             ASSERT(result.from.approx_equal({ -1.0f, -6.0f }));
             ASSERT(result.to.approx_equal({ 3.0f, 12.0f }));
-        }
-
-        test_section("scale_local");
-        {
-            const auto result = s1.scale_local({ -1.0f, 3.0f });
-            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ 5.0f, 16.0f }));
         }
 
         test_section("rotate_at");
