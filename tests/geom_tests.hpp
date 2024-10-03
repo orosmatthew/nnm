@@ -362,6 +362,13 @@ inline void geom_tests()
             ASSERT(ray.direction.approx_equal({ 1.0f, -3.0f }));
         }
 
+        test_section("from_point_slope");
+        {
+            const auto ray = nnm::Ray2f::from_point_slope({ 1.0f, -2.0f }, -1.5f);
+            ASSERT(ray.origin.approx_equal({ 1.0f, -2.0f }));
+            ASSERT(ray.direction.approx_equal({ 0.5547f, -0.83205f }));
+        }
+
         test_section("from_point_to_point");
         {
             constexpr nnm::Vector2f p1 { 1.0f, -2.0f };
