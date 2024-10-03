@@ -111,9 +111,9 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const;
 
-    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
-    [[nodiscard]] std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
@@ -974,13 +974,13 @@ constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Ray2<Real
 }
 
 template <typename Real>
-bool Line2<Real>::intersects(const Segment2<Real>& segment) const
+constexpr bool Line2<Real>::intersects(const Segment2<Real>& segment) const
 {
     return segment.intersects(*this);
 }
 
 template <typename Real>
-std::optional<Vector2<Real>> Line2<Real>::intersection(const Segment2<Real>& segment) const
+constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Segment2<Real>& segment) const
 {
     return segment.intersection(*this);
 }

@@ -104,7 +104,7 @@ inline void geom_tests()
             ASSERT(result.approx_equal({ 1.0f, -2.0f }));
         }
 
-        test_section("intersection");
+        test_section("intersection(const Line2&)");
         {
             constexpr auto result = line1.intersection(line2);
             ASSERT(result.has_value());
@@ -113,25 +113,46 @@ inline void geom_tests()
             ASSERT_FALSE(line2.intersection(line3).has_value());
         }
 
-        test_section("intersects");
+        test_section("intersects(const Ray2&)");
         {
             constexpr nnm::Ray2f ray1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
             constexpr nnm::Line2f line3 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
-            constexpr auto result = ray1.intersects(line3);
+            constexpr auto result = line3.intersects(ray1);
             ASSERT(result);
             constexpr nnm::Line2f line4 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
-            ASSERT_FALSE(ray1.intersects(line4));
+            ASSERT_FALSE(line4.intersects(ray1));
         }
 
-        test_section("intersection");
+        test_section("intersection(const Ray2&)");
         {
             constexpr nnm::Ray2f ray1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
             constexpr nnm::Line2f line3 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
-            constexpr auto result = ray1.intersection(line3);
+            constexpr auto result = line3.intersection(ray1);
             ASSERT(result.has_value());
             ASSERT(result.value().approx_equal({ 0.70588f, -1.29412f }));
             constexpr nnm::Line2f line4 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
-            ASSERT_FALSE(ray1.intersection(line4).has_value());
+            ASSERT_FALSE(line4.intersection(ray1).has_value());
+        }
+
+        test_section("intersects(const Segment2&)");
+        {
+            constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Line2f line3 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
+            constexpr auto result = line3.intersects(s1);
+            ASSERT(result);
+            constexpr nnm::Line2f line4 { { 4.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            ASSERT_FALSE(line4.intersects(s1));
+        }
+
+        test_section("intersection(const Segment2&)");
+        {
+            constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Line2f line3 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
+            constexpr auto result = line3.intersection(s1);
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal({ -0.2f, -0.2f }));
+            constexpr nnm::Line2f line4 { { 4.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            ASSERT_FALSE(line4.intersection(s1).has_value());
         }
 
         test_section("project_point");
@@ -356,6 +377,27 @@ inline void geom_tests()
             ASSERT_FALSE(result);
             ASSERT(ray2.approx_perpendicular({ { -100.0f, 20.0f }, { -0.70710678f, 0.70710678f } }));
             ASSERT(ray2.approx_perpendicular({ { -100.0f, 20.0f }, { 0.70710678f, -0.70710678f } }));
+        }
+
+        test_section("intersects(const Line2&)");
+        {
+            constexpr nnm::Ray2f ray3 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            constexpr nnm::Line2f line3 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
+            constexpr auto result = ray3.intersects(line3);
+            ASSERT(result);
+            constexpr nnm::Line2f line4 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
+            ASSERT_FALSE(ray3.intersects(line4));
+        }
+
+        test_section("intersection(const Line2&)");
+        {
+            constexpr nnm::Ray2f ray4 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            constexpr nnm::Line2f line3 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
+            constexpr auto result = ray4.intersection(line3);
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal({ 0.70588f, -1.29412f }));
+            constexpr nnm::Line2f line4 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
+            ASSERT_FALSE(ray4.intersection(line4).has_value());
         }
 
         test_section("intersects(const Ray2&)");
