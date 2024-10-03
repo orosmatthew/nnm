@@ -558,7 +558,7 @@ public:
             closest = from + dir * t;
         }
         const Real dist = (point - closest).length();
-        const Real sign = dir.cross(point - from) < static_cast<Real>(0) ? -1 : 1;
+        const Real sign = dir.cross(point - from) < static_cast<Real>(0) ? static_cast<Real>(-1) : static_cast<Real>(1);
         return sign * dist;
     }
 
@@ -582,9 +582,75 @@ public:
         return approx_zero((to - from).cross(other.to - other.from));
     }
 
+    [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
+    {
+        return approx_zero((to - from).dot(line.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2<Real>& ray) const
+    {
+        return approx_zero((to - from).dot(ray.direction));
+    }
+
     [[nodiscard]] constexpr bool approx_perpendicular(const Segment2& other) const
     {
         return approx_zero((to - from).dot(other.to - other.from));
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = line.origin - from;
+        const Real t = diff.cross(line.direction) / dir_cross;
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(line.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = line.origin - from;
+        const Real t = diff.cross(line.direction) / dir_cross;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
+        return from + dir * t;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(ray.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return false;
+        }
+        const Vector2<Real> diff = ray.origin - from;
+        const Real t = diff.cross(ray.direction) / dir_cross;
+        const Real t_ray = diff.cross(dir) / dir_cross;
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_ray >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Real dir_cross = dir.cross(ray.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> diff = ray.origin - from;
+        const Real t = diff.cross(ray.direction) / dir_cross;
+        const Real t_ray = diff.cross(dir) / dir_cross;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_ray < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        return from + dir * t;
     }
 
     [[nodiscard]] constexpr bool intersects(const Segment2& other) const
@@ -620,63 +686,7 @@ public:
         return from + dir * t;
     }
 
-    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
-    {
-        const Vector2<Real> dir = to - from;
-        const Real dir_cross = dir.cross(ray.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return false;
-        }
-        const Vector2<Real> diff = ray.origin - from;
-        const Real t = diff.cross(ray.direction) / dir_cross;
-        const Real t_ray = diff.cross(dir) / dir_cross;
-        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_ray >= static_cast<Real>(0);
-    }
-
-    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const
-    {
-        const Vector2<Real> dir = to - from;
-        const Real dir_cross = dir.cross(ray.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        const Vector2<Real> diff = ray.origin - from;
-        const Real t = diff.cross(ray.direction) / dir_cross;
-        const Real t_ray = diff.cross(dir) / dir_cross;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_ray < static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        return from + dir * t;
-    }
-
-    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
-    {
-        const Vector2<Real> dir = to - from;
-        const Real dir_cross = dir.cross(line.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return false;
-        }
-        const Vector2<Real> diff = line.origin - from;
-        const Real t = diff.cross(line.direction) / dir_cross;
-        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
-    }
-
-    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
-    {
-        const Vector2<Real> dir = to - from;
-        const Real dir_cross = dir.cross(line.direction);
-        if (dir_cross == static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        const Vector2<Real> diff = line.origin - from;
-        const Real t = diff.cross(line.direction) / dir_cross;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
-            return std::nullopt;
-        }
-        return from + dir * t;
-    }
-
-    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = to - from;
         const Real length_sqrd = dir.dot(dir);
@@ -698,7 +708,7 @@ public:
         return (to.y - from.y) / (to.x - from.x);
     }
 
-    [[nodiscard]] std::optional<Real> slope() const
+    [[nodiscard]] constexpr std::optional<Real> slope() const
     {
         const Real denom = to.x - from.x;
         if (denom == static_cast<Real>(0)) {
@@ -750,12 +760,12 @@ public:
 
     [[nodiscard]] Segment2 scale(const Vector2<Real>& by) const
     {
-        return transform(by);
+        return transform(Basis2<Real>::from_scale(by));
     }
 
     [[nodiscard]] Segment2 scale_local(const Vector2<Real>& by) const
     {
-        return transform(from, by);
+        return transform_at(from, Basis2<Real>::from_scale(by));
     }
 
     [[nodiscard]] Segment2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const

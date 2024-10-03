@@ -595,6 +595,206 @@ inline void geom_tests()
 
         test_section("approx_parallel(const Ray2&)");
         {
+            constexpr nnm::Ray2 ray1 { { 0.0f, 4.0f }, { 0.554699f, -0.832051f } };
+            constexpr auto result = s1.approx_parallel(ray1);
+            ASSERT(result);
+            constexpr nnm::Ray2 ray2 { { -0.2f, -0.2f }, { -0.554699f, -0.832051f } };
+            ASSERT_FALSE(s1.approx_parallel(ray2));
+        }
+
+        test_section("approx_parallel(const Segment2&)");
+        {
+            constexpr auto result = s1.approx_parallel(s2);
+            ASSERT(result);
+            ASSERT_FALSE(s2.approx_parallel(s3));
+        }
+
+        test_section("approx_perpendicular(const Line2&)");
+        {
+            constexpr nnm::Line2f line1 { { 2.0f, 3.0f }, { -0.8320502943f, -0.5547001962f } };
+            constexpr auto result = s1.approx_perpendicular(line1);
+            ASSERT(result);
+            constexpr nnm::Line2f line2 { { 5.0f, 0.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(s1.approx_perpendicular(line2));
+        }
+
+        test_section("approx_perpendicular(const Ray2&)");
+        {
+            constexpr nnm::Ray2f ray1 { { 2.0f, 3.0f }, { -0.8320502943f, -0.5547001962f } };
+            constexpr auto result = s1.approx_perpendicular(ray1);
+            ASSERT(result);
+            constexpr nnm::Ray2f ray2 { { 5.0f, 0.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(s1.approx_perpendicular(ray2));
+        }
+
+        test_section("approx_perpendicular(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s4 { { 2.0f, 3.0f }, { -1.0f, 1.0f } };
+            constexpr auto result = s1.approx_perpendicular(s4);
+            ASSERT(result);
+            ASSERT_FALSE(s1.approx_perpendicular(s2));
+        }
+
+        test_section("intersects(const Line2&)");
+        {
+            constexpr nnm::Line2f line1 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
+            constexpr auto result = s1.intersects(line1);
+            ASSERT(result);
+            constexpr nnm::Line2f line2 { { 4.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            ASSERT_FALSE(s1.intersects(line2));
+        }
+
+        test_section("intersection(const Line2&)");
+        {
+            constexpr nnm::Line2f line1 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
+            constexpr auto result = s1.intersection(line1);
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal({ -0.2f, -0.2f }));
+            constexpr nnm::Line2f line2 { { 4.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            ASSERT_FALSE(s1.intersection(line2).has_value());
+        }
+
+        test_section("intersects(const Ray2&)");
+        {
+            constexpr nnm::Ray2f ray1 { { 5.0f, 5.0f }, { -0.7071067812f, -0.7071067812f } };
+            constexpr auto result = s1.intersects(ray1);
+            ASSERT(result);
+            constexpr nnm::Ray2f ray2 { { 5.0f, 5.0f }, { -0.7071067812f, 0.7071067812f } };
+            ASSERT_FALSE(s1.intersects(ray2));
+        }
+
+        test_section("intersection(const Ray2&)");
+        {
+            constexpr nnm::Ray2f ray1 { { 5.0f, 5.0f }, { -0.7071067812f, -0.7071067812f } };
+            constexpr auto result = s1.intersection(ray1);
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal({ -0.2f, -0.2f }));
+            constexpr nnm::Ray2f ray2 { { 5.0f, 5.0f }, { -0.7071067812f, 0.7071067812f } };
+            ASSERT_FALSE(s1.intersection(ray2).has_value());
+        }
+
+        test_section("intersects(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s4 { { 5.0f, 5.0f }, { -5.0f, -5.0f } };
+            constexpr auto result = s1.intersects(s4);
+            ASSERT(result);
+            constexpr nnm::Segment2f s5 { { 5.0f, 5.0f }, { 1.6f, 1.6f } };
+            ASSERT_FALSE(s1.intersects(s5));
+        }
+
+        test_section("intersection(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s4 { { 5.0f, 5.0f }, { -5.0f, -5.0f } };
+            constexpr auto result = s1.intersection(s4);
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal({ -0.2f, -0.2f }));
+            constexpr nnm::Segment2f s5 { { 5.0f, 5.0f }, { 1.6f, 1.6f } };
+            ASSERT_FALSE(s1.intersection(s5).has_value());
+        }
+
+        test_section("project_point");
+        {
+            constexpr auto result = s1.project_point({ 2.0f, 3.0f });
+            ASSERT(result.approx_equal({ -1.0f, 1.0f }));
+            ASSERT(s1.project_point({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
+            ASSERT(s1.project_point({ -5.0f, 5.0f }).approx_equal({ -3.0f, 4.0f }));
+        }
+
+        test_section("unchecked_slope");
+        {
+            constexpr auto result = s1.unchecked_slope();
+            ASSERT(nnm::approx_equal(result, -1.5f));
+            ASSERT(nnm::approx_equal(s2.unchecked_slope(), -1.5f));
+        }
+
+        test_section("slope");
+        {
+            constexpr auto result = s1.slope();
+            ASSERT(result.has_value() && nnm::approx_equal(result.value(), -1.5f));
+            ASSERT_FALSE(s3.slope().has_value());
+        }
+
+        test_section("transform_at(const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
+            const auto result = s1.transform_at({ 1.0f, 2.0f }, basis);
+            ASSERT(result.from.approx_equal({ 13.0f, -14.0f }));
+            ASSERT(result.to.approx_equal({ -9.0f, 18.0f }));
+        }
+
+        test_section("transform(const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
+            const auto result = s1.transform(basis);
+            ASSERT(result.from.approx_equal({ 7.0f, -10.0f }));
+            ASSERT(result.to.approx_equal({ -15.0f, 22.0f }));
+        }
+
+        test_section("transform_local(const Basis2&)");
+        {
+            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
+            const auto result = s1.transform_local(basis);
+            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -21.0f, 30.0f }))
+        }
+
+        test_section("transform_at(const Transform2&)");
+        {
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const auto result = s1.transform_at({ 1.0f, 2.0f }, t);
+            ASSERT(result.from.approx_equal({ -14.0f, 40.0f }));
+            ASSERT(result.to.approx_equal({ 6.0f, -28.0f }));
+        }
+
+        test_section("transform(const Transform2&)");
+        {
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const auto result = s1.transform(t);
+            ASSERT(result.from.approx_equal({ -6.0f, 20.0f }));
+            ASSERT(result.to.approx_equal({ 14.0f, -48.0f }));
+        }
+
+        test_section("transform_local(const Transform2&)");
+        {
+            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
+            const auto result = s1.transform_local(t);
+            ASSERT(result.from.approx_equal({ 2.0f, -4.0f }));
+            ASSERT(result.to.approx_equal({ 22.0f, -72.0f }));
+        }
+
+        test_section("translate");
+        {
+            const auto result = s1.translate({ -3.0f, 3.0f });
+            ASSERT(result.from.approx_equal({ -2.0f, 1.0f }));
+            ASSERT(result.to.approx_equal({ -6.0f, 7.0f }));
+        }
+
+        test_section("scale_at");
+        {
+            const auto result = s1.scale_at({ 1.0f, 2.0f }, { -1.0f, 3.0f });
+            ASSERT(result.from.approx_equal({ 1.0f, -10.0f }));
+            ASSERT(result.to.approx_equal({ 5.0f, 8.0f }));
+        }
+
+        test_section("scale");
+        {
+            const auto result = s1.scale({ -1.0f, 3.0f });
+            ASSERT(result.from.approx_equal({ -1.0f, -6.0f }));
+            ASSERT(result.to.approx_equal({ 3.0f, 12.0f }));
+        }
+
+        test_section("scale_local");
+        {
+            const auto result = s1.scale_local({ -1.0f, 3.0f });
+            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
+            ASSERT(result.to.approx_equal({ 5.0f, 16.0f }));
+        }
+
+        test_section("rotate_at");
+        {
+            const auto result = s1.rotate_at({ 1.0f, 2.0f }, nnm::pi() / 5.0f);
+            ASSERT(result.from.approx_equal({ 3.35115f, -1.23607f }));
+            ASSERT(result.to.approx_equal({ -3.41164f, 1.266893f }));
         }
     }
 }
