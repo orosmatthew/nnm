@@ -512,6 +512,21 @@ public:
         return acos(cos_angle);
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
+    {
+        return nnm::approx_zero(cross(other));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Vector2& other) const
+    {
+        return nnm::approx_zero(dot(other));
+    }
+
+    [[nodiscard]] constexpr Vector2 arbitrary_perpendicular() const
+    {
+        return { -y, x };
+    }
+
     [[nodiscard]] Vector2 translate(const Vector2& by) const;
 
     [[nodiscard]] Vector2 rotate(Real angle) const;
@@ -818,6 +833,21 @@ public:
     [[nodiscard]] constexpr int cross(const Vector2i& other) const
     {
         return x * other.y - y * other.x;
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Vector2i& other) const
+    {
+        return cross(other) == 0;
+    }
+
+    [[nodiscard]] constexpr bool perpendicular(const Vector2i& other) const
+    {
+        return dot(other) == 0;
+    }
+
+    [[nodiscard]] constexpr Vector2i arbitrary_perpendicular() const
+    {
+        return { -y, x };
     }
 
     [[nodiscard]] constexpr int max() const
@@ -1254,6 +1284,22 @@ public:
         return atan2(this->cross(to).length(), this->dot(to));
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Vector3& other) const
+    {
+        return cross(other).approx_zero();
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Vector3& other) const
+    {
+        return nnm::approx_zero(dot(other));
+    }
+
+    [[nodiscard]] constexpr Vector3 arbitrary_perpendicular() const
+    {
+        const Vector3 other = nnm::abs(x) > nnm::abs(y) ? Vector3 { 0, 1, 0 } : Vector3 { 1, 0, 0 };
+        return cross(other);
+    }
+
     [[nodiscard]] Vector3 translate(const Vector3& by) const;
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
@@ -1601,6 +1647,22 @@ public:
     [[nodiscard]] constexpr Vector3i cross(const Vector3i& other) const
     {
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Vector3i& other) const
+    {
+        return cross(other) == zero();
+    }
+
+    [[nodiscard]] constexpr bool perpendicular(const Vector3i& other) const
+    {
+        return dot(other) == 0;
+    }
+
+    [[nodiscard]] constexpr Vector3i arbitrary_perpendicular() const
+    {
+        const Vector3i other = nnm::abs(x) > nnm::abs(y) ? Vector3i { 0, 1, 0 } : Vector3i { 1, 0, 0 };
+        return cross(other);
     }
 
     [[nodiscard]] constexpr int max() const
