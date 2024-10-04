@@ -798,6 +798,28 @@ int main()
             ASSERT(v1.transform(transform, 2.3f).approx_equal({ 20.9f, -5.4f }));
         }
 
+        test_section("max");
+        {
+            constexpr nnm::Vector2 v1(3.0f, 4.0f);
+            constexpr auto result = v1.max();
+            ASSERT(result == 4.0f);
+            nnm::Vector2 v2(5.0f, 2.0f);
+            ASSERT(v2.max() == 5.0f);
+            nnm::Vector2 v3(0.0f, 0.0f);
+            ASSERT(v3.max() == 0.0f);
+        }
+
+        test_section("min");
+        {
+            constexpr nnm::Vector2 v1(3.0f, 4.0f);
+            constexpr auto result = v1.min();
+            ASSERT(result == 3.0f);
+            nnm::Vector2 v2(5.0f, 2.0f);
+            ASSERT(v2.min() == 2.0f);
+            nnm::Vector2 v3(0.0f, 0.0f);
+            ASSERT(v3.min() == 0.0f);
+        }
+
         test_section("max_index");
         {
             constexpr nnm::Vector2 v1(3.0f, 4.0f);
@@ -1111,6 +1133,28 @@ int main()
             ASSERT(result == 25);
             ASSERT(nnm::Vector2i(-2, 5).length_sqrd() == 29);
             ASSERT(nnm::Vector2i(0, 0).length_sqrd() == 0);
+        }
+
+        test_section("max");
+        {
+            constexpr nnm::Vector2i v1(3, 4);
+            constexpr auto result = v1.max();
+            ASSERT(result == 4);
+            nnm::Vector2i v2(5, 2);
+            ASSERT(v2.max() == 5);
+            nnm::Vector2i v3(0, 0);
+            ASSERT(v3.max() == 0);
+        }
+
+        test_section("min");
+        {
+            constexpr nnm::Vector2i v1(3, 4);
+            constexpr auto result = v1.min();
+            ASSERT(result == 3);
+            nnm::Vector2i v2(5, 2);
+            ASSERT(v2.min() == 2);
+            nnm::Vector2i v3(0, 0);
+            ASSERT(v3.min() == 0);
         }
 
         test_section("max_index");
@@ -1743,6 +1787,28 @@ int main()
             ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
         }
 
+        test_section("max");
+        {
+            constexpr nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
+            constexpr auto result = v1.max();
+            ASSERT(result == 4.0);
+            nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
+            ASSERT(v2.max() == 100.0f);
+            nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
+            ASSERT(v3.max() == 0.0f);
+        }
+
+        test_section("min");
+        {
+            constexpr nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
+            constexpr auto result = v1.min();
+            ASSERT(result == -2.0f);
+            nnm::Vector3 v2(-100.0f, 5.0f, 100.0f);
+            ASSERT(v2.min() == -100.0f);
+            nnm::Vector3 v3(0.0f, 0.0f, 0.0f);
+            ASSERT(v3.min() == 0.0f);
+        }
+
         test_section("max_index");
         {
             constexpr nnm::Vector3 v1(3.0f, 4.0f, -2.0f);
@@ -2085,6 +2151,24 @@ int main()
             constexpr nnm::Vector3i v(1, -2, 3);
             constexpr auto result = v.length_sqrd();
             ASSERT(result == 14);
+        }
+
+        test_section("max");
+        {
+            constexpr nnm::Vector3i v1(1, -2, 3);
+            constexpr auto result = v1.max();
+            ASSERT(result == 3);
+            nnm::Vector3i v2(-1, 2, -3);
+            ASSERT(v2.max() == 2);
+        }
+
+        test_section("min");
+        {
+            constexpr nnm::Vector3i v1(1, -2, 3);
+            constexpr auto result = v1.min();
+            ASSERT(result == -2);
+            nnm::Vector3i v2(-1, 2, -3);
+            ASSERT(v2.min() == -3);
         }
 
         test_section("max_index");
@@ -2523,6 +2607,24 @@ int main()
                                         { 1.0f, 3.0f, 3.3f, -1.0f },
                                         { 9.9f, -7.54f, 20.0f, 0.1f } });
             ASSERT(v1.transform(transform).approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
+        }
+
+        test_section("max");
+        {
+            constexpr auto result = v1.max();
+            ASSERT(result == 4.0f);
+            ASSERT(v2.max() == 5.0f);
+        }
+
+        test_section("min");
+        {
+            constexpr auto result = v1.min();
+            ASSERT(result == -3.0f);
+            ASSERT(v2.min() == -2.0f);
+            constexpr nnm::Vector4f v3 { -2.0f, 2.0f, 3.0f, -1.0f };
+            ASSERT(v3.min() == -2.0f);
+            constexpr nnm::Vector4f v4 { -2.0f, 2.0f, 3.0f, -10.0f };
+            ASSERT(v4.min() == -10.0f);
         }
 
         test_section("max_index");

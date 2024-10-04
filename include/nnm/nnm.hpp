@@ -526,6 +526,16 @@ public:
 
     [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, y);
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, y);
+    }
+
     [[nodiscard]] constexpr int max_index() const
     {
         if (x > y) {
@@ -798,6 +808,16 @@ public:
     [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
+    }
+
+    [[nodiscard]] constexpr int max() const
+    {
+        return nnm::max(x, y);
+    }
+
+    [[nodiscard]] constexpr int min() const
+    {
+        return nnm::min(x, y);
     }
 
     [[nodiscard]] constexpr int max_index() const
@@ -1244,6 +1264,16 @@ public:
 
     [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
 
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, nnm::max(y, z));
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, nnm::min(y, z));
+    }
+
     [[nodiscard]] constexpr int max_index() const
     {
         Real max_val = x;
@@ -1551,6 +1581,16 @@ public:
     [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
+    }
+
+    [[nodiscard]] constexpr int max() const
+    {
+        return nnm::max(x, nnm::max(y, z));
+    }
+
+    [[nodiscard]] constexpr int min() const
+    {
+        return nnm::min(x, nnm::min(y, z));
     }
 
     [[nodiscard]] int max_index() const
@@ -1967,6 +2007,16 @@ public:
     }
 
     [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
+
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, nnm::max(y, nnm::max(z, w)));
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, nnm::min(y, nnm::min(z, w)));
+    }
 
     [[nodiscard]] int max_index() const
     {
