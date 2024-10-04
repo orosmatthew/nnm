@@ -171,7 +171,7 @@ inline void geom_tests()
 
         test_section("intersects(const Segment2&)");
         {
-            constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
             constexpr nnm::Line2f line3 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
             constexpr auto result = line3.intersects(s1);
             ASSERT(result);
@@ -181,7 +181,7 @@ inline void geom_tests()
 
         test_section("intersection(const Segment2&)");
         {
-            constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
             constexpr nnm::Line2f line3 { { 5.0f, 5.0f }, { 0.7071067812f, 0.7071067812f } };
             constexpr auto result = line3.intersection(s1);
             ASSERT(result.has_value());
@@ -597,19 +597,19 @@ inline void geom_tests()
     {
         test_section("Segment2()");
         {
-            constexpr nnm::Segment2 s {};
+            constexpr nnm::Segment2f s {};
             ASSERT(s.from == nnm::Vector2f::zero());
             ASSERT(s.to == nnm::Vector2f::zero());
         }
 
         test_section("Segment2(const Vector2&, const Vector2&)");
         {
-            constexpr nnm::Segment2 s { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Segment2f s { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
             ASSERT(s.from == nnm::Vector2f(1.0f, -2.0f));
             ASSERT(s.to == nnm::Vector2f(-3.0f, 4.0f));
         }
 
-        constexpr nnm::Segment2 s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+        constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
 
         test_section("approx_collinear(const Vector2&)");
         {
@@ -622,32 +622,32 @@ inline void geom_tests()
 
         test_section("approx_collinear(const Line2&)");
         {
-            constexpr nnm::Line2 line1 { { 0.0f, -0.5f }, { -0.5547f, 0.83205f } };
+            constexpr nnm::Line2f line1 { { 0.0f, -0.5f }, { -0.5547f, 0.83205f } };
             constexpr auto result = s1.approx_collinear(line1);
             ASSERT(result);
-            constexpr nnm::Line2 line2 { { 3.0f, -0.5f }, { -0.5547f, 0.83205f } };
+            constexpr nnm::Line2f line2 { { 3.0f, -0.5f }, { -0.5547f, 0.83205f } };
             ASSERT_FALSE(s1.approx_collinear(line2));
         }
 
         test_section("approx_collinear(const Ray2&)");
         {
-            constexpr nnm::Ray2 ray1 { { 3.0f, -5.0f }, { -0.5547f, 0.83205f } };
+            constexpr nnm::Ray2f ray1 { { 3.0f, -5.0f }, { -0.5547f, 0.83205f } };
             constexpr auto result = s1.approx_collinear(ray1);
             ASSERT(result);
-            constexpr nnm::Ray2 ray2 { { 0.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            constexpr nnm::Ray2f ray2 { { 0.0f, -0.5f }, { 0.5547f, -0.83205f } };
             ASSERT(s1.approx_collinear(ray2));
-            constexpr nnm::Ray2 ray3 { { 3.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            constexpr nnm::Ray2f ray3 { { 3.0f, -0.5f }, { 0.5547f, -0.83205f } };
             ASSERT_FALSE(s1.approx_collinear(ray3));
         }
 
         test_section("approx_collinear(const Segment2&)");
         {
-            constexpr nnm::Segment2 s2 { { -0.3333333f, 0.0f }, { 0.0f, -0.5f } };
+            constexpr nnm::Segment2f s2 { { -0.3333333f, 0.0f }, { 0.0f, -0.5f } };
             constexpr auto result = s1.approx_collinear(s2);
             ASSERT(result);
-            constexpr nnm::Segment2 s3 { { 7.0f, -11.0f }, { 3.0f, -5.0f } };
+            constexpr nnm::Segment2f s3 { { 7.0f, -11.0f }, { 3.0f, -5.0f } };
             ASSERT(s1.approx_collinear(s3));
-            constexpr nnm::Segment2 s4 { { 6.0f, -10.0f }, { 5.0f, -5.0f } };
+            constexpr nnm::Segment2f s4 { { 6.0f, -10.0f }, { 5.0f, -5.0f } };
             ASSERT_FALSE(s1.approx_collinear(s4));
         }
 
@@ -682,8 +682,8 @@ inline void geom_tests()
             ASSERT(s1.direction().approx_equal({ -0.5547f, 0.83205f }));
         }
 
-        constexpr nnm::Segment2 s2 { { 0.0f, 4.0f }, { 4.0f, -2.0f } };
-        constexpr nnm::Segment2 s3 { { 5.0f, 5.0f }, { 5.0f, 0.0f } };
+        constexpr nnm::Segment2f s2 { { 0.0f, 4.0f }, { 4.0f, -2.0f } };
+        constexpr nnm::Segment2f s3 { { 5.0f, 5.0f }, { 5.0f, 0.0f } };
 
         test_section("approx_parallel(const Line2&)");
         {
@@ -694,10 +694,10 @@ inline void geom_tests()
 
         test_section("approx_parallel(const Ray2&)");
         {
-            constexpr nnm::Ray2 ray1 { { 0.0f, 4.0f }, { 0.554699f, -0.832051f } };
+            constexpr nnm::Ray2f ray1 { { 0.0f, 4.0f }, { 0.554699f, -0.832051f } };
             constexpr auto result = s1.approx_parallel(ray1);
             ASSERT(result);
-            constexpr nnm::Ray2 ray2 { { -0.2f, -0.2f }, { -0.554699f, -0.832051f } };
+            constexpr nnm::Ray2f ray2 { { -0.2f, -0.2f }, { -0.554699f, -0.832051f } };
             ASSERT_FALSE(s1.approx_parallel(ray2));
         }
 

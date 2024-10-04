@@ -320,6 +320,7 @@ public:
             Real x;
             Real y;
         };
+
         Real data[2] {};
     };
 
@@ -731,6 +732,7 @@ public:
             int x;
             int y;
         };
+
         int data[2] {};
     };
 
@@ -1021,6 +1023,7 @@ public:
             Real y;
             Real z;
         };
+
         Real data[3] {};
     };
 
@@ -1467,6 +1470,7 @@ public:
             int y;
             int z;
         };
+
         int data[3] {};
     };
 
@@ -1790,6 +1794,7 @@ public:
             Real z;
             Real w;
         };
+
         Real data[4] {};
     };
 
@@ -2206,6 +2211,7 @@ public:
             Real z;
             Real w;
         };
+
         Vector4<Real> vector;
         Real data[4] {};
     };
@@ -2415,6 +2421,7 @@ public:
             Real col1_row0;
             Real col1_row1;
         };
+
         Vector2<Real> columns[2];
         Real data[4] {};
     };
@@ -2968,6 +2975,7 @@ public:
             Real col2_row1;
             Real col2_row2;
         };
+
         Vector3<Real> columns[3];
         Real data[9] {};
     };
@@ -3867,6 +3875,7 @@ public:
             Real col3_row2;
             Real col3_row3;
         };
+
         Vector4<Real> columns[4];
         Real data[16] {};
     };

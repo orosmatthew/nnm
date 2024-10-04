@@ -11,18 +11,22 @@
 
 namespace nnm {
 
-template <typename Real = float>
+template <typename Real>
 class Line2;
-using Line2f = Line2<>;
+using Line2f = Line2<float>;
 using Line2d = Line2<double>;
-template <typename Real = float>
+template <typename Real>
 class Ray2;
-using Ray2f = Ray2<>;
+using Ray2f = Ray2<float>;
 using Ray2d = Ray2<double>;
-template <typename Real = float>
+template <typename Real>
 class Segment2;
-using Segment2f = Segment2<>;
+using Segment2f = Segment2<float>;
 using Segment2d = Segment2<double>;
+template <typename Real>
+class Triangle2;
+using Triangle2f = Triangle2<float>;
+using Triangle2d = Triangle2<double>;
 
 template <typename Real>
 class Line2 {
@@ -46,6 +50,10 @@ public:
     {
         return { point1, point1.direction(point2) };
     }
+
+    static Line2 from_segment(const Segment2<Real>& segment);
+
+    static Line2 from_ray(const Ray2<Real>& ray);
 
     static constexpr Line2 axis_x()
     {
@@ -140,6 +148,12 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> diff = point - origin;
+        return diff.dot(direction) / direction.dot(direction);
+    }
+
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -196,6 +210,8 @@ public:
         const Vector2<Real> diff = origin - other.origin;
         return approx_zero(diff.cross(other.direction));
     }
+
+    [[nodiscard]] bool separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const;
 
     [[nodiscard]] Line2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
     {
@@ -844,6 +860,209 @@ public:
     }
 };
 
+template <typename Real>
+class Triangle2 {
+public:
+    union {
+        struct {
+            Vector2<Real> vertex0;
+            Vector2<Real> vertex1;
+            Vector2<Real> vertex2;
+        };
+
+        Vector2<Real> vertices[3];
+    };
+
+    constexpr Triangle2(const Vector2<Real>& vertex0, const Vector2<Real>& vertex1, const Vector2<Real>& vertex2)
+        : vertex0 { vertex0 }
+        , vertex1 { vertex1 }
+        , vertex2 { vertex2 }
+    {
+    }
+
+    [[nodiscard]] constexpr Vector2<Real> centroid() const
+    {
+        return (vertex0 + vertex1 + vertex2) / static_cast<Real>(3);
+    }
+
+    [[nodiscard]] constexpr Vector2<Real> circumcenter() const
+    {
+        const Vector2<Real> mid01 = (vertex0 + vertex1) / static_cast<Real>(2);
+        const Vector2<Real> mid12 = (vertex1 + vertex2) / static_cast<Real>(2);
+        const Vector2<Real> dir01 = vertex1 - vertex0;
+        const Vector2<Real> dir12 = vertex2 - vertex1;
+        const Vector2<Real> perp01 { -dir01.y, dir01.x };
+        const Vector2<Real> perp12 { -dir12.y, dir12.x };
+        const Real t = (mid12 - mid01).cross(perp12) / perp01.cross(perp12);
+        return mid01 + perp01 * t;
+    }
+
+    [[nodiscard]] Segment2<Real> edge0() const
+    {
+        return { vertex0, vertex1 };
+    }
+
+    [[nodiscard]] Segment2<Real> edge1() const
+    {
+        return { vertex1, vertex2 };
+    }
+
+    [[nodiscard]] Segment2<Real> edge2() const
+    {
+        return { vertex2, vertex0 };
+    }
+
+    [[nodiscard]] Real perimeter() const
+    {
+        return edge0().length() + edge1().length() + edge2().length();
+    }
+
+    [[nodiscard]] Vector2<Real> incenter() const
+    {
+        const Real len0 = edge0().length();
+        const Real len1 = edge1().length();
+        const Real len2 = edge2().length();
+        const Real perim = len0 + len1 + len2;
+        const Real x = (len0 * vertex0.x + len1 * vertex1.x + len2 * vertex2.x) / perim;
+        const Real y = (len0 * vertex0.y + len1 * vertex1.y + len2 * vertex2.y) / perim;
+        return { x, y };
+    }
+
+    [[nodiscard]] constexpr Vector2<Real> orthocenter() const
+    {
+        const Vector2<Real> dir01 = vertex1 - vertex0;
+        const Vector2<Real> dir12 = vertex2 - vertex1;
+        const Vector2<Real> alt12 = vertex0 - vertex1;
+        const Real t = alt12.cross(dir12) / dir01.cross(dir12);
+        return vertex0 + dir01 * t;
+    }
+
+    [[nodiscard]] constexpr Real area() const
+    {
+        const Real sum = vertex0.x * (vertex1.y - vertex2.y) + vertex1.x * (vertex2.y - vertex0.y)
+            + vertex2.x * (vertex0.y - vertex1.y);
+        return abs(sum) / static_cast<Real>(2);
+    }
+
+    [[nodiscard]] Segment2<Real> median0() const
+    {
+        return { vertex0, edge1().midpoint() };
+    }
+
+    [[nodiscard]] Segment2<Real> median1() const
+    {
+        return { vertex1, edge2().midpoint() };
+    }
+
+    [[nodiscard]] Segment2<Real> median2() const
+    {
+        return { vertex2, edge0().midpoint() };
+    }
+
+    [[nodiscard]] Line2<Real> perpendicular_bisector0() const
+    {
+        return { edge0().midpoint(), { -edge0().direction.y, edge0().direction.x } };
+    }
+
+    [[nodiscard]] Line2<Real> perpendicular_bisector1() const
+    {
+        return { edge1().midpoint(), { -edge1().direction.y, edge1().direction.x } };
+    }
+
+    [[nodiscard]] Line2<Real> perpendicular_bisector2() const
+    {
+        return { edge2().midpoint(), { -edge2().direction.y, edge2().direction.x } };
+    }
+
+    [[nodiscard]] Real angle0() const
+    {
+        const Vector2<Real> dir01 = vertex1 - vertex0;
+        const Vector2<Real> dir02 = vertex2 - vertex0;
+        return acos(dir01.dot(dir02) / (dir01.length() * dir02.length()));
+    }
+
+    [[nodiscard]] Real angle1() const
+    {
+        const Vector2<Real> dir10 = vertex0 - vertex1;
+        const Vector2<Real> dir12 = vertex2 - vertex1;
+        return acos(dir10.dot(dir12) / (dir10.length() * dir12.length()));
+    }
+
+    [[nodiscard]] Real angle2() const
+    {
+        const Vector2<Real> dir20 = vertex0 - vertex2;
+        const Vector2<Real> dir21 = vertex1 - vertex2;
+        return acos(dir20.dot(dir21) / (dir20.length() * dir21.length()));
+    }
+
+    [[nodiscard]] Line2<Real> angle_bisector0() const
+    {
+        const Vector2<Real> dir01 = (vertex1 - vertex0).normalize();
+        const Vector2<Real> dir02 = (vertex2 - vertex0).normalize();
+        const Vector2<Real> bisector_dir = (dir01 + dir02).normalize();
+        return { vertex0, bisector_dir };
+    }
+
+    [[nodiscard]] Line2<Real> angle_bisector1() const
+    {
+        const Vector2<Real> dir10 = (vertex0 - vertex1).normalize();
+        const Vector2<Real> dir12 = (vertex2 - vertex1).normalize();
+        const Vector2<Real> bisector_dir = (dir10 + dir12).normalize();
+        return { vertex1, bisector_dir };
+    }
+
+    [[nodiscard]] Line2<Real> angle_bisector2() const
+    {
+        const Vector2<Real> dir20 = (vertex0 - vertex2).normalize();
+        const Vector2<Real> dir21 = (vertex1 - vertex2).normalize();
+        const Vector2<Real> bisector_dir = (dir20 + dir21).normalize();
+        return { vertex2, bisector_dir };
+    }
+
+    [[nodiscard]] Line2<Real> altitude0() const
+    {
+        const Vector2<Real> dir12 = vertex2 - vertex1;
+        const Vector2<Real> perp = { -dir12.y, dir12.x };
+        return { vertex0, perp.normalize() };
+    }
+
+    [[nodiscard]] Line2<Real> altitude1() const
+    {
+        const Vector2<Real> dir20 = vertex0 - vertex2;
+        const Vector2<Real> perp = { -dir20.y, dir20.x };
+        return { vertex1, perp.normalize() };
+    }
+
+    [[nodiscard]] Line2<Real> altitude2() const
+    {
+        const Vector2<Real> dir01 = vertex1 - vertex0;
+        const Vector2<Real> perp = { -dir01.y, dir01.x };
+        return { vertex2, perp.normalize() };
+    }
+
+    [[nodiscard]] Triangle2 project(const Line2<Real>& line) const
+    {
+        return { line.project_point(vertex0), line.project_point(vertex1), line.project_point(vertex2) };
+    }
+
+    [[nodiscard]] Vector3<Real> project_scalars(const Line2<Real>& line) const
+    {
+        return { line.project_point_scalar(vertex0),
+                 line.project_point_scalar(vertex1),
+                 line.project_point_scalar(vertex2) };
+    }
+
+    [[nodiscard]] bool overlaps(const Triangle2& other) const
+    {
+        auto has_separating_line = [](const Triangle2& triangle1, const Triangle2& triangle2) -> bool {
+            return Line2<Real>::from_segment(triangle1.edge0()).separates(triangle1, triangle2)
+                || Line2<Real>::from_segment(triangle1.edge1()).separates(triangle1, triangle2)
+                || Line2<Real>::from_segment(triangle1.edge2()).separates(triangle1, triangle2);
+        };
+        return !has_separating_line(*this, other) && !has_separating_line(other, *this);
+    }
+};
+
 template <typename Real = float>
 class AlignedRectangle {
 public:
@@ -1031,6 +1250,30 @@ constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Segment2<
 }
 
 template <typename Real>
+Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
+{
+    return { segment.from, (segment.to - segment.from).normalize() };
+}
+
+template <typename Real>
+Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
+{
+    return { ray.origin, ray.direction };
+}
+
+template <typename Real>
+bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const
+{
+    const Vector3<Real> proj1 = triangle1.project_scalars(*this);
+    const Vector3<Real> proj2 = triangle2.project_scalars(*this);
+    const Real min1 = proj1[proj1.min_index()];
+    const Real max1 = proj1[proj1.max_index()];
+    const Real min2 = proj2[proj2.min_index()];
+    const Real max2 = proj2[proj2.max_index()];
+    return max1 < min2 || max2 < min1;
+}
+
+template <typename Real>
 bool Ray2<Real>::intersects(const Segment2<Real>& segment) const
 {
     return segment.intersects(*this);
@@ -1041,7 +1284,6 @@ std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<Real>& segm
 {
     return segment.intersection(*this);
 }
-
 }
 
 #endif
