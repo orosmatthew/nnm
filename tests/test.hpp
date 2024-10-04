@@ -6,9 +6,9 @@
 #include <sstream>
 #include <string>
 
-static bool g_tests_success = true;
-static std::optional<std::string> g_test_case = std::nullopt;
-static std::optional<std::string> g_test_section = std::nullopt;
+inline bool g_tests_success = true;
+inline std::optional<std::string> g_test_case = std::nullopt;
+inline std::optional<std::string> g_test_section = std::nullopt;
 
 inline void test_case(const std::string& name)
 {
