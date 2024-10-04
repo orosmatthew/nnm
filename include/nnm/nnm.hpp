@@ -512,6 +512,21 @@ public:
         return acos(cos_angle);
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
+    {
+        return nnm::approx_zero(cross(other));
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Vector2& other) const
+    {
+        return nnm::approx_zero(dot(other));
+    }
+
+    [[nodiscard]] constexpr Vector2 arbitrary_perpendicular() const
+    {
+        return { -y, x };
+    }
+
     [[nodiscard]] Vector2 translate(const Vector2& by) const;
 
     [[nodiscard]] Vector2 rotate(Real angle) const;
@@ -525,6 +540,16 @@ public:
     [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
 
     [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
+
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, y);
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, y);
+    }
 
     [[nodiscard]] constexpr int max_index() const
     {
@@ -798,6 +823,41 @@ public:
     [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
+    }
+
+    [[nodiscard]] constexpr int dot(const Vector2i& other) const
+    {
+        return x * other.x + y * other.y;
+    }
+
+    [[nodiscard]] constexpr int cross(const Vector2i& other) const
+    {
+        return x * other.y - y * other.x;
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Vector2i& other) const
+    {
+        return cross(other) == 0;
+    }
+
+    [[nodiscard]] constexpr bool perpendicular(const Vector2i& other) const
+    {
+        return dot(other) == 0;
+    }
+
+    [[nodiscard]] constexpr Vector2i arbitrary_perpendicular() const
+    {
+        return { -y, x };
+    }
+
+    [[nodiscard]] constexpr int max() const
+    {
+        return nnm::max(x, y);
+    }
+
+    [[nodiscard]] constexpr int min() const
+    {
+        return nnm::min(x, y);
     }
 
     [[nodiscard]] constexpr int max_index() const
@@ -1224,6 +1284,22 @@ public:
         return atan2(this->cross(to).length(), this->dot(to));
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Vector3& other) const
+    {
+        return cross(other).approx_zero();
+    }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Vector3& other) const
+    {
+        return nnm::approx_zero(dot(other));
+    }
+
+    [[nodiscard]] constexpr Vector3 arbitrary_perpendicular() const
+    {
+        const Vector3 other = nnm::abs(x) > nnm::abs(y) ? Vector3 { 0, 1, 0 } : Vector3 { 1, 0, 0 };
+        return cross(other);
+    }
+
     [[nodiscard]] Vector3 translate(const Vector3& by) const;
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
@@ -1243,6 +1319,16 @@ public:
     [[nodiscard]] Vector3 transform(const Transform2<Real>& by) const;
 
     [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
+
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, nnm::max(y, z));
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, nnm::min(y, z));
+    }
 
     [[nodiscard]] constexpr int max_index() const
     {
@@ -1551,6 +1637,42 @@ public:
     [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
+    }
+
+    [[nodiscard]] constexpr int dot(const Vector3i& other) const
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    [[nodiscard]] constexpr Vector3i cross(const Vector3i& other) const
+    {
+        return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Vector3i& other) const
+    {
+        return cross(other) == zero();
+    }
+
+    [[nodiscard]] constexpr bool perpendicular(const Vector3i& other) const
+    {
+        return dot(other) == 0;
+    }
+
+    [[nodiscard]] constexpr Vector3i arbitrary_perpendicular() const
+    {
+        const Vector3i other = nnm::abs(x) > nnm::abs(y) ? Vector3i { 0, 1, 0 } : Vector3i { 1, 0, 0 };
+        return cross(other);
+    }
+
+    [[nodiscard]] constexpr int max() const
+    {
+        return nnm::max(x, nnm::max(y, z));
+    }
+
+    [[nodiscard]] constexpr int min() const
+    {
+        return nnm::min(x, nnm::min(y, z));
     }
 
     [[nodiscard]] int max_index() const
@@ -1967,6 +2089,16 @@ public:
     }
 
     [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
+
+    [[nodiscard]] constexpr Real max() const
+    {
+        return nnm::max(x, nnm::max(y, nnm::max(z, w)));
+    }
+
+    [[nodiscard]] constexpr Real min() const
+    {
+        return nnm::min(x, nnm::min(y, nnm::min(z, w)));
+    }
 
     [[nodiscard]] int max_index() const
     {
