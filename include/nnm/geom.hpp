@@ -9,6 +9,9 @@
 
 #include <nnm/nnm.hpp>
 
+// ReSharper disable once CppUnusedIncludeDirective
+#include <utility>
+
 namespace nnm {
 
 template <typename Real>
@@ -23,6 +26,10 @@ template <typename Real>
 class Segment2;
 using Segment2f = Segment2<float>;
 using Segment2d = Segment2<double>;
+template <typename Real>
+class Circle2;
+using Circle2f = Circle2<float>;
+using Circle2d = Circle2<double>;
 template <typename Real>
 class Triangle2;
 using Triangle2f = Triangle2<float>;
@@ -147,6 +154,8 @@ public:
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+
+    [[nodiscard]] bool approx_tangent(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
@@ -861,6 +870,210 @@ public:
 };
 
 template <typename Real>
+class Circle2 {
+public:
+    Vector2<Real> center;
+    Real radius;
+
+    constexpr Circle2()
+        : center { Vector2<Real>::zero() }
+        , radius { static_cast<Real>(1) }
+    {
+    }
+
+    constexpr Circle2(const Vector2<Real>& center, const Real radius)
+        : center { center }
+        , radius { radius }
+    {
+    }
+
+    [[nodiscard]] Real circumference() const
+    {
+        return static_cast<Real>(2) * pi<Real>() * radius;
+    }
+
+    [[nodiscard]] Real perimeter() const
+    {
+        return circumference();
+    }
+
+    [[nodiscard]] Real area() const
+    {
+        return pi<Real>() * sqrd(radius);
+    }
+
+    [[nodiscard]] Real diameter() const
+    {
+        return static_cast<Real>(2) * radius;
+    }
+
+    [[nodiscard]] bool contains(const Vector2<Real>& point) const
+    {
+        return (point - center).length_sqrd() <= sqrd(radius);
+    }
+
+    [[nodiscard]] Vector2<Real> point(const Real angle) const
+    {
+        return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
+    }
+
+    [[nodiscard]] Line2<Real> tangent(const Real angle) const
+    {
+        const Vector2<Real> p = point(angle);
+        const Vector2<Real> dir = p - center;
+        return { p, dir.arbitrary_perpendicular() };
+    }
+
+    [[nodiscard]] bool intersects(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = line.origin - center;
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        return discriminant >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = line.origin - center;
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        const Vector2<Real> p1 = line.origin + line.direction * t1;
+        const Vector2<Real> p2 = line.origin + line.direction * t2;
+        return std::make_pair(p1, p2);
+    }
+
+    [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = ray.origin - center;
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return false;
+        }
+        return true;
+    }
+
+    [[nodiscard]] std::optional<std::pair<Vector2<Real>, std::optional<Vector2<Real>>>> intersections(
+        const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = ray.origin - center;
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
+            const Vector2<Real> p1 = ray.origin + ray.direction * t1;
+            const Vector2<Real> p2 = ray.origin + ray.direction * t2;
+            return std::make_pair(p1, p2);
+        }
+        if (t1 >= static_cast<Real>(0)) {
+            const Vector2<Real> p = ray.origin + ray.direction * t1;
+            return std::make_pair(p, std::nullopt);
+        }
+        if (t2 >= static_cast<Real>(0)) {
+            const Vector2<Real> p = ray.origin + ray.direction * t2;
+            return std::make_pair(p, std::nullopt);
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] std::optional<std::pair<Vector2<Real>, std::optional<Vector2<Real>>>> intersections(
+        const Segment2<Real>& segment) const
+    {
+        const Vector2<Real> seg_dir = segment.to - segment.from;
+        const Vector2<Real> circle_dir = segment.from - center;
+        const Real a = seg_dir.dot(seg_dir);
+        const Real b = static_cast<Real>(2) * circle_dir.dot(seg_dir);
+        const Real c = circle_dir.dot(circle_dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
+            && t2 <= static_cast<Real>(1)) {
+            const Vector2<Real> p1 = segment.from + seg_dir * t1;
+            const Vector2<Real> p2 = segment.from + seg_dir * t2;
+            return std::make_pair(p1, p2);
+        }
+        if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
+            const Vector2<Real> p = segment.from + seg_dir * t1;
+            return std::make_pair(p, std::nullopt);
+        }
+        if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
+            const Vector2<Real> p = segment.from + seg_dir * t2;
+            return std::make_pair(p, std::nullopt);
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
+    {
+        return { center.transform(Transform2<Real>::from_translation(by)), radius };
+    }
+
+    [[nodiscard]] Circle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return { (center - rotate_origin).transform(Basis2<Real>::from_rotation(angle)) + rotate_origin, radius };
+    }
+
+    [[nodiscard]] Circle2 rotate(const Real angle) const
+    {
+        return { center.transform(Basis2<Real>::from_rotation(angle)), radius };
+    }
+
+    [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real by) const
+    {
+        return { (center - scale_origin).transform(Basis2<Real>::from_scale(Vector2<Real>::all(by))) + scale_origin,
+                 radius * by };
+    }
+
+    [[nodiscard]] Circle2 scale(const Real by) const
+    {
+        return { center.transform(Basis2<Real>::from_scale(Vector2<Real>::all(by))), radius * by };
+    }
+
+    [[nodiscard]] bool approx_equal(const Circle2& other) const
+    {
+        return center.approx_equal(other.center) && approx_equal(radius, other.radius);
+    }
+
+    [[nodiscard]] bool operator==(const Circle2& other) const
+    {
+        return center == other.center && radius == other.radius;
+    }
+
+    [[nodiscard]] bool operator!=(const Circle2& other) const
+    {
+        return center != other.center || radius != other.radius;
+    }
+
+    [[nodiscard]] bool operator<(const Circle2& other) const
+    {
+        if (center != other.center) {
+            return center < other.center;
+        }
+        return radius < other.radius;
+    }
+};
+
+template <typename Real>
 class Triangle2 {
 public:
     union {
@@ -1256,6 +1469,16 @@ template <typename Real>
 Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
 {
     return { ray.origin, ray.direction };
+}
+
+template <typename Real>
+bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
+{
+    const Vector2<Real> dir = origin - circle.center;
+    const Real b = static_cast<Real>(2) * dir.dot(direction);
+    const Real c = dir.dot(dir) - sqrd(circle.radius);
+    const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+    return approx_zero(discriminant);
 }
 
 template <typename Real>
