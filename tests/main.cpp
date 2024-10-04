@@ -1135,6 +1135,22 @@ int main()
             ASSERT(nnm::Vector2i(0, 0).length_sqrd() == 0);
         }
 
+        test_section("dot");
+        {
+            constexpr nnm::Vector2i v1(2, 3);
+            constexpr nnm::Vector2i v2(4, 5);
+            constexpr auto result = v1.dot(v2);
+            ASSERT(result == 23);
+        }
+
+        test_section("cross");
+        {
+            constexpr nnm::Vector2i v1(2, -3);
+            constexpr nnm::Vector2i v2(-4, 5);
+            constexpr auto result = v1.cross(v2);
+            ASSERT(result == -2);
+        }
+
         test_section("max");
         {
             constexpr nnm::Vector2i v1(3, 4);
@@ -2151,6 +2167,25 @@ int main()
             constexpr nnm::Vector3i v(1, -2, 3);
             constexpr auto result = v.length_sqrd();
             ASSERT(result == 14);
+        }
+
+        test_section("dot");
+        {
+            constexpr nnm::Vector3i v1(1, -2, 3);
+            constexpr nnm::Vector3i v2(-2, 4, -6);
+            constexpr auto result = v1.dot(v2);
+            ASSERT(result == -28);
+        }
+
+        test_section("cross");
+        {
+            constexpr nnm::Vector3i v1(1, -2, 3);
+            constexpr nnm::Vector3i v2(-2, 4, -6);
+            constexpr auto result = v1.cross(v2);
+            ASSERT(result == nnm::Vector3i::zero());
+            constexpr nnm::Vector3i v3(1, 2, 3);
+            constexpr nnm::Vector3i v4(-2, 4, 6);
+            ASSERT(v3.cross(v4) == nnm::Vector3i(0, -12, 8));
         }
 
         test_section("max");

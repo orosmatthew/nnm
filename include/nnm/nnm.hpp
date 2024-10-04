@@ -810,6 +810,16 @@ public:
         return sqrd(x) + sqrd(y);
     }
 
+    [[nodiscard]] constexpr int dot(const Vector2i& other) const
+    {
+        return x * other.x + y * other.y;
+    }
+
+    [[nodiscard]] constexpr int cross(const Vector2i& other) const
+    {
+        return x * other.y - y * other.x;
+    }
+
     [[nodiscard]] constexpr int max() const
     {
         return nnm::max(x, y);
@@ -1581,6 +1591,16 @@ public:
     [[nodiscard]] constexpr int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
+    }
+
+    [[nodiscard]] constexpr int dot(const Vector3i& other) const
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    [[nodiscard]] constexpr Vector3i cross(const Vector3i& other) const
+    {
+        return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
     }
 
     [[nodiscard]] constexpr int max() const
