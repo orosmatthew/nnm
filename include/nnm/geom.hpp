@@ -85,9 +85,9 @@ public:
         return { point, direction };
     }
 
-    [[nodiscard]] constexpr Line2 perpendicular_containing(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Line2 arbitrary_perpendicular_containing(const Vector2<Real>& point) const
     {
-        return { point, { -direction.y, direction.x } };
+        return { point, direction.arbitrary_perpendicular() };
     }
 
     [[nodiscard]] Line2 normalize() const
@@ -891,8 +891,8 @@ public:
         const Vector2<Real> mid12 = (vertex1 + vertex2) / static_cast<Real>(2);
         const Vector2<Real> dir01 = vertex1 - vertex0;
         const Vector2<Real> dir12 = vertex2 - vertex1;
-        const Vector2<Real> perp01 { -dir01.y, dir01.x };
-        const Vector2<Real> perp12 { -dir12.y, dir12.x };
+        const Vector2<Real> perp01 = dir01.arbitrary_perpendicular();
+        const Vector2<Real> perp12 = dir12.arbitrary_perpendicular();
         const Real t = (mid12 - mid01).cross(perp12) / perp01.cross(perp12);
         return mid01 + perp01 * t;
     }
@@ -961,17 +961,17 @@ public:
 
     [[nodiscard]] Line2<Real> perpendicular_bisector0() const
     {
-        return { edge0().midpoint(), { -edge0().direction.y, edge0().direction.x } };
+        return { edge0().midpoint(), edge0().direction.arbitrary_perpendicular() };
     }
 
     [[nodiscard]] Line2<Real> perpendicular_bisector1() const
     {
-        return { edge1().midpoint(), { -edge1().direction.y, edge1().direction.x } };
+        return { edge1().midpoint(), edge1().direction.arbitrary_perpendicular() };
     }
 
     [[nodiscard]] Line2<Real> perpendicular_bisector2() const
     {
-        return { edge2().midpoint(), { -edge2().direction.y, edge2().direction.x } };
+        return { edge2().midpoint(), edge2().direction.arbitrary_perpendicular() };
     }
 
     [[nodiscard]] Real angle0() const
@@ -1022,22 +1022,19 @@ public:
     [[nodiscard]] Line2<Real> altitude0() const
     {
         const Vector2<Real> dir12 = vertex2 - vertex1;
-        const Vector2<Real> perp = { -dir12.y, dir12.x };
-        return { vertex0, perp.normalize() };
+        return { vertex0, dir12.arbitrary_perpendicular().normalize() };
     }
 
     [[nodiscard]] Line2<Real> altitude1() const
     {
         const Vector2<Real> dir20 = vertex0 - vertex2;
-        const Vector2<Real> perp = { -dir20.y, dir20.x };
-        return { vertex1, perp.normalize() };
+        return { vertex1, dir20.arbitrary_perpendicular().normalize() };
     }
 
     [[nodiscard]] Line2<Real> altitude2() const
     {
         const Vector2<Real> dir01 = vertex1 - vertex0;
-        const Vector2<Real> perp = { -dir01.y, dir01.x };
-        return { vertex2, perp.normalize() };
+        return { vertex2, dir01.arbitrary_perpendicular().normalize() };
     }
 
     [[nodiscard]] Triangle2 project(const Line2<Real>& line) const
@@ -1266,11 +1263,7 @@ bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Triangle2<Re
 {
     const Vector3<Real> proj1 = triangle1.project_scalars(*this);
     const Vector3<Real> proj2 = triangle2.project_scalars(*this);
-    const Real min1 = proj1[proj1.min_index()];
-    const Real max1 = proj1[proj1.max_index()];
-    const Real min2 = proj2[proj2.min_index()];
-    const Real max2 = proj2[proj2.max_index()];
-    return max1 < min2 || max2 < min1;
+    return proj1.max() < proj2.min() || proj2.max() < proj1.min();
 }
 
 template <typename Real>

@@ -77,9 +77,9 @@ inline void geom_tests()
             ASSERT(line2.approx_parallel({ line1 }));
         }
 
-        test_section("perpendicular_containing");
+        test_section("arbitrary_perpendicular_containing");
         {
-            constexpr nnm::Line2f line2 = line1.perpendicular_containing({ -6.0f, -5.0f });
+            constexpr nnm::Line2f line2 = line1.arbitrary_perpendicular_containing({ -6.0f, -5.0f });
             ASSERT(line2.approx_contains({ -6.0f, -5.0f }));
             ASSERT(line2.approx_perpendicular({ line1 }));
         }
