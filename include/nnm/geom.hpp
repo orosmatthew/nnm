@@ -947,7 +947,7 @@ public:
         const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
         const Vector2<Real> p1 = line.origin + line.direction * t1;
         const Vector2<Real> p2 = line.origin + line.direction * t2;
-        return std::make_pair(p1, p2);
+        return { p1, p2 };
     }
 
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
@@ -959,10 +959,19 @@ public:
         if (discriminant < static_cast<Real>(0)) {
             return false;
         }
-        return true;
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
+            return true;
+        }
+        if (t1 >= static_cast<Real>(0) || t2 >= static_cast<Real>(0)) {
+            return true;
+        }
+        return false;
     }
 
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, std::optional<Vector2<Real>>>> intersections(
+    [[nodiscard]] std::pair<std::optional<Vector2<Real>>, std::optional<Vector2<Real>>> intersections(
         const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
@@ -970,7 +979,7 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return { std::nullopt, std::nullopt };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
@@ -978,20 +987,47 @@ public:
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p1 = ray.origin + ray.direction * t1;
             const Vector2<Real> p2 = ray.origin + ray.direction * t2;
-            return std::make_pair(p1, p2);
+            return { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t1;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
         if (t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t2;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
         return std::nullopt;
     }
 
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, std::optional<Vector2<Real>>>> intersections(
+    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
+    {
+        const Vector2<Real> seg_dir = segment.to - segment.from;
+        const Vector2<Real> circle_dir = segment.from - center;
+        const Real a = seg_dir.dot(seg_dir);
+        const Real b = static_cast<Real>(2) * circle_dir.dot(seg_dir);
+        const Real c = circle_dir.dot(circle_dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return false;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
+            && t2 <= static_cast<Real>(1)) {
+            return true;
+        }
+        if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
+            return true;
+        }
+        if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
+            return true;
+        }
+        return false;
+    }
+
+    [[nodiscard]] std::pair<std::optional<Vector2<Real>>, std::optional<Vector2<Real>>> intersections(
         const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
@@ -1001,7 +1037,7 @@ public:
         const Real c = circle_dir.dot(circle_dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return { std::nullopt, std::nullopt };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
@@ -1010,17 +1046,52 @@ public:
             && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p1 = segment.from + seg_dir * t1;
             const Vector2<Real> p2 = segment.from + seg_dir * t2;
-            return std::make_pair(p1, p2);
+            return { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.from + seg_dir * t1;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
         if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.from + seg_dir * t2;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
-        return std::nullopt;
+        return { std::nullopt, std::nullopt };
+    }
+
+    [[nodiscard]] bool intersects(const Circle2& other) const
+    {
+        return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
+    }
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2& other) const
+    {
+        const Vector2<Real> diff = other.center - center;
+        const Real dist_sqrd = diff.length_sqrd();
+        const Real radius_sum = radius + other.radius;
+        if (dist_sqrd >= sqrd(radius_sum)) {
+            return std::nullopt;
+        }
+        const Real dist = sqrt(dist_sqrd);
+        const Real depth = radius_sum - dist;
+        return diff.normalize() * depth;
+    }
+
+    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Circle2& other) const
+    {
+        const Vector2<Real> centers_diff = other.center - center;
+        const Real centers_dist = centers_diff.length();
+        const Real radius_sum = radius + other.radius;
+        const Real radius_diff = abs(radius - other.radius);
+        if (centers_dist > radius_sum || centers_dist < radius_diff) {
+            return std::nullopt;
+        }
+        const Real center_intersections_dist
+            = (sqrd(radius) - sqrd(other.radius) + sqrd(centers_dist)) / (static_cast<Real>(2) * centers_dist);
+        const Vector2<Real> intersections_midpoint = center + centers_diff * (center_intersections_dist / centers_dist);
+        const Real half_intersections_dist = sqrt(sqrd(radius) - sqrd(center_intersections_dist));
+        const Vector2<Real> offset = centers_diff.arbitrary_perpendicular().normalize() * half_intersections_dist;
+        return std::make_pair(intersections_midpoint + offset, intersections_midpoint - offset);
     }
 
     [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
