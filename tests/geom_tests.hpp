@@ -246,38 +246,6 @@ inline void geom_tests()
 
         constexpr nnm::Line2f line3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
 
-        test_section("transform_at(const Vector2&, const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const auto result = line3.transform_at({ -2.0f, 3.0f }, basis);
-            ASSERT(result.origin.approx_equal({ 15.0f, -3.0f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
-        }
-
-        test_section("transform(const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const nnm::Line2f result = line3.transform(basis);
-            ASSERT(result.origin.approx_equal({ 6.0f, 2.0f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
-        }
-
-        test_section("transform_at(const Vector2&, const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const auto result = line3.transform_at({ -2.0f, 3.0f }, t);
-            ASSERT(result.origin.approx_equal({ -12.0f, 51.0f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
-
-        test_section("transform(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const nnm::Line2f result = line3.transform(t);
-            ASSERT(result.origin.approx_equal({ 0.0f, 14.0f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
-
         test_section("translate");
         {
             const nnm::Line2f result = line3.translate({ -2.0f, 3.0f });
@@ -479,38 +447,6 @@ inline void geom_tests()
         }
 
         constexpr nnm::Ray2f ray3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
-
-        test_section("transform_at(const Vector2&, const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const auto result = ray3.transform_at({ 2.0f, -1.5f }, basis);
-            ASSERT(result.origin.approx_equal({ 1.5f, 2.5f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
-        }
-
-        test_section("transform(const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, 2.0f }, { -3.0f, 4.0f } } };
-            const nnm::Ray2f result = ray3.transform(basis);
-            ASSERT(result.origin.approx_equal({ 6.0f, 2.0f }));
-            ASSERT(result.direction.approx_equal({ -0.316227f, 0.948684f }));
-        }
-
-        test_section("transform_at(const Vector2&, const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const auto result = ray3.transform_at({ 2.0f, -1.5f }, t);
-            ASSERT(result.origin.approx_equal({ 6.0f, -6.5f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
-
-        test_section("transform(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const nnm::Ray2f result = ray3.transform(t);
-            ASSERT(result.origin.approx_equal({ 0.0f, 14.0f }));
-            ASSERT(result.direction.approx_equal({ 0.529999f, -0.847998f }));
-        }
 
         test_section("translate");
         {
@@ -830,38 +766,6 @@ inline void geom_tests()
         {
             ASSERT(s1.midpoint().approx_equal({ -1.0f, 1.0f }));
             ASSERT(s3.midpoint().approx_equal({ 5.0f, 2.5f }));
-        }
-
-        test_section("transform_at(const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
-            const auto result = s1.transform_at({ 1.0f, 2.0f }, basis);
-            ASSERT(result.from.approx_equal({ 13.0f, -14.0f }));
-            ASSERT(result.to.approx_equal({ -9.0f, 18.0f }));
-        }
-
-        test_section("transform(const Basis2&)");
-        {
-            constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -3.0f, 4.0f } } };
-            const auto result = s1.transform(basis);
-            ASSERT(result.from.approx_equal({ 7.0f, -10.0f }));
-            ASSERT(result.to.approx_equal({ -15.0f, 22.0f }));
-        }
-
-        test_section("transform_at(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const auto result = s1.transform_at({ 1.0f, 2.0f }, t);
-            ASSERT(result.from.approx_equal({ -14.0f, 40.0f }));
-            ASSERT(result.to.approx_equal({ 6.0f, -28.0f }));
-        }
-
-        test_section("transform(const Transform2&)");
-        {
-            constexpr nnm::Transform2f t { { { 1.0f, 2.0f, -3.0f }, { 4.0f, -10.0f, 0.0f }, { 1.0f, -2.0f, 9.0f } } };
-            const auto result = s1.transform(t);
-            ASSERT(result.from.approx_equal({ -6.0f, 20.0f }));
-            ASSERT(result.to.approx_equal({ 14.0f, -48.0f }));
         }
 
         test_section("translate");

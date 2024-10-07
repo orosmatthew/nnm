@@ -222,65 +222,49 @@ public:
 
     [[nodiscard]] bool separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const;
 
-    [[nodiscard]] Line2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
-    {
-        return { (origin - basis_origin).transform(by) + basis_origin, direction.transform(by).normalize() };
-    }
-
-    [[nodiscard]] Line2 transform(const Basis2<Real>& by) const
-    {
-        return transform_at(Vector2<Real>::zero(), by);
-    }
-
-    [[nodiscard]] Line2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
-    {
-        return { (origin - transform_origin).transform(by) + transform_origin,
-                 direction.transform(by, static_cast<Real>(0)).normalize() };
-    }
-
-    [[nodiscard]] Line2 transform(const Transform2<Real>& by) const
-    {
-        return transform_at(Vector2<Real>::zero(), by);
-    }
-
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
     {
-        return transform(Transform2<Real>::from_translation(by));
+        return { origin.translate(by), direction };
     }
 
     [[nodiscard]] Line2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
-        return transform_at(scale_origin, Basis2<Real>::from_scale(by));
+        return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
     }
 
     [[nodiscard]] Line2 scale(const Vector2<Real>& by) const
     {
-        return transform(Basis2<Real>::from_scale(by));
+        return { origin.scale(by), direction.scale(by).normalize() };
+    }
+
+    [[nodiscard]] Line2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return { origin.rotate_at(rotate_origin, angle), direction.rotate(angle).normalize() };
     }
 
     [[nodiscard]] Line2 rotate(const Real angle) const
     {
-        return transform(Basis2<Real>::from_rotation(angle));
+        return { origin.rotate(angle), direction.rotate(angle).normalize() };
     }
 
     [[nodiscard]] Line2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
+        return { origin.shear_x_at(shear_origin, angle_y), direction.shear_x(angle_y).normalize() };
     }
 
     [[nodiscard]] Line2 shear_x(const Real angle_y) const
     {
-        return transform(Basis2<Real>::from_shear_x(angle_y));
+        return { origin.shear_x(angle_y), direction.shear_x(angle_y).normalize() };
     }
 
     [[nodiscard]] Line2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_y(angle_x));
+        return { origin.shear_y_at(shear_origin, angle_x), direction.shear_y(angle_x).normalize() };
     }
 
     [[nodiscard]] Line2 shear_y(const Real angle_x) const
     {
-        return transform(Basis2<Real>::from_shear_y(angle_x));
+        return { origin.shear_y(angle_x), direction.shear_y(angle_x).normalize() };
     }
 
     [[nodiscard]] bool operator==(const Line2& other) const
@@ -430,70 +414,49 @@ public:
         return origin + direction * t;
     }
 
-    [[nodiscard]] Ray2 transform_at(const Vector2<Real>& transform_origin, const Basis2<Real>& by) const
-    {
-        return { (origin - transform_origin).transform(by) + transform_origin, direction.transform(by).normalize() };
-    }
-
-    [[nodiscard]] Ray2 transform(const Basis2<Real>& by) const
-    {
-        return transform_at(Vector2<Real>::zero(), by);
-    }
-
-    [[nodiscard]] Ray2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
-    {
-        return { (origin - transform_origin).transform(by) + transform_origin,
-                 direction.transform(by, 0.0f).normalize() };
-    }
-
-    [[nodiscard]] Ray2 transform(const Transform2<Real>& by) const
-    {
-        return { origin.transform(by), direction.transform(by, static_cast<Real>(0)).normalize() };
-    }
-
     [[nodiscard]] Ray2 translate(const Vector2<Real>& by) const
     {
-        return transform(Transform2<Real>::from_translation(by));
+        return { origin.translate(by), direction };
     }
 
     [[nodiscard]] Ray2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
-        return transform_at(scale_origin, Basis2<Real>::from_scale(by));
+        return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
     }
 
     [[nodiscard]] Ray2 scale(const Vector2<Real>& by) const
     {
-        return transform(Basis2<Real>::from_scale(by));
+        return { origin.scale(by), direction.scale(by).normalize() };
     }
 
     [[nodiscard]] Ray2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return transform_at(rotate_origin, Basis2<Real>::from_rotation(angle));
+        return { origin.rotate_at(rotate_origin, angle), direction.rotate(angle).normalize() };
     }
 
     [[nodiscard]] Ray2 rotate(const Real angle) const
     {
-        return transform(Basis2<Real>::from_rotation(angle));
+        return { origin.rotate(angle), direction.rotate(angle).normalize() };
     }
 
     [[nodiscard]] Ray2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
+        return { origin.shear_x_at(shear_origin, angle_y), direction.shear_x(angle_y).normalize() };
     }
 
     [[nodiscard]] Ray2 shear_x(const Real angle_y) const
     {
-        return transform(Basis2<Real>::from_shear_x(angle_y));
+        return { origin.shear_x(angle_y), direction.shear_x(angle_y).normalize() };
     }
 
     [[nodiscard]] Ray2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_y(angle_x));
+        return { origin.shear_y_at(shear_origin, angle_x), direction.shear_y(angle_x).normalize() };
     }
 
     [[nodiscard]] Ray2 shear_y(const Real angle_x) const
     {
-        return transform(Basis2<Real>::from_shear_y(angle_x));
+        return { origin.shear_y(angle_x), direction.shear_y(angle_x).normalize() };
     }
 
     [[nodiscard]] bool operator==(const Ray2& other) const
@@ -784,70 +747,49 @@ public:
         return (to + from) / static_cast<Real>(2);
     }
 
-    [[nodiscard]] Segment2 transform_at(const Vector2<Real>& basis_origin, const Basis2<Real>& by) const
-    {
-        return { (from - basis_origin).transform(by) + basis_origin, (to - basis_origin).transform(by) + basis_origin };
-    }
-
-    [[nodiscard]] Segment2 transform(const Basis2<Real>& by) const
-    {
-        return transform_at(Vector2<Real>::zero(), by);
-    }
-
-    [[nodiscard]] Segment2 transform_at(const Vector2<Real>& transform_origin, const Transform2<Real>& by) const
-    {
-        return { (from - transform_origin).transform(by) + transform_origin,
-                 (to - transform_origin).transform(by) + transform_origin };
-    }
-
-    [[nodiscard]] Segment2 transform(const Transform2<Real>& by) const
-    {
-        return transform_at(Vector2<Real>::zero(), by);
-    }
-
     [[nodiscard]] Segment2 translate(const Vector2<Real>& by) const
     {
-        return transform(Transform2<Real>::from_translation(by));
+        return { from.translate(by), to.translate(by) };
     }
 
     [[nodiscard]] Segment2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
-        return transform_at(scale_origin, Basis2<Real>::from_scale(by));
+        return { from.scale_at(scale_origin, by), to.scale_at(scale_origin, by) };
     }
 
     [[nodiscard]] Segment2 scale(const Vector2<Real>& by) const
     {
-        return transform(Basis2<Real>::from_scale(by));
+        return { from.scale(by), to.scale(by) };
     }
 
     [[nodiscard]] Segment2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return transform_at(rotate_origin, Basis2<Real>::from_rotation(angle));
+        return { from.rotate_at(rotate_origin, angle), to.rotate_at(rotate_origin, angle) };
     }
 
     [[nodiscard]] Segment2 rotate(const Real angle) const
     {
-        return transform(Basis2<Real>::from_rotation(angle));
+        return { from.rotate(angle), to.rotate(angle) };
     }
 
     [[nodiscard]] Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_x(angle_y));
+        return { from.shear_x_at(shear_origin, angle_y), to.shear_x_at(shear_origin, angle_y) };
     }
 
     [[nodiscard]] Segment2 shear_x(const Real angle_y) const
     {
-        return transform(Basis2<Real>::from_shear_x(angle_y));
+        return { from.shear_x(angle_y), to.shear_x(angle_y) };
     }
 
     [[nodiscard]] Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
-        return transform_at(shear_origin, Basis2<Real>::from_shear_y(angle_x));
+        return { from.shear_y_at(shear_origin, angle_x), to.shear_y_at(shear_origin, angle_x) };
     }
 
     [[nodiscard]] Segment2 shear_y(const Real angle_x) const
     {
-        return transform(Basis2<Real>::from_shear_y(angle_x));
+        return { from.shear_y(angle_x), to.shear_y(angle_x) };
     }
 
     [[nodiscard]] constexpr bool operator==(const Segment2& other) const
@@ -1096,28 +1038,27 @@ public:
 
     [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
     {
-        return { center.transform(Transform2<Real>::from_translation(by)), radius };
+        return { center.translate(by), radius };
     }
 
     [[nodiscard]] Circle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return { (center - rotate_origin).transform(Basis2<Real>::from_rotation(angle)) + rotate_origin, radius };
+        return { center.rotate_at(rotate_origin, angle), radius };
     }
 
     [[nodiscard]] Circle2 rotate(const Real angle) const
     {
-        return { center.transform(Basis2<Real>::from_rotation(angle)), radius };
+        return { center.rotate(angle), radius };
     }
 
     [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real by) const
     {
-        return { (center - scale_origin).transform(Basis2<Real>::from_scale(Vector2<Real>::all(by))) + scale_origin,
-                 radius * by };
+        return { center.scale_at(scale_origin, Vector2<Real>::all(by)), radius * by };
     }
 
     [[nodiscard]] Circle2 scale(const Real by) const
     {
-        return { center.transform(Basis2<Real>::from_scale(Vector2<Real>::all(by))), radius * by };
+        return { center.scale(Vector2<Real>::all(by)), radius * by };
     }
 
     [[nodiscard]] bool approx_equal(const Circle2& other) const
