@@ -531,15 +531,28 @@ public:
 
     [[nodiscard]] Vector2 rotate(Real angle) const;
 
+    [[nodiscard]] Vector2 rotate_at(const Vector2& origin, Real angle) const;
+
     [[nodiscard]] Vector2 scale(const Vector2& factor) const;
+
+    [[nodiscard]] Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
 
     [[nodiscard]] Vector2 shear_x(Real angle_y) const;
 
+    [[nodiscard]] Vector2 shear_x_at(const Vector2& origin, Real angle_y) const;
+
     [[nodiscard]] Vector2 shear_y(Real angle_x) const;
+
+    [[nodiscard]] Vector2 shear_y_at(const Vector2& origin, Real angle_x) const;
 
     [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
 
+    [[nodiscard]] Vector2 transform_at(const Vector2& origin, const Basis2<Real>& by) const;
+
     [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
+
+    [[nodiscard]] Vector2 transform_at(
+        const Vector2& origin, const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
     [[nodiscard]] constexpr Real max() const
     {
@@ -1304,21 +1317,40 @@ public:
 
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
 
+    [[nodiscard]] Vector3 rotate_axis_angle_at(const Vector3& origin, const Vector3& axis, Real angle) const;
+
     [[nodiscard]] Vector3 rotate_quaternion(const Quaternion<Real>& quaternion) const;
+
+    [[nodiscard]] Vector3 rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const;
 
     [[nodiscard]] Vector3 scale(const Vector3& factor) const;
 
+    [[nodiscard]] Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
+
     [[nodiscard]] Vector3 shear_x(Real angle_y, Real angle_z) const;
+
+    [[nodiscard]] Vector3 shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const;
 
     [[nodiscard]] Vector3 shear_y(Real angle_x, Real angle_z) const;
 
+    [[nodiscard]] Vector3 shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const;
+
     [[nodiscard]] Vector3 shear_z(Real angle_x, Real angle_y) const;
+
+    [[nodiscard]] Vector3 shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const;
 
     [[nodiscard]] Vector3 transform(const Basis3<Real>& by) const;
 
+    [[nodiscard]] Vector3 transform_at(const Vector3& origin, const Basis3<Real>& by) const;
+
     [[nodiscard]] Vector3 transform(const Transform2<Real>& by) const;
 
+    [[nodiscard]] Vector3 transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const;
+
     [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
+
+    [[nodiscard]] Vector3 transform_at(
+        const Vector3& origin, const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
 
     [[nodiscard]] constexpr Real max() const
     {
@@ -2089,6 +2121,8 @@ public:
     }
 
     [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
+
+    [[nodiscard]] Vector4 transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const;
 
     [[nodiscard]] constexpr Real max() const
     {
@@ -3825,9 +3859,9 @@ public:
 
     static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
-        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
-                        { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
-                        { tan(angle_x), tan(angle_y), static_cast<Real>(1) } });
+        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
+                        { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
+                        { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     [[nodiscard]] Real trace() const
@@ -4863,36 +4897,55 @@ Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 template <typename Real>
 Vector2<Real> Vector2<Real>::translate(const Vector2& by) const
 {
-    const auto transform = Transform2<Real>::from_translation(by);
-    return this->transform(transform);
+    return transform(Transform2<Real>::from_translation(by));
 }
 
 template <typename Real>
 Vector2<Real> Vector2<Real>::rotate(const Real angle) const
 {
-    const auto transform = Transform2<Real>::from_rotation(angle);
-    return this->transform(transform);
+    return transform(Basis2<Real>::from_rotation(angle));
+}
+
+template <typename Real>
+Vector2<Real> Vector2<Real>::rotate_at(const Vector2& origin, Real angle) const
+{
+    return transform_at(origin, Basis2<Real>::from_rotation(angle));
 }
 
 template <typename Real>
 Vector2<Real> Vector2<Real>::scale(const Vector2& factor) const
 {
-    const auto transform = Transform2<Real>::from_scale(factor);
-    return this->transform(transform);
+    return transform(Basis2<Real>::from_scale(factor));
+}
+
+template <typename Real>
+Vector2<Real> Vector2<Real>::scale_at(const Vector2& origin, const Vector2& factor) const
+{
+    return transform_at(origin, Basis2<Real>::from_scale(factor));
 }
 
 template <typename Real>
 Vector2<Real> Vector2<Real>::shear_x(const Real angle_y) const
 {
-    const auto transform = Transform2<Real>::from_shear_x(angle_y);
-    return this->transform(transform);
+    return transform(Basis2<Real>::from_shear_x(angle_y));
+}
+
+template <typename Real>
+Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real angle_y) const
+{
+    return transform_at(origin, Basis2<Real>::from_shear_x(angle_y));
 }
 
 template <typename Real>
 Vector2<Real> Vector2<Real>::shear_y(const Real angle_x) const
 {
-    const auto transform = Transform2<Real>::from_shear_y(angle_x);
-    return this->transform(transform);
+    return transform(Basis2<Real>::from_shear_y(angle_x));
+}
+
+template <typename Real>
+Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real angle_x) const
+{
+    return transform_at(origin, Basis2<Real>::from_shear_y(angle_x));
 }
 
 template <typename Real>
@@ -4902,9 +4955,21 @@ Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
 }
 
 template <typename Real>
+Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Basis2<Real>& by) const
+{
+    return (*this - origin).transform(by) + origin;
+}
+
+template <typename Real>
 Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
 {
     return Vector3<Real>(*this, z).transform(by).xy();
+}
+
+template <typename Real>
+Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Transform2<Real>& by, Real z) const
+{
+    return (*this - origin).transform(by, z) + origin;
 }
 
 template <typename Real>
@@ -4939,50 +5004,79 @@ Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 template <typename Real>
 Vector3<Real> Vector3<Real>::translate(const Vector3& by) const
 {
-    const auto transform = Transform3<Real>::from_translation(by);
-    return this->transform(transform);
+    return transform(Transform3<Real>::from_translation(by));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::rotate_axis_angle(const Vector3& axis, const Real angle) const
 {
-    const auto transform = Transform3<Real>::from_rotation_axis_angle(axis, angle);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_rotation_axis_angle(axis, angle));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::rotate_axis_angle_at(const Vector3& origin, const Vector3& axis, Real angle) const
+{
+    return transform_at(origin, Basis3<Real>::from_rotation_axis_angle(axis, angle));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::rotate_quaternion(const Quaternion<Real>& quaternion) const
 {
-    const auto transform = Transform3<Real>::from_rotation_quaternion(quaternion);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_rotation_quaternion(quaternion));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const
+{
+    return transform_at(origin, Basis3<Real>::from_rotation_quaternion(quaternion));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::scale(const Vector3& factor) const
 {
-    const auto transform = Transform3<Real>::from_scale(factor);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_scale(factor));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::scale_at(const Vector3& origin, const Vector3& factor) const
+{
+    return transform_at(origin, Basis3<Real>::from_scale(factor));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::shear_x(const Real angle_y, const Real angle_z) const
 {
-    const auto transform = Transform3<Real>::from_shear_x(angle_y, angle_z);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_shear_x(angle_y, angle_z));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const
+{
+    return transform_at(origin, Basis3<Real>::from_shear_x(angle_y, angle_z));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::shear_y(const Real angle_x, const Real angle_z) const
 {
-    const auto transform = Transform3<Real>::from_shear_y(angle_x, angle_z);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_shear_y(angle_x, angle_z));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const
+{
+    return transform_at(origin, Basis3<Real>::from_shear_y(angle_x, angle_z));
 }
 
 template <typename Real>
 Vector3<Real> Vector3<Real>::shear_z(const Real angle_x, const Real angle_y) const
 {
-    const auto transform = Transform3<Real>::from_shear_z(angle_x, angle_y);
-    return this->transform(transform);
+    return transform(Basis3<Real>::from_shear_z(angle_x, angle_y));
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const
+{
+    return transform_at(origin, Basis3<Real>::from_shear_z(angle_x, angle_y));
 }
 
 template <typename Real>
@@ -4992,15 +5086,33 @@ Vector3<Real> Vector3<Real>::transform(const Basis3<Real>& by) const
 }
 
 template <typename Real>
+Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Basis3<Real>& by) const
+{
+    return (*this - origin).transform(by) + origin;
+}
+
+template <typename Real>
 Vector3<Real> Vector3<Real>::transform(const Transform2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
 template <typename Real>
+Vector3<Real> Vector3<Real>::transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const
+{
+    return (*this - Vector3 { origin, static_cast<Real>(0) }).transform(by) + Vector3 { origin, static_cast<Real>(0) };
+}
+
+template <typename Real>
 Vector3<Real> Vector3<Real>::transform(const Transform3<Real>& by, const Real w) const
 {
     return Vector4<Real>(*this, w).transform(by).xyz();
+}
+
+template <typename Real>
+Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Transform3<Real>& by, Real w) const
+{
+    return (*this - origin).transform(by, w) + origin;
 }
 
 template <typename Real>
@@ -5031,6 +5143,12 @@ template <typename Real>
 Vector4<Real> Vector4<Real>::transform(const Transform3<Real>& by) const
 {
     return by.matrix * *this;
+}
+
+template <typename Real>
+Vector4<Real> Vector4<Real>::transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const
+{
+    return (*this - Vector4 { origin, static_cast<Real>(0) }).transform(by) + Vector4 { origin, static_cast<Real>(0) };
 }
 
 template <typename Real>
