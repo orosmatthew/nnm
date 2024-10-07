@@ -6,8 +6,6 @@
 
 #include "test.hpp"
 
-// ReSharper disable once CppDFATimeOver
-
 int main()
 {
     nnm_tests();
