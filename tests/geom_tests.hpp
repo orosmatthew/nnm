@@ -481,23 +481,41 @@ inline void geom_tests()
             ASSERT(ray2.intersection(ray3).value().approx_equal({ 6.5f, 3.5f }));
         }
 
-        test_section("intersects(const Line2&)");
+        test_section("intersects(const Segment2&)");
         {
-            constexpr nnm::Line2f line1 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
-            constexpr auto result = ray1.intersects(line1);
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Ray2f ray3 { { 5.0f, 5.0f }, { -0.7071067812f, -0.7071067812f } };
+            constexpr auto result = ray3.intersects(s1);
             ASSERT(result);
-            constexpr nnm::Line2f line2 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
-            ASSERT_FALSE(ray1.intersects(line2));
+            constexpr nnm::Ray2f ray4 { { 5.0f, 5.0f }, { -0.7071067812f, 0.7071067812f } };
+            ASSERT_FALSE(ray4.intersects(s1));
         }
 
-        test_section("intersection(const Line2&)");
+        test_section("intersection(const Segment2&)");
         {
-            constexpr nnm::Line2f line1 { { 0.0, -2.0f }, { 0.70710678f, 0.70710678f } };
-            constexpr auto result = ray1.intersection(line1);
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Ray2f ray3 { { 5.0f, 5.0f }, { -0.7071067812f, -0.7071067812f } };
+            constexpr auto result = ray3.intersection(s1);
             ASSERT(result.has_value());
-            ASSERT(result.value().approx_equal({ 0.70588f, -1.29412f }));
-            constexpr nnm::Line2f line2 { { 0.0, -4.0f }, { 0.70710678f, 0.70710678f } };
-            ASSERT_FALSE(ray1.intersection(line2).has_value());
+            ASSERT(result.value().approx_equal({ -0.2f, -0.2f }));
+            constexpr nnm::Ray2f ray4 { { 5.0f, 5.0f }, { -0.7071067812f, 0.7071067812f } };
+            ASSERT_FALSE(ray4.intersection(s1).has_value());
+        }
+
+        test_section("project_point_scalar");
+        {
+            constexpr nnm::Ray2f r { { 1.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            constexpr auto result = r.project_point_scalar({ 2.0f, 3.0f });
+            ASSERT(nnm::approx_equal(result, 3.6055512755f));
+            ASSERT(nnm::approx_zero(r.project_point_scalar({ 5.0f, -5.0f })));
+        }
+
+        test_section("project_point");
+        {
+            constexpr nnm::Ray2f r { { 1.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
+            constexpr auto result = r.project_point({ 2.0f, 3.0f });
+            ASSERT(result.approx_equal({ -1.0f, 1.0f }));
+            ASSERT(r.project_point({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
         }
 
         constexpr nnm::Ray2f ray3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };

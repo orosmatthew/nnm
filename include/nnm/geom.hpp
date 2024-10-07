@@ -397,18 +397,22 @@ public:
         return std::nullopt;
     }
 
-    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
-    [[nodiscard]] std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
-    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
-        const Vector2<Real> diff = point - origin;
-        Real t = diff.dot(direction);
+        const Real t = (point - origin).dot(direction);
         if (t < static_cast<Real>(0)) {
-            return origin;
+            return static_cast<Real>(0);
         }
-        return origin + direction * t;
+        return t;
+    }
+
+    [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
+    {
+        return origin + direction * project_point_scalar(point);
     }
 
     [[nodiscard]] Ray2 translate(const Vector2<Real>& by) const
@@ -1499,13 +1503,13 @@ constexpr bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Tr
 }
 
 template <typename Real>
-bool Ray2<Real>::intersects(const Segment2<Real>& segment) const
+constexpr bool Ray2<Real>::intersects(const Segment2<Real>& segment) const
 {
     return segment.intersects(*this);
 }
 
 template <typename Real>
-std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<Real>& segment) const
+constexpr std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<Real>& segment) const
 {
     return segment.intersection(*this);
 }
