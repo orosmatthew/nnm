@@ -33,6 +33,22 @@ inline void geom_tests()
             ASSERT(line.approx_contains(p2));
         }
 
+        test_section("from_segment");
+        {
+            constexpr nnm::Segment2f s { { -1.0f, 2.0f }, { -4.0f, 10.0f } };
+            const auto line = nnm::Line2f::from_segment(s);
+            ASSERT(line.origin == nnm::Vector2f(-1.0f, 2.0f));
+            ASSERT(line.direction.approx_equal({ -0.3511234416, 0.9363291776f }));
+        }
+
+        test_section("from_ray");
+        {
+            constexpr nnm::Ray2f r { { -1.0f, 2.0f }, { -0.3713906764f, 0.9284766909f } };
+            constexpr auto line = nnm::Line2f::from_ray(r);
+            ASSERT(line.origin == nnm::Vector2f(-1.0f, 2.0f));
+            ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
+        }
+
         test_section("axis_x");
         {
             constexpr auto line = nnm::Line2f::axis_x();
@@ -190,10 +206,38 @@ inline void geom_tests()
             ASSERT_FALSE(line4.intersection(s1).has_value());
         }
 
+        test_section("approx_tangent");
+        {
+            constexpr nnm::Circle2f circle { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Line2f line3 { { -2.0f, 2.0f }, { -1.0f, 0.0f } };
+            constexpr auto result = line3.approx_tangent(circle);
+            ASSERT(result);
+            ASSERT_FALSE(line1.approx_tangent(circle));
+        }
+
+        test_section("project_point_scalar");
+        {
+            constexpr auto result = line1.project_point_scalar({ 5.0f, 3.0f });
+            ASSERT(nnm::approx_equal(result, 3.076923076f));
+        }
+
         test_section("project_point");
         {
             constexpr auto result = line1.project_point({ 5.0f, 3.0f });
             ASSERT(result.approx_equal({ -0.18343f, 0.84024f }));
+        }
+
+        test_section("unchecked_slope");
+        {
+            constexpr auto result = line1.unchecked_slope();
+            ASSERT(nnm::approx_equal(result, -2.4f));
+        }
+
+        test_section("slope");
+        {
+            constexpr auto result = line1.slope();
+            ASSERT(result.has_value() && nnm::approx_equal(result.value(), -2.4f));
+            ASSERT_FALSE(nnm::Line2f::axis_y_offset(-3.0f).slope().has_value());
         }
 
         test_section("unchecked_intercept_x");
@@ -242,6 +286,16 @@ inline void geom_tests()
             ASSERT_FALSE(result);
             constexpr nnm::Line2f line3 { { 0.0f, -3.0f }, { -0.70710678f, -0.70710678f } };
             ASSERT(line2.approx_coincident(line3));
+        }
+
+        test_section("separates");
+        {
+            // TODO: Fix
+            // constexpr nnm::Triangle2f t1 { { 2.0f, -1.0f }, { 3.0f, -3.0f }, { 1.0f, -2.0f } };
+            // constexpr nnm::Triangle2f t2 { { 4.0f, -3.0f }, { 4.0f, 0.0f }, { 3.0f, -2.0f } };
+            // constexpr nnm::Line2f l1 { { 2.0f, 1.0f }, { 0.2747211279f, -0.9615239476f } };
+            // constexpr auto result = l1.separates(t1, t2);
+            // ASSERT(result);
         }
 
         constexpr nnm::Line2f line3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };

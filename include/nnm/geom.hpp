@@ -60,7 +60,7 @@ public:
 
     static Line2 from_segment(const Segment2<Real>& segment);
 
-    static Line2 from_ray(const Ray2<Real>& ray);
+    static constexpr Line2 from_ray(const Ray2<Real>& ray);
 
     static constexpr Line2 axis_x()
     {
@@ -155,19 +155,16 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
-    [[nodiscard]] bool approx_tangent(const Circle2<Real>& circle) const;
+    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
-        const Vector2<Real> diff = point - origin;
-        return diff.dot(direction) / direction.dot(direction);
+        return (point - origin).dot(direction);
     }
 
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
-        const Vector2<Real> diff = point - origin;
-        const Real t = diff.dot(direction) / direction.dot(direction);
-        return origin + direction * t;
+        return origin + direction * project_point_scalar(point);
     }
 
     [[nodiscard]] constexpr Real unchecked_slope() const
@@ -220,7 +217,7 @@ public:
         return approx_zero(diff.cross(other.direction));
     }
 
-    [[nodiscard]] bool separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const;
+    [[nodiscard]] constexpr bool separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const;
 
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
     {
@@ -1267,7 +1264,7 @@ public:
         return { line.project_point(vertex0), line.project_point(vertex1), line.project_point(vertex2) };
     }
 
-    [[nodiscard]] Vector3<Real> project_scalars(const Line2<Real>& line) const
+    [[nodiscard]] constexpr Vector3<Real> project_scalars(const Line2<Real>& line) const
     {
         return { line.project_point_scalar(vertex0),
                  line.project_point_scalar(vertex1),
@@ -1478,13 +1475,13 @@ Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 }
 
 template <typename Real>
-Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
+constexpr Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
 {
     return { ray.origin, ray.direction };
 }
 
 template <typename Real>
-bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
+constexpr bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     const Vector2<Real> dir = origin - circle.center;
     const Real b = static_cast<Real>(2) * dir.dot(direction);
@@ -1494,7 +1491,7 @@ bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const
+constexpr bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const
 {
     const Vector3<Real> proj1 = triangle1.project_scalars(*this);
     const Vector3<Real> proj2 = triangle2.project_scalars(*this);
