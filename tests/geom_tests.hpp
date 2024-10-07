@@ -924,4 +924,76 @@ inline void geom_tests()
             ASSERT_FALSE(s1 < s2);
         }
     }
+
+    test_case("Circle2");
+    {
+        test_section("Circle2()");
+        {
+            constexpr nnm::Circle2f c {};
+            ASSERT(c.center == nnm::Vector2f(0.0f, 0.0f));
+            ASSERT(c.radius == 1.0f);
+        }
+
+        test_section("Circle2(const Vector2&, Real)");
+        {
+            constexpr nnm::Circle2f c { { 2.0f, -3.0f }, 5.0f };
+            ASSERT(c.center == nnm::Vector2f(2.0f, -3.0f));
+            ASSERT(c.radius == 5.0f);
+        }
+
+        constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
+
+        test_section("circumference");
+        {
+            constexpr auto result = c1.circumference();
+            ASSERT(nnm::approx_equal(result, 31.4159265359f));
+        }
+
+        test_section("perimeter");
+        {
+            constexpr auto result = c1.perimeter();
+            ASSERT(nnm::approx_equal(result, 31.4159265359f));
+        }
+
+        test_section("area");
+        {
+            constexpr auto result = c1.area();
+            ASSERT(nnm::approx_equal(result, 78.5398163397f));
+        }
+
+        test_section("diameter");
+        {
+            constexpr auto result = c1.diameter();
+            ASSERT(nnm::approx_equal(result, 10.0f));
+        }
+
+        test_section("contains");
+        {
+            constexpr auto result = c1.contains({ 2.0f, -3.0f });
+            ASSERT(result);
+            ASSERT(c1.contains({ 4.0f, -4.0f }));
+            ASSERT_FALSE(c1.contains({ 7.0f, 0.0f }));
+        }
+
+        test_section("point_at");
+        {
+            ASSERT(c1.point_at(0.0f).approx_equal({ 7.0f, -3.0f }));
+            ASSERT(c1.point_at(nnm::pi()).approx_equal({ -3.0f, -3.0f }));
+            ASSERT(c1.point_at(nnm::pi() / 2.0f).approx_equal({ 2.0f, 2.0f }));
+            ASSERT(c1.point_at(nnm::pi() / 3.0f).approx_equal({ 4.5f, 1.330127f }));
+        }
+
+        test_section("tangent");
+        {
+            const auto l1 = c1.tangent_at(0.0f);
+            ASSERT(l1.origin.approx_equal({ 7.0f, -3.0f }));
+            ASSERT(nnm::approx_zero(l1.direction.cross({ 0.0f, 1.0f })));
+            ASSERT(l1.approx_tangent(c1));
+            const auto l2 = c1.tangent_at(nnm::pi() / 3.0f);
+            ASSERT(l2.origin.approx_equal({ 4.5f, 1.330127f }));
+            ASSERT(l2.direction.approx_parallel(
+                nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
+            ASSERT(l2.approx_tangent(c1));
+        }
+    }
 }

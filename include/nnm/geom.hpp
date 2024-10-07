@@ -830,39 +830,39 @@ public:
     {
     }
 
-    [[nodiscard]] Real circumference() const
+    [[nodiscard]] constexpr Real circumference() const
     {
         return static_cast<Real>(2) * pi<Real>() * radius;
     }
 
-    [[nodiscard]] Real perimeter() const
+    [[nodiscard]] constexpr Real perimeter() const
     {
         return circumference();
     }
 
-    [[nodiscard]] Real area() const
+    [[nodiscard]] constexpr Real area() const
     {
         return pi<Real>() * sqrd(radius);
     }
 
-    [[nodiscard]] Real diameter() const
+    [[nodiscard]] constexpr Real diameter() const
     {
         return static_cast<Real>(2) * radius;
     }
 
-    [[nodiscard]] bool contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         return (point - center).length_sqrd() <= sqrd(radius);
     }
 
-    [[nodiscard]] Vector2<Real> point(const Real angle) const
+    [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
     }
 
-    [[nodiscard]] Line2<Real> tangent(const Real angle) const
+    [[nodiscard]] Line2<Real> tangent_at(const Real angle) const
     {
-        const Vector2<Real> p = point(angle);
+        const Vector2<Real> p = point_at(angle);
         const Vector2<Real> dir = p - center;
         return { p, dir.arbitrary_perpendicular() };
     }
