@@ -39,7 +39,7 @@ inline void geom_tests()
             constexpr nnm::Segment2f s { { -1.0f, 2.0f }, { -4.0f, 10.0f } };
             const auto line = nnm::Line2f::from_segment(s);
             ASSERT(line.origin == nnm::Vector2f(-1.0f, 2.0f));
-            ASSERT(line.direction.approx_equal({ -0.3511234416, 0.9363291776f }));
+            ASSERT(line.direction.approx_equal({ -0.3511234416f, 0.9363291776f }));
         }
 
         test_section("from_ray");
@@ -1050,7 +1050,7 @@ inline void geom_tests()
             constexpr nnm::Ray2f ray1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };
             const auto result1 = c1.intersections(ray1);
             ASSERT_FALSE(result1.first.has_value() || result1.second.has_value());
-            constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.7071067812f, -0.7071067812f } };
+            constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.707102f,6781 -0.7071067812f } };
             const auto result2 = c1.intersections(ray2);
             ASSERT(
                 result2.first.has_value() && result2.second.has_value()

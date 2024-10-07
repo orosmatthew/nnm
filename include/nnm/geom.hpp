@@ -870,24 +870,24 @@ public:
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
-        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
-        const Real c = dir.dot(dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        const Real twice_proj_length = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         return discriminant >= static_cast<Real>(0);
     }
 
     [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
-        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
-        const Real c = dir.dot(dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        const Real twice_proj_length = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return std::nullopt;
         }
         const Real disc_sqrt = sqrt(discriminant);
-        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
-        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         const Vector2<Real> p1 = line.origin + line.direction * t1;
         const Vector2<Real> p2 = line.origin + line.direction * t2;
         return std::make_pair(p1, p2);
@@ -896,15 +896,15 @@ public:
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
-        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
-        const Real c = dir.dot(dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return false;
         }
         const Real disc_sqrt = sqrt(discriminant);
-        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
-        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             return true;
         }
@@ -918,15 +918,15 @@ public:
         const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
-        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
-        const Real c = dir.dot(dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return std::make_pair(std::nullopt, std::nullopt);
         }
         const Real disc_sqrt = sqrt(discriminant);
-        const Real t1 = (-b - disc_sqrt) / static_cast<Real>(2);
-        const Real t2 = (-b + disc_sqrt) / static_cast<Real>(2);
+        const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p1 = ray.origin + ray.direction * t1;
             const Vector2<Real> p2 = ray.origin + ray.direction * t2;
@@ -947,16 +947,17 @@ public:
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
         const Vector2<Real> circle_dir = segment.from - center;
-        const Real a = seg_dir.dot(seg_dir);
-        const Real b = static_cast<Real>(2) * circle_dir.dot(seg_dir);
-        const Real c = circle_dir.dot(circle_dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        const Real seg_len_sqrd = seg_dir.dot(seg_dir);
+        const Real twice_proj_len = static_cast<Real>(2) * circle_dir.dot(seg_dir);
+        const Real dist_sqrd_minus_radius_sqrd = circle_dir.dot(circle_dir) - sqrd(radius);
+        const Real discriminant
+            = sqrd(twice_proj_len) - static_cast<Real>(4) * seg_len_sqrd * dist_sqrd_minus_radius_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return false;
         }
         const Real disc_sqrt = sqrt(discriminant);
-        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
-        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t1 = (-twice_proj_len - disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
+        const Real t2 = (-twice_proj_len + disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
             && t2 <= static_cast<Real>(1)) {
             return true;
@@ -975,16 +976,17 @@ public:
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
         const Vector2<Real> circle_dir = segment.from - center;
-        const Real a = seg_dir.dot(seg_dir);
-        const Real b = static_cast<Real>(2) * circle_dir.dot(seg_dir);
-        const Real c = circle_dir.dot(circle_dir) - sqrd(radius);
-        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        const Real seg_len_sqrd = seg_dir.dot(seg_dir);
+        const Real twice_proj_len = static_cast<Real>(2) * circle_dir.dot(seg_dir);
+        const Real dist_sqrd_minus_radius_sqrd = circle_dir.dot(circle_dir) - sqrd(radius);
+        const Real discriminant
+            = sqrd(twice_proj_len) - static_cast<Real>(4) * seg_len_sqrd * dist_sqrd_minus_radius_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return { std::nullopt, std::nullopt };
         }
         const Real disc_sqrt = sqrt(discriminant);
-        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
-        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t1 = (-twice_proj_len - disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
+        const Real t2 = (-twice_proj_len + disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
             && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p1 = segment.from + seg_dir * t1;
