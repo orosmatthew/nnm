@@ -1050,7 +1050,7 @@ inline void geom_tests()
             constexpr nnm::Ray2f ray1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };
             const auto result1 = c1.intersections(ray1);
             ASSERT_FALSE(result1.first.has_value() || result1.second.has_value());
-            constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.707102f,6781 -0.7071067812f } };
+            constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.7071067812f, -0.7071067812f } };
             const auto result2 = c1.intersections(ray2);
             ASSERT(
                 result2.first.has_value() && result2.second.has_value()
