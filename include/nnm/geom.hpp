@@ -9,8 +9,8 @@
 
 #include <nnm/nnm.hpp>
 
-// ReSharper disable once CppUnusedIncludeDirective
-#include <utility>
+#include <array>
+#include <optional>
 
 namespace nnm {
 
@@ -876,7 +876,7 @@ public:
         return discriminant >= static_cast<Real>(0);
     }
 
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Line2<Real>& line) const
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(line.direction);
@@ -890,7 +890,7 @@ public:
         const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         const Vector2<Real> p1 = line.origin + line.direction * t1;
         const Vector2<Real> p2 = line.origin + line.direction * t2;
-        return std::make_pair(p1, p2);
+        return std::array { p1, p2 };
     }
 
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
@@ -914,15 +914,14 @@ public:
         return false;
     }
 
-    [[nodiscard]] std::pair<std::optional<Vector2<Real>>, std::optional<Vector2<Real>>> intersections(
-        const Ray2<Real>& ray) const
+    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return std::make_pair(std::nullopt, std::nullopt);
+            return { std::nullopt, std::nullopt };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
@@ -930,17 +929,17 @@ public:
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p1 = ray.origin + ray.direction * t1;
             const Vector2<Real> p2 = ray.origin + ray.direction * t2;
-            return std::make_pair(p1, p2);
+            return { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t1;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
         if (t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t2;
-            return std::make_pair(p, std::nullopt);
+            return { p, std::nullopt };
         }
-        return std::make_pair(std::nullopt, std::nullopt);
+        return { std::nullopt, std::nullopt };
     }
 
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
@@ -971,8 +970,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] std::pair<std::optional<Vector2<Real>>, std::optional<Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
         const Vector2<Real> circle_dir = segment.from - center;
@@ -1022,7 +1020,7 @@ public:
         return diff.normalize() * depth;
     }
 
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Circle2& other) const
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2& other) const
     {
         const Vector2<Real> centers_diff = other.center - center;
         const Real centers_dist = centers_diff.length();
@@ -1036,7 +1034,7 @@ public:
         const Vector2<Real> intersections_midpoint = center + centers_diff * (center_intersections_dist / centers_dist);
         const Real half_intersections_dist = sqrt(sqrd(radius) - sqrd(center_intersections_dist));
         const Vector2<Real> offset = centers_diff.arbitrary_perpendicular().normalize() * half_intersections_dist;
-        return std::make_pair(intersections_midpoint + offset, intersections_midpoint - offset);
+        return std::array { intersections_midpoint + offset, intersections_midpoint - offset };
     }
 
     [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const

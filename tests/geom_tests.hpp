@@ -1014,19 +1014,19 @@ inline void geom_tests()
             const auto result1 = c1.intersections(line1);
             ASSERT(
                 result1.has_value()
-                && ((result1.value().first.approx_equal({ 1.08452405f, 1.9154759f })
-                     && result1.value().second.approx_equal({ 6.9154759f, -3.9154759f }))
-                    || (result1.value().first.approx_equal({ 6.9154759f, -3.9154759f })
-                        && result1.value().second.approx_equal({ 1.08452405f, 1.9154759f }))));
+                && ((result1.value()[0].approx_equal({ 1.08452405f, 1.9154759f })
+                     && result1.value()[1].approx_equal({ 6.9154759f, -3.9154759f }))
+                    || (result1.value()[0].approx_equal({ 6.9154759f, -3.9154759f })
+                        && result1.value()[1].approx_equal({ 1.08452405f, 1.9154759f }))));
             constexpr nnm::Line2f line2 { { 0.0f, 3.0f }, { 0.7071067812f, 0.7071067812f } };
             ASSERT_FALSE(c1.intersections(line2).has_value());
             const auto result2 = c1.intersections(nnm::Line2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
             ASSERT(
                 result2.has_value()
-                && ((result2.value().first.approx_equal({ 0.0f, 1.58257294f })
-                     && result2.value().second.approx_equal({ 0.0f, -7.58257294f }))
-                    || result2.value().first.approx_equal({ 0.0f, -7.58257294f })
-                        && result2.value().second.approx_equal({ 0.0f, 1.58257294f })));
+                && ((result2.value()[0].approx_equal({ 0.0f, 1.58257294f })
+                     && result2.value()[1].approx_equal({ 0.0f, -7.58257294f }))
+                    || result2.value()[0].approx_equal({ 0.0f, -7.58257294f })
+                        && result2.value()[1].approx_equal({ 0.0f, 1.58257294f })));
         }
 
         test_section("intersects(const Ray2&)");
@@ -1049,33 +1049,36 @@ inline void geom_tests()
         {
             constexpr nnm::Ray2f ray1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };
             const auto result1 = c1.intersections(ray1);
-            ASSERT_FALSE(result1.first.has_value() || result1.second.has_value());
+            ASSERT_FALSE(result1[0].has_value() || result1[1].has_value());
             constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.7071067812f, -0.7071067812f } };
             const auto result2 = c1.intersections(ray2);
             ASSERT(
-                result2.first.has_value() && result2.second.has_value()
-                && ((result2.first.value().approx_equal({ 1.08452405f, 1.9154759f })
-                     && result2.second.value().approx_equal({ 6.9154759f, -3.9154759f }))
-                    || (result2.first.value().approx_equal({ 6.9154759f, -3.9154759f })
-                        && result2.second.value().approx_equal({ 1.08452405f, 1.9154759f }))));
+                result2[0].has_value() && result2[1].has_value()
+                && ((result2[0].value().approx_equal({ 1.08452405f, 1.9154759f })
+                     && result2[1].value().approx_equal({ 6.9154759f, -3.9154759f }))
+                    || (result2[0].value().approx_equal({ 6.9154759f, -3.9154759f })
+                        && result2[1].value().approx_equal({ 1.08452405f, 1.9154759f }))));
             constexpr nnm::Ray2f ray3 { { 0.0f, 3.0f }, { 0.7071067812f, 0.7071067812f } };
             const auto result3 = c1.intersections(ray3);
-            ASSERT_FALSE(result3.first.has_value() || result3.second.has_value());
+            ASSERT_FALSE(result3[0].has_value() || result3[1].has_value());
             const auto result4 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
-            ASSERT_FALSE(result4.first.has_value() || result4.second.has_value());
+            ASSERT_FALSE(result4[0].has_value() || result4[1].has_value());
             const auto result5 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, -1.0f } });
             ASSERT(
-                result5.first.has_value() && result5.second.has_value()
-                && ((result5.first.value().approx_equal({ 0.0f, 1.58257294f })
-                     && result5.second.value().approx_equal({ 0.0f, -7.58257294f }))
-                    || (result5.first.value().approx_equal({ 0.0f, -7.58257294f })
-                        && result5.second.value().approx_equal({ 0.0f, 1.58257294f }))));
+                result5[0].has_value() && result5[1].has_value()
+                && ((result5[0].value().approx_equal({ 0.0f, 1.58257294f })
+                     && result5[1].value().approx_equal({ 0.0f, -7.58257294f }))
+                    || (result5[0].value().approx_equal({ 0.0f, -7.58257294f })
+                        && result5[1].value().approx_equal({ 0.0f, 1.58257294f }))));
             const auto result6 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 1.0f, 0.0f } });
-            ASSERT_FALSE(result6.first.has_value() || result6.second.has_value());
+            ASSERT_FALSE(result6[0].has_value() || result6[1].has_value());
             const auto result7 = c1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 0.7071067812f, -0.7071067812f } });
             ASSERT(
-                result7.first.has_value() && !result7.second.has_value()
-                && result7.first.value().approx_equal({ 6.0f, -6.0f }));
+                result7[0].has_value() && !result7[1].has_value() && result7[0].value().approx_equal({ 6.0f, -6.0f }));
+        }
+
+        test_section("intersects(const Segment2<Real>& segment)");
+        {
         }
     }
 }
