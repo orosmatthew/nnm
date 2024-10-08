@@ -869,6 +869,9 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
+        if (contains(line.origin)) {
+            return true;
+        }
         const Vector2<Real> dir = line.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(line.direction);
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
@@ -895,6 +898,9 @@ public:
 
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
+        if (contains(ray.origin)) {
+            return true;
+        }
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
@@ -944,6 +950,9 @@ public:
 
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
+        if (contains(segment.from) || contains(segment.to)) {
+            return true;
+        }
         const Vector2<Real> seg_dir = segment.to - segment.from;
         const Vector2<Real> circle_dir = segment.from - center;
         const Real seg_len_sqrd = seg_dir.dot(seg_dir);
@@ -1002,7 +1011,7 @@ public:
         return { std::nullopt, std::nullopt };
     }
 
-    [[nodiscard]] bool intersects(const Circle2& other) const
+    [[nodiscard]] constexpr bool intersects(const Circle2& other) const
     {
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
     }

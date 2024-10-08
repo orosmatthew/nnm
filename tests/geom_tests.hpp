@@ -1077,7 +1077,60 @@ inline void geom_tests()
                 result7[0].has_value() && !result7[1].has_value() && result7[0].value().approx_equal({ 6.0f, -6.0f }));
         }
 
-        test_section("intersects(const Segment2<Real>& segment)");
+        test_section("intersects(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 0.0f, 3.0f }, { 1.0f, 2.0f } };
+            ASSERT_FALSE(c1.intersects(s1));
+            constexpr nnm::Segment2f s2 { { 0.0f, 3.0f }, { 9.0f, -6.0f } };
+            ASSERT(c1.intersects(s2));
+            constexpr nnm::Segment2f s3 { { 5.0f, -2.0f }, { 0.0f, 3.0f } };
+            ASSERT(c1.intersects(s3));
+            constexpr nnm::Segment2f s4 { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
+            ASSERT(c1.intersects(s4));
+        }
+
+        test_section("intersections(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 0.0f, 3.0f }, { 1.0f, 2.0f } };
+            const auto result1 = c1.intersections(s1);
+            ASSERT_FALSE(result1[0].has_value() || result1[1].has_value());
+            constexpr nnm::Segment2f s2 { { 0.0f, 3.0f }, { 9.0f, -6.0f } };
+            const auto result2 = c1.intersections(s2);
+            ASSERT(
+                result2[0].has_value() && result2[1].has_value()
+                && ((result2[0]->approx_equal({ 1.08452405f, 1.9154759f })
+                     && result2[1]->approx_equal({ 6.9154759f, -3.9154759f }))
+                    || (result2[0]->approx_equal({ 6.9154759f, -3.9154759f })
+                        && result2[1]->approx_equal({ 1.08452405f, 1.9154759f }))));
+            constexpr nnm::Segment2f s3 { { 5.0f, -2.0f }, { 0.0f, 3.0f } };
+            const auto result3 = c1.intersections(s3);
+            ASSERT(
+                result3[0].has_value() && !result3[1].has_value()
+                && result3[0]->approx_equal({ 1.08452405f, 1.9154759f }));
+            constexpr nnm::Segment2f s4 { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
+            const auto result4 = c1.intersections(s4);
+            ASSERT_FALSE(result4[0].has_value() || result4[1].has_value());
+        }
+
+        test_section("intersects(const Circle2&)");
+        {
+            constexpr auto result = c1.intersects(c1);
+            ASSERT(result);
+            constexpr nnm::Circle2f c2 { { 1.0f, -4.0f }, 2.0f };
+            ASSERT(c1.intersects(c2));
+            ASSERT_FALSE(c1.intersects(nnm::Circle2 { { 0.0f, 100.0f }, 2.0f }))
+            ASSERT(c1.intersects(nnm::Circle2f { { -4.0f, -4.0f }, 2.0f }))
+        }
+
+        test_section("intersect_depth");
+        {
+            const auto result1 = c1.intersect_depth(c1);
+            ASSERT(result1.has_value() && result1->approx_equal({ 0.0f, 0.0f }));
+            const auto result2 = c1.intersect_depth({ { 1.0f, -4.0f }, 2.0f });
+            // ASSERT(result2.has_value() && result2->approx_equal({ 2.8284271247f, 2.8284271247 }))
+        }
+
+        test_section("intersections(const Circle2&)");
         {
         }
     }
