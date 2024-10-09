@@ -170,6 +170,10 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] constexpr bool intersects(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
+
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
@@ -429,6 +433,10 @@ public:
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
+
+    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
@@ -730,6 +738,10 @@ public:
         }
         return from + dir * t;
     }
+
+    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
@@ -1538,9 +1550,21 @@ constexpr std::optional<Vector2<Real>> Line2<Real>::intersection(const Segment2<
 }
 
 template <typename Real>
+constexpr bool Line2<Real>::intersects(const Circle2<Real>& circle) const
+{
+    return circle.intersects(*this);
+}
+
+template <typename Real>
 Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 {
     return { segment.from, (segment.to - segment.from).normalize() };
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Circle2<Real>& circle) const
+{
+    return circle.intersections(*this);
 }
 
 template <typename Real>
@@ -1589,6 +1613,30 @@ template <typename Real>
 constexpr std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<Real>& segment) const
 {
     return segment.intersection(*this);
+}
+
+template <typename Real>
+bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
+{
+    return circle.intersects(*this);
+}
+
+template <typename Real>
+std::array<std::optional<Vector2<Real>>, 2> Ray2<Real>::intersections(const Circle2<Real>& circle) const
+{
+    return circle.intersections(*this);
+}
+
+template <typename Real>
+bool Segment2<Real>::intersects(const Circle2<Real>& circle) const
+{
+    return circle.intersects(*this);
+}
+
+template <typename Real>
+std::array<std::optional<Vector2<Real>>, 2> Segment2<Real>::intersections(const Circle2<Real>& circle) const
+{
+    return circle.intersections(*this);
 }
 }
 
