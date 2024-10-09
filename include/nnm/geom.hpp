@@ -130,10 +130,18 @@ public:
         return approx_zero(direction.cross(other.direction));
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Ray2<Real>& ray) const;
+
+    [[nodiscard]] constexpr bool approx_parallel(const Segment2<Real>& segment) const;
+
     [[nodiscard]] constexpr bool approx_perpendicular(const Line2& other) const
     {
         return approx_zero(direction.dot(other.direction));
     }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2<Real>& ray) const;
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr Vector2<Real> unchecked_intersection(const Line2& other) const
     {
@@ -342,15 +350,29 @@ public:
         return abs(direction.cross(diff));
     }
 
+    [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
+    {
+        return approx_zero(direction.cross(line.direction));
+    }
+
     [[nodiscard]] constexpr bool approx_parallel(const Ray2& other) const
     {
         return approx_zero(direction.cross(other.direction));
+    }
+
+    [[nodiscard]] constexpr bool approx_parallel(const Segment2<Real>& segment) const;
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
+    {
+        return approx_zero(direction.dot(line.direction));
     }
 
     [[nodiscard]] constexpr bool approx_perpendicular(const Ray2& other) const
     {
         return approx_zero(direction.dot(other.direction));
     }
+
+    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
@@ -1468,6 +1490,30 @@ public:
 };
 
 template <typename Real>
+constexpr bool Line2<Real>::approx_parallel(const Ray2<Real>& ray) const
+{
+    return ray.approx_parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Line2<Real>::approx_parallel(const Segment2<Real>& segment) const
+{
+    return segment.approx_parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Line2<Real>::approx_perpendicular(const Ray2<Real>& ray) const
+{
+    return ray.approx_perpendicular(*this);
+}
+
+template <typename Real>
+constexpr bool Line2<Real>::approx_perpendicular(const Segment2<Real>& segment) const
+{
+    return segment.approx_perpendicular(*this);
+}
+
+template <typename Real>
 constexpr bool Line2<Real>::intersects(const Ray2<Real>& ray) const
 {
     return ray.intersects(*this);
@@ -1519,6 +1565,18 @@ constexpr bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Tr
     const Vector3<Real> proj1 = triangle1.project_scalars(*this);
     const Vector3<Real> proj2 = triangle2.project_scalars(*this);
     return proj1.max() < proj2.min() || proj2.max() < proj1.min();
+}
+
+template <typename Real>
+constexpr bool Ray2<Real>::approx_parallel(const Segment2<Real>& segment) const
+{
+    return segment.approx_parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Ray2<Real>::approx_perpendicular(const Segment2<Real>& segment) const
+{
+    return segment.approx_perpendicular(*this);
 }
 
 template <typename Real>

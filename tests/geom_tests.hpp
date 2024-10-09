@@ -166,20 +166,66 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(line2.signed_distance({ 5.0f, 0.0f }), -1.4142135624f));
         }
 
-        test_section("approx_parallel");
+        test_section("approx_parallel(const Line2&)");
         {
             constexpr auto result = line1.approx_parallel(line2);
             ASSERT_FALSE(result);
-            ASSERT(line2.approx_parallel({ { -100.0f, 20.0f }, { 0.70710678f, 0.70710678f } }));
-            ASSERT(line2.approx_parallel({ { -100.0f, 20.0f }, { -0.70710678f, -0.70710678f } }));
+            ASSERT(line2.approx_parallel(nnm::Line2f { { -100.0f, 20.0f }, { 0.70710678f, 0.70710678f } }));
+            ASSERT(line2.approx_parallel(nnm::Line2f { { -100.0f, 20.0f }, { -0.70710678f, -0.70710678f } }));
         }
 
-        test_section("approx_perpendicular");
+        test_section("approx_parallel(const Ray2&)");
+        {
+            constexpr auto result
+                = line1.approx_parallel(nnm::Ray2f { { 100.0f, -100.0f }, { -0.384615391f, 0.923076928f } });
+            ASSERT(result);
+            ASSERT(line1.approx_parallel(nnm::Ray2f { { 100.0f, -100.0f }, { 0.384615391f, -0.923076928f } }))
+            ASSERT_FALSE(line1.approx_parallel(nnm::Ray2f {
+                { 1.0f, -2.0f },
+                {
+                    0.923076928f,
+                    0.384615391f,
+                } }));
+        }
+
+        test_section("approx_parallel(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Line2f l1 { { 100.0f, -100.0f }, { -0.5547001962f, 0.8320502943f } };
+            constexpr auto result = l1.approx_parallel(s1);
+            ASSERT(result);
+            constexpr nnm::Line2f l2 { { -100.0f, 100.0f }, { 0.5547001962f, -0.8320502943f } };
+            ASSERT(l2.approx_parallel(s1));
+            constexpr nnm::Line2f l3 { { 1.0f, -2.0f }, { 0.8320502943f, 0.5547001962f } };
+            ASSERT_FALSE(l3.approx_parallel(s1));
+        }
+
+        test_section("approx_perpendicular(const Line2&)");
         {
             constexpr auto result = line1.approx_perpendicular(line2);
             ASSERT_FALSE(result);
-            ASSERT(line2.approx_perpendicular({ { -100.0f, 20.0f }, { -0.70710678f, 0.70710678f } }));
-            ASSERT(line2.approx_perpendicular({ { -100.0f, 20.0f }, { 0.70710678f, -0.70710678f } }));
+            ASSERT(line2.approx_perpendicular(nnm::Line2f { { -100.0f, 20.0f }, { -0.70710678f, 0.70710678f } }));
+            ASSERT(line2.approx_perpendicular(nnm::Line2f { { -100.0f, 20.0f }, { 0.70710678f, -0.70710678f } }));
+        }
+
+        test_section("approx_perpendicular(const Ray2&)");
+        {
+            constexpr nnm::Ray2f ray1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            constexpr auto result
+                = nnm::Line2f { { -100.0f, 100.0f }, { -0.923076928f, -0.384615391f } }.approx_perpendicular(ray1);
+            ASSERT(result);
+            ASSERT(nnm::Line2f({ -100.0f, 100.0f }, { 0.923076928f, 0.384615391f }).approx_perpendicular(ray1));
+            ASSERT_FALSE(nnm::Line2f({ 1000.0f, 0.0f }, { -0.384615391f, 0.923076928f }).approx_perpendicular(ray1));
+        }
+
+        test_section("approx_perpendicular(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Line2f l1 { { 2.0f, 3.0f }, { -0.8320502943f, -0.5547001962f } };
+            constexpr auto result = l1.approx_perpendicular(s1);
+            ASSERT(result);
+            constexpr nnm::Line2f l2 { { 5.0f, 0.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(l2.approx_perpendicular(s1));
         }
 
         test_section("unchecked_intersection");
@@ -460,20 +506,65 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(ray2.distance({ 5.0f, 0.0f }), 1.4142135624f));
         }
 
-        test_section("approx_parallel");
+        test_section("approx_parallel(const Line2&)");
+        {
+            constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            constexpr nnm::Ray2f r1 { { 100.0f, -100.0f }, { -0.384615391f, 0.923076928f } };
+            constexpr auto result = r1.approx_parallel(line1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { 100.0f, -100.0f }, { 0.384615391f, -0.923076928f } };
+            ASSERT(r2.approx_parallel(line1))
+            constexpr nnm::Ray2f r3 { { 1.0f, -2.0f },
+                                      {
+                                          0.923076928f,
+                                          0.384615391f,
+                                      } };
+            ASSERT_FALSE(r3.approx_parallel(line1));
+        }
+
+        test_section("approx_parallel(const Ray2&)");
         {
             constexpr auto result = ray1.approx_parallel(ray2);
             ASSERT_FALSE(result);
-            ASSERT(ray2.approx_parallel({ { -100.0f, 20.0f }, { 0.70710678f, 0.70710678f } }));
-            ASSERT(ray2.approx_parallel({ { -100.0f, 20.0f }, { -0.70710678f, -0.70710678f } }));
+            ASSERT(ray2.approx_parallel(nnm::Ray2f { { -100.0f, 20.0f }, { 0.70710678f, 0.70710678f } }));
+            ASSERT(ray2.approx_parallel(nnm::Ray2f { { -100.0f, 20.0f }, { -0.70710678f, -0.70710678f } }));
         }
 
-        test_section("approx_perpendicular");
+        test_section("approx_parallel(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Ray2f r1 { { 0.0f, 4.0f }, { 0.554699f, -0.832051f } };
+            constexpr auto result = r1.approx_parallel(s1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { -0.2f, -0.2f }, { -0.554699f, -0.832051f } };
+            ASSERT_FALSE(r2.approx_parallel(s1));
+        }
+
+        test_section("approx_perpendicular(const Line2&)");
+        {
+            constexpr auto result
+                = ray1.approx_perpendicular(nnm::Line2f { { -100.0f, 100.0f }, { -0.923076928f, -0.384615391f } });
+            ASSERT(result);
+            ASSERT(ray1.approx_perpendicular(nnm::Line2f { { -100.0f, 100.0f }, { 0.923076928f, 0.384615391f } }));
+            ASSERT_FALSE(ray1.approx_perpendicular(nnm::Line2f { { 1000.0f, 0.0f }, { -0.384615391f, 0.923076928f } }));
+        }
+
+        test_section("approx_perpendicular(const Ray2&)");
         {
             constexpr auto result = ray1.approx_perpendicular(ray2);
             ASSERT_FALSE(result);
-            ASSERT(ray2.approx_perpendicular({ { -100.0f, 20.0f }, { -0.70710678f, 0.70710678f } }));
-            ASSERT(ray2.approx_perpendicular({ { -100.0f, 20.0f }, { 0.70710678f, -0.70710678f } }));
+            ASSERT(ray2.approx_perpendicular(nnm::Ray2f { { -100.0f, 20.0f }, { -0.70710678f, 0.70710678f } }));
+            ASSERT(ray2.approx_perpendicular(nnm::Ray2f { { -100.0f, 20.0f }, { 0.70710678f, -0.70710678f } }));
+        }
+
+        test_section("approx_perpendicular(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Ray2f r1 { { 2.0f, 3.0f }, { -0.8320502943f, -0.5547001962f } };
+            constexpr auto result = r1.approx_perpendicular(s1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { 5.0f, 0.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(r2.approx_perpendicular(s1));
         }
 
         test_section("intersects(const Line2&)");
@@ -728,9 +819,16 @@ inline void geom_tests()
 
         test_section("approx_parallel(const Line2&)");
         {
-            constexpr auto result = s1.approx_parallel(s2);
+            constexpr auto result
+                = s1.approx_parallel(nnm::Line2f { { 100.0f, -100.0f }, { -0.5547001962f, 0.8320502943f } });
             ASSERT(result);
-            ASSERT_FALSE(s1.approx_parallel(s3));
+            ASSERT(s1.approx_parallel(nnm::Line2f { { -100.0f, 100.0f }, { 0.5547001962f, -0.8320502943f } }));
+            ASSERT_FALSE(s1.approx_parallel(nnm::Line2f {
+                { 1.0f, -2.0f },
+                {
+                    0.8320502943f,
+                    0.5547001962f,
+                } }));
         }
 
         test_section("approx_parallel(const Ray2&)");
