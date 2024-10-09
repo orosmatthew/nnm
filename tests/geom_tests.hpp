@@ -1002,6 +1002,21 @@ inline void geom_tests()
             ASSERT(c1.point_at(nnm::pi() / 3.0f).approx_equal({ 4.5f, 1.330127f }));
         }
 
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_equal(c1.signed_distance({ -3.0f, 1.0f }), 1.403124237f));
+            ASSERT(nnm::approx_equal(c1.signed_distance({ 0.0f, 0.0f }), -1.39444872f));
+            ASSERT_FALSE(nnm::approx_equal(c1.signed_distance({ 1.0f, 1.0f }), -1.39444872f));
+        }
+
+        test_section("distance");
+        {
+            ASSERT(nnm::approx_equal(c1.distance({ -3.0f, 1.0f }), 1.403124237f));
+            ASSERT(nnm::approx_equal(c1.distance({ 0.0f, 0.0f }), 0.0f));
+            ASSERT_FALSE(nnm::approx_equal(c1.distance({ 1.0f, 1.0f }), 1.0f));
+            ASSERT_FALSE(nnm::approx_equal(c1.distance({ 10.0f, 10.0f }), 1.0f));
+        }
+
         test_section("tangent_at");
         {
             const auto l1 = c1.tangent_at(0.0f);
@@ -1174,6 +1189,75 @@ inline void geom_tests()
                     result5.value(),
                     { nnm::Vector2f { -3.0f, -3.0f }, nnm::Vector2f { -3.0f, -3.0f } },
                     [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+        }
+
+        test_section("translate");
+        {
+            ASSERT(c1.translate({ 0.0f, 0.0f }).approx_equal(c1));
+            ASSERT(c1.translate({ -20.0f, 30.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }))
+            ASSERT_FALSE(c1.translate({ -20.0f, 100.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }));
+        }
+
+        constexpr nnm::Vector2f origin { -3.0f, 1.0f };
+
+        test_section("rotate_at");
+        {
+            ASSERT(c1.rotate_at(origin, nnm::pi() / 3.0f).approx_equal({ { 2.964101615f, 3.330127f }, 5.0f }));
+            ASSERT_FALSE(
+                c1.rotate_at({ -2.0f, 10.0f }, nnm::pi() / 4.0f).approx_equal({ { 2.964101615f, 3.330127f }, 5.0f }))
+        }
+
+        test_section("rotate");
+        {
+            ASSERT(c1.rotate(nnm::pi() / 3.0f).approx_equal({ { 3.5980762f, 0.2320508f }, 5.0f }));
+            ASSERT_FALSE(c1.rotate(-nnm::pi() / 10.0f).approx_equal({ { 3.5980762f, 0.2320508f }, 5.0f }));
+        }
+
+        test_section("scale_at");
+        {
+            ASSERT(c1.scale_at(origin, 4.0f).approx_equal({ { 17.0f, -15.0f }, 20.0f }));
+            ASSERT_FALSE(c1.scale_at({ -10.0f, 200.0f }, 2.0f).approx_equal({ { 17.0f, -15.0f }, 20.0f }));
+        }
+
+        test_section("scale");
+        {
+            ASSERT(c1.scale(-3.0f).approx_equal({ { -6.0f, 9.0f }, 15.0f }));
+            ASSERT_FALSE(c1.scale(2.0f).approx_equal({ { -6.0f, 9.0f }, 15.0f }));
+        }
+
+        test_section("approx_equal");
+        {
+            constexpr auto result = c1.approx_equal(c1);
+            ASSERT(result);
+            ASSERT_FALSE(c1.approx_equal(nnm::Circle2f { { -1.0f, -100.0f }, 10.0f }));
+            ASSERT(c1.approx_equal(nnm::Circle2f { { 2.00000001f, -3.000000000001f }, 4.999999f }));
+        }
+
+        test_section("operator==");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = c1 == c1;
+            ASSERT(result);
+            ASSERT_FALSE(c1 == nnm::Circle2f({ -1.0f, -100.0f }, 10.0f));
+            ASSERT_FALSE(c1 == nnm::Circle2f({ 2.00000001f, -3.0001f }, 4.999999f));
+        }
+
+        test_section("operator!=");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = c1 != c1;
+            ASSERT_FALSE(result);
+            ASSERT(c1 != nnm::Circle2f({ -1.0f, -100.0f }, 10.0f));
+            ASSERT(c1 != nnm::Circle2f({ 2.00000001f, -3.0001f }, 4.999999f));
+        }
+
+        test_section("operator<");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = c1 < c1;
+            ASSERT_FALSE(result);
+            ASSERT_FALSE(c1 < nnm::Circle2f({ -1.0f, -100.0f }, 10.0f));
+            ASSERT(c1 < nnm::Circle2f({ 2.000001f, -3.0001f }, 4.999999f))
         }
     }
 }

@@ -855,6 +855,16 @@ public:
         return (point - center).length_sqrd() <= sqrd(radius);
     }
 
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        return center.distance(point) - radius;
+    }
+
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        return max(static_cast<Real>(0), signed_distance(point));
+    }
+
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
@@ -1063,30 +1073,30 @@ public:
 
     [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real by) const
     {
-        return { center.scale_at(scale_origin, Vector2<Real>::all(by)), radius * by };
+        return { center.scale_at(scale_origin, Vector2<Real>::all(by)), abs(radius * by) };
     }
 
     [[nodiscard]] Circle2 scale(const Real by) const
     {
-        return { center.scale(Vector2<Real>::all(by)), radius * by };
+        return { center.scale(Vector2<Real>::all(by)), abs(radius * by) };
     }
 
-    [[nodiscard]] bool approx_equal(const Circle2& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Circle2& other) const
     {
-        return center.approx_equal(other.center) && approx_equal(radius, other.radius);
+        return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
     }
 
-    [[nodiscard]] bool operator==(const Circle2& other) const
+    [[nodiscard]] constexpr bool operator==(const Circle2& other) const
     {
         return center == other.center && radius == other.radius;
     }
 
-    [[nodiscard]] bool operator!=(const Circle2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Circle2& other) const
     {
         return center != other.center || radius != other.radius;
     }
 
-    [[nodiscard]] bool operator<(const Circle2& other) const
+    [[nodiscard]] constexpr bool operator<(const Circle2& other) const
     {
         if (center != other.center) {
             return center < other.center;
