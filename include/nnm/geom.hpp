@@ -62,6 +62,13 @@ public:
 
     static constexpr Line2 from_ray(const Ray2<Real>& ray);
 
+    static Line2 from_tangent_at(const Circle2<Real>& circle, const Real angle)
+    {
+        const Vector2<Real> p = circle.point_at(angle);
+        const Vector2<Real> dir = p - circle.center;
+        return { p, dir.arbitrary_perpendicular() };
+    }
+
     static constexpr Line2 axis_x()
     {
         return { Vector2<Real>::zero(), Vector2<Real>::axis_x() };
@@ -868,13 +875,6 @@ public:
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
-    }
-
-    [[nodiscard]] Line2<Real> tangent_at(const Real angle) const
-    {
-        const Vector2<Real> p = point_at(angle);
-        const Vector2<Real> dir = p - center;
-        return { p, dir.arbitrary_perpendicular() };
     }
 
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const

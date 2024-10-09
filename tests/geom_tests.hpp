@@ -68,6 +68,20 @@ inline void geom_tests()
             ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
         }
 
+        test_section("from_tangent_at");
+        {
+            constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
+            const auto l1 = nnm::Line2f::from_tangent_at(c1, 0.0f);
+            ASSERT(l1.origin.approx_equal({ 7.0f, -3.0f }));
+            ASSERT(nnm::approx_zero(l1.direction.cross({ 0.0f, 1.0f })));
+            ASSERT(l1.approx_tangent(c1));
+            const auto l2 = nnm::Line2f::from_tangent_at(c1, nnm::pi() / 3.0f);
+            ASSERT(l2.origin.approx_equal({ 4.5f, 1.330127f }));
+            ASSERT(l2.direction.approx_parallel(
+                nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
+            ASSERT(l2.approx_tangent(c1));
+        }
+
         test_section("axis_x");
         {
             constexpr auto line = nnm::Line2f::axis_x();
@@ -1015,19 +1029,6 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(c1.distance({ 0.0f, 0.0f }), 0.0f));
             ASSERT_FALSE(nnm::approx_equal(c1.distance({ 1.0f, 1.0f }), 1.0f));
             ASSERT_FALSE(nnm::approx_equal(c1.distance({ 10.0f, 10.0f }), 1.0f));
-        }
-
-        test_section("tangent_at");
-        {
-            const auto l1 = c1.tangent_at(0.0f);
-            ASSERT(l1.origin.approx_equal({ 7.0f, -3.0f }));
-            ASSERT(nnm::approx_zero(l1.direction.cross({ 0.0f, 1.0f })));
-            ASSERT(l1.approx_tangent(c1));
-            const auto l2 = c1.tangent_at(nnm::pi() / 3.0f);
-            ASSERT(l2.origin.approx_equal({ 4.5f, 1.330127f }));
-            ASSERT(l2.direction.approx_parallel(
-                nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
-            ASSERT(l2.approx_tangent(c1));
         }
 
         test_section("intersects(const Line2&)");
