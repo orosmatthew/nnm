@@ -1016,14 +1016,11 @@ public:
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
     }
 
-    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2& other) const
+    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2& other) const
     {
         const Vector2<Real> diff = other.center - center;
         const Real dist_sqrd = diff.length_sqrd();
         const Real radius_sum = radius + other.radius;
-        if (dist_sqrd >= sqrd(radius_sum)) {
-            return std::nullopt;
-        }
         const Real dist = sqrt(dist_sqrd);
         const Real depth = radius_sum - dist;
         return diff.normalize() * depth;
@@ -1035,6 +1032,9 @@ public:
         const Real centers_dist = centers_diff.length();
         const Real radius_sum = radius + other.radius;
         const Real radius_diff = abs(radius - other.radius);
+        if (centers_dist == static_cast<Real>(0) && radius_diff == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
         if (centers_dist > radius_sum || centers_dist < radius_diff) {
             return std::nullopt;
         }
