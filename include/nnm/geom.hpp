@@ -313,9 +313,9 @@ public:
         return { point, Vector2<Real> { static_cast<Real>(1), slope }.normalize() };
     }
 
-    static Ray2 from_point_to_point(const Vector2<Real>& point1, const Vector2<Real>& point2)
+    static Ray2 from_point_to_point(const Vector2<Real>& from, const Vector2<Real>& to)
     {
-        return { point1, point1.direction(point2) };
+        return { from, from.direction(to) };
     }
 
     [[nodiscard]] Ray2 normalize() const
