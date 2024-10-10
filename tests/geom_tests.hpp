@@ -710,6 +710,22 @@ inline void geom_tests()
                 result7[0].has_value() && !result7[1].has_value() && result7[0].value().approx_equal({ 6.0f, -6.0f }));
         }
 
+        test_section("approx_tangent");
+        {
+            constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Ray2f r1 { { 0.0f, 2.0f }, { 1.0f, 0.0f } };
+            constexpr auto result = r1.approx_tangent(c1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { 0.0f, 2.0f }, { -1.0f, 0.0f } };
+            ASSERT_FALSE(r2.approx_tangent(c1));
+            const auto r3 = nnm::Ray2f::from_point_slope({ 0.0f, 2.0f }, -1.0f);
+            ASSERT_FALSE(r3.approx_tangent(c1));
+            constexpr nnm::Ray2f r4 { { 2.0f, 2.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(r4.approx_tangent(c1));
+            constexpr nnm::Ray2f r5 { { 2.0f, 2.0f }, { 0.0f, -1.0f } };
+            ASSERT_FALSE(r5.approx_tangent(c1));
+        }
+
         test_section("project_point_scalar");
         {
             constexpr nnm::Ray2f r { { 1.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
@@ -1049,6 +1065,20 @@ inline void geom_tests()
             constexpr nnm::Segment2f seg4 { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
             const auto result4 = seg4.intersections(c1);
             ASSERT_FALSE(result4[0].has_value() || result4[1].has_value());
+        }
+
+        test_section("approx_tangent");
+        {
+            constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Segment2f seg1 { { 0.0f, 2.0f }, { 1.0f, 2.0f } };
+            constexpr auto result = seg1.approx_tangent(c1);
+            ASSERT_FALSE(result);
+            constexpr nnm::Segment2f seg2 { { 0.0f, 2.0f }, { 4.0f, 2.0f } };
+            ASSERT(seg2.approx_tangent(c1));
+            constexpr nnm::Segment2f seg3 { { 2.0f, 2.0f }, { 4.0f, 4.0f } };
+            ASSERT_FALSE(seg3.approx_tangent(c1));
+            constexpr nnm::Segment2f seg4 { { 2.0f, 2.0f }, { 4.0f, 0.0f } };
+            ASSERT_FALSE(seg4.approx_tangent(c1));
         }
 
         test_section("project_point");
@@ -1409,6 +1439,46 @@ inline void geom_tests()
                     result5.value(),
                     { nnm::Vector2f { -3.0f, -3.0f }, nnm::Vector2f { -3.0f, -3.0f } },
                     [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+        }
+
+        test_section("approx_tangent(const Line2&)");
+        {
+            constexpr nnm::Circle2f circle { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Line2f line3 { { -2.0f, 2.0f }, { -1.0f, 0.0f } };
+            constexpr auto result = circle.approx_tangent(line3);
+            ASSERT(result);
+            constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            ASSERT_FALSE(circle.approx_tangent(line1));
+        }
+
+        test_section("approx_tangent(const Ray2&)");
+        {
+            constexpr nnm::Circle2f c2 { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Ray2f r1 { { 0.0f, 2.0f }, { 1.0f, 0.0f } };
+            constexpr auto result = c2.approx_tangent(r1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { 0.0f, 2.0f }, { -1.0f, 0.0f } };
+            ASSERT_FALSE(c2.approx_tangent(r2));
+            const auto r3 = nnm::Ray2f::from_point_slope({ 0.0f, 2.0f }, -1.0f);
+            ASSERT_FALSE(c2.approx_tangent(r3));
+            constexpr nnm::Ray2f r4 { { 2.0f, 2.0f }, { 0.0f, 1.0f } };
+            ASSERT_FALSE(c2.approx_tangent(r4));
+            constexpr nnm::Ray2f r5 { { 2.0f, 2.0f }, { 0.0f, -1.0f } };
+            ASSERT_FALSE(c2.approx_tangent(r5));
+        }
+
+        test_section("approx_tangent(const Segment2&");
+        {
+            constexpr nnm::Circle2f c2 { { 2.0f, -3.0f }, 5.0f };
+            constexpr nnm::Segment2f seg1 { { 0.0f, 2.0f }, { 1.0f, 2.0f } };
+            constexpr auto result = c2.approx_tangent(seg1);
+            ASSERT_FALSE(result);
+            constexpr nnm::Segment2f seg2 { { 0.0f, 2.0f }, { 4.0f, 2.0f } };
+            ASSERT(c2.approx_tangent(seg2));
+            constexpr nnm::Segment2f seg3 { { 2.0f, 2.0f }, { 4.0f, 4.0f } };
+            ASSERT_FALSE(c2.approx_tangent(seg3));
+            constexpr nnm::Segment2f seg4 { { 2.0f, 2.0f }, { 4.0f, 0.0f } };
+            ASSERT_FALSE(c2.approx_tangent(seg4));
         }
 
         test_section("translate");

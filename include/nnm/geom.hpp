@@ -438,6 +438,8 @@ public:
 
     [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
+
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
         const Real t = (point - origin).dot(direction);
@@ -743,6 +745,8 @@ public:
 
     [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
+
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = to - from;
@@ -776,7 +780,7 @@ public:
 
     [[nodiscard]] constexpr Real length_sqrd() const
     {
-        return sqrd(from.x - to.x) + sqrd(from.y - to.y);
+        return sqrd(to.x - from.x) + sqrd(to.y - from.y);
     }
 
     [[nodiscard]] Real length() const
@@ -1088,6 +1092,43 @@ public:
         const Real half_intersections_dist = sqrt(sqrd(radius) - sqrd(center_intersections_dist));
         const Vector2<Real> offset = centers_diff.arbitrary_perpendicular().normalize() * half_intersections_dist;
         return std::array { intersections_midpoint + offset, intersections_midpoint - offset };
+    }
+
+    [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = line.origin - center;
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
+        return approx_zero(discriminant);
+    }
+
+    [[nodiscard]] constexpr bool approx_tangent(const Ray2<Real>& line) const
+    {
+        const Vector2<Real> dir = line.origin - center;
+        const Real twice_dot = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - sqrd(radius);
+        if (const Real discriminant = sqrd(twice_dot) - static_cast<Real>(4) * dist_sqrd_minus_radius_sqrd;
+            !approx_zero(discriminant)) {
+            return false;
+        }
+        const Real t = -twice_dot / static_cast<Real>(2);
+        return t >= static_cast<Real>(0);
+    }
+
+    [[nodiscard]] constexpr bool approx_tangent(const Segment2<Real>& segment) const
+    {
+        const Vector2<Real> dir = segment.from - center;
+        const Vector2<Real> segment_dir = segment.to - segment.from;
+        const Real twice_dot = static_cast<Real>(2) * dir.dot(segment_dir);
+        const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - sqrd(radius);
+        const Real len_sqrd = segment.length_sqrd();
+        if (const Real discriminant = sqrd(twice_dot) - static_cast<Real>(4) * len_sqrd * dist_sqrd_minus_radius_sqrd;
+            !approx_zero(discriminant)) {
+            return false;
+        }
+        const Real t = -twice_dot / (static_cast<Real>(2) * len_sqrd);
+        return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
     }
 
     [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
@@ -1576,11 +1617,7 @@ constexpr Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
 template <typename Real>
 constexpr bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
-    const Vector2<Real> dir = origin - circle.center;
-    const Real b = static_cast<Real>(2) * dir.dot(direction);
-    const Real c = dir.dot(dir) - sqrd(circle.radius);
-    const Real discriminant = sqrd(b) - static_cast<Real>(4) * c;
-    return approx_zero(discriminant);
+    return circle.approx_tangent(*this);
 }
 
 template <typename Real>
@@ -1616,6 +1653,12 @@ constexpr std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<R
 }
 
 template <typename Real>
+constexpr bool Ray2<Real>::approx_tangent(const Circle2<Real>& circle) const
+{
+    return circle.approx_tangent(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
 {
     return circle.intersects(*this);
@@ -1637,6 +1680,12 @@ template <typename Real>
 std::array<std::optional<Vector2<Real>>, 2> Segment2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
+}
+
+template <typename Real>
+constexpr bool Segment2<Real>::approx_tangent(const Circle2<Real>& circle) const
+{
+    return circle.approx_tangent(*this);
 }
 }
 
