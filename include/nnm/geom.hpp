@@ -1367,26 +1367,29 @@ public:
         return { vertex2, dir01.arbitrary_perpendicular().normalize() };
     }
 
-    [[nodiscard]] Triangle2 project(const Line2<Real>& line) const
+    [[nodiscard]] bool intersects(const Triangle2& other) const
     {
-        return { line.project_point(vertex0), line.project_point(vertex1), line.project_point(vertex2) };
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> project_scalars(const Line2<Real>& line) const
-    {
-        return { line.project_point_scalar(vertex0),
-                 line.project_point_scalar(vertex1),
-                 line.project_point_scalar(vertex2) };
-    }
-
-    [[nodiscard]] bool overlaps(const Triangle2& other) const
-    {
-        auto has_separating_line = [](const Triangle2& triangle1, const Triangle2& triangle2) -> bool {
-            return Line2<Real>::from_segment(triangle1.edge0()).separates(triangle1, triangle2)
-                || Line2<Real>::from_segment(triangle1.edge1()).separates(triangle1, triangle2)
-                || Line2<Real>::from_segment(triangle1.edge2()).separates(triangle1, triangle2);
+        const std::array<Vector2<Real>, 6> axes {
+            edge0().direction(),       edge1().direction(),       edge2().direction(),
+            other.edge0().direction(), other.edge1().direction(), other.edge2().direction()
         };
-        return !has_separating_line(*this, other) && !has_separating_line(other, *this);
+        auto proj_min_max = [](const Triangle2& t, const Vector2<Real>& axis) -> std::array<Real, 2> {
+            const Real proj0 = t.vertex0.dot(axis);
+            const Real proj1 = t.vertex1.dot(axis);
+            const Real proj2 = t.vertex2.dot(axis);
+            const Real min = nnm::min(proj0, nnm::min(proj1, proj2));
+            const Real max = nnm::max(proj0, nnm::max(proj1, proj2));
+            return { min, max };
+        };
+        for (const Vector2<Real>& axis : axes) {
+            const Vector2<Real> perp = axis.arbitrary_perpendicular();
+            auto [min1, max1] = proj_min_max(*this, perp);
+            auto [min2, max2] = proj_min_max(other, perp);
+            if (max1 < min2 || max2 < min1) {
+                return false;
+            }
+        }
+        return true;
     }
 };
 
