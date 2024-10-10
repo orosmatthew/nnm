@@ -1131,6 +1131,16 @@ public:
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
     }
 
+    [[nodiscard]] constexpr bool approx_tangent(const Circle2& other) const
+    {
+        if (center == other.center) {
+            return false;
+        }
+        const Real dist_sqrd = center.distance_sqrd(other.center);
+        return nnm::approx_equal(dist_sqrd, sqrd(radius + other.radius))
+            || nnm::approx_equal(dist_sqrd, sqrd(radius - other.radius));
+    }
+
     [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
     {
         return { center.translate(by), radius };

@@ -289,6 +289,7 @@ std::optional<std::array<Vector2, 2>> intersections(const Circle2& other) const;
 bool approx_tangent(const Line2& line) const;
 bool approx_tangent(const Ray2& ray) const;
 bool approx_tangent(const Segment2& segment) const;
+bool approx_tangent(const Circle2& circle) const;
 Circle2 translate(const Vector2& by) const;
 Circle2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Circle2 rotate(Real angle) const;

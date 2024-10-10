@@ -1481,6 +1481,22 @@ inline void geom_tests()
             ASSERT_FALSE(c2.approx_tangent(seg4));
         }
 
+        test_section("approx_tangent(const Circle2&)");
+        {
+            constexpr nnm::Circle2f c2 { { 8.0f, -3.0f }, 1.0f };
+            constexpr auto result = c1.approx_tangent(c2);
+            ASSERT(result);
+            constexpr nnm::Circle2f c3 { { 6.0f, 2.0f }, 1.403124237f };
+            ASSERT(c1.approx_tangent(c3));
+            constexpr nnm::Circle2f c4 { { 2.0f, -6.0f }, 2.0f };
+            ASSERT(c1.approx_tangent(c4));
+            constexpr nnm::Circle2f c5 { { 0.0f, 100.0f }, 45.0f };
+            ASSERT_FALSE(c1.approx_tangent(c5));
+            constexpr nnm::Circle2f c6 { { 2.0f, 0.0f }, 4.0f };
+            ASSERT_FALSE(c1.approx_tangent(c6));
+            ASSERT_FALSE(c1.approx_tangent(c1));
+        }
+
         test_section("translate");
         {
             ASSERT(c1.translate({ 0.0f, 0.0f }).approx_equal(c1));
