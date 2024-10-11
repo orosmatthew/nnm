@@ -1566,4 +1566,53 @@ inline void geom_tests()
             ASSERT(c1 < nnm::Circle2f({ 2.000001f, -3.0001f }, 4.999999f))
         }
     }
+
+    test_case("Triangle2");
+    {
+        test_section("Triangle()");
+        {
+            constexpr nnm::Triangle2f t;
+            ASSERT(t.vertices[0] == nnm::Vector2f::zero());
+            ASSERT(t.vertices[1] == nnm::Vector2f::zero());
+            ASSERT(t.vertices[2] == nnm::Vector2f::zero());
+        }
+
+        test_section("Triangle2(const Vector2&, const Vector2&, const Vector2&)");
+        {
+            constexpr nnm::Triangle2f t { { 1.0f, -2.0f }, { -3.0f, 4.0f }, { 5.0f, 6.0f } };
+            ASSERT(t.vertices[0] == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(t.vertices[1] == nnm::Vector2f(-3.0f, 4.0f));
+            ASSERT(t.vertices[2] == nnm::Vector2f(5.0f, 6.0f));
+        }
+
+        constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+        constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
+
+        test_section("centroid");
+        {
+            constexpr auto result = tri1.centroid();
+            ASSERT(result.approx_equal({ -2.0f, 0.666666667f }));
+            ASSERT(tri2.centroid().approx_equal({ -2.0f, 0.666666667f }));
+        }
+
+        test_section("circumcenter");
+        {
+            constexpr auto result = tri1.circumcenter();
+            ASSERT(result.approx_equal({ -0.125f, -0.4375f }));
+            ASSERT(tri2.circumcenter().approx_equal({ -0.125f, -0.4375f }));
+        }
+
+        test_section("incenter");
+        {
+            ASSERT(tri1.incenter().approx_equal({ -2.2461969f, 1.01306745f }));
+            ASSERT(tri2.incenter().approx_equal({ -2.2461969f, 1.01306745f }));
+        }
+
+        test_section("orthocenter");
+        {
+            const auto result = tri1.orthocenter();
+            ASSERT(result.approx_equal({ -5.75f, 2.875f }));
+            ASSERT(tri2.orthocenter().approx_equal({ -5.75f, 2.875f }));
+        }
+    }
 }
