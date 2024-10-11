@@ -1242,6 +1242,21 @@ public:
         return { vertex2, vertex0 };
     }
 
+    [[nodiscard]] Segment2<Real> edge(const int index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return edge0();
+        case 1:
+            return edge1();
+        case 2:
+            return edge2();
+        default:
+            return edge0();
+        }
+    }
+
     [[nodiscard]] Real perimeter() const
     {
         return edge0().length() + edge1().length() + edge2().length();
@@ -1289,6 +1304,21 @@ public:
         return { vertex2, edge0().midpoint() };
     }
 
+    [[nodiscard]] Segment2<Real> median(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return median0();
+        case 1:
+            return median1();
+        case 2:
+            return median2();
+        default:
+            return median0();
+        }
+    }
+
     [[nodiscard]] Line2<Real> perpendicular_bisector0() const
     {
         return { edge0().midpoint(), edge0().direction.arbitrary_perpendicular() };
@@ -1302,6 +1332,21 @@ public:
     [[nodiscard]] Line2<Real> perpendicular_bisector2() const
     {
         return { edge2().midpoint(), edge2().direction.arbitrary_perpendicular() };
+    }
+
+    [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return perpendicular_bisector0();
+        case 1:
+            return perpendicular_bisector1();
+        case 2:
+            return perpendicular_bisector2();
+        default:
+            return perpendicular_bisector0();
+        }
     }
 
     [[nodiscard]] Real angle0() const
@@ -1323,6 +1368,21 @@ public:
         const Vector2<Real> dir20 = vertex0 - vertex2;
         const Vector2<Real> dir21 = vertex1 - vertex2;
         return acos(dir20.dot(dir21) / (dir20.length() * dir21.length()));
+    }
+
+    [[nodiscard]] Real angle(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return angle0();
+        case 1:
+            return angle1();
+        case 2:
+            return angle2();
+        default:
+            return angle0();
+        }
     }
 
     [[nodiscard]] Line2<Real> angle_bisector0() const
@@ -1349,6 +1409,21 @@ public:
         return { vertex2, bisector_dir };
     }
 
+    [[nodiscard]] Line2<Real> angle_bisector(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return angle_bisector0();
+        case 1:
+            return angle_bisector1();
+        case 2:
+            return angle_bisector2();
+        default:
+            return angle_bisector0();
+        }
+    }
+
     [[nodiscard]] Line2<Real> altitude0() const
     {
         const Vector2<Real> dir12 = vertex2 - vertex1;
@@ -1365,6 +1440,21 @@ public:
     {
         const Vector2<Real> dir01 = vertex1 - vertex0;
         return { vertex2, dir01.arbitrary_perpendicular().normalize() };
+    }
+
+    [[nodiscard]] Line2<Real> altitude(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        switch (index) {
+        case 0:
+            return altitude0();
+        case 1:
+            return altitude1();
+        case 2:
+            return altitude2();
+        default:
+            return altitude0();
+        }
     }
 
     [[nodiscard]] bool intersects(const Triangle2& other) const
