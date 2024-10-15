@@ -1614,5 +1614,39 @@ inline void geom_tests()
             ASSERT(result.approx_equal({ -5.75f, 2.875f }));
             ASSERT(tri2.orthocenter().approx_equal({ -5.75f, 2.875f }));
         }
+
+        test_section("area");
+        {
+            constexpr auto result = tri1.area();
+            ASSERT(nnm::approx_equal(result, 16.0f));
+            ASSERT(nnm::approx_equal(tri2.area(), 16.0f));
+        }
+
+        test_section("median");
+        {
+            constexpr auto result = tri1.median(0);
+            ASSERT(result.approx_equal({ { -4.0f, 2.0f }, { -1.0f, 0.0f } }));
+            ASSERT(tri1.median(1).approx_equal({ { -3.0f, -4.0f }, { -1.5f, 3.0f } }));
+            ASSERT(tri1.median(2).approx_equal({ { 1.0f, 4.0f }, { -3.5f, -1.0f } }));
+            ASSERT(tri2.median(0).approx_equal({ { -3.0f, -4.0f }, { -1.5f, 3.0f } }));
+            ASSERT(tri2.median(1).approx_equal({ { 1.0f, 4.0f }, { -3.5f, -1.0f } }));
+            ASSERT(tri2.median(2).approx_equal({ { -4.0f, 2.0f }, { -1.0f, 0.0f } }));
+        }
+
+        test_section("perpendicular_bisector");
+        {
+            ASSERT(tri1.perpendicular_bisector(0).approx_coincident(
+                nnm::Line2f::from_point_slope({ -3.5f, -1.0f }, 0.166666667f)));
+            ASSERT(tri1.perpendicular_bisector(1).approx_coincident(
+                nnm::Line2f::from_point_slope({ -1.0f, 0.0f }, -0.5f)));
+            ASSERT(
+                tri1.perpendicular_bisector(2).approx_coincident(nnm::Line2f::from_point_slope({ -1.5f, 3.0f }, -2.5f)))
+            ASSERT(tri2.perpendicular_bisector(0).approx_coincident(
+                nnm::Line2f::from_point_slope({ -1.0f, 0.0f }, -0.5f)));
+            ASSERT(tri2.perpendicular_bisector(1).approx_coincident(
+                nnm::Line2f::from_point_slope({ -1.5f, 3.0f }, -2.5f)));
+            ASSERT(tri2.perpendicular_bisector(2).approx_coincident(
+                nnm::Line2f::from_point_slope({ -3.5f, -1.0f }, 0.166666667f)));
+        }
     }
 }

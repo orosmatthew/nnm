@@ -843,6 +843,11 @@ public:
         return { from.shear_y(angle_x), to.shear_y(angle_x) };
     }
 
+    [[nodiscard]] constexpr bool approx_equal(const Segment2& other) const
+    {
+        return from.approx_equal(other.from) && to.approx_equal(other.to);
+    }
+
     [[nodiscard]] constexpr bool operator==(const Segment2& other) const
     {
         return from == other.from && to == other.to;
@@ -1260,7 +1265,7 @@ public:
         return abs(sum) / static_cast<Real>(2);
     }
 
-    [[nodiscard]] Segment2<Real> median(const int index) const
+    [[nodiscard]] constexpr Segment2<Real> median(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
         switch (index) {
@@ -1279,12 +1284,12 @@ public:
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
         switch (index) {
         case 1:
-            return { edge(1).midpoint(), edge(1).direction.arbitrary_perpendicular() };
+            return { edge(1).midpoint(), edge(1).direction().arbitrary_perpendicular() };
         case 2:
-            return { edge(2).midpoint(), edge(2).direction.arbitrary_perpendicular() };
+            return { edge(2).midpoint(), edge(2).direction().arbitrary_perpendicular() };
         case 0:
         default:
-            return { edge(0).midpoint(), edge(0).direction.arbitrary_perpendicular() };
+            return { edge(0).midpoint(), edge(0).direction().arbitrary_perpendicular() };
         }
     }
 
