@@ -1327,6 +1327,28 @@ public:
         }
         return true;
     }
+
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
+    {
+        for (int i = 0; i < 3; ++i) {
+            if (edge(i).intersects(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr std::optional<std::array<Vector2<Real>, 2>> intersections(const nnm::Line2<Real>& line) const
+    {
+        std::array<Vector2<Real>, 2> points;
+        int count = 0;
+        for (int i = 0; i < 3 && count < 2; ++i) {
+            if (std::optional<Vector2<Real>> point = edge(i).intersection(line)) {
+                points[count++] = *point;
+            }
+        }
+        return count == 2 ? points : std::nullopt;
+    }
 };
 
 template <typename Real = float>

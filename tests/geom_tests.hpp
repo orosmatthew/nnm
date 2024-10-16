@@ -1679,7 +1679,7 @@ inline void geom_tests()
         {
         }
 
-        test_section("intersects");
+        test_section("intersects(const Triangle2&)");
         {
             ASSERT(tri1.intersects(tri1));
             ASSERT(tri1.intersects(tri2));
@@ -1700,6 +1700,29 @@ inline void geom_tests()
             ASSERT(tri5.intersects(tri1));
             ASSERT(tri2.intersects(tri5));
             ASSERT(tri5.intersects(tri1));
+        }
+
+        test_section("intersects(const Line2&)");
+        {
+            constexpr auto result = tri1.intersects(nnm::Line2f::axis_x());
+            ASSERT(result);
+            ASSERT(tri2.intersects(nnm::Line2f::axis_x()));
+            ASSERT(tri1.intersects(nnm::Line2f::axis_y()));
+            ASSERT(tri2.intersects(nnm::Line2f::axis_y()));
+            ASSERT_FALSE(tri1.intersects(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f })));
+            ASSERT_FALSE(tri2.intersects(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f })));
+            ASSERT(tri1.intersects(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f })));
+            ASSERT(tri2.intersects(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f })));
+        }
+
+        test_section("intersections(const Line2&)");
+        {
+            constexpr auto result = tri1.intersections(nnm::Line2f::axis_x());
+            ASSERT(
+                result.has_value()
+                && unordered_equal_if(*result, { nnm::Vector2f { 0.0f, 2.0f }, nnm::Vector2f { 0.0f, 3.6f } }, [
+                   ](const nnm::Vector2f& a, const nnm::Vector2f& b)) { return a.approx_equal(b) });
+            // TODO
         }
     }
 }
