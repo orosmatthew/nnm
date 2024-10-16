@@ -1648,5 +1648,58 @@ inline void geom_tests()
             ASSERT(tri2.perpendicular_bisector(2).approx_coincident(
                 nnm::Line2f::from_point_slope({ -3.5f, -1.0f }, 0.166666667f)));
         }
+
+        test_section("angle");
+        {
+            ASSERT(nnm::approx_equal(tri1.angle(0), nnm::radians(102.339087f)));
+            ASSERT(nnm::approx_equal(tri1.angle(1), nnm::radians(36.02737339f)));
+            ASSERT(nnm::approx_equal(tri1.angle(2), nnm::radians(41.6335393f)));
+            ASSERT(nnm::approx_equal(tri2.angle(0), nnm::radians(36.02737339f)));
+            ASSERT(nnm::approx_equal(tri2.angle(1), nnm::radians(41.6335393f)));
+            ASSERT(nnm::approx_equal(tri2.angle(2), nnm::radians(102.339087f)));
+        }
+
+        test_section("angle_bisector");
+        {
+            ASSERT(
+                tri1.angle_bisector(0).approx_coincident(nnm::Line2f::from_point_slope({ -4.0f, 2.0f }, -0.56273853f)));
+            ASSERT(tri1.angle_bisector(1).approx_coincident(
+                nnm::Line2f::from_point_slope({ -3.0f, -4.0f }, 6.650367627f)));
+            ASSERT(
+                tri1.angle_bisector(2).approx_coincident(nnm::Line2f::from_point_slope({ 1.0f, 4.0f }, 0.92013288f)));
+            ASSERT(tri2.angle_bisector(0).approx_coincident(
+                nnm::Line2f::from_point_slope({ -3.0f, -4.0f }, 6.650367627f)));
+            ASSERT(
+                tri2.angle_bisector(1).approx_coincident(nnm::Line2f::from_point_slope({ 1.0f, 4.0f }, 0.92013288f)));
+            ASSERT(
+                tri2.angle_bisector(2).approx_coincident(nnm::Line2f::from_point_slope({ -4.0f, 2.0f }, -0.56273853f)));
+        }
+
+        test_section("altitude");
+        {
+        }
+
+        test_section("intersects");
+        {
+            ASSERT(tri1.intersects(tri1));
+            ASSERT(tri1.intersects(tri2));
+            ASSERT(tri2.intersects(tri2));
+            ASSERT(tri2.intersects(tri1));
+            constexpr nnm::Triangle2f tri3 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
+            ASSERT_FALSE(tri1.intersects(tri3));
+            ASSERT_FALSE(tri3.intersects(tri1));
+            ASSERT_FALSE(tri2.intersects(tri3));
+            ASSERT_FALSE(tri3.intersects(tri2));
+            constexpr nnm::Triangle2f tri4 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
+            ASSERT(tri1.intersects(tri4));
+            ASSERT(tri4.intersects(tri1));
+            ASSERT(tri2.intersects(tri4));
+            ASSERT(tri4.intersects(tri2));
+            constexpr nnm::Triangle2f tri5 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
+            ASSERT(tri1.intersects(tri5));
+            ASSERT(tri5.intersects(tri1));
+            ASSERT(tri2.intersects(tri5));
+            ASSERT(tri5.intersects(tri1));
+        }
     }
 }

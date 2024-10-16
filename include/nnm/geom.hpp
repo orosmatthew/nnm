@@ -1218,15 +1218,8 @@ public:
     [[nodiscard]] constexpr Segment2<Real> edge(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 1:
-            return { vertices[1], vertices[2] };
-        case 2:
-            return { vertices[2], vertices[0] };
-        case 0:
-        default:
-            return { vertices[0], vertices[1] };
-        }
+        const int next_index = (index + 1) % 3;
+        return { vertices[index], vertices[next_index] };
     }
 
     [[nodiscard]] constexpr Vector2<Real> centroid() const
@@ -1255,7 +1248,7 @@ public:
 
     [[nodiscard]] constexpr Vector2<Real> orthocenter() const
     {
-        return altitude0().unchecked_intersection(altitude1());
+        return Line2<Real>::from_segment(altitude(0)).unchecked_intersection(Line2<Real>::from_segment(altitude(1)));
     }
 
     [[nodiscard]] constexpr Real area() const
@@ -1268,111 +1261,46 @@ public:
     [[nodiscard]] constexpr Segment2<Real> median(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 1:
-            return { vertices[1], edge(2).midpoint() };
-        case 2:
-            return { vertices[2], edge(0).midpoint() };
-        case 0:
-        default:
-            return { vertices[0], edge(1).midpoint() };
-        }
+        const int next_index = (index + 1) % 3;
+        return { vertices[index], edge(next_index).midpoint() };
     }
 
     [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 1:
-            return { edge(1).midpoint(), edge(1).direction().arbitrary_perpendicular() };
-        case 2:
-            return { edge(2).midpoint(), edge(2).direction().arbitrary_perpendicular() };
-        case 0:
-        default:
-            return { edge(0).midpoint(), edge(0).direction().arbitrary_perpendicular() };
-        }
+        return { edge(index).midpoint(), edge(index).direction().arbitrary_perpendicular() };
     }
 
     [[nodiscard]] Real angle(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 1: {
-            const Vector2<Real> dir10 = vertices[0] - vertices[1];
-            const Vector2<Real> dir12 = vertices[2] - vertices[1];
-            return acos(dir10.dot(dir12) / (dir10.length() * dir12.length()));
-        }
-        case 2: {
-            const Vector2<Real> dir20 = vertices[0] - vertices[2];
-            const Vector2<Real> dir21 = vertices[1] - vertices[2];
-            return acos(dir20.dot(dir21) / (dir20.length() * dir21.length()));
-        }
-        case 0:
-        default: {
-            const Vector2<Real> dir01 = vertices[1] - vertices[0];
-            const Vector2<Real> dir02 = vertices[2] - vertices[0];
-            return acos(dir01.dot(dir02) / (dir01.length() * dir02.length()));
-        }
-        }
+        const int next_index = (index + 1) % 3;
+        const int prev_index = (index + 2) % 3;
+        const Vector2<Real> dir1 = vertices[prev_index] - vertices[index];
+        const Vector2<Real> dir2 = vertices[next_index] - vertices[index];
+        return acos(dir1.dot(dir2) / (dir1.length() * dir2.length()));
     }
 
     [[nodiscard]] Line2<Real> angle_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 1: {
-            const Vector2<Real> dir10 = (vertices[0] - vertices[1]).normalize();
-            const Vector2<Real> dir12 = (vertices[2] - vertices[1]).normalize();
-            const Vector2<Real> bisector_dir = (dir10 + dir12).normalize();
-            return { vertices[1], bisector_dir };
-        }
-        case 2: {
-            const Vector2<Real> dir20 = (vertices[0] - vertices[2]).normalize();
-            const Vector2<Real> dir21 = (vertices[1] - vertices[2]).normalize();
-            const Vector2<Real> bisector_dir = (dir20 + dir21).normalize();
-            return { vertices[2], bisector_dir };
-        }
-        case 0:
-        default: {
-            const Vector2<Real> dir01 = (vertices[1] - vertices[0]).normalize();
-            const Vector2<Real> dir02 = (vertices[2] - vertices[0]).normalize();
-            const Vector2<Real> bisector_dir = (dir01 + dir02).normalize();
-            return { vertices[0], bisector_dir };
-        }
-        }
+        const int next_index = (index + 1) % 3;
+        const int prev_index = (index + 2) % 3;
+        const Vector2<Real> dir1 = (vertices[prev_index] - vertices[index]).normalize();
+        const Vector2<Real> dir2 = (vertices[next_index] - vertices[index]).normalize();
+        const Vector2<Real> bisector_dir = (dir1 + dir2).normalize();
+        return { vertices[index], bisector_dir };
     }
 
-    [[nodiscard]] Line2<Real> altitude0() const
-    {
-        const Vector2<Real> dir12 = vertices[2] - vertices[1];
-        return { vertices[0], dir12.arbitrary_perpendicular().normalize() };
-    }
-
-    [[nodiscard]] Line2<Real> altitude1() const
-    {
-        const Vector2<Real> dir20 = vertices[0] - vertices[2];
-        return { vertices[1], dir20.arbitrary_perpendicular().normalize() };
-    }
-
-    [[nodiscard]] Line2<Real> altitude2() const
-    {
-        const Vector2<Real> dir01 = vertices[1] - vertices[0];
-        return { vertices[2], dir01.arbitrary_perpendicular().normalize() };
-    }
-
-    [[nodiscard]] Line2<Real> altitude(const int index) const
+    [[nodiscard]] Segment2<Real> altitude(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
-        switch (index) {
-        case 0:
-            return altitude0();
-        case 1:
-            return altitude1();
-        case 2:
-            return altitude2();
-        default:
-            return altitude0();
-        }
+        const Vector2<Real>& vertex = vertices[index];
+        const Segment2<Real> base = edge((index + 1) % 3);
+        const Vector2<Real> perp_dir = (base.to - base.from).arbitrary_perpendicular().normalize();
+        const Line2<Real> altitude_line { vertex, perp_dir };
+        const Vector2<Real> intersection = altitude_line.unchecked_intersection(Line2<Real>::from_segment(base));
+        return { vertex, intersection };
     }
 
     [[nodiscard]] bool intersects(const Triangle2& other) const
