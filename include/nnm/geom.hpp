@@ -9,6 +9,7 @@
 
 #include <nnm/nnm.hpp>
 
+#include <algorithm>
 #include <array>
 #include <optional>
 
@@ -436,7 +437,7 @@ public:
 
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
-    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -748,7 +749,7 @@ public:
 
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
-    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Circle2<Real>& circle) const;
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -951,7 +952,9 @@ public:
         const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         const Vector2<Real> p1 = line.origin + line.direction * t1;
         const Vector2<Real> p2 = line.origin + line.direction * t2;
-        return std::array { p1, p2 };
+        std::array<Vector2<Real>, 2> points { p1, p2 };
+        std::sort(points.begin(), points.end());
+        return points;
     }
 
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
@@ -978,14 +981,14 @@ public:
         return false;
     }
 
-    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return { std::nullopt, std::nullopt };
+            return std::nullopt;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
@@ -993,17 +996,19 @@ public:
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p1 = ray.origin + ray.direction * t1;
             const Vector2<Real> p2 = ray.origin + ray.direction * t2;
-            return { p1, p2 };
+            std::array<Vector2<Real>, 2> points { p1, p2 };
+            std::sort(points.begin(), points.end());
+            return points;
         }
         if (t1 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t1;
-            return { p, std::nullopt };
+            return std::array { p, p };
         }
         if (t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t2;
-            return { p, std::nullopt };
+            return std::array { p, p };
         }
-        return { std::nullopt, std::nullopt };
+        return std::nullopt;
     }
 
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
@@ -1037,7 +1042,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] std::array<std::optional<Vector2<Real>>, 2> intersections(const Segment2<Real>& segment) const
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
         const Vector2<Real> circle_dir = segment.from - center;
@@ -1047,7 +1052,7 @@ public:
         const Real discriminant
             = sqrd(twice_proj_len) - static_cast<Real>(4) * seg_len_sqrd * dist_sqrd_minus_radius_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return { std::nullopt, std::nullopt };
+            return std::nullopt;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_len - disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
@@ -1056,17 +1061,19 @@ public:
             && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p1 = segment.from + seg_dir * t1;
             const Vector2<Real> p2 = segment.from + seg_dir * t2;
-            return { p1, p2 };
+            std::array<Vector2<Real>, 2> points { p1, p2 };
+            std::sort(points.begin(), points.end());
+            return points;
         }
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.from + seg_dir * t1;
-            return { p, std::nullopt };
+            return std::array { p, p };
         }
         if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.from + seg_dir * t2;
-            return { p, std::nullopt };
+            return std::array { p, p };
         }
-        return { std::nullopt, std::nullopt };
+        return std::nullopt;
     }
 
     [[nodiscard]] constexpr bool intersects(const Circle2& other) const
@@ -1101,7 +1108,9 @@ public:
         const Vector2<Real> intersections_midpoint = center + centers_diff * (center_intersections_dist / centers_dist);
         const Real half_intersections_dist = sqrt(sqrd(radius) - sqrd(center_intersections_dist));
         const Vector2<Real> offset = centers_diff.arbitrary_perpendicular().normalize() * half_intersections_dist;
-        return std::array { intersections_midpoint + offset, intersections_midpoint - offset };
+        std::array<Vector2<Real>, 2> points { intersections_midpoint + offset, intersections_midpoint - offset };
+        std::sort(points.begin(), points.end());
+        return points;
     }
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
@@ -1338,7 +1347,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] constexpr std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> points;
         int count = 0;
@@ -1347,9 +1356,10 @@ public:
                 points[count++] = *point;
             }
         }
-        if (count != 2) {
+        if (count < 2) {
             return std::nullopt;
         }
+        std::sort(points.begin(), points.end());
         return points;
     }
 
@@ -1378,6 +1388,7 @@ public:
         if (count == 1) {
             points[1] = points[0];
         }
+        std::sort(points.begin(), points.end());
         return points;
     }
 };
@@ -1667,7 +1678,7 @@ bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-std::array<std::optional<Vector2<Real>>, 2> Ray2<Real>::intersections(const Circle2<Real>& circle) const
+std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
 }
@@ -1679,7 +1690,7 @@ bool Segment2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-std::array<std::optional<Vector2<Real>>, 2> Segment2<Real>::intersections(const Circle2<Real>& circle) const
+std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
 }
