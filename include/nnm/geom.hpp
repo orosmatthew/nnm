@@ -1338,7 +1338,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] constexpr std::optional<std::array<Vector2<Real>, 2>> intersections(const nnm::Line2<Real>& line) const
+    [[nodiscard]] constexpr std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> points;
         int count = 0;
@@ -1347,7 +1347,38 @@ public:
                 points[count++] = *point;
             }
         }
-        return count == 2 ? points : std::nullopt;
+        if (count != 2) {
+            return std::nullopt;
+        }
+        return points;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
+    {
+        for (int i = 0; i < 3; ++i) {
+            if (edge(i).intersects(ray)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
+    {
+        std::array<Vector2<Real>, 2> points;
+        int count = 0;
+        for (int i = 0; i < 3 && count < 2; ++i) {
+            if (std::optional<Vector2<Real>> point = edge(i).intersection(ray)) {
+                points[count++] = *point;
+            }
+        }
+        if (count == 0) {
+            return std::nullopt;
+        }
+        if (count == 1) {
+            points[1] = points[0];
+        }
+        return points;
     }
 };
 

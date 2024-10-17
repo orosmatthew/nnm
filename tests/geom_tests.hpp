@@ -1717,12 +1717,112 @@ inline void geom_tests()
 
         test_section("intersections(const Line2&)");
         {
-            constexpr auto result = tri1.intersections(nnm::Line2f::axis_x());
+            constexpr auto result1 = tri1.intersections(nnm::Line2f::axis_x());
             ASSERT(
-                result.has_value()
-                && unordered_equal_if(*result, { nnm::Vector2f { 0.0f, 2.0f }, nnm::Vector2f { 0.0f, 3.6f } }, [
-                   ](const nnm::Vector2f& a, const nnm::Vector2f& b)) { return a.approx_equal(b) });
-            // TODO
+                result1.has_value()
+                && unordered_equal_if(
+                    *result1,
+                    { nnm::Vector2f { -3.666667f, 0.0f }, nnm::Vector2f { -1.0f, 0.0f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            constexpr auto result2 = tri2.intersections(nnm::Line2f::axis_x());
+            ASSERT(
+                result2.has_value()
+                && unordered_equal_if(
+                    *result2,
+                    { nnm::Vector2f { -3.666667f, 0.0f }, nnm::Vector2f { -1.0f, 0.0f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            constexpr auto result3 = tri1.intersections(nnm::Line2f::axis_y());
+            ASSERT(
+                result3.has_value()
+                && unordered_equal_if(
+                    *result3,
+                    { nnm::Vector2f { 0.0f, 2.0f }, nnm::Vector2f { 0.0f, 3.6f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            constexpr auto result4 = tri2.intersections(nnm::Line2f::axis_y());
+            ASSERT(
+                result4.has_value()
+                && unordered_equal_if(
+                    *result4,
+                    { nnm::Vector2f { 0.0f, 2.0f }, nnm::Vector2f { 0.0f, 3.6f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            const auto result5 = tri1.intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
+            ASSERT_FALSE(result5.has_value());
+            const auto result6 = tri2.intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
+            ASSERT_FALSE(result6.has_value());
+            const auto result7 = tri1.intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
+            ASSERT(
+                result7.has_value()
+                && unordered_equal_if(
+                    *result7,
+                    { nnm::Vector2f { -3.0f, 2.4f }, nnm::Vector2f { -0.538461548f, 0.923076923f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            const auto result8 = tri2.intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
+            ASSERT(
+                result8.has_value()
+                && unordered_equal_if(
+                    *result8,
+                    { nnm::Vector2f { -3.0f, 2.4f }, nnm::Vector2f { -0.538461548f, 0.923076923f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+        }
+
+        test_section("intersects(const Ray2&)");
+        {
+            constexpr auto result = tri1.intersects(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
+            ASSERT(result);
+            ASSERT(tri2.intersects(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } }));
+            ASSERT(tri1.intersects(nnm::Ray2f { { 0.0f, 0.0f }, { -1.0f, 0.0f } }));
+            ASSERT(tri1.intersects(nnm::Ray2f { { 0.0f, 0.0f }, { -1.0f, 0.0f } }));
+            ASSERT(tri1.intersects(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { 0.0f, 1.0f })));
+            ASSERT(tri2.intersects(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { -2.0f, 1.0f })));
+            ASSERT(tri1.intersects(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f })));
+            ASSERT(tri2.intersects(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f })));
+            ASSERT_FALSE(tri1.intersects(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } }));
+            ASSERT_FALSE(tri2.intersects(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } }));
+        }
+
+        test_section("intersections(const Ray2&)");
+        {
+            const auto result1 = tri1.intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
+            ASSERT(
+                result1.has_value() && (*result1)[0].approx_equal({ -1.0f, 0.0f })
+                && (*result1)[1].approx_equal({ -1.0f, 0.0f }));
+            const auto result2 = tri2.intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
+            ASSERT(
+                result2.has_value() && (*result2)[0].approx_equal({ -1.0f, 0.0f })
+                && (*result2)[1].approx_equal({ -1.0f, 0.0f }));
+            const auto result3 = tri1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { -1.0f, 0.0f } });
+            ASSERT(
+                result3.has_value()
+                && unordered_equal_if(
+                    *result3,
+                    { nnm::Vector2f { -1.0f, 0.0f }, nnm::Vector2f { -3.6666667f, 0.0f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            const auto result4 = tri1.intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { 0.0f, 1.0f }));
+            ASSERT(
+                result4.has_value()
+                && unordered_equal_if(
+                    *result4,
+                    { nnm::Vector2f { -0.3333333f, 1.3333333f }, nnm::Vector2f { -1.8571429f, 2.8571429f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            const auto result5 = tri2.intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { -2.0f, 1.0f }));
+            ASSERT(
+                result5.has_value()
+                && unordered_equal_if(
+                    *result5,
+                    { nnm::Vector2f { -3.9411765f, 1.64705882f }, nnm::Vector2f { -0.7142857f, 0.57142857f } },
+                    [](const nnm::Vector2f& a, const nnm::Vector2f& b) { return a.approx_equal(b); }));
+            const auto result6 = tri1.intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
+            ASSERT(
+                result6.has_value() && (*result6)[0].approx_equal({ 1.0f, 4.0f })
+                && (*result6)[1].approx_equal({ 1.0f, 4.0f }));
+            const auto result7 = tri2.intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
+            ASSERT(
+                result7.has_value() && (*result7)[0].approx_equal({ 1.0f, 4.0f })
+                && (*result7)[1].approx_equal({ 1.0f, 4.0f }));
+            const auto result8 = tri1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
+            ASSERT_FALSE(result8.has_value());
+            const auto result9 = tri2.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
+            ASSERT_FALSE(result9.has_value());
         }
     }
 }
