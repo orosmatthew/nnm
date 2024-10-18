@@ -1630,6 +1630,35 @@ inline void geom_tests()
         {
         }
 
+        test_section("lerp_point");
+        {
+            constexpr auto result = tri1.lerp_point({ 0.5f, 0.1f, 0.4f });
+            ASSERT(result.approx_equal({ -1.9f, 2.2f }));
+            ASSERT(tri2.lerp_point({ 0.1f, 0.4f, 0.5f }).approx_equal({ -1.9f, 2.2f }));
+            ASSERT(tri1.lerp_point({ 0.5f, -1.5f, 100.0f }).approx_equal({ 102.5f, 407.0f }));
+            ASSERT(tri2.lerp_point({ -1.5f, 100.0f, 0.5f }).approx_equal({ 102.5f, 407.0f }));
+        }
+
+        test_section("barycentric");
+        {
+            constexpr auto r1 = tri1.barycentric({ 0.0f, 0.0f });
+            ASSERT(tri1.lerp_point(r1).approx_equal({ 0.0f, 0.0f }));
+            ASSERT(tri2.lerp_point(tri2.barycentric({ -2.0f, 1.0f })).approx_equal({ -2.0f, 1.0f }));
+        }
+
+        test_section("contains");
+        {
+            constexpr auto result = tri1.contains({ 0.0f, 0.0f });
+            ASSERT_FALSE(result);
+            ASSERT_FALSE(tri2.contains({ 0.0f, 0.0f }));
+            ASSERT(tri1.contains({ -2.0f, 1.0f }));
+            ASSERT(tri2.contains({ -2.0f, 1.0f }));
+            ASSERT(tri1.contains({ 1.0f, 4.0f }));
+            ASSERT(tri2.contains({ 1.0f, 4.0f }));
+            ASSERT(tri1.contains({ -1.0f, 0.0f }));
+            ASSERT(tri2.contains({ -1.0f, 0.0f }));
+        }
+
         test_section("intersects(const Triangle2&)");
         {
             ASSERT(tri1.intersects(tri1));

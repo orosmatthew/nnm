@@ -1312,6 +1312,33 @@ public:
         return { vertex, intersection };
     }
 
+    [[nodiscard]] constexpr Vector2<Real> lerp_point(const Vector3<Real>& weights) const
+    {
+        return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> barycentric(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> v0 = vertices[1] - vertices[0];
+        const Vector2<Real> v1 = vertices[2] - vertices[0];
+        const Vector2<Real> v2 = point - vertices[0];
+        const Real cross01 = v0.cross(v1);
+        const Real cross21 = v2.cross(v1);
+        const Real cross02 = v0.cross(v2);
+        const Real inv_cross01 = static_cast<Real>(1) / cross01;
+        const Real y = cross21 * inv_cross01;
+        const Real z = cross02 * inv_cross01;
+        const Real x = static_cast<Real>(1) - y - z;
+        return { x, y, z };
+    }
+
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
+    {
+        const Vector3<Real> b = barycentric(point);
+        return b.x >= static_cast<Real>(0) && b.x <= static_cast<Real>(1) && b.y >= static_cast<Real>(0)
+            && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
+    }
+
     [[nodiscard]] bool intersects(const Triangle2& other) const
     {
         const std::array<Vector2<Real>, 6> axes {
@@ -1391,6 +1418,16 @@ public:
         std::sort(points.begin(), points.end());
         return points;
     }
+
+    // [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersects(const Segment2<Real>& segment) const
+    // {
+    //     for (int i = 0; i < 3; ++i) {
+    //         if (std::optional<Vector2<Real>> point = edge(i).intersects(segment)) {
+    //             return true;
+    //         }
+    //     }
+    //     return false;
+    // }
 };
 
 template <typename Real = float>
