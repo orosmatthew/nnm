@@ -175,6 +175,10 @@ public:
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
+
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
@@ -438,6 +442,10 @@ public:
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -750,6 +758,10 @@ public:
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -1366,6 +1378,9 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
+        if (contains(line.origin)) {
+            return true;
+        }
         for (int i = 0; i < 3; ++i) {
             if (edge(i).intersects(line)) {
                 return true;
@@ -1392,6 +1407,9 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
+        if (contains(ray.origin)) {
+            return true;
+        }
         for (int i = 0; i < 3; ++i) {
             if (edge(i).intersects(ray)) {
                 return true;
@@ -1419,15 +1437,37 @@ public:
         return points;
     }
 
-    // [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersects(const Segment2<Real>& segment) const
-    // {
-    //     for (int i = 0; i < 3; ++i) {
-    //         if (std::optional<Vector2<Real>> point = edge(i).intersects(segment)) {
-    //             return true;
-    //         }
-    //     }
-    //     return false;
-    // }
+    [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
+    {
+        if (contains(segment.from) || contains(segment.to)) {
+            return true;
+        }
+        for (int i = 0; i < 3; ++i) {
+            if (edge(i).intersects(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
+    {
+        std::array<Vector2<Real>, 2> points;
+        int count = 0;
+        for (int i = 0; i < 3 && count < 2; ++i) {
+            if (std::optional<Vector2<Real>> point = edge(i).intersection(segment)) {
+                points[count++] = *point;
+            }
+        }
+        if (count == 0) {
+            return std::nullopt;
+        }
+        if (count == 1) {
+            points[1] = points[0];
+        }
+        std::sort(points.begin(), points.end());
+        return points;
+    }
 };
 
 template <typename Real = float>
@@ -1659,6 +1699,18 @@ std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Cir
 }
 
 template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersections(*this);
+}
+
+template <typename Real>
+constexpr bool Line2<Real>::intersects(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
 constexpr Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
 {
     return { ray.origin, ray.direction };
@@ -1703,6 +1755,12 @@ constexpr std::optional<Vector2<Real>> Ray2<Real>::intersection(const Segment2<R
 }
 
 template <typename Real>
+constexpr bool Ray2<Real>::intersects(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
 constexpr bool Ray2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
@@ -1721,6 +1779,12 @@ std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Circ
 }
 
 template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersections(*this);
+}
+
+template <typename Real>
 bool Segment2<Real>::intersects(const Circle2<Real>& circle) const
 {
     return circle.intersects(*this);
@@ -1730,6 +1794,18 @@ template <typename Real>
 std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersections(*this);
+}
+
+template <typename Real>
+constexpr bool Segment2<Real>::intersects(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersects(*this);
 }
 
 template <typename Real>
