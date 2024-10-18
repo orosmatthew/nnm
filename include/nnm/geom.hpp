@@ -126,6 +126,18 @@ public:
         return direction.cross(point - origin);
     }
 
+    [[nodiscard]] constexpr Real distance(const Line2& other) const
+    {
+        if (direction.cross(other.direction) == static_cast<Real>(0)) {
+            return abs((other.origin - origin).cross(direction));
+        }
+        return static_cast<Real>(0);
+    }
+
+    [[nodiscard]] Real distance(const Ray2<Real>& ray) const;
+
+    [[nodiscard]] constexpr Real distance(const Segment2<Real>& segment) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
@@ -240,8 +252,6 @@ public:
         const Vector2<Real> diff = origin - other.origin;
         return approx_zero(diff.cross(other.direction));
     }
-
-    [[nodiscard]] constexpr bool separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const;
 
     [[nodiscard]] Line2 translate(const Vector2<Real>& by) const
     {
@@ -358,6 +368,33 @@ public:
         }
         return abs(direction.cross(diff));
     }
+
+    [[nodiscard]] Real distance(const Line2<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        return line.distance(origin);
+    }
+
+    [[nodiscard]] Real distance(const Ray2& other) const
+    {
+        const Real dir_cross = direction.cross(other.direction);
+        if (dir_cross == static_cast<Real>(0)) {
+            if (direction.dot(other.direction) > static_cast<Real>(0)) {
+                return abs((other.origin - origin).cross(direction));
+            }
+            return origin.distance(other.origin);
+        }
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        const Real d1 = distance(other.origin);
+        const Real d2 = other.distance(origin);
+        return min(d1, d2);
+    }
+
+    [[nodiscard]] Real distance(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
@@ -604,6 +641,39 @@ public:
         }
         Vector2<Real> proj = from + dir * t;
         return (point - proj).length();
+    }
+
+    [[nodiscard]] constexpr Real distance(const Line2<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        const Real d1 = line.distance(from);
+        const Real d2 = line.distance(to);
+        return min(d1, d2);
+    }
+
+    [[nodiscard]] Real distance(const Ray2<Real>& ray) const
+    {
+        if (intersects(ray)) {
+            return static_cast<Real>(0);
+        }
+        const Real d1 = ray.distance(from);
+        const Real d2 = ray.distance(to);
+        const Real d3 = distance(ray.origin);
+        return min(d1, min(d2, d3));
+    }
+
+    [[nodiscard]] Real distance(const Segment2& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        const Real d1 = distance(other.from);
+        const Real d2 = distance(other.to);
+        const Real d3 = other.distance(from);
+        const Real d4 = other.distance(to);
+        return min(d1, min(d2, min(d3, d4)));
     }
 
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
@@ -1693,6 +1763,18 @@ Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 }
 
 template <typename Real>
+Real Line2<Real>::distance(const Ray2<Real>& ray) const
+{
+    return ray.distance(*this);
+}
+
+template <typename Real>
+constexpr Real Line2<Real>::distance(const Segment2<Real>& segment) const
+{
+    return segment.distance(*this);
+}
+
+template <typename Real>
 std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
@@ -1720,14 +1802,6 @@ template <typename Real>
 constexpr bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
-}
-
-template <typename Real>
-constexpr bool Line2<Real>::separates(const Triangle2<Real>& triangle1, const Triangle2<Real>& triangle2) const
-{
-    const Vector3<Real> proj1 = triangle1.project_scalars(*this);
-    const Vector3<Real> proj2 = triangle2.project_scalars(*this);
-    return proj1.max() < proj2.min() || proj2.max() < proj1.min();
 }
 
 template <typename Real>
@@ -1764,6 +1838,12 @@ template <typename Real>
 constexpr bool Ray2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
+}
+
+template <typename Real>
+Real Ray2<Real>::distance(const Segment2<Real>& segment) const
+{
+    return segment.distance(*this);
 }
 
 template <typename Real>
