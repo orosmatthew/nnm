@@ -164,12 +164,24 @@ inline void geom_tests()
 
         test_section("distance(const Ray2&)");
         {
-            // TODO
+            constexpr nnm::Ray2f ray2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
+            ASSERT(nnm::approx_zero(nnm::Line2f::axis_x_offset(1.0f).distance(ray2)));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 2.0f, 1.0f }, { 1.0f, 0.0f }).distance(ray2), 1.4142135624f));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, -1.0f }).distance(ray2), 1.4142135624f));
         }
 
         test_section("distance(const Segment2&)");
         {
-            // TODO
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr auto result = nnm::Line2f::axis_x_offset(2.0f).distance(s1);
+            ASSERT(nnm::approx_zero(result));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 0.0f, 3.0f }, { 1.0f, 2.0f }).distance(s1), 1.4142135624f));
+            ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(2.0f).distance(s1), 1.0f));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 2.0f, 0.0f }, { 0.0f, 3.0f }).distance(s1), 1.9414506868f));
         }
 
         test_section("approx_parallel(const Line2&)");
@@ -450,16 +462,6 @@ inline void geom_tests()
             ASSERT(line2.approx_coincident(line3));
         }
 
-        test_section("separates");
-        {
-            // TODO: Fix
-            // constexpr nnm::Triangle2f t1 { { 2.0f, -1.0f }, { 3.0f, -3.0f }, { 1.0f, -2.0f } };
-            // constexpr nnm::Triangle2f t2 { { 4.0f, -3.0f }, { 4.0f, 0.0f }, { 3.0f, -2.0f } };
-            // constexpr nnm::Line2f l1 { { 2.0f, 1.0f }, { 0.2747211279f, -0.9615239476f } };
-            // constexpr auto result = l1.separates(t1, t2);
-            // ASSERT(result);
-        }
-
         constexpr nnm::Line2f line3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
 
         test_section("translate");
@@ -611,7 +613,18 @@ inline void geom_tests()
 
         test_section("distance(const Segment2&)");
         {
-            // TODO
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            ASSERT(nnm::approx_zero(nnm::Ray2f { { 1.0f, 2.0f }, { -1.0f, 0.0f } }.distance(s1)));
+            ASSERT(nnm::approx_equal(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, -1.0f } }.distance(s1), 1.0f));
+            ASSERT(nnm::approx_equal(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, 1.0f } }.distance(s1), 3.60555127f));
+            ASSERT(nnm::approx_equal(nnm::Ray2f { { 1.0f, 5.0f }, { -1.0f, 0.0f } }.distance(s1), 1.0f))
+            ASSERT(nnm::approx_equal(nnm::Ray2f { { 1.0f, 5.0f }, { 1.0f, 0.0f } }.distance(s1), 3.88290137f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 1.0f, 2.0f }, { 3.0f, -1.0f }).distance(s1), 2.21880078f))
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 3.0f, -2.0f }, { 4.0f, -3.0f }).distance(s1), 2.0f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ -4.0f, 5.0f }, { -5.0f, 4.0f }).distance(s1), 1.4142135624f));
         }
 
         test_section("approx_parallel(const Line2&)");
@@ -1054,6 +1067,12 @@ inline void geom_tests()
 
         test_section("distance(const Segment2&)");
         {
+            ASSERT(nnm::approx_zero(s1.distance(s1)));
+            ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { -1.0f, 4.0f }, { 1.0f, 1.0f } }), 1.66410059f));
+            ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { 1.0f, 5.0f }, { 1.0f, 1.0f } }), 1.66410059f));
+            ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { 3.0f, 3.0f }, { 2.0f, -2.0f } }), 1.0f));
+            ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { -4.0f, 5.0f }, { -5.0f, 7.0f } }), 1.4142135624f));
+            ASSERT(nnm::approx_zero(s1.distance(nnm::Segment2f { { -1.0f, 3.0f }, { -2.0f, 0.0f } })));
         }
 
         test_section("signed_distance");
