@@ -2016,5 +2016,15 @@ inline void geom_tests()
                 result6.has_value() && (*result6)[0].approx_equal({ -3.7272727f, 0.36363636f })
                 && (*result6)[1].approx_equal({ -0.33333333f, 1.3333333f }));
         }
+
+        test_section("approx_equilateral");
+        {
+            // TODO
+        }
+
+        test_section("approx_right");
+        {
+            // TODO
+        }
     }
 }
