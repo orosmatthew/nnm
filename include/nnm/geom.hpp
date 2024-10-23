@@ -116,14 +116,14 @@ public:
         return approx_equal(t.x, t.y);
     }
 
-    [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
-    {
-        return abs(direction.cross(point - origin));
-    }
-
     [[nodiscard]] constexpr Real signed_distance(const Vector2<Real>& point) const
     {
         return direction.cross(point - origin);
+    }
+
+    [[nodiscard]] constexpr Real distance(const Vector2<Real>& point) const
+    {
+        return abs(signed_distance(point));
     }
 
     [[nodiscard]] constexpr Real distance(const Line2& other) const
@@ -214,34 +214,6 @@ public:
             return std::nullopt;
         }
         return unchecked_slope();
-    }
-
-    [[nodiscard]] constexpr Real unchecked_intercept_x() const
-    {
-        const Real t = -origin.y / direction.y;
-        return origin.x + direction.x * t;
-    }
-
-    [[nodiscard]] constexpr std::optional<Real> intercept_x() const
-    {
-        if (direction.y == static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        return unchecked_intercept_x();
-    }
-
-    [[nodiscard]] constexpr Real unchecked_intercept_y() const
-    {
-        const Real t = -origin.x / direction.x;
-        return origin.y + direction.y * t;
-    }
-
-    [[nodiscard]] constexpr std::optional<Real> intercept_y() const
-    {
-        if (direction.x == static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        return unchecked_intercept_y();
     }
 
     [[nodiscard]] constexpr bool approx_coincident(const Line2& other) const
@@ -335,11 +307,6 @@ public:
     {
     }
 
-    static Ray2 from_point_slope(const Vector2<Real>& point, const Real slope)
-    {
-        return { point, Vector2<Real> { static_cast<Real>(1), slope }.normalize() };
-    }
-
     static Ray2 from_point_to_point(const Vector2<Real>& from, const Vector2<Real>& to)
     {
         return { from, from.direction(to) };
@@ -360,13 +327,18 @@ public:
         return approx_equal(t.x, t.y);
     }
 
-    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr Real signed_distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
         if (diff.dot(direction) < static_cast<Real>(0)) {
             return diff.length();
         }
-        return abs(direction.cross(diff));
+        return direction.cross(diff);
+    }
+
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        return abs(signed_distance(point));
     }
 
     [[nodiscard]] Real distance(const Line2<Real>& line) const
@@ -628,6 +600,25 @@ public:
         return dot >= static_cast<Real>(0) && dot <= length_sqrd;
     }
 
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = to - from;
+        const Vector2<Real> diff = point - from;
+        Real t = diff.dot(dir) / dir.dot(dir);
+        Vector2<Real> closest;
+        if (t < static_cast<Real>(0)) {
+            closest = from;
+        }
+        else if (t > static_cast<Real>(1)) {
+            closest = to;
+        }
+        else {
+            closest = from + dir * t;
+        }
+        const Real dist = (point - closest).length();
+        return sign(dir.cross(point - from)) * dist;
+    }
+
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = to - from;
@@ -674,26 +665,6 @@ public:
         const Real d3 = other.distance(from);
         const Real d4 = other.distance(to);
         return min(d1, min(d2, min(d3, d4)));
-    }
-
-    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
-    {
-        const Vector2<Real> dir = to - from;
-        const Vector2<Real> diff = point - from;
-        Real t = diff.dot(dir) / dir.dot(dir);
-        Vector2<Real> closest;
-        if (t < static_cast<Real>(0)) {
-            closest = from;
-        }
-        else if (t > static_cast<Real>(1)) {
-            closest = to;
-        }
-        else {
-            closest = from + dir * t;
-        }
-        const Real dist = (point - closest).length();
-        const Real sign = dir.cross(point - from) < static_cast<Real>(0) ? static_cast<Real>(-1) : static_cast<Real>(1);
-        return sign * dist;
     }
 
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
@@ -1171,28 +1142,6 @@ public:
         const Real dist = sqrt(dist_sqrd);
         const Real depth = radius_sum - dist;
         return diff.normalize() * depth;
-    }
-
-    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2& other) const
-    {
-        const Vector2<Real> centers_diff = other.center - center;
-        const Real centers_dist = centers_diff.length();
-        const Real radius_sum = radius + other.radius;
-        const Real radius_diff = abs(radius - other.radius);
-        if (centers_dist == static_cast<Real>(0) && radius_diff == static_cast<Real>(0)) {
-            return std::nullopt;
-        }
-        if (centers_dist > radius_sum || centers_dist < radius_diff) {
-            return std::nullopt;
-        }
-        const Real center_intersections_dist
-            = (sqrd(radius) - sqrd(other.radius) + sqrd(centers_dist)) / (static_cast<Real>(2) * centers_dist);
-        const Vector2<Real> intersections_midpoint = center + centers_diff * (center_intersections_dist / centers_dist);
-        const Real half_intersections_dist = sqrt(sqrd(radius) - sqrd(center_intersections_dist));
-        const Vector2<Real> offset = centers_diff.arbitrary_perpendicular().normalize() * half_intersections_dist;
-        std::array<Vector2<Real>, 2> points { intersections_midpoint + offset, intersections_midpoint - offset };
-        std::sort(points.begin(), points.end());
-        return points;
     }
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
