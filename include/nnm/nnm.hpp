@@ -158,6 +158,19 @@ constexpr int sqrd(const int value)
     return value * value;
 }
 
+// TODO: test
+template <typename Real = float>
+constexpr Real mod(const Real a, const Real b)
+{
+    return std::fmod(a, b);
+}
+
+// TODO: test
+inline int mod(const int a, const int b)
+{
+    return a % b;
+}
+
 template <typename Real = float>
 Real floor(const Real value)
 {
@@ -502,14 +515,19 @@ public:
         return { static_cast<Real>(1) / x, static_cast<Real>(1) / y };
     }
 
-    [[nodiscard]] Real angle(const Vector2& to) const
+    [[nodiscard]] Real angle_between(const Vector2& other) const
     {
-        const Real lengths = length() * to.length();
+        const Real lengths = length() * other.length();
         if (lengths == 0) {
             return static_cast<Real>(0);
         }
-        const Real cos_angle = nnm::clamp(dot(to) / lengths, static_cast<Real>(-1), static_cast<Real>(1));
+        const Real cos_angle = nnm::clamp(dot(other) / lengths, static_cast<Real>(-1), static_cast<Real>(1));
         return acos(cos_angle);
+    }
+
+    [[nodiscard]] Real angle_to(const Vector2& to) const
+    {
+        return atan2(to.y - y, to.x - x);
     }
 
     [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const

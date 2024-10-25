@@ -28,6 +28,10 @@ class Segment2;
 using Segment2f = Segment2<float>;
 using Segment2d = Segment2<double>;
 template <typename Real>
+class Arc2;
+using Arc2f = Arc2<float>;
+using Arc2d = Arc2<double>;
+template <typename Real>
 class Circle2;
 using Circle2f = Circle2<float>;
 using Circle2d = Circle2<double>;
@@ -939,6 +943,115 @@ public:
             return from < other.from;
         }
         return to < other.to;
+    }
+};
+
+template <typename Real>
+class Arc2 {
+public:
+    Vector2<Real> from;
+    Vector2<Real> pivot;
+    Real angle;
+
+    // TODO: test
+    constexpr Arc2()
+        : from { Vector2<Real>::zero() }
+        , pivot { Vector2<Real>::zero() }
+        , angle { static_cast<Real>(0) }
+    {
+    }
+
+    // TODO: test
+    constexpr Arc2(const Vector2<Real>& from, const Vector2<Real>& pivot, const Real angle)
+        : from { from }
+        , pivot { pivot }
+        , angle { angle }
+    {
+    }
+
+    // TODO: test
+    [[nodiscard]] Arc2 normalize_angle() const
+    {
+        const Real new_angle = mod(angle, static_cast<Real>(2) * pi<Real>());
+        return { from, pivot, new_angle };
+    }
+
+    // TODO: test
+    [[nodiscard]] Real radius() const
+    {
+        return pivot.distance(from);
+    }
+
+    // TODO: test
+    [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
+    {
+        if (!approx_equal(point.distance(pivot), radius())) {
+            return false;
+        }
+        const Real from_angle = pivot.angle_to(from);
+        const Real point_angle = pivot.angle_to(point);
+        const Real to_angle = mod(from_angle + angle, static_cast<Real>(2) * pi<Real>());
+        if (from_angle <= to_angle) {
+            return from_angle <= point_angle && point_angle <= to_angle;
+        }
+        return from_angle <= point_angle || point_angle <= to_angle;
+    }
+
+    // TODO: test
+    [[nodiscard]] Vector2<Real> to() const
+    {
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real r = radius();
+        return { pivot.x + cos(from_angle + angle) * r, pivot.y + sin(from_angle + angle) * r };
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = point.direction(pivot);
+        const Vector2<Real> proj = pivot + dir * radius();
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real proj_angle = mod(pivot.angle_to(proj) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const bool in_arc = from_angle < to_angle
+            ? from_angle <= proj_angle && proj_angle <= to_angle
+            : from_angle <= proj_angle || proj_angle <= to_angle;
+        if (in_arc) {
+            return point.distance(proj);
+        }
+        const Real from_dist = point.distance(from);
+        const Real to_dist = point.distance(to());
+        return min(from_dist, to_dist);
+    }
+
+    // TODO: test
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        const Real dist = distance(point);
+        const Vector2<Real> from_point = point - from;
+        const Vector2<Real> from_to = to() - from;
+        const Real cross = from_to.cross(from_point);
+        return cross < static_cast<Real>(0) ? -dist : dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Line2<Real>& line) const
+    {
+        const Real proj_scalar = (pivot - line.origin).dot(line.direction);
+        const Vector2<Real> closest_point_on_line = line.origin + line.direction * proj_scalar;
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real proj_angle = mod(pivot.angle_to(closest_point_on_line) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const bool in_arc = from_angle < to_angle
+            ? from_angle <= proj_angle && proj_angle <= to_angle
+            : from_angle <= proj_angle || proj_angle <= to_angle;
+        if (in_arc) {
+            return pivot.distance(closest_point_on_line) - radius();
+        }
+        return min(line.distance(from), line.distance(to()));
     }
 };
 

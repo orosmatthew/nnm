@@ -744,11 +744,18 @@ inline void nnm_tests()
             ASSERT(result.approx_equal(nnm::Vector2(1.0f / 2.0f, 1.0f / 3.0f)));
         }
 
-        test_section("angle");
+        test_section("angle_between");
         {
             nnm::Vector2 v1(2.0f, -3.0f);
             nnm::Vector2 v2(-4.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v1.angle(v2), 3.05485f))
+            ASSERT(nnm::approx_equal(v1.angle_between(v2), 3.05485f))
+        }
+
+        test_section("angle_to");
+        {
+            nnm::Vector2 v1(2.0f, -3.0f);
+            nnm::Vector2 v2(-4.0f, 5.0f);
+            ASSERT(nnm::approx_equal(v1.angle_to(v2), 2.21429744f));
         }
 
         test_section("approx_parallel");
