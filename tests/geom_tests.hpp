@@ -2019,12 +2019,21 @@ inline void geom_tests()
 
         test_section("approx_equilateral");
         {
-            // TODO
+            constexpr auto result = tri1.approx_equilateral();
+            ASSERT_FALSE(result);
+            constexpr nnm::Triangle2f tri3 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+            ASSERT(tri3.approx_equilateral());
+            constexpr nnm::Triangle2f tri4 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
+            ASSERT_FALSE(tri4.approx_equilateral());
         }
 
         test_section("approx_right");
         {
-            // TODO
+            ASSERT_FALSE(tri1.approx_right())
+            constexpr nnm::Triangle2f tri3 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+            ASSERT_FALSE(tri3.approx_right());
+            constexpr nnm::Triangle2f tri4 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
+            ASSERT(tri4.approx_right());
         }
     }
 }

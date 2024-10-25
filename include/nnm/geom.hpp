@@ -1488,7 +1488,7 @@ public:
         return points;
     }
 
-    [[nodiscard]] bool approx_equilateral() const
+    [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
             && approx_equal(edge(1).length_sqrd(), edge(2).length_sqrd())
@@ -1497,7 +1497,7 @@ public:
 
     [[nodiscard]] bool approx_right() const
     {
-        constexpr Real right_angle = pi() / static_cast<Real>(4);
+        constexpr Real right_angle = pi() / static_cast<Real>(2);
         return approx_equal(angle(0), right_angle) || approx_equal(angle(1), right_angle)
             || approx_equal(angle(2), right_angle);
     }
