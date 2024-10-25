@@ -125,6 +125,27 @@ inline void geom_tests()
             ASSERT(line2.direction.approx_equal(nnm::Vector2f { -10.0f, 8.0f }.normalize()));
         }
 
+        constexpr nnm::Line2f line2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
+
+        test_section("approx_collinear(const Ray2&)");
+        {
+            constexpr auto result
+                = line2.approx_collinear(nnm::Ray2f { { 5.0f, 2.0f }, { -0.70710678f, -0.70710678f } });
+            ASSERT(result);
+            ASSERT_FALSE(line1.approx_collinear(nnm::Ray2f { { 5.0f, 2.0f }, { -0.70710678f, -0.70710678f } }));
+            ASSERT_FALSE(line2.approx_collinear(nnm::Ray2f { { 5.0f, 2.0f }, { 0.0f, 1.0f } }));
+            ASSERT_FALSE(line2.approx_collinear(nnm::Ray2f { { 3.0f, 3.0f }, { -0.70710678f, -0.70710678f } }));
+        }
+
+        test_section("approx_collinear(const Segment2&)");
+        {
+            constexpr auto result = line2.approx_collinear(nnm::Segment2f { { 4.0f, 1.0f }, { 6.0f, 3.0f } });
+            ASSERT(result);
+            ASSERT_FALSE(line1.approx_collinear(nnm::Segment2f { { 4.0f, 1.0f }, { 6.0f, 3.0f } }));
+            ASSERT_FALSE(line2.approx_collinear(nnm::Segment2f { { 4.0f, 1.0f }, { 6.0f, 5.0f } }));
+            ASSERT_FALSE(line2.approx_collinear(nnm::Segment2f { { 4.0f, 3.0f }, { 6.0f, 5.0f } }));
+        }
+
         test_section("approx_contains");
         {
             constexpr auto result = line1.approx_contains({ 1.0f, -2.0f });
@@ -132,8 +153,6 @@ inline void geom_tests()
             ASSERT(line1.approx_contains({ 0.999999f, -2.0000001f }));
             ASSERT_FALSE(line1.approx_contains({ 20.0f, 2.0f }));
         }
-
-        constexpr nnm::Line2f line2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
 
         test_section("distance");
         {
@@ -526,6 +545,51 @@ inline void geom_tests()
             ASSERT(ray2.direction.approx_equal(nnm::Vector2f { -10.0f, 8.0f }.normalize()));
         }
 
+        constexpr nnm::Ray2f ray2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
+
+        test_section("approx_collinear(const Vector2&)");
+        {
+            constexpr auto result = ray2.approx_collinear({ 5.0f, 2.0f });
+            ASSERT(result);
+            ASSERT(ray2.approx_collinear({ 2.0f, -1.0f }));
+            ASSERT_FALSE(ray1.approx_collinear({ 5.0f, 2.0f }));
+        }
+
+        test_section("approx_collinear(const Line2&)");
+        {
+            constexpr nnm::Line2f line2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
+            constexpr auto result
+                = nnm::Ray2f { { 5.0f, 2.0f }, { -0.70710678f, -0.70710678f } }.approx_collinear(line2);
+            ASSERT(result);
+            constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
+            ASSERT_FALSE(nnm::Ray2f({ 5.0f, 2.0f }, { -0.70710678f, -0.70710678f }).approx_collinear(line1));
+            ASSERT_FALSE(nnm::Ray2f({ 5.0f, 2.0f }, { 0.0f, 1.0f }).approx_collinear(line2));
+            ASSERT_FALSE(nnm::Ray2f({ 3.0f, 3.0f }, { -0.70710678f, -0.70710678f }).approx_collinear(line2));
+        }
+
+        test_section("approx_collinear(const Ray2&)");
+        {
+            constexpr auto result
+                = ray2.approx_collinear(nnm::Ray2f { { 6.0f, 3.0f }, { -0.70710678f, -0.70710678f } });
+            ASSERT(result);
+            ASSERT(ray2.approx_collinear(nnm::Ray2f { { 2.0f, -1.0f }, { -0.70710678f, -0.70710678f } }))
+            ASSERT_FALSE(ray2.approx_collinear(ray1));
+            ASSERT_FALSE(ray2.approx_collinear(nnm::Ray2f { { 2.0f, -1.0f }, { 0.70710678f, -0.70710678f } }));
+            ASSERT_FALSE(ray2.approx_collinear(nnm::Ray2f { { 2.0f, -3.0f }, { -0.70710678f, -0.70710678f } }));
+        }
+
+        test_section("approx_collinear(const Segment2&)");
+        {
+            constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+            constexpr nnm::Ray2f r1 { { 3.0f, -5.0f }, { -0.5547f, 0.83205f } };
+            constexpr auto result = r1.approx_collinear(s1);
+            ASSERT(result);
+            constexpr nnm::Ray2f r2 { { 0.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            ASSERT(r2.approx_collinear(s1));
+            constexpr nnm::Ray2f r3 { { 3.0f, -0.5f }, { 0.5547f, -0.83205f } };
+            ASSERT_FALSE(r3.approx_collinear(s1));
+        }
+
         test_section("approx_contains");
         {
             constexpr auto result = ray1.approx_contains({ 1.0f, -2.0f });
@@ -534,8 +598,6 @@ inline void geom_tests()
             ASSERT_FALSE(ray1.approx_contains({ 20.0f, 2.0f }));
             ASSERT_FALSE(ray1.approx_contains({ 2.25f, -5.0f }));
         }
-
-        constexpr nnm::Ray2f ray2 { { 3.0f, 0.0f }, { 0.70710678f, 0.70710678f } };
 
         test_section("signed_distance(const Vector2&)");
         {

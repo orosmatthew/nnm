@@ -110,6 +110,10 @@ public:
         return { origin, direction.normalize() };
     }
 
+    [[nodiscard]] constexpr bool approx_collinear(const Ray2<Real>& ray) const;
+
+    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& segment) const;
+
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> t = (point - origin) / direction;
@@ -316,6 +320,23 @@ public:
     {
         return { origin, direction.normalize() };
     }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
+    {
+        return Line2<Real>::from_ray(*this).approx_contains(point);
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Line2<Real>& line) const
+    {
+        return Line2<Real>::from_ray(*this).approx_coincident(line);
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Ray2& other) const
+    {
+        return Line2<Real>::from_ray(*this).approx_coincident(Line2<Real>::from_ray(other));
+    }
+
+    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& segment) const;
 
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
@@ -1726,6 +1747,18 @@ Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 }
 
 template <typename Real>
+constexpr bool Line2<Real>::approx_collinear(const Ray2<Real>& ray) const
+{
+    return ray.approx_collinear(*this);
+}
+
+template <typename Real>
+constexpr bool Line2<Real>::approx_collinear(const Segment2<Real>& segment) const
+{
+    return segment.approx_collinear(*this);
+}
+
+template <typename Real>
 Real Line2<Real>::distance(const Ray2<Real>& ray) const
 {
     return ray.distance(*this);
@@ -1801,6 +1834,12 @@ template <typename Real>
 constexpr bool Ray2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
+}
+
+template <typename Real>
+constexpr bool Ray2<Real>::approx_collinear(const Segment2<Real>& segment) const
+{
+    return segment.approx_collinear(*this);
 }
 
 template <typename Real>

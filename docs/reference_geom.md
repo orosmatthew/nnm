@@ -51,6 +51,8 @@ static Line2 from_point_slope(const Vector2& point, Real slope);
 Line2 parallel_containing(const Vector2& point) const;
 Line2 arbitrary_perpendicular_containing(const Vector2& point) const;
 Line2 normalize() const;
+bool approx_collinear(const Ray2& ray) const;
+bool approx_collinear(const Segment2& segment) const;
 bool approx_contains(const Vector2& point) const;
 Real signed_distance(const Vector2& point) const;
 Real distance(const Vector2& point) const;
@@ -131,6 +133,10 @@ static Ray2 from_point_to_point(const Vector2& from, const Vector2& to);
 
 ```cpp
 Ray2 normalize() const;
+bool approx_collinear(const Vector2& point) const;
+bool approx_collinear(const Line2& line) const;
+bool approx_collinear(const Ray2& other) const;
+bool approx_collinear(const Segment2& segment) const;
 bool approx_contains(const Vector2& point) const;
 Real signed_distance(const Vector2& point) const;
 Real distance(const Vector2& point) const;
@@ -366,5 +372,6 @@ std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
 bool approx_equilateral() const;
+bool approx_right() const;
 ```
 
