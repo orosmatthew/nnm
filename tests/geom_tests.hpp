@@ -1450,6 +1450,70 @@ inline void geom_tests()
         }
     }
 
+    test_case("Arc2");
+    {
+        test_section("Arc2()");
+        {
+            constexpr nnm::Arc2f a {};
+            ASSERT(a.from == nnm::Vector2f::zero());
+            ASSERT(a.pivot == nnm::Vector2f::zero());
+            ASSERT(a.angle == 0.0f);
+        }
+
+        test_section("Arc2(const Vector2&, const Vector2&, Real)");
+        {
+            constexpr nnm::Arc2f a { { -3.0f, 4.0f }, { 1.0f, -2.0f }, 5.0f };
+            ASSERT(a.pivot == nnm::Vector2f(-3.0f, 4.0f));
+            ASSERT(a.from == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(a.angle == 5.0f);
+        }
+
+        constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, 5.0f * nnm::pi() / 2.0f };
+
+        test_section("normalize_angle");
+        {
+            const auto result = arc1.normalize_angle();
+            ASSERT(result.approx_equal({ arc1.pivot, arc1.from, nnm::pi() / 2.0f }));
+        }
+
+        test_section("radius");
+        {
+            ASSERT(nnm::approx_equal(arc1.radius(), 7.21110255f));
+        }
+
+        test_section("approx_contains");
+        {
+            ASSERT(arc1.approx_contains({ 4.006296f, 2.2935955f }));
+            ASSERT_FALSE(arc1.approx_contains({ 0.0f, 4.0f }));
+            ASSERT_FALSE(arc1.approx_contains({ -9.56f, 7.0f }));
+        }
+
+        test_section("to");
+        {
+            ASSERT(arc1.to().approx_equal({ 3.0f, 8.0f }));
+        }
+
+        test_section("distance");
+        {
+            ASSERT(nnm::approx_zero(arc1.distance({ 4.006296f, 2.2935955f })));
+            ASSERT(nnm::approx_equal(arc1.distance(arc1.pivot), 7.21110255f));
+            ASSERT(nnm::approx_equal(arc1.distance({ 1.0f, 5.0f }), 3.0879969f));
+            ASSERT(nnm::approx_equal(arc1.distance({ 7.0f, 3.0f }), 2.83877307f));
+            ASSERT(nnm::approx_equal(arc1.distance({ 1.0f, -5.0f }), 3.0f));
+            ASSERT(nnm::approx_equal(arc1.distance({ 0.0f, 8.0f }), 3.0f));
+        }
+
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_zero(arc1.signed_distance({ 4.006296f, 2.2935955f })));
+            ASSERT(nnm::approx_equal(arc1.signed_distance(arc1.pivot), -7.21110255f));
+            ASSERT(nnm::approx_equal(arc1.signed_distance({ 1.0f, 5.0f }), -3.0879969f));
+            ASSERT(nnm::approx_equal(arc1.signed_distance({ 7.0f, 3.0f }), 2.83877307f));
+            ASSERT(nnm::approx_equal(arc1.signed_distance({ 1.0f, -5.0f }), 3.0f));
+            ASSERT(nnm::approx_equal(arc1.signed_distance({ 0.0f, 8.0f }), -3.0f));
+        }
+    }
+
     test_case("Circle2");
     {
         test_section("Circle2()");

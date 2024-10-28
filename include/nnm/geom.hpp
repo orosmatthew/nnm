@@ -949,43 +949,38 @@ public:
 template <typename Real>
 class Arc2 {
 public:
-    Vector2<Real> from;
     Vector2<Real> pivot;
+    Vector2<Real> from;
     Real angle;
 
-    // TODO: test
     constexpr Arc2()
-        : from { Vector2<Real>::zero() }
-        , pivot { Vector2<Real>::zero() }
+        : pivot { Vector2<Real>::zero() }
+        , from { Vector2<Real>::zero() }
         , angle { static_cast<Real>(0) }
     {
     }
 
-    // TODO: test
-    constexpr Arc2(const Vector2<Real>& from, const Vector2<Real>& pivot, const Real angle)
-        : from { from }
-        , pivot { pivot }
+    constexpr Arc2(const Vector2<Real>& pivot, const Vector2<Real>& from, const Real angle)
+        : pivot { pivot }
+        , from { from }
         , angle { angle }
     {
     }
 
-    // TODO: test
-    [[nodiscard]] Arc2 normalize_angle() const
+    [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
         const Real new_angle = mod(angle, static_cast<Real>(2) * pi<Real>());
-        return { from, pivot, new_angle };
+        return { pivot, from, new_angle };
     }
 
-    // TODO: test
     [[nodiscard]] Real radius() const
     {
         return pivot.distance(from);
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
     {
-        if (!approx_equal(point.distance(pivot), radius())) {
+        if (!nnm::approx_equal(point.distance_sqrd(pivot), sqrd(radius()))) {
             return false;
         }
         const Real from_angle = pivot.angle_to(from);
@@ -997,7 +992,6 @@ public:
         return from_angle <= point_angle || point_angle <= to_angle;
     }
 
-    // TODO: test
     [[nodiscard]] Vector2<Real> to() const
     {
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
@@ -1006,10 +1000,12 @@ public:
         return { pivot.x + cos(from_angle + angle) * r, pivot.y + sin(from_angle + angle) * r };
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
-        const Vector2<Real> dir = point.direction(pivot);
+        if (point == pivot) {
+            return radius();
+        }
+        const Vector2<Real> dir = pivot.direction(point);
         const Vector2<Real> proj = pivot + dir * radius();
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
@@ -1026,14 +1022,13 @@ public:
         return min(from_dist, to_dist);
     }
 
-    // TODO: test
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const Real dist = distance(point);
         const Vector2<Real> from_point = point - from;
         const Vector2<Real> from_to = to() - from;
         const Real cross = from_to.cross(from_point);
-        return cross < static_cast<Real>(0) ? -dist : dist;
+        return cross <= static_cast<Real>(0) ? dist : -dist;
     }
 
     // TODO: test
@@ -1052,6 +1047,13 @@ public:
             return pivot.distance(closest_point_on_line) - radius();
         }
         return min(line.distance(from), line.distance(to()));
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
+    {
+        return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
+            && nnm::approx_equal(angle, other.angle);
     }
 };
 

@@ -160,13 +160,13 @@ constexpr int sqrd(const int value)
 
 // TODO: test
 template <typename Real = float>
-constexpr Real mod(const Real a, const Real b)
+Real mod(const Real a, const Real b)
 {
     return std::fmod(a, b);
 }
 
 // TODO: test
-inline int mod(const int a, const int b)
+constexpr int mod(const int a, const int b)
 {
     return a % b;
 }
