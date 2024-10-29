@@ -1512,6 +1512,30 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc1.signed_distance({ 1.0f, -5.0f }), 3.0f));
             ASSERT(nnm::approx_equal(arc1.signed_distance({ 0.0f, 8.0f }), -3.0f));
         }
+
+        test_section("distance");
+        {
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f))));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Line2f::axis_y_offset(6.0f)), 1.788897449f));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Line2f::from_points({ 0.0f, 0.0f }, { 2.0f, 6.0f })), 0.316227766f));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Line2f::axis_y_offset(-8.0f)), 9.0f));
+        }
+
+        test_section("intersects");
+        {
+            ASSERT(arc1.intersects(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f)));
+            ASSERT_FALSE(arc1.intersects(nnm::Line2f::axis_y()));
+            ASSERT(arc1.intersects(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 2.5f, 4.0f })));
+            ASSERT_FALSE(arc1.intersects(nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f })));
+        }
+
+        test_section("approx_equal");
+        {
+            ASSERT(arc1.approx_equal(arc1));
+            ASSERT_FALSE(arc1.approx_equal({ { 3.0f, -10.0f }, { 1.0f, 200.0f }, 3.0f }));
+            ASSERT(arc1.approx_equal({ { -3.0000001f, 4.0f }, { 0.999999f, -2.0f }, 5.000000001f * nnm::pi() / 2.0f }));
+        }
     }
 
     test_case("Circle2");
