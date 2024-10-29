@@ -1522,12 +1522,28 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc1.distance(nnm::Line2f::axis_y_offset(-8.0f)), 9.0f));
         }
 
-        test_section("intersects");
+        test_section("intersects(const Line2&)");
         {
             ASSERT(arc1.intersects(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f)));
             ASSERT_FALSE(arc1.intersects(nnm::Line2f::axis_y()));
-            ASSERT(arc1.intersects(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 2.5f, 4.0f })));
+            ASSERT(arc1.intersects(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f })));
             ASSERT_FALSE(arc1.intersects(nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f })));
+        }
+
+        test_section("intersections(const Line2&)");
+        {
+            const auto i1 = arc1.intersections(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f));
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ 3.37339735f, 7.37339735f })
+                && i1.value()[1].approx_equal({ 3.37339735f, 7.37339735f }));
+            const auto i2 = arc1.intersections(nnm::Line2f::axis_y());
+            ASSERT_FALSE(i2.has_value());
+            const auto i3 = arc1.intersections(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f }));
+            ASSERT(
+                i3.has_value() && i3.value()[0].approx_equal({ 1.614710072f, -1.5411597f })
+                && i3.value()[1].approx_equal({ 3.67940757f, 6.7176303f }));
+            const auto i4 = arc1.intersections(nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f }));
+            ASSERT_FALSE(i4.has_value());
         }
 
         test_section("approx_equal");

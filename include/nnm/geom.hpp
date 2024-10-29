@@ -1081,6 +1081,46 @@ public:
         return in_arc1 || in_arc2;
     }
 
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
+    {
+        const Real r = radius();
+        const Vector2<Real> pivot_origin_dir = line.origin - pivot;
+        const Real twice_dot_dir = static_cast<Real>(2) * pivot_origin_dir.dot(line.direction);
+        const Real dot_minus_r_sqrd = pivot_origin_dir.dot(pivot_origin_dir) - sqrd(r);
+        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * dot_minus_r_sqrd;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real sqrt_discriminant = sqrt(discriminant);
+        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
+        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
+        const Vector2<Real> intersection1 = line.origin + line.direction * t1;
+        const Vector2<Real> intersection2 = line.origin + line.direction * t2;
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const Real intersection1_angle = mod(pivot.angle_to(intersection1) + two_pi, two_pi);
+        const Real intersection2_angle = mod(pivot.angle_to(intersection2) + two_pi, two_pi);
+        const bool in_arc1 = from_angle < to_angle
+            ? from_angle <= intersection1_angle && intersection1_angle <= to_angle
+            : from_angle <= intersection1_angle || intersection1_angle <= to_angle;
+        const bool in_arc2 = from_angle < to_angle
+            ? from_angle <= intersection2_angle && intersection2_angle <= to_angle
+            : from_angle <= intersection2_angle || intersection2_angle <= to_angle;
+        if (in_arc1 && in_arc2) {
+            std::array result { intersection1, intersection2 };
+            std::sort(result.begin(), result.end());
+            return result;
+        }
+        if (in_arc1) {
+            return std::array { intersection1, intersection1 };
+        }
+        if (in_arc2) {
+            return std::array { intersection2, intersection2 };
+        }
+        return std::nullopt;
+    }
+
     // TODO: test
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
