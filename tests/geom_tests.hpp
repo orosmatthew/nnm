@@ -1559,7 +1559,6 @@ inline void geom_tests()
             ASSERT(arc1.intersects(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f })));
         }
 
-        // TODO: finish
         test_section("intersections(const Ray2&)");
         {
             const auto i1 = arc1.intersections(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }));
