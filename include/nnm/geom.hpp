@@ -1121,7 +1121,74 @@ public:
         return std::nullopt;
     }
 
-    // TODO: test
+    [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
+    {
+        const Real r = radius();
+        const Vector2<Real> pivot_origin_dir = ray.origin - pivot;
+        const Real twice_dot_dir = static_cast<Real>(2) * pivot_origin_dir.dot(ray.direction);
+        const Real dot_minus_r_sqrd = pivot_origin_dir.dot(pivot_origin_dir) - sqrd(r);
+        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * dot_minus_r_sqrd;
+        if (discriminant < static_cast<Real>(0)) {
+            return false;
+        }
+        const Real sqrt_discriminant = sqrt(discriminant);
+        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
+        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const auto in_arc = [&](const Real t) -> bool {
+            const Vector2<Real> intersection = ray.origin + ray.direction * t;
+            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            return from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle;
+        };
+        const bool in_arc1 = t1 > static_cast<Real>(0) ? in_arc(t1) : false;
+        const bool in_arc2 = t2 > static_cast<Real>(0) ? in_arc(t2) : false;
+        return in_arc1 || in_arc2;
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
+    {
+        const Real r = radius();
+        const Vector2<Real> pivot_origin_dir = ray.origin - pivot;
+        const Real twice_dot_dir = static_cast<Real>(2) * pivot_origin_dir.dot(ray.direction);
+        const Real dot_minus_r_sqrd = pivot_origin_dir.dot(pivot_origin_dir) - sqrd(r);
+        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * dot_minus_r_sqrd;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real sqrt_discriminant = sqrt(discriminant);
+        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
+        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const auto intersection = [&](const Real t) -> std::optional<Vector2<Real>> {
+            const Vector2<Real> point = ray.origin + ray.direction * t;
+            const Real intersection_angle = mod(pivot.angle_to(point) + two_pi, two_pi);
+            if (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                      : from_angle <= intersection_angle || intersection_angle <= to_angle) {
+                return point;
+            }
+            return std::nullopt;
+        };
+        const std::optional<Vector2<Real>> point1 = t1 > static_cast<Real>(0) ? intersection(t1) : std::nullopt;
+        const std::optional<Vector2<Real>> point2 = t2 > static_cast<Real>(0) ? intersection(t2) : std::nullopt;
+        if (point1.has_value() && point2.has_value()) {
+            std::array result = { point1.value(), point2.value() };
+            std::sort(result.begin(), result.end());
+            return result;
+        }
+        if (point1.has_value()) {
+            return std::array { point1.value(), point1.value() };
+        }
+        if (point2.has_value()) {
+            return std::array { point2.value(), point2.value() };
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
         return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
