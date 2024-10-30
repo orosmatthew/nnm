@@ -162,11 +162,32 @@ constexpr int sqrd(const int value)
 template <typename Real = float>
 Real mod(const Real a, const Real b)
 {
+    const Real result = std::fmod(a, b);
+    if (result < static_cast<Real>(0)) {
+        return result + b;
+    }
+    return result;
+}
+
+// TODO: test
+template <typename Real = float>
+Real remainder(const Real a, const Real b)
+{
     return std::fmod(a, b);
 }
 
 // TODO: test
 constexpr int mod(const int a, const int b)
+{
+    const int result = a % b;
+    if (result < 0) {
+        return result + b;
+    }
+    return result;
+}
+
+// TODO: test
+constexpr int remainder(const int a, const int b)
 {
     return a % b;
 }

@@ -969,7 +969,7 @@ public:
 
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
-        const Real new_angle = mod(angle, static_cast<Real>(2) * pi<Real>());
+        const Real new_angle = remainder(angle, static_cast<Real>(2) * pi<Real>());
         return { pivot, from, new_angle };
     }
 
@@ -983,13 +983,16 @@ public:
         if (!nnm::approx_equal(point.distance_sqrd(pivot), sqrd(radius()))) {
             return false;
         }
-        const Real from_angle = pivot.angle_to(from);
-        const Real point_angle = pivot.angle_to(point);
-        const Real to_angle = mod(from_angle + angle, static_cast<Real>(2) * pi<Real>());
-        if (from_angle <= to_angle) {
-            return from_angle <= point_angle && point_angle <= to_angle;
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real point_angle = mod(pivot.angle_to(point) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        if (angle < static_cast<Real>(0)) {
+            return from_angle >= to_angle ? to_angle <= point_angle && point_angle <= from_angle
+                                          : to_angle <= point_angle || point_angle <= from_angle;
         }
-        return from_angle <= point_angle || point_angle <= to_angle;
+        return from_angle <= to_angle ? from_angle <= point_angle && point_angle <= to_angle
+                                      : from_angle <= point_angle || point_angle <= to_angle;
     }
 
     [[nodiscard]] Vector2<Real> to() const
@@ -1011,9 +1014,11 @@ public:
         const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
         const Real proj_angle = mod(pivot.angle_to(proj) + two_pi, two_pi);
         const Real to_angle = mod(from_angle + angle, two_pi);
-        const bool in_arc = from_angle < to_angle
-            ? from_angle <= proj_angle && proj_angle <= to_angle
-            : from_angle <= proj_angle || proj_angle <= to_angle;
+        const bool in_arc = angle >= static_cast<Real>(0)
+            ? (from_angle < to_angle ? from_angle <= proj_angle && proj_angle <= to_angle
+                                     : from_angle <= proj_angle || proj_angle <= to_angle)
+            : from_angle >= to_angle ? to_angle <= proj_angle && proj_angle <= from_angle
+                                     : to_angle <= proj_angle || proj_angle <= from_angle;
         if (in_arc) {
             return point.distance(proj);
         }
@@ -1028,6 +1033,9 @@ public:
         const Vector2<Real> from_point = point - from;
         const Vector2<Real> from_to = to() - from;
         const Real cross = from_to.cross(from_point);
+        if (angle < static_cast<Real>(0)) {
+            return cross > static_cast<Real>(0) ? dist : -dist;
+        }
         return cross <= static_cast<Real>(0) ? dist : -dist;
     }
 
@@ -1043,9 +1051,11 @@ public:
         const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
         const Real proj_angle = mod(pivot.angle_to(closest_point_on_line) + two_pi, two_pi);
         const Real to_angle = mod(from_angle + angle, two_pi);
-        const bool in_arc = from_angle < to_angle
-            ? from_angle <= proj_angle && proj_angle <= to_angle
-            : from_angle <= proj_angle || proj_angle <= to_angle;
+        const bool in_arc = angle >= static_cast<Real>(0)
+            ? (from_angle < to_angle ? from_angle <= proj_angle && proj_angle <= to_angle
+                                     : from_angle <= proj_angle || proj_angle <= to_angle)
+            : from_angle >= to_angle ? to_angle <= proj_angle && proj_angle <= from_angle
+                                     : to_angle <= proj_angle || proj_angle <= from_angle;
         if (in_arc) {
             return min(abs(pivot.distance(closest_point_on_line) - radius()), to_from_min_dist);
         }
@@ -1072,13 +1082,14 @@ public:
         const Real to_angle = mod(from_angle + angle, two_pi);
         const Real intersection1_angle = mod(pivot.angle_to(intersection1) + two_pi, two_pi);
         const Real intersection2_angle = mod(pivot.angle_to(intersection2) + two_pi, two_pi);
-        const bool in_arc1 = from_angle < to_angle
-            ? from_angle <= intersection1_angle && intersection1_angle <= to_angle
-            : from_angle <= intersection1_angle || intersection1_angle <= to_angle;
-        const bool in_arc2 = from_angle < to_angle
-            ? from_angle <= intersection2_angle && intersection2_angle <= to_angle
-            : from_angle <= intersection2_angle || intersection2_angle <= to_angle;
-        return in_arc1 || in_arc2;
+        const auto in_arc = [&](const Real intersection_angle) -> bool {
+            return angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
+        };
+        return in_arc(intersection1_angle) || in_arc(intersection2_angle);
     }
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
@@ -1101,12 +1112,15 @@ public:
         const Real to_angle = mod(from_angle + angle, two_pi);
         const Real intersection1_angle = mod(pivot.angle_to(intersection1) + two_pi, two_pi);
         const Real intersection2_angle = mod(pivot.angle_to(intersection2) + two_pi, two_pi);
-        const bool in_arc1 = from_angle < to_angle
-            ? from_angle <= intersection1_angle && intersection1_angle <= to_angle
-            : from_angle <= intersection1_angle || intersection1_angle <= to_angle;
-        const bool in_arc2 = from_angle < to_angle
-            ? from_angle <= intersection2_angle && intersection2_angle <= to_angle
-            : from_angle <= intersection2_angle || intersection2_angle <= to_angle;
+        const auto in_arc = [&](const Real intersection_angle) -> bool {
+            return angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
+        };
+        const bool in_arc1 = in_arc(intersection1_angle);
+        const bool in_arc2 = in_arc(intersection2_angle);
         if (in_arc1 && in_arc2) {
             std::array result { intersection1, intersection2 };
             std::sort(result.begin(), result.end());
@@ -1140,8 +1154,11 @@ public:
         const auto in_arc = [&](const Real t) -> bool {
             const Vector2<Real> intersection = ray.origin + ray.direction * t;
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
-            return from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
-                                         : from_angle <= intersection_angle || intersection_angle <= to_angle;
+            return angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
         };
         const bool in_arc1 = t1 >= static_cast<Real>(0) ? in_arc(t1) : false;
         const bool in_arc2 = t2 >= static_cast<Real>(0) ? in_arc(t2) : false;
@@ -1167,8 +1184,11 @@ public:
         const auto intersection = [&](const Real t) -> std::optional<Vector2<Real>> {
             const Vector2<Real> point = ray.origin + ray.direction * t;
             const Real intersection_angle = mod(pivot.angle_to(point) + two_pi, two_pi);
-            if (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
-                                      : from_angle <= intersection_angle || intersection_angle <= to_angle) {
+            if (angle >= static_cast<Real>(0)
+                    ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                             : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                    : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                             : to_angle <= intersection_angle || intersection_angle <= from_angle) {
                 return point;
             }
             return std::nullopt;
@@ -1209,8 +1229,11 @@ public:
         const Real to_angle = mod(from_angle + angle, two_pi);
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
-            return from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
-                                         : from_angle <= intersection_angle || intersection_angle <= to_angle;
+            return angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
         };
         const auto in_segment
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
@@ -1241,8 +1264,11 @@ public:
         const Real to_angle = mod(from_angle + angle, two_pi);
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
-            return from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
-                                         : from_angle <= intersection_angle || intersection_angle <= to_angle;
+            return angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
         };
         const auto in_segment
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
@@ -1262,6 +1288,52 @@ public:
             return std::array { intersection2, intersection2 };
         }
         return std::nullopt;
+    }
+
+    [[nodiscard]] bool intersects(const Arc2& other) const
+    {
+        if (const Vector2<Real> other_to = other.to();
+            from.approx_equal(other.from) || from.approx_equal(other_to) || to().approx_equal(other_to)) {
+            return true;
+        }
+        const Real r1 = radius();
+        const Real r2 = other.radius();
+        const Vector2<Real> pivot_diff = other.pivot - pivot;
+        const Real pivot_dist_sqrd = pivot_diff.dot(pivot_diff);
+        const Real pivot_dist = sqrt(pivot_dist_sqrd);
+        if (pivot_dist > r1 + r2 || pivot_dist < abs(r1 - r2)) {
+            return false;
+        }
+        const Real pivot_intersect_line_dist
+            = (sqrd(r1) - sqrd(r2) + pivot_dist_sqrd) / (static_cast<Real>(2) * pivot_dist);
+        const Real perp_dist_intersections = sqrt(sqrd(r1) - sqrd(pivot_intersect_line_dist));
+        const Vector2<Real> pivots_line_base = pivot + pivot_diff * (pivot_intersect_line_dist / pivot_dist);
+        const Vector2<Real> intersection1
+            = pivots_line_base + Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
+        const Vector2<Real> intersection2
+            = pivots_line_base - Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle1 = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real to_angle1 = mod(from_angle1 + angle, two_pi);
+        const Real from_angle2 = mod(other.pivot.angle_to(other.from) + two_pi, two_pi);
+        const Real to_angle2 = mod(from_angle2 + other.angle, two_pi);
+        const auto in_arc
+            = [&](const Vector2<Real>& intersection,
+                  const Vector2<Real>& pivot,
+                  const Real from_angle,
+                  const Real to_angle) -> bool {
+            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            return angle >= static_cast<Real>(0) && other.angle >= static_cast<Real>(0)
+                ? (from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle)
+                : from_angle >= to_angle ? to_angle <= intersection_angle && intersection_angle <= from_angle
+                                         : to_angle <= intersection_angle || intersection_angle <= from_angle;
+        };
+        const bool in_arc1_1 = in_arc(intersection1, pivot, from_angle1, to_angle1);
+        const bool in_arc1_2 = in_arc(intersection2, pivot, from_angle1, to_angle1);
+        const bool in_arc2_1 = in_arc(intersection1, other.pivot, from_angle2, to_angle2);
+        const bool in_arc2_2 = in_arc(intersection2, other.pivot, from_angle2, to_angle2);
+        return (in_arc1_1 && in_arc2_1) || (in_arc1_2 && in_arc2_2);
     }
 
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
