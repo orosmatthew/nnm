@@ -1589,6 +1589,52 @@ inline void geom_tests()
                 && i9.value()[1].approx_equal({ 4.100969f, 2.74451914f }));
         }
 
+        test_section("intersects(const Segment2&)");
+        {
+            ASSERT(arc1.intersects(nnm::Segment2f { { 2.0f, 4.0f }, { 5.0f, 6.0f } }));
+            ASSERT(arc1.intersects(nnm::Segment2f { { 5.0f, 6.0f }, { 2.0f, 4.0f } }));
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 2.0f, 4.0f }, { 3.0f, 5.0f } }));
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 3.0f, 5.0f }, { 2.0f, 4.0f } }));
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 2.0f, 4.0f }, { 2.0f, 10.0f } }));
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 2.0f, 10.0f }, { 2.0f, 4.0f } }));
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 5.0f, 4.0f }, { 7.0f, 7.0f } }))
+            ASSERT_FALSE(arc1.intersects(nnm::Segment2f { { 7.0f, 7.0f }, { 5.0f, 4.0f } }))
+            ASSERT(arc1.intersects(nnm::Segment2f { { 2.0f, -2.0f }, { 4.0f, 7.0f } }));
+            ASSERT(arc1.intersects(nnm::Segment2f { { 4.0f, 7.0f }, { 2.0f, -2.0f } }));
+        }
+
+        test_section("intersections(const Segment2&)");
+        {
+            const auto i1 = arc1.intersections(nnm::Segment2f { { 2.0f, 4.0f }, { 5.0f, 6.0f } });
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ 4.07692308f, 5.38461538f })
+                && i1.value()[1].approx_equal({ 4.07692308f, 5.38461538f }));
+            const auto i2 = arc1.intersections(nnm::Segment2f { { 5.0f, 6.0f }, { 2.0f, 4.0f } });
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 4.07692308f, 5.38461538f })
+                && i2.value()[1].approx_equal({ 4.07692308f, 5.38461538f }));
+            const auto i3 = arc1.intersections(nnm::Segment2f { { 2.0f, 4.0f }, { 3.0f, 5.0f } });
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = arc1.intersections(nnm::Segment2f { { 3.0f, 5.0f }, { 2.0f, 4.0f } });
+            ASSERT_FALSE(i4.has_value());
+            const auto i5 = arc1.intersections(nnm::Segment2f { { 2.0f, 4.0f }, { 2.0f, 10.0f } });
+            ASSERT_FALSE(i5.has_value());
+            const auto i6 = arc1.intersections(nnm::Segment2f { { 2.0f, 10.0f }, { 2.0f, 4.0f } });
+            ASSERT_FALSE(i6.has_value());
+            const auto i7 = arc1.intersections(nnm::Segment2f { { 5.0f, 4.0f }, { 7.0f, 7.0f } });
+            ASSERT_FALSE(i7.has_value());
+            const auto i8 = arc1.intersections(nnm::Segment2f { { 7.0f, 7.0f }, { 5.0f, 4.0f } });
+            ASSERT_FALSE(i8.has_value());
+            const auto i9 = arc1.intersections(nnm::Segment2f { { 2.0f, -2.0f }, { 4.0f, 7.0f } });
+            ASSERT(
+                i9.has_value() && i9.value()[0].approx_equal({ 2.23012053f, -0.96445759f })
+                && i9.value()[1].approx_equal({ 3.8404677f, 6.2821057f }));
+            const auto i10 = arc1.intersections(nnm::Segment2f { { 4.0f, 7.0f }, { 2.0f, -2.0f } });
+            ASSERT(
+                i10.has_value() && i10.value()[0].approx_equal({ 2.23012053f, -0.96445759f })
+                && i10.value()[1].approx_equal({ 3.8404677f, 6.2821057f }));
+        }
+
         test_section("approx_equal");
         {
             ASSERT(arc1.approx_equal(arc1));

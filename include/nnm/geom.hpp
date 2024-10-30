@@ -694,7 +694,7 @@ public:
 
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
     {
-        return (to - from);
+        return to - from;
     }
 
     [[nodiscard]] Vector2<Real> direction() const
@@ -1189,20 +1189,21 @@ public:
         return std::nullopt;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         const Real r = radius();
-        const Vector2<Real> pivot_origin_dir = segment.from - pivot;
-        const Real twice_dot_dir = static_cast<Real>(2) * pivot_origin_dir.dot(segment.direction());
-        const Real dot_minus_r_sqrd = pivot_origin_dir.dot(pivot_origin_dir) - sqrd(r);
-        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * dot_minus_r_sqrd;
+        const Vector2<Real> pivot_seg_from_dir = segment.from - pivot;
+        const Vector2<Real> seg_dir = segment.direction_unnormalized();
+        const Real twice_dot_dir = static_cast<Real>(2) * pivot_seg_from_dir.dot(seg_dir);
+        const Real dot_minus_r_sqrd = pivot_seg_from_dir.dot(pivot_seg_from_dir) - sqrd(r);
+        const Real seg_len_sqrd = segment.length_sqrd();
+        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * seg_len_sqrd * dot_minus_r_sqrd;
         if (discriminant < static_cast<Real>(0)) {
             return false;
         }
         const Real sqrt_discriminant = sqrt(discriminant);
-        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
-        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
+        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
+        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
         const Real to_angle = mod(from_angle + angle, two_pi);
@@ -1213,11 +1214,54 @@ public:
         };
         const auto in_segment
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
-        const Vector2<Real> intersection1 = segment.from + segment.direction() + t1;
-        const Vector2<Real> intersection2 = segment.from + segment.direction() + t2;
-        const bool in_arc1 = t1 >= in_segment(t1) && in_arc(intersection1);
-        const bool in_arc2 = t2 >= in_segment(t2) && in_arc(intersection1);
-        return in_arc1 || in_arc2;
+        const Vector2<Real> intersection1 = segment.from + seg_dir * t1;
+        const Vector2<Real> intersection2 = segment.from + seg_dir * t2;
+        const bool valid1 = in_segment(t1) && in_arc(intersection1);
+        const bool valid2 = in_segment(t2) && in_arc(intersection2);
+        return valid1 || valid2;
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
+    {
+        const Real r = radius();
+        const Vector2<Real> pivot_seg_from_dir = segment.from - pivot;
+        const Vector2<Real> seg_dir = segment.direction_unnormalized();
+        const Real twice_dot_dir = static_cast<Real>(2) * pivot_seg_from_dir.dot(seg_dir);
+        const Real dot_minus_r_sqrd = pivot_seg_from_dir.dot(pivot_seg_from_dir) - sqrd(r);
+        const Real seg_len_sqrd = segment.length_sqrd();
+        const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * seg_len_sqrd * dot_minus_r_sqrd;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real sqrt_discriminant = sqrt(discriminant);
+        const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
+        const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real from_angle = mod(pivot.angle_to(from) + two_pi, two_pi);
+        const Real to_angle = mod(from_angle + angle, two_pi);
+        const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
+            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            return from_angle < to_angle ? from_angle <= intersection_angle && intersection_angle <= to_angle
+                                         : from_angle <= intersection_angle || intersection_angle <= to_angle;
+        };
+        const auto in_segment
+            = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
+        const Vector2<Real> intersection1 = segment.from + seg_dir * t1;
+        const Vector2<Real> intersection2 = segment.from + seg_dir * t2;
+        const bool valid1 = in_segment(t1) && in_arc(intersection1);
+        const bool valid2 = in_segment(t2) && in_arc(intersection2);
+        if (valid1 && valid2) {
+            std::array result = { intersection1, intersection2 };
+            std::sort(result.begin(), result.end());
+            return result;
+        }
+        if (valid1) {
+            return std::array { intersection1, intersection1 };
+        }
+        if (valid2) {
+            return std::array { intersection2, intersection2 };
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
