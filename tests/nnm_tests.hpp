@@ -173,6 +173,42 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
     }
 
+    test_case("mod");
+    {
+        ASSERT(nnm::approx_equal(nnm::mod(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, 3.0f), 1.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(5.0f, -3.0f), -1.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, -3.0f), -2.0f));
+
+        constexpr auto result = nnm::mod(0, 1);
+        ASSERT(nnm::approx_equal(result, 0));
+        ASSERT(nnm::approx_equal(nnm::mod(0, -1), 0));
+        ASSERT(nnm::approx_equal(nnm::mod(5, 3), 2));
+        ASSERT(nnm::approx_equal(nnm::mod(-5, 3), 1));
+        ASSERT(nnm::approx_equal(nnm::mod(5, -3), -1));
+        ASSERT(nnm::approx_equal(nnm::mod(-5, -3), -2));
+    }
+
+    test_case("rem");
+    {
+        ASSERT(nnm::approx_equal(nnm::rem(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, 3.0f), -2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(5.0f, -3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, -3.0f), -2.0f));
+
+        constexpr auto result = nnm::rem(0, 1);
+        ASSERT(nnm::approx_equal(result, 0));
+        ASSERT(nnm::approx_equal(nnm::rem(0, -1), 0));
+        ASSERT(nnm::approx_equal(nnm::rem(5, 3), 2));
+        ASSERT(nnm::approx_equal(nnm::rem(-5, 3), -2));
+        ASSERT(nnm::approx_equal(nnm::rem(5, -3), 2));
+        ASSERT(nnm::approx_equal(nnm::rem(-5, -3), -2));
+    }
+
     test_case("floor");
     {
         ASSERT(nnm::floor(5.3f) == 5.0f);
