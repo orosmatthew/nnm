@@ -188,22 +188,20 @@ constexpr int rem(const int a, const int b)
     return a % b;
 }
 
-// TODO: test
 template <typename Real = float>
 Real normalize_angle(const Real angle)
 {
     return mod(angle, static_cast<Real>(2) * pi<Real>());
 }
 
-// TODO: test
 template <typename Real = float>
 bool angle_in_range(const Real angle, const Real from, const Real to)
 {
     const Real two_pi = static_cast<Real>(2) * pi<Real>();
-    if (from < to) {
+    if (from <= to) {
         return mod(angle - from, two_pi) <= mod(to - from, two_pi);
     }
-    return mod(angle - from, two_pi) > mod(to - from, two_pi);
+    return mod(angle - from, two_pi) >= mod(to - from, two_pi);
 }
 
 template <typename Real = float>

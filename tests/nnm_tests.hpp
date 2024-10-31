@@ -209,6 +209,51 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::rem(-5, -3), -2));
     }
 
+    test_case("normalize_angle");
+    {
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(0.0f)));
+
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(nnm::pi() / 4.0f), nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(2.0f * nnm::pi() / 3.0f), 2.0f * nnm::pi() / 3.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(5.0f * nnm::pi() / 4.0f), 5.0f * nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(7.0f * nnm::pi() / 4.0f), 7.0f * nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(2.0f * nnm::pi())));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(8.0f * nnm::pi() / 3.0f), 2.0f * nnm::pi() / 3.0f));
+
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-nnm::pi() / 4.0f), 7.0f * nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-2.0f * nnm::pi() / 3.0f), 4.0f * nnm::pi() / 3.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-5.0f * nnm::pi() / 4.0f), 3.0f * nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-7.0f * nnm::pi() / 4.0f), nnm::pi() / 4.0f));
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(-2.0f * nnm::pi())));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-8.0f * nnm::pi() / 3.0f), 4.0f * nnm::pi() / 3.0f));
+    }
+
+    test_case("angle_in_range");
+    {
+        ASSERT(nnm::angle_in_range(0.0f, 0.0f, 0.0f));
+
+        ASSERT_FALSE(nnm::angle_in_range(nnm::pi() / 4.0f, 0.0f, nnm::pi() / 5.0f));
+        ASSERT_FALSE(nnm::angle_in_range(nnm::pi() / 4.0f, nnm::pi() / 5.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(nnm::pi() / 4.0f, 0.0f, nnm::pi() / 3.0f));
+        ASSERT(nnm::angle_in_range(nnm::pi() / 4.0f, nnm::pi() / 3.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(4.0f * nnm::pi() / 3.0f, nnm::pi(), 2.0f * nnm::pi()));
+        ASSERT(nnm::angle_in_range(4.0f * nnm::pi() / 3.0f, 2.0f * nnm::pi(), nnm::pi()));
+        ASSERT(nnm::angle_in_range(0.0f, nnm::pi(), 7.0f * nnm::pi() / 3.0f));
+
+        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi() / 4.0f, 0.0f, -nnm::pi() / 5.0f));
+        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi() / 4.0f, -nnm::pi() / 5.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(-nnm::pi() / 4.0f, 0.0f, -nnm::pi() / 3.0f));
+        ASSERT(nnm::angle_in_range(-nnm::pi() / 4.0f, -nnm::pi() / 3.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi() / 3.0f, -nnm::pi(), -2.0f * nnm::pi()));
+        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi() / 3.0f, -2.0f * nnm::pi(), -nnm::pi()));
+        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi(), -7.0f * nnm::pi() / 3.0f));
+
+        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi() / 4.0f, nnm::pi() / 4.0f));
+        ASSERT(nnm::angle_in_range(0.0f, nnm::pi() / 4.0f, -nnm::pi() / 4.0f));
+        ASSERT(nnm::angle_in_range(2.0f * nnm::pi() / 3.0f, -3.0f * nnm::pi() / 2.0f, nnm::pi() / 7.0f));
+        ASSERT(nnm::angle_in_range(2.0f * nnm::pi() / 3.0f, nnm::pi() / 7.0f, -3.0f * nnm::pi() / 2.0f));
+    }
+
     test_case("floor");
     {
         ASSERT(nnm::floor(5.3f) == 5.0f);
