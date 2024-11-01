@@ -191,7 +191,7 @@ constexpr int rem(const int a, const int b)
 template <typename Real = float>
 Real normalize_angle(const Real angle)
 {
-    return mod(angle, static_cast<Real>(2) * pi<Real>());
+    return mod(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
 }
 
 template <typename Real = float>
@@ -558,7 +558,6 @@ public:
         return acos(cos_angle);
     }
 
-    // TODO: test
     [[nodiscard]] Real angle_to(const Vector2& to) const
     {
         return atan2(to.y - y, to.x - x);

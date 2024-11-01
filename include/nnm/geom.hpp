@@ -969,8 +969,7 @@ public:
 
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
-        const Real new_angle = remainder(angle, static_cast<Real>(2) * pi<Real>());
-        return { pivot, from, new_angle };
+        return { pivot, from, nnm::normalize_angle(angle) };
     }
 
     [[nodiscard]] Real radius() const
@@ -978,16 +977,14 @@ public:
         return pivot.distance(from);
     }
 
-    // TODO: test
     [[nodiscard]] Real from_angle() const
     {
-        return remainder(pivot.angle_to(from), static_cast<Real>(2) * pi<Real>());
+        return nnm::normalize_angle(pivot.angle_to(from));
     }
 
-    // TODO: test
     [[nodiscard]] Real to_angle() const
     {
-        return from_angle() + angle;
+        return nnm::normalize_angle(from_angle() + angle);
     }
 
     [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const

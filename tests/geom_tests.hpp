@@ -1468,8 +1468,8 @@ inline void geom_tests()
             ASSERT(a.angle == 5.0f);
         }
 
-        constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
-        constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+        constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, 5.0f * nnm::pi() / 2.0f };
+        constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -5.0f * nnm::pi() / 2.0f };
 
         test_section("normalize_angle");
         {
@@ -1484,6 +1484,34 @@ inline void geom_tests()
         {
             ASSERT(nnm::approx_equal(arc1.radius(), 7.21110255f));
             ASSERT(nnm::approx_equal(arc2.radius(), 7.21110255f));
+        }
+
+        test_section("from_angle");
+        {
+            ASSERT(nnm::approx_equal(arc1.from_angle(), -0.9827937232473f));
+            ASSERT(nnm::approx_equal(arc2.from_angle(), 0.5880026035f));
+            constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
+            constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
+            ASSERT(nnm::approx_equal(arc3.from_angle(), 2.67794504459f));
+            ASSERT(nnm::approx_equal(arc4.from_angle(), 0.463647608991f));
+            constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
+            constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
+            ASSERT(nnm::approx_equal(arc5.from_angle(), 2.55359005f));
+            ASSERT(nnm::approx_equal(arc6.from_angle(), -0.339292614454f));
+        }
+
+        test_section("to_angle");
+        {
+            ASSERT(nnm::approx_equal(arc1.to_angle(), 0.5880026035f));
+            ASSERT(nnm::approx_equal(arc2.to_angle(), -0.9827937232473f));
+            constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
+            constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
+            ASSERT(nnm::approx_equal(arc3.to_angle(), 0.463647608991f));
+            ASSERT(nnm::approx_equal(arc4.to_angle(), 2.67794504459f));
+            constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
+            constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
+            ASSERT(nnm::approx_equal(arc5.to_angle(), -0.339292614454f));
+            ASSERT(nnm::approx_equal(arc6.to_angle(), 2.55359005f));
         }
 
         test_section("approx_contains");
@@ -1782,7 +1810,7 @@ inline void geom_tests()
         {
             ASSERT(arc1.approx_equal(arc1));
             ASSERT_FALSE(arc1.approx_equal({ { 3.0f, -10.0f }, { 1.0f, 200.0f }, 3.0f }));
-            ASSERT(arc1.approx_equal({ { -3.0000001f, 4.0f }, { 0.999999f, -2.0f }, 1.000000001f * nnm::pi() / 2.0f }));
+            ASSERT(arc1.approx_equal({ { -3.0000001f, 4.0f }, { 0.999999f, -2.0f }, 5.000000001f * nnm::pi() / 2.0f }));
         }
     }
 
