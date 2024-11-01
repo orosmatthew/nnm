@@ -1562,7 +1562,7 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc2.signed_distance({ 0.0f, 8.0f }), -3.0f));
         }
 
-        test_section("distance");
+        test_section("distance(const Line2&)");
         {
             ASSERT(nnm::approx_zero(arc1.distance(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f))));
             ASSERT(nnm::approx_zero(arc2.distance(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f))));
@@ -1574,6 +1574,11 @@ inline void geom_tests()
                 arc2.distance(nnm::Line2f::from_points({ 0.0f, 0.0f }, { 2.0f, 6.0f })), 0.316227766f));
             ASSERT(nnm::approx_equal(arc1.distance(nnm::Line2f::axis_y_offset(-8.0f)), 9.0f));
             ASSERT(nnm::approx_equal(arc2.distance(nnm::Line2f::axis_y_offset(-8.0f)), 9.0f));
+        }
+
+        // TODO: test
+        test_section("distance(const Ray2&)");
+        {
         }
 
         test_section("intersects(const Line2&)");
