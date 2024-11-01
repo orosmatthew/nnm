@@ -984,7 +984,7 @@ public:
 
     [[nodiscard]] Real to_angle() const
     {
-        return nnm::normalize_angle(from_angle() + angle);
+        return from_angle() + angle;
     }
 
     [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
@@ -999,10 +999,9 @@ public:
 
     [[nodiscard]] Vector2<Real> to() const
     {
-        const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
+        const Real to_angle_ = to_angle();
         const Real r = radius();
-        return { pivot.x + cos(from_angle_ + angle) * r, pivot.y + sin(from_angle_ + angle) * r };
+        return { pivot.x + cos(to_angle_) * r, pivot.y + sin(to_angle_) * r };
     }
 
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
