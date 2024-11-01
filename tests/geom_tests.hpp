@@ -2267,6 +2267,7 @@ inline void geom_tests()
                 tri2.angle_bisector(2).approx_coincident(nnm::Line2f::from_point_slope({ -4.0f, 2.0f }, -0.56273853f)));
         }
 
+        // TODO: finish
         test_section("altitude");
         {
         }
