@@ -1069,7 +1069,21 @@ public:
 
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
-        // TODO
+        if (intersects(segment)) {
+            return static_cast<Real>(0);
+        }
+        const Real ends_min_dist = min(
+            distance(segment.from), min(distance(segment.to), min(segment.distance(from), segment.distance(to()))));
+        const Real proj_scalar = (pivot - segment.from).dot(segment.direction_unnormalized());
+        if (proj_scalar >= static_cast<Real>(0) && proj_scalar <= segment.length_sqrd()) {
+            const Vector2<Real> closest_point_on_seg = segment.from + segment.direction_unnormalized() * proj_scalar;
+            const Real two_pi = static_cast<Real>(2) * pi<Real>();
+            if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_seg), two_pi);
+                angle_in_range(proj_angle, from_angle(), to_angle())) {
+                return min(abs(pivot.distance(closest_point_on_seg) - radius()), ends_min_dist);
+            }
+        }
+        return ends_min_dist;
     }
 
     [[nodiscard]] bool intersects(const Line2<Real>& line) const

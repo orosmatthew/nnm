@@ -1608,6 +1608,34 @@ inline void geom_tests()
             ASSERT(nnm::approx_zero(arc2.distance(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }))));
         }
 
+        test_section("distance(const Segment2&)");
+        {
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 5.0f, 6.0f } })));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 5.0f, 6.0f } })));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Segment2f { { 5.0f, 6.0f }, { 2.0f, 4.0f } })));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Segment2f { { 5.0f, 6.0f }, { 2.0f, 4.0f } })));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 3.0f, 5.0f } }), 1.1283400206f));
+            ASSERT(nnm::approx_equal(arc2.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 3.0f, 5.0f } }), 1.1283400206f));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Segment2f { { 3.0f, 5.0f }, { 2.0f, 4.0f } }), 1.1283400206f));
+            ASSERT(nnm::approx_equal(arc2.distance(nnm::Segment2f { { 3.0f, 5.0f }, { 2.0f, 4.0f } }), 1.1283400206f));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 2.0f, 10.0f } }), 1.0f));
+            ASSERT(nnm::approx_equal(arc2.distance(nnm::Segment2f { { 2.0f, 4.0f }, { 2.0f, 10.0f } }), 1.0f));
+            ASSERT(nnm::approx_equal(arc1.distance(nnm::Segment2f { { 2.0f, 10.0f }, { 2.0f, 4.0f } }), 1.0f));
+            ASSERT(nnm::approx_equal(arc2.distance(nnm::Segment2f { { 2.0f, 10.0f }, { 2.0f, 4.0f } }), 1.0f));
+            ASSERT(
+                nnm::approx_equal(arc1.distance(nnm::Segment2f { { 5.0f, 4.0f }, { 7.0f, 7.0f } }), 0.788897449072f));
+            ASSERT(
+                nnm::approx_equal(arc2.distance(nnm::Segment2f { { 5.0f, 4.0f }, { 7.0f, 7.0f } }), 0.788897449072f));
+            ASSERT(
+                nnm::approx_equal(arc1.distance(nnm::Segment2f { { 7.0f, 7.0f }, { 5.0f, 4.0f } }), 0.788897449072f));
+            ASSERT(
+                nnm::approx_equal(arc2.distance(nnm::Segment2f { { 7.0f, 7.0f }, { 5.0f, 4.0f } }), 0.788897449072f));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Segment2f { { 2.0f, -2.0f }, { 4.0f, 7.0f } })));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Segment2f { { 2.0f, -2.0f }, { 4.0f, 7.0f } })));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Segment2f { { 4.0f, 7.0f }, { 2.0f, -2.0f } })));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Segment2f { { 4.0f, 7.0f }, { 2.0f, -2.0f } })));
+        }
+
         test_section("intersects(const Line2&)");
         {
             ASSERT(arc1.intersects(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f)));
