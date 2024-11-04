@@ -1054,17 +1054,17 @@ public:
         if (intersects(ray)) {
             return static_cast<Real>(0);
         }
-        Real to_from_min_dist = min(ray.distance(from), ray.distance(to()));
+        const Real to_from_origin_min_dist = min(distance(ray.origin), min(ray.distance(from), ray.distance(to())));
         const Real proj_scalar = (pivot - ray.origin).dot(ray.direction);
         if (proj_scalar >= static_cast<Real>(0)) {
             const Vector2<Real> closest_point_on_ray = ray.origin + ray.direction * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_ray), two_pi);
                 angle_in_range(proj_angle, from_angle(), to_angle())) {
-                return min(abs(pivot.distance(closest_point_on_ray) - radius()), to_from_min_dist);
+                return min(abs(pivot.distance(closest_point_on_ray) - radius()), to_from_origin_min_dist);
             }
         }
-        return to_from_min_dist;
+        return to_from_origin_min_dist;
     }
 
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const

@@ -1576,9 +1576,36 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc2.distance(nnm::Line2f::axis_y_offset(-8.0f)), 9.0f));
         }
 
-        // TODO: test
         test_section("distance(const Ray2&)");
         {
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }))));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }))));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f })), 3.087996925f));
+            ASSERT(nnm::approx_equal(
+                arc2.distance(nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f })), 3.087996925f));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f })), 2.211102550928f));
+            ASSERT(nnm::approx_equal(
+                arc2.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f })), 2.211102550928f));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f })), 1.0f));
+            ASSERT(nnm::approx_equal(
+                arc2.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f })), 1.0f));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }))));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }))));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }))));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }))));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f })), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                arc2.distance(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f })), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                arc1.distance(nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f })), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                arc2.distance(nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f })), 0.694591522f));
+            ASSERT(nnm::approx_zero(arc1.distance(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }))));
+            ASSERT(nnm::approx_zero(arc2.distance(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }))));
         }
 
         test_section("intersects(const Line2&)");
