@@ -262,6 +262,56 @@ bool operator!=(const Segment2& other) const;
 bool operator<(const Segment2& other) const;
 ```
 
+## Arc2
+
+### Aliases
+
+```cpp
+using Arc2f = Arc2<float>;
+using Arc2d = Arc2<double>;
+```
+
+### Members
+
+```cpp
+Vector2 pivot;
+Vector2 from;
+Real angle;
+```
+
+### Constructors
+
+```cpp
+Arc2();
+Arc2(const Vector2& pivot, const Vector2& from, Real angle);
+```
+
+### Methods
+
+```cpp
+Arc2 normalize_angle() const;
+Real radius() const;
+Real from_angle() const;
+REal to_angle() const;
+bool approx_contains(const Vector2& point) const;
+Vector2 to() const;
+Real distance(const Vector2& point) const;
+Real signed_distance(const Vector2& point) const;
+Real distance(const line2& line) const;
+Real distance(const Ray2& ray) const;
+Real distance(const Segment2& segment) const;
+bool intersects(const Line2& line) const;
+std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;
+bool intersects(const Ray2& ray) const;
+std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
+bool intersects(const Segment2& segment) const;
+std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
+bool intersects(const Arc2& other) const;
+bool approx_equal(const Arc2& other) const;
+```
+
+
+
 ## Circle2
 
 ### Aliases
