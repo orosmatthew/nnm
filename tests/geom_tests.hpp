@@ -1486,6 +1486,13 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc2.radius(), 7.21110255f));
         }
 
+        test_section("radius_sqrd");
+        {
+            constexpr auto result = arc1.radius_sqrd();
+            ASSERT(nnm::approx_equal(result, nnm::sqrd(7.21110255f)));
+            ASSERT(nnm::approx_equal(arc2.radius_sqrd(), nnm::sqrd(7.21110255f)));
+        }
+
         test_section("from_angle");
         {
             ASSERT(nnm::approx_equal(arc1.from_angle(), -0.9827937232473f));
@@ -1528,6 +1535,33 @@ inline void geom_tests()
         {
             ASSERT(arc1.to().approx_equal({ 3.0f, 8.0f }));
             ASSERT(arc2.to().approx_equal({ 1.0f, -2.0f }));
+        }
+
+        test_section("length");
+        {
+            ASSERT(nnm::approx_equal(arc1.length(), 11.327173399f));
+            ASSERT(nnm::approx_equal(arc2.length(), 11.327173399f));
+            ASSERT(nnm::approx_equal(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi()).length(), 11.327173399f));
+            ASSERT(
+                nnm::approx_equal(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi()).length(), 11.327173399f));
+            ASSERT(nnm::approx_equal(nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089f).length(), 26.779450446f));
+            ASSERT(
+                nnm::approx_equal(nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f).length(), 26.779450446f));
+        }
+
+        test_section("length_sqrd");
+        {
+            constexpr auto result = arc1.length_sqrd();
+            ASSERT(nnm::approx_equal(result, nnm::sqrd(11.327173399f)));
+            ASSERT(nnm::approx_equal(arc2.length_sqrd(), nnm::sqrd(11.327173399f)));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi()).length_sqrd(), nnm::sqrd(11.327173399f)));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi()).length_sqrd(), nnm::sqrd(11.327173399f)));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089f).length_sqrd(), nnm::sqrd(26.779450446f)));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f).length_sqrd(), nnm::sqrd(26.779450446f)));
         }
 
         test_section("distance");

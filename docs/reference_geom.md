@@ -295,6 +295,8 @@ Real from_angle() const;
 REal to_angle() const;
 bool approx_contains(const Vector2& point) const;
 Vector2 to() const;
+Real length() const;
+Real length_sqrd() const;
 Real distance(const Vector2& point) const;
 Real signed_distance(const Vector2& point) const;
 Real distance(const line2& line) const;
@@ -307,6 +309,7 @@ std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
 bool intersects(const Arc2& other) const;
+std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const;
 bool approx_equal(const Arc2& other) const;
 ```
 

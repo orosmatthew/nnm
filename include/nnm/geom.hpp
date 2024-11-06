@@ -977,6 +977,11 @@ public:
         return pivot.distance(from);
     }
 
+    [[nodiscard]] constexpr Real radius_sqrd() const
+    {
+        return pivot.distance_sqrd(from);
+    }
+
     [[nodiscard]] Real from_angle() const
     {
         return nnm::normalize_angle(pivot.angle_to(from));
@@ -1002,6 +1007,16 @@ public:
         const Real to_angle_ = to_angle();
         const Real r = radius();
         return { pivot.x + cos(to_angle_) * r, pivot.y + sin(to_angle_) * r };
+    }
+
+    [[nodiscard]] Real length() const
+    {
+        return abs(radius() * angle);
+    }
+
+    [[nodiscard]] constexpr Real length_sqrd() const
+    {
+        return radius_sqrd() * sqrd(angle);
     }
 
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
