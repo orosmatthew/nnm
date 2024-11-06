@@ -297,6 +297,7 @@ bool approx_contains(const Vector2& point) const;
 Vector2 to() const;
 Real length() const;
 Real length_sqrd() const;
+Vector2 midpoint() const;
 Vector2 project_point(const Vector2& point) const;
 Real distance(const Vector2& point) const;
 Real signed_distance(const Vector2& point) const;

@@ -1417,6 +1417,32 @@ public:
         return std::nullopt;
     }
 
+    [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
+    {
+        return Arc2 { pivot.translate(by), from.translate(by), angle };
+    }
+
+    [[nodiscard]] Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    {
+        return Arc2 { pivot.scale_at(scale_origin, by), from.scale_at(scale_origin, by), angle };
+    }
+
+    [[nodiscard]] Arc2 scale(const Vector2<Real>& by) const
+    {
+        return Arc2 { pivot.scale(by), from.scale(by), angle };
+    }
+
+    [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return Arc2 { pivot.rotate_at(rotate_origin, angle), from.rotate_at(rotate_origin, angle), angle };
+    }
+
+    // TODO: test
+    [[nodiscard]] Arc2 rotate(const Real angle) const
+    {
+        return Arc2 { pivot.rotate(angle), from.rotate(angle), angle };
+    }
+
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
         return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
