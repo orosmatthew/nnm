@@ -1564,6 +1564,22 @@ inline void geom_tests()
                 nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f).length_sqrd(), nnm::sqrd(26.779450446f)));
         }
 
+        test_section("project_point");
+        {
+            ASSERT(arc1.project_point({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
+            ASSERT(arc2.project_point({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
+            ASSERT(arc1.project_point({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
+            ASSERT(arc2.project_point({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
+            ASSERT(arc1.project_point({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
+            ASSERT(arc2.project_point({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
+            ASSERT(arc1.project_point({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
+            ASSERT(arc2.project_point({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
+            ASSERT(arc1.project_point({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
+            ASSERT(arc2.project_point({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
+            ASSERT(arc1.project_point({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
+            ASSERT(arc2.project_point({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
+        }
+
         test_section("distance");
         {
             ASSERT(nnm::approx_zero(arc1.distance({ 4.006296f, 2.2935955f })));

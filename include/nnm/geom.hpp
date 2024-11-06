@@ -1019,6 +1019,21 @@ public:
         return radius_sqrd() * sqrd(angle);
     }
 
+    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> dir = pivot.direction(point);
+        const Vector2<Real> proj = pivot + dir * radius();
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        if (const Real proj_angle = remainder(pivot.angle_to(proj) + two_pi, two_pi);
+            angle_in_range(proj_angle, from_angle(), to_angle())) {
+            return proj;
+        }
+        if (const Vector2<Real> to_ = to(); point.distance_sqrd(from) >= point.distance_sqrd(to_)) {
+            return to_;
+        }
+        return from;
+    }
+
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         if (point == pivot) {
