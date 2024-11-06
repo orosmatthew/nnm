@@ -1878,14 +1878,14 @@ inline void geom_tests()
             ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)
                        .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())));
             ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)
-                       .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, 1.0f }, -nnm::pi())));
+                       .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())));
             ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
                        .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)));
             ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())
                        .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)));
             ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
                        .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)));
-            ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, 1.0f }, -nnm::pi())
+            ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())
                        .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)));
         }
 
@@ -1905,40 +1905,131 @@ inline void geom_tests()
             ASSERT_FALSE(arc2.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 4.0f }, -0.76101275f }).has_value());
             ASSERT_FALSE((nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 4.0f }, -0.76101275f }.intersections(arc2)).has_value());
 
-            // ASSERT(arc1.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f }));
-            // ASSERT(arc1.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f }));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f).intersects(arc1));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f).intersects(arc1));
-            // ASSERT(arc2.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f }));
-            // ASSERT(arc2.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f }));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f).intersects(arc2));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f).intersects(arc2));
+            const auto i1 = arc1.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f });
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i1.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i2 = arc1.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f });
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i2.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i3 = nnm::Arc2f({ 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f).intersections(arc1);
+            ASSERT(
+                i3.has_value() && i3.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i3.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i4 = nnm::Arc2f({ 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f).intersections(arc1);
+            ASSERT(
+                i4.has_value() && i4.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i4.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i5 = arc2.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f });
+            ASSERT(
+                i5.has_value() && i5.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i5.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i6 = arc2.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f });
+            ASSERT(
+                i6.has_value() && i6.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i6.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i7 = nnm::Arc2f({ 0.0f, 2.0f }, { 5.0f, 0.0f }, 1.57079633f).intersections(arc2);
+            ASSERT(
+                i7.has_value() && i7.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i7.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
+            const auto i8 = nnm::Arc2f({ 0.0f, 2.0f }, { 2.0f, 7.0f }, -1.57079633f).intersections(arc2);
+            ASSERT(
+                i8.has_value() && i8.value()[0].approx_equal({ 4.040255852199f, 5.5603837782f })
+                && i8.value()[1].approx_equal({ 4.040255852199f, 5.5603837782f }));
 
-            // ASSERT_FALSE(arc1.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f }));
-            // ASSERT_FALSE(arc1.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f }));
-            // ASSERT_FALSE(arc2.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f }));
-            // ASSERT_FALSE(arc2.intersects(nnm::Arc2f { { 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f }));
-            // ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f).intersects(arc1));
-            // ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f).intersects(arc1));
-            // ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f).intersects(arc2));
-            // ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f).intersects(arc2));
-            //
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)
-            //            .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)
-            //            .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)
-            //            .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())));
-            // ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)
-            //            .intersects(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, 1.0f }, -nnm::pi())));
-            // ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
-            //            .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)));
-            // ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())
-            //            .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)));
-            // ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
-            //            .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)));
-            // ASSERT(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, 1.0f }, -nnm::pi())
-            //            .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)));
+            ASSERT_FALSE(
+                arc1.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f }).has_value());
+            ASSERT_FALSE(
+                arc1.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f }).has_value());
+            ASSERT_FALSE(
+                arc2.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f }).has_value());
+            ASSERT_FALSE(
+                arc2.intersections(nnm::Arc2f { { 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f }).has_value());
+            ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f).intersections(arc1).has_value());
+            ASSERT_FALSE(
+                nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f).intersections(arc1).has_value());
+            ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi() / 4.0f).intersections(arc2));
+            ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, 5.0f }, -nnm::pi() / 4.0f).intersections(arc2));
+
+            const auto i9 = nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)
+                                .intersections(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi()));
+            ASSERT(
+                i9.has_value() && i9.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i9.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i10 = nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)
+                                 .intersections(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi()));
+            ASSERT(
+                i10.has_value() && i10.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i10.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i11 = nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f)
+                                 .intersections(nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi()));
+            ASSERT(
+                i11.has_value() && i11.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i11.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i12 = nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)
+                                 .intersections(nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi()));
+            ASSERT(
+                i12.has_value() && i12.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i12.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i13 = nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
+                                 .intersections(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f));
+            ASSERT(
+                i13.has_value() && i13.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i13.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i14 = nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
+                                 .intersections(nnm::Arc2f({ 0.0f, 2.0f }, { 4.0f, 0.0f }, 4.7123889803847f));
+            ASSERT(
+                i14.has_value() && i14.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i14.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i15 = nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
+                                 .intersections(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f));
+            ASSERT(
+                i15.has_value() && i15.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i15.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i16 = nnm::Arc2f({ -6.0f, 1.0f }, { -9.0f, 3.0f }, nnm::pi())
+                                 .intersections(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f));
+            ASSERT(
+                i16.has_value() && i16.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i16.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+            const auto i17 = nnm::Arc2f({ -6.0f, 1.0f }, { -3.0f, -1.0f }, -nnm::pi())
+                                 .intersections(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f));
+            ASSERT(
+                i17.has_value() && i17.value()[0].approx_equal({ -3.135135135f, -1.189189189f })
+                && i17.value()[1].approx_equal({ -3.135135135f, -1.189189189f }));
+
+            const auto i18 = arc1.intersections(nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089178f));
+            ASSERT(
+                i18.has_value() && i18.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i18.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i19 = arc2.intersections(nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089178f));
+            ASSERT(
+                i19.has_value() && i19.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i19.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i20 = arc1.intersections(nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089178f));
+            ASSERT(
+                i20.has_value() && i20.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i20.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i21 = arc2.intersections(nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089178f));
+            ASSERT(
+                i21.has_value() && i21.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i21.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i22 = nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089178f).intersections(arc1);
+            ASSERT(
+                i22.has_value() && i22.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i22.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i23 = nnm::Arc2f({ 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089178f).intersections(arc2);
+            ASSERT(
+                i23.has_value() && i23.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i23.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i24 = nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089178f).intersections(arc1);
+            ASSERT(
+                i24.has_value() && i24.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i24.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+            const auto i25 = nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089178f).intersections(arc2);
+            ASSERT(
+                i25.has_value() && i25.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
+                && i25.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
         }
 
         test_section("approx_equal");
