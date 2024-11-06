@@ -1019,6 +1019,11 @@ public:
         return radius_sqrd() * sqrd(angle);
     }
 
+    [[nodiscard]] Vector2<Real> midpoint() const
+    {
+        return Arc2 { pivot, from, angle / static_cast<Real>(2) }.to();
+    }
+
     [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = pivot.direction(point);

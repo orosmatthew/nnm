@@ -1564,6 +1564,12 @@ inline void geom_tests()
                 nnm::Arc2f({ 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f).length_sqrd(), nnm::sqrd(26.779450446f)));
         }
 
+        test_section("midpoint");
+        {
+            ASSERT(arc1.midpoint().approx_equal({ 4.07106781f, 2.5857864f }));
+            ASSERT(arc2.midpoint().approx_equal({ 4.07106781f, 2.5857864f }));
+        }
+
         test_section("project_point");
         {
             ASSERT(arc1.project_point({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
