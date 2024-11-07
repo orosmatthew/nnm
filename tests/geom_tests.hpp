@@ -2130,6 +2130,25 @@ inline void geom_tests()
                         { { -4.778191992f, 1.4727122207f }, { -2.275231035067f, 8.23549171192f }, -nnm::pi() / 2.0f }));
         }
 
+        test_section("approx_coincident");
+        {
+            ASSERT(arc1.approx_coincident(arc1));
+            ASSERT(arc2.approx_coincident(arc2));
+            ASSERT(arc1.approx_coincident(arc2));
+            ASSERT(arc2.approx_coincident(arc1));
+
+            ASSERT_FALSE(arc1.approx_coincident({ { 3.0f, 4.0f }, { 5.0f, 5.0f }, nnm::pi() / 3.0f }));
+
+            ASSERT_FALSE(nnm::Arc2f({ 8.0f, 1.8f }, { 3.0f, 8.0f }, nnm::pi() / 2.0f).approx_coincident(arc1));
+            ASSERT_FALSE(arc1.approx_coincident(nnm::Arc2f({ 8.0f, 1.8f }, { 3.0f, 8.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(nnm::Arc2f({ 8.0f, 1.8f }, { 3.0f, 8.0f }, nnm::pi() / 2.0f).approx_coincident(arc2));
+            ASSERT_FALSE(arc2.approx_coincident(nnm::Arc2f({ 8.0f, 1.8f }, { 3.0f, 8.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(nnm::Arc2f({ 8.0f, 1.8f }, { 1.0f, -2.0f }, -nnm::pi() / 2.0f).approx_coincident(arc1));
+            ASSERT_FALSE(arc1.approx_coincident(nnm::Arc2f({ 8.0f, 1.8f }, { 1.0f, -2.0f }, -nnm::pi() / 2.0f)));
+            ASSERT_FALSE(nnm::Arc2f({ 8.0f, 1.8f }, { 1.0f, -2.0f }, -nnm::pi() / 2.0f).approx_coincident(arc2));
+            ASSERT_FALSE(arc2.approx_coincident(nnm::Arc2f({ 8.0f, 1.8f }, { 1.0f, -2.0f }, -nnm::pi() / 2.0f)));
+        }
+
         test_section("approx_equal");
         {
             ASSERT(arc1.approx_equal(arc1));

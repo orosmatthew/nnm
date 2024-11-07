@@ -1442,6 +1442,17 @@ public:
         return Arc2 { pivot.rotate(angle), from.rotate(angle), this->angle };
     }
 
+    [[nodiscard]] bool approx_coincident(const Arc2& other) const
+    {
+        if (!pivot.approx_equal(other.pivot)) {
+            return false;
+        }
+        const Vector2<Real> to_ = to();
+        const Vector2<Real> other_to = other.to();
+        return (from.approx_equal(other.from) && to_.approx_equal(other_to))
+            || (from.approx_equal(other_to) && to_.approx_equal(other.from));
+    }
+
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
         return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
