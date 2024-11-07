@@ -411,6 +411,8 @@ public:
 
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
@@ -491,6 +493,10 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
+
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
@@ -498,6 +504,8 @@ public:
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -2487,6 +2495,24 @@ Real Ray2<Real>::distance(const Segment2<Real>& segment) const
 }
 
 template <typename Real>
+Real Ray2<Real>::distance(const Arc2<Real>& arc) const
+{
+    return arc.distance(*this);
+}
+
+template <typename Real>
+bool Ray2<Real>::intersects(const Arc2<Real>& arc) const
+{
+    return arc.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Arc2<Real>& arc) const
+{
+    return arc.intersections(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
 {
     return circle.intersects(*this);
@@ -2502,6 +2528,12 @@ template <typename Real>
 std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Triangle2<Real>& triangle) const
 {
     return triangle.intersections(*this);
+}
+
+template <typename Real>
+bool Ray2<Real>::approx_tangent(const Arc2<Real>& arc) const
+{
+    return arc.approx_tangent(*this);
 }
 
 template <typename Real>

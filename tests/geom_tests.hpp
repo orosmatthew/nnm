@@ -745,6 +745,40 @@ inline void geom_tests()
                 nnm::Ray2f::from_point_to_point({ -4.0f, 5.0f }, { -5.0f, 4.0f }).distance(s1), 1.4142135624f));
         }
 
+        test_section("distance(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).distance(arc1)));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).distance(arc2)));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).distance(arc1), 3.087996925f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).distance(arc2), 3.087996925f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).distance(arc1), 2.211102550928f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).distance(arc2), 2.211102550928f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).distance(arc1), 1.0f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).distance(arc2), 1.0f));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).distance(arc1)));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).distance(arc2)));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).distance(arc1)));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).distance(arc2)));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).distance(arc1), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).distance(arc2), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).distance(arc1), 0.694591522f));
+            ASSERT(nnm::approx_equal(
+                nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).distance(arc2), 0.694591522f));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).distance(arc1)));
+            ASSERT(nnm::approx_zero(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).distance(arc2)));
+        }
+
         test_section("approx_parallel(const Line2&)");
         {
             constexpr nnm::Line2f line1 { { 1.0f, -2.0f }, { -0.384615391f, 0.923076928f } };
@@ -865,6 +899,88 @@ inline void geom_tests()
             ASSERT_FALSE(ray4.intersection(s1).has_value());
         }
 
+        test_section("intersects(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).intersects(arc1));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).intersects(arc2));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersects(arc1));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersects(arc2));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).intersects(arc1));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).intersects(arc2));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).intersects(arc1));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).intersects(arc2));
+        }
+
+        test_section("intersections(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            const auto i1 = nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).intersections(arc1);
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ 3.37339717f, 7.37339717f })
+                && i1.value()[1].approx_equal({ 3.37339717f, 7.37339717f }));
+            const auto i1n = nnm::Ray2f::from_point_to_point({ 0.0f, 4.0f }, { 1.0f, 5.0f }).intersections(arc2);
+            ASSERT(
+                i1n.has_value() && i1n.value()[0].approx_equal({ 3.37339717f, 7.37339717f })
+                && i1n.value()[1].approx_equal({ 3.37339717f, 7.37339717f }));
+            const auto i2 = nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).intersections(arc1);
+            ASSERT_FALSE(i2.has_value());
+            const auto i2n = nnm::Ray2f::from_point_to_point({ 1.0f, 5.0f }, { 0.0f, 4.0f }).intersections(arc2);
+            ASSERT_FALSE(i2n.has_value());
+            const auto i3 = nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).intersections(arc1);
+            ASSERT_FALSE(i3.has_value());
+            const auto i3n = nnm::Ray2f::from_point_to_point({ 0.0f, 0.0f }, { 0.0f, 1.0f }).intersections(arc2);
+            ASSERT_FALSE(i3n.has_value());
+            const auto i4 = nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).intersections(arc1);
+            ASSERT_FALSE(i4.has_value());
+            const auto i4n = nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 0.0f, 0.0f }).intersections(arc2);
+            ASSERT_FALSE(i4n.has_value());
+            const auto i5 = nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersections(arc1);
+            ASSERT(
+                i5.has_value() && i5.value()[0].approx_equal({ 3.67940757f, 6.7176303f })
+                && i5.value()[1].approx_equal({ 3.67940757f, 6.7176303f }));
+            const auto i5n = nnm::Ray2f::from_point_to_point({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersections(arc2);
+            ASSERT(
+                i5n.has_value() && i5n.value()[0].approx_equal({ 3.67940757f, 6.7176303f })
+                && i5n.value()[1].approx_equal({ 3.67940757f, 6.7176303f }));
+            const auto i6 = nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).intersections(arc1);
+            ASSERT(
+                i6.has_value() && i6.value()[0].approx_equal({ 1.61471007f, -1.5411597f })
+                && i6.value()[1].approx_equal({ 1.61471007f, -1.5411597f }));
+            const auto i6n = nnm::Ray2f::from_point_to_point({ 3.0f, 4.0f }, { 2.0f, 0.0f }).intersections(arc2);
+            ASSERT(
+                i6n.has_value() && i6n.value()[0].approx_equal({ 1.61471007f, -1.5411597f })
+                && i6n.value()[1].approx_equal({ 1.61471007f, -1.5411597f }));
+            const auto i7 = nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersections(arc1);
+            ASSERT_FALSE(i7.has_value());
+            const auto i7n = nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersections(arc2);
+            ASSERT_FALSE(i7n.has_value());
+            const auto i8 = nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).intersections(arc1);
+            ASSERT_FALSE(i8.has_value());
+            const auto i8n = nnm::Ray2f::from_point_to_point({ 4.0f, 0.0f }, { 6.0f, 6.0f }).intersections(arc2);
+            ASSERT_FALSE(i8n.has_value());
+            const auto i9 = nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).intersections(arc1);
+            ASSERT(
+                i9.has_value() && i9.value()[0].approx_equal({ 1.588149673f, -1.563172f })
+                && i9.value()[1].approx_equal({ 4.100969f, 2.74451914f }));
+            const auto i9n = nnm::Ray2f::from_point_to_point({ 6.0f, 6.0f }, { 2.5f, 0.0f }).intersections(arc2);
+            ASSERT(
+                i9n.has_value() && i9n.value()[0].approx_equal({ 1.588149673f, -1.563172f })
+                && i9n.value()[1].approx_equal({ 4.100969f, 2.74451914f }));
+        }
+
         test_section("intersects(const Circle2&)");
         {
             constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
@@ -963,6 +1079,26 @@ inline void geom_tests()
             ASSERT_FALSE(result8.has_value());
             const auto result9 = nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } }.intersections(tri2);
             ASSERT_FALSE(result9.has_value());
+        }
+
+        test_section("approx_tangent(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Ray2f::from_point_to_point({ 3.5539105245f, 0.0f }, { 3.68462985f, 0.653596646f })
+                       .approx_tangent(arc1));
+            ASSERT(nnm::Ray2f::from_point_to_point({ 3.5539105245f, 0.0f }, { 3.68462985f, 0.653596646f })
+                       .approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 3.68462985f, 0.653596646f }, { 3.5539105245f, 0.0f })
+                             .approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Ray2f::from_point_to_point({ 3.68462985f, 0.653596646f }, { 3.5539105245f, 0.0f })
+                             .approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Ray2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f }).approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Ray2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f }).approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Ray2f({ 3.0f, 11.21110255f }, { 1.0f, 0.0f }).approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f }).approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Ray2f({ 3.0f, 11.21110255f }, { 1.0f, 0.0f }).approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f }).approx_tangent(arc2));
         }
 
         test_section("approx_tangent");
