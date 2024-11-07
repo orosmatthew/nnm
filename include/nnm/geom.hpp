@@ -69,9 +69,12 @@ public:
 
     static std::optional<Line2> from_tangent_at(const Arc2<Real>& arc, const Real angle)
     {
-        const Vector2<Real> p = arc.point_at(angle);
-        const Vector2<Real> dir = p - arc.center;
-        return { p, dir.arbitrary_perpendicular() };
+        const std::optional<Vector2<Real>> p = arc.point_at(angle);
+        if (!p.has_value()) {
+            return std::nullopt;
+        }
+        const Vector2<Real> dir = p.value() - arc.pivot;
+        return { p.value(), dir.arbitrary_perpendicular() };
     }
 
     static Line2 from_tangent_at(const Circle2<Real>& circle, const Real angle)
@@ -1435,6 +1438,23 @@ public:
             return std::array { intersection2, intersection2 };
         }
         return std::nullopt;
+    }
+
+    [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
+    {
+        const Vector2<Real> dir = line.origin - pivot;
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - radius_sqrd();
+        const Real disc = sqrd(b) - static_cast<Real>(4) * c;
+        if (!approx_zero(disc)) {
+            return false;
+        }
+        const Real disc_sqrt = sqrt(disc);
+        const Real t1 = (-b + disc_sqrt) / static_cast<Real>(2);
+        const Real t2 = (-b - disc_sqrt) / static_cast<Real>(2);
+        const Vector2<Real> p1 = line.origin + line.direction * t1;
+        const Vector2<Real> p2 = line.origin + line.direction * t2;
+        return approx_contains(p1) || approx_contains(p2);
     }
 
     [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const

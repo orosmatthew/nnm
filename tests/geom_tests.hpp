@@ -53,7 +53,14 @@ inline void geom_tests()
             ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
         }
 
-        test_section("from_tangent_at");
+        // TODO: finish
+        test_section("from_tangent_at(const Arc2&, Real)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+        }
+
+        test_section("from_tangent_at(const Circle&, Real)");
         {
             constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
             const auto l1 = nnm::Line2f::from_tangent_at(c1, 0.0f);
@@ -2109,6 +2116,22 @@ inline void geom_tests()
             ASSERT(
                 i25.has_value() && i25.value()[0].approx_equal({ 1.2167708374f, -1.849687488f })
                 && i25.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
+        }
+
+        test_section("approx_tangent");
+        {
+            ASSERT(arc1.approx_tangent(
+                nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT(arc2.approx_tangent(
+                nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT(arc1.approx_tangent(
+                nnm::Line2f::from_points({ 4.485281374f, 4.6568542495f }, { 4.0710678119f, 2.585786438f })));
+            ASSERT(arc2.approx_tangent(
+                nnm::Line2f::from_points({ 4.485281374f, 4.6568542495f }, { 4.0710678119f, 2.585786438f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Line2f({ 0.0f, 4.0f }, { 1.0f, 0.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Line2f({ 0.0f, 4.0f }, { 1.0f, 0.0f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
         }
 
         test_section("translate");
