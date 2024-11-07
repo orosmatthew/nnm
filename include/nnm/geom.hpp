@@ -1478,7 +1478,7 @@ public:
         if (const Real disc = sqrd(twice_dot) - static_cast<Real>(4) * dist_sqrd_minus_radius_sqrd;
             !approx_zero(disc)) {
             return false;
-            }
+        }
         const Real t = -twice_dot / static_cast<Real>(2);
         if (t < static_cast<Real>(0) || t > segment.length()) {
             return false;
