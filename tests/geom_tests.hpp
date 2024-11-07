@@ -53,11 +53,22 @@ inline void geom_tests()
             ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
         }
 
-        // TODO: finish
         test_section("from_tangent_at(const Arc2&, Real)");
         {
             constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
             constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            const auto l1 = nnm::Line2f::from_tangent_at(arc1, -0.1973955598f);
+            ASSERT(
+                l1.has_value()
+                && l1->approx_coincident(
+                    nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
+            const auto l2 = nnm::Line2f::from_tangent_at(arc2, -0.1973955598f);
+            ASSERT(
+                l2.has_value()
+                && l2->approx_coincident(
+                    nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT_FALSE(nnm::Line2f::from_tangent_at(arc1, nnm::pi() / 2.0f).has_value());
+            ASSERT_FALSE(nnm::Line2f::from_tangent_at(arc2, nnm::pi() / 2.0f).has_value());
         }
 
         test_section("from_tangent_at(const Circle&, Real)");

@@ -74,7 +74,7 @@ public:
             return std::nullopt;
         }
         const Vector2<Real> dir = p.value() - arc.pivot;
-        return { p.value(), dir.arbitrary_perpendicular() };
+        return Line2 { p.value(), dir.arbitrary_perpendicular() };
     }
 
     static Line2 from_tangent_at(const Circle2<Real>& circle, const Real angle)
