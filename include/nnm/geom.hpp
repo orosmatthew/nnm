@@ -67,7 +67,7 @@ public:
 
     static constexpr Line2 from_ray(const Ray2<Real>& ray);
 
-    static std::optional<Line2> from_tangent_at(const Arc2<Real>& arc, const Real angle)
+    static std::optional<Line2> from_tangent(const Arc2<Real>& arc, const Real angle)
     {
         const std::optional<Vector2<Real>> p = arc.point_at(angle);
         if (!p.has_value()) {
@@ -77,7 +77,7 @@ public:
         return Line2 { p.value(), dir.arbitrary_perpendicular() };
     }
 
-    static Line2 from_tangent_at(const Circle2<Real>& circle, const Real angle)
+    static Line2 from_tangent(const Circle2<Real>& circle, const Real angle)
     {
         const Vector2<Real> p = circle.point_at(angle);
         const Vector2<Real> dir = p - circle.center;
@@ -156,6 +156,8 @@ public:
 
     [[nodiscard]] constexpr Real distance(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
@@ -208,6 +210,12 @@ public:
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
+
+    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
@@ -2371,6 +2379,12 @@ Real Line2<Real>::distance(const Ray2<Real>& ray) const
 }
 
 template <typename Real>
+Real Line2<Real>::distance(const Arc2<Real>& arc) const
+{
+    return arc.distance(*this);
+}
+
+template <typename Real>
 constexpr Real Line2<Real>::distance(const Segment2<Real>& segment) const
 {
     return segment.distance(*this);
@@ -2386,6 +2400,24 @@ template <typename Real>
 std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Triangle2<Real>& triangle) const
 {
     return triangle.intersections(*this);
+}
+
+template <typename Real>
+bool Line2<Real>::intersects(const Arc2<Real>& arc) const
+{
+    return arc.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Arc2<Real>& arc) const
+{
+    return arc.intersections(*this);
+}
+
+template <typename Real>
+bool Line2<Real>::approx_tangent(const Arc2<Real>& arc) const
+{
+    return arc.approx_tangent(*this);
 }
 
 template <typename Real>

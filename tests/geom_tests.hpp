@@ -53,32 +53,32 @@ inline void geom_tests()
             ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
         }
 
-        test_section("from_tangent_at(const Arc2&, Real)");
+        test_section("from_tangent(const Arc2&, Real)");
         {
             constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
             constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
-            const auto l1 = nnm::Line2f::from_tangent_at(arc1, -0.1973955598f);
+            const auto l1 = nnm::Line2f::from_tangent(arc1, -0.1973955598f);
             ASSERT(
                 l1.has_value()
                 && l1->approx_coincident(
                     nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
-            const auto l2 = nnm::Line2f::from_tangent_at(arc2, -0.1973955598f);
+            const auto l2 = nnm::Line2f::from_tangent(arc2, -0.1973955598f);
             ASSERT(
                 l2.has_value()
                 && l2->approx_coincident(
                     nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
-            ASSERT_FALSE(nnm::Line2f::from_tangent_at(arc1, nnm::pi() / 2.0f).has_value());
-            ASSERT_FALSE(nnm::Line2f::from_tangent_at(arc2, nnm::pi() / 2.0f).has_value());
+            ASSERT_FALSE(nnm::Line2f::from_tangent(arc1, nnm::pi() / 2.0f).has_value());
+            ASSERT_FALSE(nnm::Line2f::from_tangent(arc2, nnm::pi() / 2.0f).has_value());
         }
 
-        test_section("from_tangent_at(const Circle&, Real)");
+        test_section("from_tangent(const Circle&, Real)");
         {
             constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
-            const auto l1 = nnm::Line2f::from_tangent_at(c1, 0.0f);
+            const auto l1 = nnm::Line2f::from_tangent(c1, 0.0f);
             ASSERT(l1.origin.approx_equal({ 7.0f, -3.0f }));
             ASSERT(nnm::approx_zero(l1.direction.cross({ 0.0f, 1.0f })));
             ASSERT(l1.approx_tangent(c1));
-            const auto l2 = nnm::Line2f::from_tangent_at(c1, nnm::pi() / 3.0f);
+            const auto l2 = nnm::Line2f::from_tangent(c1, nnm::pi() / 3.0f);
             ASSERT(l2.origin.approx_equal({ 4.5f, 1.330127f }));
             ASSERT(l2.direction.approx_parallel(
                 nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
@@ -219,6 +219,22 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(2.0f).distance(s1), 1.0f));
             ASSERT(nnm::approx_equal(
                 nnm::Line2f::from_points({ 2.0f, 0.0f }, { 0.0f, 3.0f }).distance(s1), 1.9414506868f));
+        }
+
+        test_section("distance(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::approx_zero(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).distance(arc1)));
+            ASSERT(nnm::approx_zero(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).distance(arc2)));
+            ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(6.0f).distance(arc1), 1.788897449f));
+            ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(6.0f).distance(arc2), 1.788897449f));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 0.0f, 0.0f }, { 2.0f, 6.0f }).distance(arc1), 0.316227766f));
+            ASSERT(nnm::approx_equal(
+                nnm::Line2f::from_points({ 0.0f, 0.0f }, { 2.0f, 6.0f }).distance(arc2), 0.316227766f));
+            ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(-8.0f).distance(arc1), 9.0f));
+            ASSERT(nnm::approx_equal(nnm::Line2f::axis_y_offset(-8.0f).distance(arc2), 9.0f));
         }
 
         test_section("approx_parallel(const Line2&)");
@@ -417,7 +433,69 @@ inline void geom_tests()
                 && (*result8)[1].approx_equal({ -0.538461548f, 0.923076923f }));
         }
 
-        test_section("approx_tangent");
+        test_section("intersects(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).intersects(arc1));
+            ASSERT(nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).intersects(arc2));
+            ASSERT_FALSE(nnm::Line2f::axis_y().intersects(arc1));
+            ASSERT_FALSE(nnm::Line2f::axis_y().intersects(arc2));
+            ASSERT(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersects(arc1));
+            ASSERT(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersects(arc2));
+            ASSERT_FALSE(nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersects(arc1));
+            ASSERT_FALSE(nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersects(arc2));
+        }
+
+        test_section("intersections(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            const auto i1 = nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).intersections(arc1);
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ 3.37339735f, 7.37339735f })
+                && i1.value()[1].approx_equal({ 3.37339735f, 7.37339735f }));
+            const auto i1n = nnm::Line2f::from_point_slope({ 0.0f, 4.0f }, 1.0f).intersections(arc2);
+            ASSERT(
+                i1n.has_value() && i1n.value()[0].approx_equal({ 3.37339735f, 7.37339735f })
+                && i1n.value()[1].approx_equal({ 3.37339735f, 7.37339735f }));
+            const auto i2 = nnm::Line2f::axis_y().intersections(arc1);
+            ASSERT_FALSE(i2.has_value());
+            const auto i2n = nnm::Line2f::axis_y().intersections(arc2);
+            ASSERT_FALSE(i2n.has_value());
+            const auto i3 = nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersections(arc1);
+            ASSERT(
+                i3.has_value() && i3.value()[0].approx_equal({ 1.614710072f, -1.5411597f })
+                && i3.value()[1].approx_equal({ 3.67940757f, 6.7176303f }));
+            const auto i3n = nnm::Line2f::from_points({ 2.0f, 0.0f }, { 3.0f, 4.0f }).intersections(arc2);
+            ASSERT(
+                i3n.has_value() && i3n.value()[0].approx_equal({ 1.614710072f, -1.5411597f })
+                && i3n.value()[1].approx_equal({ 3.67940757f, 6.7176303f }));
+            const auto i4 = nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersections(arc1);
+            ASSERT_FALSE(i4.has_value());
+            const auto i4n = nnm::Line2f::from_points({ 6.0f, 6.0f }, { 4.0f, 0.0f }).intersections(arc2);
+            ASSERT_FALSE(i4n.has_value());
+        }
+
+        test_section("approx_tangent(const Arc2&)");
+        {
+            constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
+            constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })
+                       .approx_tangent(arc1));
+            ASSERT(nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })
+                       .approx_tangent(arc2));
+            ASSERT(nnm::Line2f::from_points({ 4.485281374f, 4.6568542495f }, { 4.0710678119f, 2.585786438f })
+                       .approx_tangent(arc1));
+            ASSERT(nnm::Line2f::from_points({ 4.485281374f, 4.6568542495f }, { 4.0710678119f, 2.585786438f })
+                       .approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Line2f({ 0.0f, 4.0f }, { 1.0f, 0.0f }).approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Line2f({ 0.0f, 4.0f }, { 1.0f, 0.0f }).approx_tangent(arc2));
+            ASSERT_FALSE(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f }).approx_tangent(arc1));
+            ASSERT_FALSE(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f }).approx_tangent(arc2));
+        }
+
+        test_section("approx_tangent(const Circle2&)");
         {
             constexpr nnm::Circle2f circle { { 2.0f, -3.0f }, 5.0f };
             constexpr nnm::Line2f line3 { { -2.0f, 2.0f }, { -1.0f, 0.0f } };
