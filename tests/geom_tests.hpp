@@ -2109,11 +2109,25 @@ inline void geom_tests()
             ASSERT(arc2.scale({ -2.0f, 1.5f }).approx_equal({ { 6.0f, 6.0f }, { -6.0f, 12.0f }, -nnm::pi() / 2.0f }));
         }
 
-        // TODO: finish
         test_section("rotate_at");
         {
-            // ASSERT(arc1.rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f)
-            //            .approx_equal({ { -3.79360437f, 2.4424634f }, { 0.61803f, 3.17557f }, nnm::pi() / 2.0f }));
+            ASSERT(arc1.rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f)
+                       .approx_equal(
+                           { { -3.793604493f, 2.4424634842f }, { 2.969174998f, -0.060497473f }, nnm::pi() / 2.0f }));
+            ASSERT(arc2.rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f)
+                       .approx_equal(
+                           { { -3.793604493f, 2.4424634842f }, { -1.2906435536f, 9.2052429754f }, -nnm::pi() / 2.0f }));
+        }
+
+        test_section("rotate");
+        {
+            ASSERT(arc1.rotate(nnm::pi() / 5.0f)
+                       .approx_equal(
+                           { { -4.778191992f, 1.4727122207f }, { 1.9845874989f, -1.0302487364f }, nnm::pi() / 2.0f }));
+            ASSERT(
+                arc2.rotate(nnm::pi() / 5.0f)
+                    .approx_equal(
+                        { { -4.778191992f, 1.4727122207f }, { -2.275231035067f, 8.23549171192f }, -nnm::pi() / 2.0f }));
         }
 
         test_section("approx_equal");

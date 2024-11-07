@@ -1434,13 +1434,12 @@ public:
 
     [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return Arc2 { pivot.rotate_at(rotate_origin, angle), from.rotate_at(rotate_origin, angle), angle };
+        return Arc2 { pivot.rotate_at(rotate_origin, angle), from.rotate_at(rotate_origin, angle), this->angle };
     }
 
-    // TODO: test
     [[nodiscard]] Arc2 rotate(const Real angle) const
     {
-        return Arc2 { pivot.rotate(angle), from.rotate(angle), angle };
+        return Arc2 { pivot.rotate(angle), from.rotate(angle), this->angle };
     }
 
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
