@@ -1531,6 +1531,30 @@ inline void geom_tests()
             ASSERT_FALSE(arc2.approx_contains({ -9.56f, 7.0f }));
         }
 
+        test_section("unchecked_point_at");
+        {
+            ASSERT(arc1.unchecked_point_at(nnm::pi() / 7.0f).approx_equal({ 3.4969789f, 7.128780138f }));
+            ASSERT(arc2.unchecked_point_at(nnm::pi() / 7.0f).approx_equal({ 3.4969789f, 7.128780138f }));
+            ASSERT(arc1.unchecked_point_at(-nnm::pi() / 7.0f).approx_equal({ 3.4969789f, 0.87121986f }));
+            ASSERT(arc2.unchecked_point_at(-nnm::pi() / 7.0f).approx_equal({ 3.4969789f, 0.87121986f }));
+        }
+
+        test_section("point_at");
+        {
+            const auto p1 = arc1.point_at(nnm::pi() / 7.0f);
+            ASSERT(p1.has_value() && p1->approx_equal({ 3.4969789f, 7.128780138f }));
+            const auto p2 = arc2.point_at(nnm::pi() / 7.0f);
+            ASSERT(p2.has_value() && p2->approx_equal({ 3.4969789f, 7.128780138f }));
+            const auto p3 = arc1.point_at(-nnm::pi() / 7.0f);
+            ASSERT(p3.has_value() && p3->approx_equal({ 3.4969789f, 0.87121986f }));
+            const auto p4 = arc2.point_at(-nnm::pi() / 7.0f);
+            ASSERT(p4.has_value() && p4->approx_equal({ 3.4969789f, 0.87121986f }));
+            const auto p5 = arc1.point_at(nnm::pi() / 4.0f);
+            ASSERT_FALSE(p5.has_value());
+            const auto p6 = arc1.point_at(-2.0f * nnm::pi() / 3.0f);
+            ASSERT_FALSE(p6.has_value());
+        }
+
         test_section("to");
         {
             ASSERT(arc1.to().approx_equal({ 3.0f, 8.0f }));
@@ -1945,7 +1969,6 @@ inline void geom_tests()
                        .intersects(nnm::Arc2f({ 0.0f, 2.0f }, { -2.0f, -2.0f }, -4.7123889803847f)));
         }
 
-        // TODO: finish
         test_section("intersections(const Arc2& other)");
         {
             ASSERT_FALSE(arc1.intersections(arc1).has_value());

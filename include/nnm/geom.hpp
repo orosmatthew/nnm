@@ -67,6 +67,13 @@ public:
 
     static constexpr Line2 from_ray(const Ray2<Real>& ray);
 
+    static std::optional<Line2> from_tangent_at(const Arc2<Real>& arc, const Real angle)
+    {
+        const Vector2<Real> p = arc.point_at(angle);
+        const Vector2<Real> dir = p - arc.center;
+        return { p, dir.arbitrary_perpendicular() };
+    }
+
     static Line2 from_tangent_at(const Circle2<Real>& circle, const Real angle)
     {
         const Vector2<Real> p = circle.point_at(angle);
@@ -1002,11 +1009,24 @@ public:
         return angle_in_range(point_angle, from_angle(), to_angle());
     }
 
+    [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle) const
+    {
+        const Real r = radius();
+        return { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
+    }
+
+    [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle) const
+    {
+        const Real r = radius();
+        if (!angle_in_range(angle, from_angle(), to_angle())) {
+            return std::nullopt;
+        }
+        return Vector2<Real> { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
+    }
+
     [[nodiscard]] Vector2<Real> to() const
     {
-        const Real to_angle_ = to_angle();
-        const Real r = radius();
-        return { pivot.x + cos(to_angle_) * r, pivot.y + sin(to_angle_) * r };
+        return unchecked_point_at(to_angle());
     }
 
     [[nodiscard]] Real length() const

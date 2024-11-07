@@ -291,9 +291,12 @@ Arc2(const Vector2& pivot, const Vector2& from, Real angle);
 ```cpp
 Arc2 normalize_angle() const;
 Real radius() const;
+Real radius_sqrd() const;
 Real from_angle() const;
 REal to_angle() const;
 bool approx_contains(const Vector2& point) const;
+Vector2 unchecked_point_at(Real angle) const;
+std::optional<Vector2> point_at(Real angle) const;
 Vector2 to() const;
 Real length() const;
 Real length_sqrd() const;
@@ -312,6 +315,12 @@ bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
 bool intersects(const Arc2& other) const;
 std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const;
+Arc2 translate(const Vector2& by) const;
+Arc2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
+Arc2 scale(const Vector2& by) const;
+Arc2 rotate_at(const Vector2& rotate_origin, Real angle) const;
+Arc2 rotate(Real angle) const;
+bool approx_coincident(const Arc2& other) const;
 bool approx_equal(const Arc2& other) const;
 ```
 
