@@ -2163,6 +2163,37 @@ inline void geom_tests()
             ASSERT_FALSE(arc2.approx_tangent(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f })));
         }
 
+        test_section("approx_tangent(const Segment2&)");
+        {
+            ASSERT(arc1.approx_tangent(nnm::Segment2f({ 3.5539105245497f, 0.0f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT(arc2.approx_tangent(nnm::Segment2f({ 3.5539105245497f, 0.0f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT(arc1.approx_tangent(nnm::Segment2f({ 4.485281374f, 4.6568542495f }, { 3.5539105245497f, 0.0f })));
+            ASSERT(arc2.approx_tangent(nnm::Segment2f({ 4.485281374f, 4.6568542495f }, { 3.5539105245497f, 0.0f })));
+
+            ASSERT_FALSE(
+                arc1.approx_tangent(nnm::Segment2f({ 4.3539098923497f, 4.0f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT_FALSE(
+                arc2.approx_tangent(nnm::Segment2f({ 4.3539098923497f, 4.0f }, { 4.485281374f, 4.6568542495f })));
+            ASSERT_FALSE(
+                arc1.approx_tangent(nnm::Segment2f({ 4.485281374f, 4.6568542495f }, { 4.3539098923497f, 4.0f })));
+            ASSERT_FALSE(
+                arc2.approx_tangent(nnm::Segment2f({ 4.485281374f, 4.6568542495f }, { 4.3539098923497f, 4.0f })));
+
+            ASSERT_FALSE(
+                arc1.approx_tangent(nnm::Segment2f({ 3.5539105245497f, 0.0f }, { 3.68462892034f, 0.65361123245f })));
+            ASSERT_FALSE(
+                arc2.approx_tangent(nnm::Segment2f({ 3.5539105245497f, 0.0f }, { 3.68462892034f, 0.65361123245f })));
+            ASSERT_FALSE(
+                arc1.approx_tangent(nnm::Segment2f({ 3.68462892034f, 0.65361123245f }, { 3.5539105245497f, 0.0f })));
+            ASSERT_FALSE(
+                arc2.approx_tangent(nnm::Segment2f({ 3.68462892034f, 0.65361123245f }, { 3.5539105245497f, 0.0f })));
+
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Segment2f({ 3.0f, 2.0f }, { 6.0f, 3.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Segment2f({ 3.0f, 2.0f }, { 6.0f, 3.0f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Segment2f({ 6.0f, 3.0f }, { 3.0f, 2.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Segment2f({ 6.0f, 3.0f }, { 3.0f, 2.0f })));
+        }
+
         test_section("translate");
         {
             ASSERT(arc1.translate({ -1.0f, 2.0f }).approx_equal({ { -4.0f, 6.0f }, { 0.0f, 0.0f }, nnm::pi() / 2.0f }));

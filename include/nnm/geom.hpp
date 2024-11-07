@@ -1462,9 +1462,29 @@ public:
             return false;
         }
         const Real t = -b / static_cast<Real>(2);
+        if (t < static_cast<Real>(0)) {
+            return false;
+        }
         const Vector2<Real> p = ray.origin + ray.direction * t;
-        const bool p_in_ray = (p - ray.origin).dot(ray.direction) >= static_cast<Real>(0);
-        return p_in_ray && approx_contains(p);
+        return approx_contains(p);
+    }
+
+    [[nodiscard]] bool approx_tangent(const Segment2<Real>& segment) const
+    {
+        const Vector2<Real> dir = segment.from - pivot;
+        const Vector2<Real> segment_dir = segment.direction();
+        const Real twice_dot = static_cast<Real>(2) * dir.dot(segment_dir);
+        const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - radius_sqrd();
+        if (const Real disc = sqrd(twice_dot) - static_cast<Real>(4) * dist_sqrd_minus_radius_sqrd;
+            !approx_zero(disc)) {
+            return false;
+            }
+        const Real t = -twice_dot / static_cast<Real>(2);
+        if (t < static_cast<Real>(0) || t > segment.length()) {
+            return false;
+        }
+        const Vector2<Real> p = segment.from + segment_dir * t;
+        return approx_contains(p);
     }
 
     [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
