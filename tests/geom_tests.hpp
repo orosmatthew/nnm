@@ -2129,7 +2129,7 @@ inline void geom_tests()
                 && i25.value()[1].approx_equal({ 3.8832291626f, 6.14968749f }));
         }
 
-        test_section("approx_tangent");
+        test_section("approx_tangent(const Line2&)");
         {
             ASSERT(arc1.approx_tangent(
                 nnm::Line2f::from_points({ 4.0710678119f, 2.585786438f }, { 4.485281374f, 4.6568542495f })));
@@ -2143,6 +2143,24 @@ inline void geom_tests()
             ASSERT_FALSE(arc2.approx_tangent(nnm::Line2f({ 0.0f, 4.0f }, { 1.0f, 0.0f })));
             ASSERT_FALSE(arc1.approx_tangent(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
             ASSERT_FALSE(arc2.approx_tangent(nnm::Line2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
+        }
+
+        test_section("approx_tangent(const Ray2&)");
+        {
+            ASSERT(arc1.approx_tangent(
+                nnm::Ray2f::from_point_to_point({ 3.5539105245f, 0.0f }, { 3.68462985f, 0.653596646f })));
+            ASSERT(arc2.approx_tangent(
+                nnm::Ray2f::from_point_to_point({ 3.5539105245f, 0.0f }, { 3.68462985f, 0.653596646f })));
+            ASSERT_FALSE(arc1.approx_tangent(
+                nnm::Ray2f::from_point_to_point({ 3.68462985f, 0.653596646f }, { 3.5539105245f, 0.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(
+                nnm::Ray2f::from_point_to_point({ 3.68462985f, 0.653596646f }, { 3.5539105245f, 0.0f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Ray2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Ray2f({ -3.0f, 11.21110255f }, { 0.0f, 1.0f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Ray2f({ 3.0f, 11.21110255f }, { 1.0f, 0.0f })));
+            ASSERT_FALSE(arc1.approx_tangent(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Ray2f({ 3.0f, 11.21110255f }, { 1.0f, 0.0f })));
+            ASSERT_FALSE(arc2.approx_tangent(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f })));
         }
 
         test_section("translate");

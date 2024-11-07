@@ -316,6 +316,7 @@ std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) con
 bool intersects(const Arc2& other) const;
 std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const;
 bool approx_tangent(const Line2& line) const;
+bool approx_tangent(const Ray2& ray) const;
 Arc2 translate(const Vector2& by) const;
 Arc2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
 Arc2 scale(const Vector2& by) const;

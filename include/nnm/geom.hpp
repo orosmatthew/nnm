@@ -1445,16 +1445,26 @@ public:
         const Vector2<Real> dir = line.origin - pivot;
         const Real b = static_cast<Real>(2) * dir.dot(line.direction);
         const Real c = dir.dot(dir) - radius_sqrd();
-        const Real disc = sqrd(b) - static_cast<Real>(4) * c;
-        if (!approx_zero(disc)) {
+        if (const Real disc = sqrd(b) - static_cast<Real>(4) * c; !approx_zero(disc)) {
             return false;
         }
-        const Real disc_sqrt = sqrt(disc);
-        const Real t1 = (-b + disc_sqrt) / static_cast<Real>(2);
-        const Real t2 = (-b - disc_sqrt) / static_cast<Real>(2);
-        const Vector2<Real> p1 = line.origin + line.direction * t1;
-        const Vector2<Real> p2 = line.origin + line.direction * t2;
-        return approx_contains(p1) || approx_contains(p2);
+        const Real t = -b / static_cast<Real>(2);
+        const Vector2<Real> p = line.origin + line.direction * t;
+        return approx_contains(p);
+    }
+
+    [[nodiscard]] bool approx_tangent(const Ray2<Real>& ray) const
+    {
+        const Vector2<Real> dir = ray.origin - pivot;
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - radius_sqrd();
+        if (const Real disc = sqrd(b) - static_cast<Real>(4) * c; !approx_zero(disc)) {
+            return false;
+        }
+        const Real t = -b / static_cast<Real>(2);
+        const Vector2<Real> p = ray.origin + ray.direction * t;
+        const bool p_in_ray = (p - ray.origin).dot(ray.direction) >= static_cast<Real>(0);
+        return p_in_ray && approx_contains(p);
     }
 
     [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
