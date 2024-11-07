@@ -1487,6 +1487,24 @@ public:
         return approx_contains(p);
     }
 
+    [[nodiscard]] bool approx_tangent(const Arc2& other) const
+    {
+        if (pivot == other.pivot) {
+            return false;
+        }
+        const Real dist_sqrd = pivot.distance_sqrd(other.pivot);
+        const Real r = radius();
+        const Real other_r = other.radius();
+        if (!nnm::approx_equal(dist_sqrd, sqrd(r + other_r)) && !nnm::approx_equal(dist_sqrd, sqrd(r - other_r))) {
+            return false;
+        }
+        const Real dist = sqrt(dist_sqrd);
+        const Vector2<Real> dir = (other.pivot - pivot) / dist;
+        const Vector2<Real> p1 = pivot + dir * r;
+        const Vector2<Real> p2 = pivot - dir * other_r;
+        return (approx_contains(p1) && other.approx_contains(p1)) || (approx_contains(p2) && other.approx_contains(p2));
+    }
+
     [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
     {
         return Arc2 { pivot.translate(by), from.translate(by), angle };

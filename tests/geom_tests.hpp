@@ -2194,6 +2194,18 @@ inline void geom_tests()
             ASSERT_FALSE(arc2.approx_tangent(nnm::Segment2f({ 6.0f, 3.0f }, { 3.0f, 2.0f })));
         }
 
+        test_section("approx_tangent(const Arc2&)");
+        {
+            ASSERT(nnm::Arc2f({ -3.0f, 2.0f }, { -3.0f, 0.0f }, 2.41604f)
+                       .approx_tangent(nnm::Arc2f({ 0.0f, 2.0f }, { 0.0f, 1.0f }, -2.3821458f)));
+            ASSERT(nnm::Arc2f({ 0.0f, 2.0f }, { 0.0f, 1.0f }, -2.3821458f)
+                       .approx_tangent(nnm::Arc2f({ -3.0f, 2.0f }, { -3.0f, 0.0f }, 2.41604f)));
+            ASSERT_FALSE(nnm::Arc2f({ -3.0f, 2.0f }, { -3.0f, 0.0f }, 2.41604f)
+                             .approx_tangent(nnm::Arc2f({ 0.0f, 2.0f }, { 0.0f, 1.0f }, 2.3821458f)))
+            ASSERT_FALSE(nnm::Arc2f({ 0.0f, 2.0f }, { 0.0f, 1.0f }, 2.3821458f)
+                             .approx_tangent(nnm::Arc2f({ -3.0f, 2.0f }, { -3.0f, 0.0f }, 2.41604f)));
+        }
+
         test_section("translate");
         {
             ASSERT(arc1.translate({ -1.0f, 2.0f }).approx_equal({ { -4.0f, 6.0f }, { 0.0f, 0.0f }, nnm::pi() / 2.0f }));
