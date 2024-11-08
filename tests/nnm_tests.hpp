@@ -829,7 +829,8 @@ inline void nnm_tests()
         {
             nnm::Vector2 v1(2.0f, -3.0f);
             nnm::Vector2 v2(-4.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v1.angle_between(v2), 3.05485f))
+            ASSERT(nnm::approx_equal(v1.angle_between(v2), -3.05485f))
+            ASSERT(nnm::approx_equal(v2.angle_between(v1), 3.05485f));
         }
 
         test_section("angle_to");

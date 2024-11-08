@@ -555,7 +555,8 @@ public:
             return static_cast<Real>(0);
         }
         const Real cos_angle = nnm::clamp(dot(other) / lengths, static_cast<Real>(-1), static_cast<Real>(1));
-        return acos(cos_angle);
+        const Real angle = acos(cos_angle);
+        return cross(other) < static_cast<Real>(0) ? -angle : angle;
     }
 
     [[nodiscard]] Real angle_to(const Vector2& to) const

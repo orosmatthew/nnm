@@ -157,6 +157,8 @@ public:
 
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
 
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
@@ -411,6 +413,8 @@ public:
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const;
 
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
+
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
@@ -719,6 +723,8 @@ public:
 
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
 
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
+
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
     {
         return to - from;
@@ -1019,10 +1025,10 @@ public:
         const Line2<Real> l1 { mid1, perp1 };
         const Line2<Real> l2 { mid2, perp2 };
         const Vector2<Real> pivot = l1.unchecked_intersection(l2);
-        const Real angle_from = pivot.angle_to(from);
-        const Real angle_to = pivot.angle_to(to);
-        const Real angle_through = pivot.angle_to(through);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real angle_from = remainder(pivot.angle_to(from) + pi<Real>(), two_pi);
+        const Real angle_to = remainder(pivot.angle_to(to) + pi<Real>(), two_pi);
+        const Real angle_through = remainder(pivot.angle_to(through) + pi<Real>(), two_pi);
         const Real angle_diff = abs(nnm::normalize_angle(angle_to - angle_from));
         const bool in_range = angle_in_range(angle_through, angle_from, angle_to);
         const Real angle = in_range ? angle_to - angle_from
@@ -1224,6 +1230,27 @@ public:
         }
         return ends_min_dist;
     }
+
+    [[nodiscard]] Real distance(const Arc2& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        const Vector2<Real> dir = pivot.direction(other.pivot);
+        const Real angle1 = Vector2<Real>::axis_x().angle_between(dir);
+        const Real angle2 = Vector2<Real>::axis_x().angle_between(-dir);
+        const std::optional<Vector2<Real>> p1 = point_at(angle1);
+        if (const std::optional<Vector2<Real>> p2 = other.point_at(angle2); p1.has_value() && p2.has_value()) {
+            return p1->distance(*p2);
+        }
+        Real min_dist = other.distance(from);
+        min_dist = min(min_dist, other.distance(to()));
+        min_dist = min(min_dist, distance(other.from));
+        min_dist = min(min_dist, distance(other.to()));
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
@@ -2530,6 +2557,12 @@ Real Line2<Real>::distance(const Arc2<Real>& arc) const
 }
 
 template <typename Real>
+Real Line2<Real>::distance(const Circle2<Real>& circle) const
+{
+    return circle.distance(*this);
+}
+
+template <typename Real>
 constexpr Real Line2<Real>::distance(const Segment2<Real>& segment) const
 {
     return segment.distance(*this);
@@ -2638,6 +2671,12 @@ Real Ray2<Real>::distance(const Arc2<Real>& arc) const
 }
 
 template <typename Real>
+Real Ray2<Real>::distance(const Circle2<Real>& circle) const
+{
+    return circle.distance(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::intersects(const Arc2<Real>& arc) const
 {
     return arc.intersects(*this);
@@ -2680,6 +2719,12 @@ Real Segment2<Real>::distance(const Arc2<Real>& arc) const
 }
 
 template <typename Real>
+Real Segment2<Real>::distance(const Circle2<Real>& circle) const
+{
+    return circle.distance(*this);
+}
+
+template <typename Real>
 bool Segment2<Real>::intersects(const Arc2<Real>& arc) const
 {
     return arc.intersects(*this);
@@ -2713,6 +2758,12 @@ template <typename Real>
 bool Segment2<Real>::approx_tangent(const Arc2<Real>& arc) const
 {
     return arc.approx_tangent(*this);
+}
+
+template <typename Real>
+Real Arc2<Real>::distance(const Circle2<Real>& circle) const
+{
+    return circle.distance(*this);
 }
 
 template <typename Real>
