@@ -1239,11 +1239,16 @@ public:
         const Vector2<Real> dir = pivot.direction(other.pivot);
         const Real angle1 = Vector2<Real>::axis_x().angle_between(dir);
         const Real angle2 = Vector2<Real>::axis_x().angle_between(-dir);
-        const std::optional<Vector2<Real>> p1 = point_at(angle1);
-        if (const std::optional<Vector2<Real>> p2 = other.point_at(angle2); p1.has_value() && p2.has_value()) {
-            return p1->distance(*p2);
+        std::optional<Vector2<Real>> p1 = point_at(angle1);
+        if (!p1.has_value()) {
+            p1 = point_at(angle2);
         }
-        Real min_dist = other.distance(from);
+        std::optional<Vector2<Real>> p2 = other.point_at(angle1);
+        if (!p2.has_value()) {
+            p2 = other.point_at(angle2);
+        }
+        Real min_dist
+            = p1.has_value() & p2.has_value() ? min(p1->distance(*p2), other.distance(from)) : other.distance(from);
         min_dist = min(min_dist, other.distance(to()));
         min_dist = min(min_dist, distance(other.from));
         min_dist = min(min_dist, distance(other.to()));

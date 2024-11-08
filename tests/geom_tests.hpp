@@ -2184,6 +2184,17 @@ inline void geom_tests()
                 nnm::Arc2f::from_points_unchecked({ -3.0f, 3.0f }, { -2.0f, 5.0f }, { 1.0f, 4.0f })
                     .distance(nnm::Arc2f::from_points_unchecked({ 2.0f, -2.0f }, { 4.0f, 0.0f }, { 3.0f, 1.0f })),
                 3.60555128f));
+            ASSERT(nnm::approx_zero(
+                nnm::Arc2f::from_points_unchecked({ 2.0f, 1.0f }, { -2.0f, 5.0f }, { -3.0f, 3.0f })
+                    .distance(nnm::Arc2f::from_points_unchecked({ 2.0f, -2.0f }, { 0.0f, 0.0f }, { 3.0f, 1.0f }))));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f::from_points_unchecked({ -3.0f, 3.0f }, { -2.0f, 5.0f }, { 2.0f, 1.0f })
+                    .distance(nnm::Arc2f::from_points_unchecked({ -2.0f, 3.0f }, { -1.0f, 5.0f }, { 1.0f, 3.0f })),
+                0.511736f));
+            ASSERT(nnm::approx_equal(
+                nnm::Arc2f::from_points_unchecked({ -2.0f, 3.0f }, { -1.0f, 5.0f }, { 1.0f, 3.0f })
+                    .distance(nnm::Arc2f::from_points_unchecked({ -3.0f, 3.0f }, { -2.0f, 5.0f }, { 2.0f, 1.0f })),
+                0.511736f));
         }
 
         test_section("distance(const Circle2&)");
