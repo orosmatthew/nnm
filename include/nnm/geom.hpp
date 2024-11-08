@@ -1025,7 +1025,10 @@ public:
         }
         const Real angle_from = pivot->angle_to(from);
         const Real angle_to = pivot->angle_to(to);
-        const Real angle = angle_to - angle_from;
+        const Real angle_through = pivot->angle_to(through);
+        const Real angle = angle_in_range(angle_through, angle_from, angle_to) ? angle_to - angle_from
+            : angle_to < angle_from ? static_cast<Real>(2) * pi() - abs(nnm::normalize_angle(angle_to - angle_from))
+                                    : -static_cast<Real>(2) * pi() + abs(nnm::normalize_angle(angle_to - angle_from));
         return Arc2 { pivot.value(), from, angle };
     }
 
