@@ -1008,6 +1008,30 @@ public:
         return { pivot, from, angle };
     }
 
+    // TODO: test
+    static Arc2 from_points_unchecked(const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
+    {
+        const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
+        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, to }.midpoint();
+        const Vector2<Real> dir1 = through - from;
+        const Vector2<Real> dir2 = to - through;
+        const Vector2<Real> perp1 = dir1.arbitrary_perpendicular();
+        const Vector2<Real> perp2 = dir2.arbitrary_perpendicular();
+        const Line2<Real> l1 { mid1, perp1 };
+        const Line2<Real> l2 { mid2, perp2 };
+        const Vector2<Real> pivot = l1.unchecked_intersection(l2);
+        const Real angle_from = pivot.angle_to(from);
+        const Real angle_to = pivot.angle_to(to);
+        const Real angle_through = pivot.angle_to(through);
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real angle_diff = abs(nnm::normalize_angle(angle_to - angle_from));
+        const bool in_range = angle_in_range(angle_through, angle_from, angle_to);
+        const Real angle = in_range ? angle_to - angle_from
+            : angle_to < angle_from ? two_pi - angle_diff
+                                    : -two_pi + angle_diff;
+        return Arc2 { pivot, from, angle };
+    }
+
     static std::optional<Arc2> from_points(
         const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
     {
@@ -1702,6 +1726,26 @@ public:
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         return max(static_cast<Real>(0), signed_distance(point));
+    }
+
+    [[nodiscard]] Real distance(const Line2<Real>& line) const
+    {
+        return max(static_cast<Real>(0), line.distance(center) - radius);
+    }
+
+    [[nodiscard]] Real distance(const Ray2<Real>& ray) const
+    {
+        return max(static_cast<Real>(0), ray.distance(center) - radius);
+    }
+
+    [[nodiscard]] Real distance(const Segment2<Real>& segment) const
+    {
+        return max(static_cast<Real>(0), segment.distance(center) - radius);
+    }
+
+    [[nodiscard]] Real distance(const Arc2<Real>& arc) const
+    {
+        return max(static_cast<Real>(0), arc.distance(center) - radius);
     }
 
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const

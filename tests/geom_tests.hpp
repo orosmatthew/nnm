@@ -2772,12 +2772,50 @@ inline void geom_tests()
             ASSERT_FALSE(nnm::approx_equal(c1.signed_distance({ 1.0f, 1.0f }), -1.39444872f));
         }
 
-        test_section("distance");
+        test_section("distance(const Vector2&)");
         {
             ASSERT(nnm::approx_equal(c1.distance({ -3.0f, 1.0f }), 1.403124237f));
             ASSERT(nnm::approx_equal(c1.distance({ 0.0f, 0.0f }), 0.0f));
             ASSERT_FALSE(nnm::approx_equal(c1.distance({ 1.0f, 1.0f }), 1.0f));
             ASSERT_FALSE(nnm::approx_equal(c1.distance({ 10.0f, 10.0f }), 1.0f));
+        }
+
+        test_section("distance(const Line2&)");
+        {
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Line2f::axis_x())));
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Line2f::axis_y())));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Line2f::axis_x_offset(3.0f)), 1.0f));
+        }
+
+        test_section("distance(const Ray2&)");
+        {
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Ray2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }))));
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Ray2f({ -4.0f, 0.0f }, { 1.0f, 0.0f }))));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Ray2f({ -4.0f, 0.0f }, { -1.0f, 0.0f })), 1.7082039f));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Ray2f({ 0.0f, 3.0f }, { 1.0f, 0.0f })), 1.0f));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Ray2f({ 0.0f, 3.0f }, { -1.0f, 0.0f })), 1.32455532f));
+        }
+
+        test_section("distance(const Segment2&)");
+        {
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }))));
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Segment2f({ 0.0f, 0.0f }, { 8.0f, 0.0f }))));
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Segment2f({ -8.0f, 0.0f }, { 0.0f, 0.0f }))));
+            ASSERT(nnm::approx_zero(c1.distance(nnm::Segment2f({ -8.0f, 0.0f }, { 8.0f, 0.0f }))));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Segment2f({ 0.0f, 3.0f }, { 3.0f, 3.0f })), 1.0f));
+            ASSERT(nnm::approx_equal(c1.distance(nnm::Segment2f({ 0.0f, 3.0f }, { 1.0f, 3.0f })), 1.0827625f));
+        }
+
+        test_section("distance(const Arc2&)");
+        {
+            ASSERT(nnm::approx_zero(
+                c1.distance(nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -2.0f, 1.0f }, { -1.0f, -2.0f }))));
+            ASSERT(nnm::approx_equal(
+                c1.distance(nnm::Arc2f::from_points_unchecked({ -1.0f, 3.0f }, { -2.0f, 1.0f }, { -4.0f, 1.0f })),
+                0.60431089f));
+            ASSERT(nnm::approx_equal(
+                c1.distance(nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -5.0f, 3.0f }, { -1.0f, 3.0f })),
+                1.70820393f));
         }
 
         test_section("intersects(const Line2&)");
