@@ -303,6 +303,7 @@ Arc2(const Vector2& pivot, const Vector2& from, Real angle);
 
 ```cpp
 static Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_from, Real angle_to);
+static Arc2 from_points_unchecked(const Vector2& from, const Vector2& through, const Vector2& to);
 static std::optional<Arc2> from_points(const Vector2& from, const Vector2& through, const Vector2& to);
 ```
 
@@ -383,6 +384,7 @@ Circle2(const Vector2& center, Real radius);
 
 ```cpp
 static Circle2 from_center_point(const Vector2& center, const Vector2& point);
+static Circle2 from_points_unchecked(const Vector2& point1, const Vector2& point2, const Vector2& point3);
 static std::optional<Circle2> from_points(const Vector2& point1, const Vector2& point2, const Vector2& point3);
 ```
 
@@ -396,6 +398,10 @@ Real diameter() const;
 bool contains(const Vector2& point) const;
 Real signed_distance(const Vector2& point) const;
 Real distance(const Vector2& point) const;
+Real distance(const Line2& line) const;
+Real distance(const Ray2& ray) const;
+Real distance(const Segment2& segment) const;
+Real distance(const Arc2& arc) const;
 Vector2<Real> point_at(Real angle) const;
 bool intersects(const Line2& line) const;
 std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;

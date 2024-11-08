@@ -2728,6 +2728,12 @@ inline void geom_tests()
                        .approx_equal({ { -2.0f, -1.0f }, 3.0f }));
         }
 
+        test_section("from_points_unchecked");
+        {
+            ASSERT(nnm::Circle2f::from_points_unchecked({ -2.0f, 2.0f }, { 1.0f, 3.0f }, { 1.0f, -1.0f })
+                       .approx_equal({ { 0.0f, 1.0f }, 2.236067977f }));
+        }
+
         test_section("from_points");
         {
             const auto c1 = nnm::Circle2f::from_points({ -2.0f, 2.0f }, { 1.0f, 3.0f }, { 1.0f, -1.0f });
