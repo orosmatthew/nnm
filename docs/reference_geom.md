@@ -302,7 +302,8 @@ Arc2(const Vector2& pivot, const Vector2& from, Real angle);
 ### Static Methods
 
 ```cpp
-Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_from, Real angle_to);
+static Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_from, Real angle_to);
+static std::optional<Arc2> from_points(const Vector2& from, const Vector2& through, const Vector2& to);
 ```
 
 ### Methods
@@ -376,6 +377,13 @@ Real radius;
 ```cpp
 Circle2();
 Circle2(const Vector2& center, Real radius);
+```
+
+### Static Methods
+
+```cpp
+static Circle2 from_center_point(const Vector2& center, const Vector2& point);
+static std::optional<Circle2> from_points(const Vector2& point1, const Vector2& point2, const Vector2& point3);
 ```
 
 ### Methods

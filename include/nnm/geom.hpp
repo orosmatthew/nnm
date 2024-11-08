@@ -1008,6 +1008,27 @@ public:
         return { pivot, from, angle };
     }
 
+    static std::optional<Arc2> from_points(
+        const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
+    {
+        const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
+        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, to }.midpoint();
+        const Vector2<Real> dir1 = through - from;
+        const Vector2<Real> dir2 = to - through;
+        const Vector2<Real> perp1 = dir1.arbitrary_perpendicular();
+        const Vector2<Real> perp2 = dir2.arbitrary_perpendicular();
+        const Line2<Real> l1 { mid1, perp1 };
+        const Line2<Real> l2 { mid2, perp2 };
+        const std::optional<Vector2<Real>> pivot = l1.intersection(l2);
+        if (!pivot.has_value()) {
+            return std::nullopt;
+        }
+        const Real angle_from = pivot->angle_to(from);
+        const Real angle_to = pivot->angle_to(to);
+        const Real angle = angle_to - angle_from;
+        return Arc2 { pivot.value(), from, angle };
+    }
+
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
         return { pivot, from, nnm::normalize_angle(angle) };

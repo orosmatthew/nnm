@@ -1862,6 +1862,17 @@ inline void geom_tests()
                        .approx_equal({ { 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f }));
         }
 
+        test_section("from_points");
+        {
+            const auto a1 = nnm::Arc2f::from_points({ -3.0f, 2.0f }, { -1.0f, 4.0f }, { 1.0f, 4.0f });
+            ASSERT(a1.has_value() && a1->approx_equal({ { 0.0f, 1.0f }, { -3.0f, 2.0f }, -nnm::pi() / 2.0f }));
+            const auto a2 = nnm::Arc2f::from_points({ 1.0f, 4.0f }, { -1.0f, 4.0f }, { -3.0f, 2.0f });
+            ASSERT(a2.has_value() && a2->approx_equal({ { 0.0f, 1.0f }, { 1.0f, 4.0f }, nnm::pi() / 2.0f }));
+            ASSERT_FALSE(nnm::Arc2f::from_points({ -3.0f, 2.0f }, { -1.0f, 4.0f }, { 0.0f, 5.0f }).has_value());
+            const auto a3 = nnm::Arc2f::from_points({ -3.0f, 2.0f }, { 1.0f, 4.0f }, { -1.0f, 4.0f });
+            ASSERT(a3.has_value() && a3->approx_equal({ { 0.0f, 1.0f }, { -3.0f, 2.0f }, -0.9272952f }));
+        }
+
         constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
         constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
 
