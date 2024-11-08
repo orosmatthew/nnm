@@ -1618,6 +1618,30 @@ public:
     {
     }
 
+    static Circle2 from_center_point(const Vector2<Real>& center, const Vector2<Real>& point)
+    {
+        return { center, center.distance(point) };
+    }
+
+    static std::optional<Circle2> from_points(
+        const Vector2<Real>& point1, const Vector2<Real>& point2, const Vector2<Real>& point3)
+    {
+        const Vector2<Real> mid12 = nnm::Segment2<Real> { point1, point2 }.midpoint();
+        const Vector2<Real> mid23 = nnm::Segment2<Real> { point2, point3 }.midpoint();
+        const Vector2<Real> dir12 = point2 - point1;
+        const Vector2<Real> dir23 = point3 - point2;
+        const Vector2<Real> perp12 = dir12.arbitrary_perpendicular();
+        const Vector2<Real> perp23 = dir23.arbitrary_perpendicular();
+        const Line2<Real> l1 { mid12, perp12 };
+        const Line2<Real> l2 { mid23, perp23 };
+        const std::optional<Vector2<Real>> center = l1.intersection(l2);
+        if (!center.has_value()) {
+            return std::nullopt;
+        }
+        const Real radius = center.value().distance(point1);
+        return Circle2 { center.value(), radius };
+    }
+
     [[nodiscard]] constexpr Real circumference() const
     {
         return static_cast<Real>(2) * pi<Real>() * radius;

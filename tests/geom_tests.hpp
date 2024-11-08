@@ -2691,6 +2691,23 @@ inline void geom_tests()
             ASSERT(c.radius == 5.0f);
         }
 
+        test_section("from_center_containing_point");
+        {
+            ASSERT(nnm::Circle2f::from_center_point({ -2.0f, 2.0f }, { -1.0f, 0.0f })
+                       .approx_equal({ { -2.0f, 2.0f }, 2.236067977f }));
+            ASSERT(nnm::Circle2f::from_center_point({ -2.0f, -1.0f }, { 1.0f, -1.0f })
+                       .approx_equal({ { -2.0f, -1.0f }, 3.0f }));
+        }
+
+        test_section("from_points");
+        {
+            const auto c1 = nnm::Circle2f::from_points({ -2.0f, 2.0f }, { 1.0f, 3.0f }, { 1.0f, -1.0f });
+            ASSERT(c1.has_value() && c1->approx_equal({ { 0.0f, 1.0f }, 2.236067977f }));
+            ASSERT_FALSE(nnm::Circle2f::from_points({ -2.0f, 2.0f }, { 1.0f, -1.0f }, { 0.0f, 0.0f }).has_value());
+            ASSERT_FALSE(nnm::Circle2f::from_points({ -2.0f, 2.0f }, { -2.0f, 2.0f }, { 0.0f, 0.0f }).has_value());
+            ASSERT_FALSE(nnm::Circle2f::from_points({ -2.0f, 2.0f }, { -2.0f, 2.0f }, { -2.0f, 2.0f }).has_value());
+        }
+
         constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
 
         test_section("circumference");
