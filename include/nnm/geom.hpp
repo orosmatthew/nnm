@@ -1944,6 +1944,28 @@ public:
         return std::nullopt;
     }
 
+    // TODO: finish implementation and test
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
+    {
+        if (contains(arc.from)) {
+            return true;
+        }
+        const Real dist = center.distance_sqrd(arc.pivot);
+        const Real arc_radius = arc.radius();
+        if (dist > radius + arc_radius || dist < abs(radius - arc_radius) || (dist == 0 && radius == arc_radius)) {
+            return false;
+        }
+        const Real a = (sqrd(radius) - sqrd(arc_radius) + sqrd(dist)) / (static_cast<Real>(2) * dist);
+        const Real h = sqrt(sqrt(radius) - sqrd(a));
+        const Vector2<Real> diff = arc.pivot - center;
+        const Vector2<Real> p = center + a * diff / dist;
+        const Vector2<Real> inter1 { p.x + h * diff.y / dist, p.y - h * diff.x / dist };
+        const Vector2<Real> inter2 { p.x - h * diff.y / dist, p.y + h * diff.x / dist };
+    }
+
+    // TODO: implement and test
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
+
     [[nodiscard]] constexpr bool intersects(const Circle2& other) const
     {
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
