@@ -347,7 +347,13 @@ bool approx_coincident(const Arc2& other) const;
 bool approx_equal(const Arc2& other) const;
 ```
 
+### Operators
 
+```cpp
+bool operator==(const Arc2& other) const;
+bool operator!=(const Arc2& other) const;
+bool operator<(const Arc2& other) const;
+```
 
 ## Circle2
 

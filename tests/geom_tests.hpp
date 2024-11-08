@@ -2649,6 +2649,30 @@ inline void geom_tests()
             ASSERT_FALSE(arc1.approx_equal({ { 3.0f, -10.0f }, { 1.0f, 200.0f }, 3.0f }));
             ASSERT(arc1.approx_equal({ { -3.0000001f, 4.0f }, { 0.999999f, -2.0f }, 1.000000001f * nnm::pi() / 2.0f }));
         }
+
+        test_section("operator==");
+        {
+            ASSERT(arc1 == arc1);
+            ASSERT(arc2 == arc2);
+            ASSERT_FALSE(arc1 == arc2);
+            ASSERT_FALSE(arc2 == arc1);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(arc1 != arc1);
+            ASSERT_FALSE(arc2 != arc2);
+            ASSERT(arc1 != arc2);
+            ASSERT(arc2 != arc1);
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(arc1 < arc2);
+            ASSERT_FALSE(arc2 < arc1);
+            ASSERT_FALSE(arc1 < arc1);
+            ASSERT_FALSE(arc2 < arc2);
+        }
     }
 
     test_case("Circle2");

@@ -1577,6 +1577,27 @@ public:
         return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
             && nnm::approx_equal(angle, other.angle);
     }
+
+    [[nodiscard]] constexpr bool operator==(const Arc2& other) const
+    {
+        return pivot == other.pivot && from == other.from && angle == other.angle;
+    }
+
+    [[nodiscard]] constexpr bool operator!=(const Arc2& other) const
+    {
+        return pivot != other.pivot || from != other.from || angle != other.angle;
+    }
+
+    [[nodiscard]] constexpr bool operator<(const Arc2& other) const
+    {
+        if (pivot != other.pivot) {
+            return pivot < other.pivot;
+        }
+        if (from != other.from) {
+            return from < other.from;
+        }
+        return angle < other.angle;
+    }
 };
 
 template <typename Real>
