@@ -9,7 +9,6 @@
 
 #include <nnm/nnm.hpp>
 
-#include <algorithm>
 #include <array>
 #include <optional>
 
@@ -1223,9 +1222,9 @@ public:
         const bool in_arc1 = angle_in_range(intersection1_angle, from_angle_, to_angle_);
         const bool in_arc2 = angle_in_range(intersection2_angle, from_angle_, to_angle_);
         if (in_arc1 && in_arc2) {
-            std::array result { intersection1, intersection2 };
-            std::sort(result.begin(), result.end());
-            return result;
+            return intersection2 < intersection1
+                ? std::array { intersection2, intersection1 }
+                : std::array { intersection1, intersection2 };
         }
         if (in_arc1) {
             return std::array { intersection1, intersection1 };
@@ -1289,9 +1288,9 @@ public:
         const std::optional<Vector2<Real>> point1 = t1 > static_cast<Real>(0) ? intersection(t1) : std::nullopt;
         const std::optional<Vector2<Real>> point2 = t2 > static_cast<Real>(0) ? intersection(t2) : std::nullopt;
         if (point1.has_value() && point2.has_value()) {
-            std::array result = { point1.value(), point2.value() };
-            std::sort(result.begin(), result.end());
-            return result;
+            return point2.value() < point1.value()
+                ? std::array { point2.value(), point1.value() }
+                : std::array { point1.value(), point2.value() };
         }
         if (point1.has_value()) {
             return std::array { point1.value(), point1.value() };
@@ -1362,9 +1361,9 @@ public:
         const bool valid1 = in_segment(t1) && in_arc(intersection1);
         const bool valid2 = in_segment(t2) && in_arc(intersection2);
         if (valid1 && valid2) {
-            std::array result = { intersection1, intersection2 };
-            std::sort(result.begin(), result.end());
-            return result;
+            return intersection2 < intersection1
+                ? std::array { intersection2, intersection1 }
+                : std::array { intersection1, intersection2 };
         }
         if (valid1) {
             return std::array { intersection1, intersection1 };
@@ -1459,9 +1458,9 @@ public:
         const bool intersection1_valid = in_arc1_1 && in_arc2_1;
         const bool intersection2_valid = in_arc1_2 && in_arc2_2;
         if (intersection1_valid && intersection2_valid) {
-            std::array result = { intersection1, intersection2 };
-            std::sort(result.begin(), result.end());
-            return result;
+            return intersection2 < intersection1
+                ? std::array { intersection2, intersection1 }
+                : std::array { intersection1, intersection2 };
         }
         if (intersection1_valid) {
             return std::array { intersection1, intersection1 };
@@ -1664,9 +1663,7 @@ public:
         const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
         const Vector2<Real> p1 = line.origin + line.direction * t1;
         const Vector2<Real> p2 = line.origin + line.direction * t2;
-        std::array<Vector2<Real>, 2> points { p1, p2 };
-        std::sort(points.begin(), points.end());
-        return points;
+        return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
     }
 
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
@@ -1708,9 +1705,7 @@ public:
         if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p1 = ray.origin + ray.direction * t1;
             const Vector2<Real> p2 = ray.origin + ray.direction * t2;
-            std::array<Vector2<Real>, 2> points { p1, p2 };
-            std::sort(points.begin(), points.end());
-            return points;
+            return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t1;
@@ -1773,9 +1768,7 @@ public:
             && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p1 = segment.from + seg_dir * t1;
             const Vector2<Real> p2 = segment.from + seg_dir * t2;
-            std::array<Vector2<Real>, 2> points { p1, p2 };
-            std::sort(points.begin(), points.end());
-            return points;
+            return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.from + seg_dir * t1;
@@ -2079,8 +2072,7 @@ public:
         if (count < 2) {
             return std::nullopt;
         }
-        std::sort(points.begin(), points.end());
-        return points;
+        return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
@@ -2111,8 +2103,7 @@ public:
         if (count == 1) {
             points[1] = points[0];
         }
-        std::sort(points.begin(), points.end());
-        return points;
+        return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
@@ -2143,8 +2134,7 @@ public:
         if (count == 1) {
             points[1] = points[0];
         }
-        std::sort(points.begin(), points.end());
-        return points;
+        return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
     [[nodiscard]] constexpr bool approx_equilateral() const
