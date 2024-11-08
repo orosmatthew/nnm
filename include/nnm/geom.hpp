@@ -1001,6 +1001,14 @@ public:
     {
     }
 
+    static Arc2 from_pivot_radius_angle_to_angle(
+        const Vector2<Real>& pivot, const Real radius, const Real angle_from, const Real angle_to)
+    {
+        const Vector2<Real> from { pivot.x + radius * cos(angle_from), pivot.y + radius * sin(angle_from) };
+        const Real angle = angle_to - angle_from;
+        return { pivot, from, angle };
+    }
+
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
         return { pivot, from, nnm::normalize_angle(angle) };

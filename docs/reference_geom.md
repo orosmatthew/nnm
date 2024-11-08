@@ -299,6 +299,12 @@ Arc2();
 Arc2(const Vector2& pivot, const Vector2& from, Real angle);
 ```
 
+### Static Methods
+
+```cpp
+Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_from, Real angle_to);
+```
+
 ### Methods
 
 ```cpp

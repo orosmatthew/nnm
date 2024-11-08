@@ -1848,6 +1848,20 @@ inline void geom_tests()
             ASSERT(a.angle == 5.0f);
         }
 
+        test_section("from_pivot_radius_angle_to_angle");
+        {
+            ASSERT(nnm::Arc2f::from_pivot_radius_angle_to_angle(
+                       { -3.0f, 4.0f }, 7.211102550928f, -0.982793723f, 0.5880026035f)
+                       .approx_equal({ { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f }));
+            ASSERT(nnm::Arc2f::from_pivot_radius_angle_to_angle(
+                       { -3.0f, 4.0f }, 7.211102550928f, 0.5880026035f, -0.982793723f)
+                       .approx_equal({ { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f }));
+            ASSERT(nnm::Arc2f::from_pivot_radius_angle_to_angle({ 0.0f, 3.0f }, 5.0f, 0.0f, 5.355890089f)
+                       .approx_equal({ { 0.0f, 3.0f }, { 5.0f, 3.0f }, 5.355890089f }));
+            ASSERT(nnm::Arc2f::from_pivot_radius_angle_to_angle({ 0.0f, 3.0f }, 5.0f, 5.355890089f, 0.0f)
+                       .approx_equal({ { 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f }));
+        }
+
         constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
         constexpr nnm::Arc2f arc2 { { -3.0f, 4.0f }, { 3.0f, 8.0f }, -nnm::pi() / 2.0f };
 
