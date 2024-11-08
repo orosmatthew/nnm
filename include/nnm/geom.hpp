@@ -1024,14 +1024,14 @@ public:
         return pivot.distance_sqrd(from);
     }
 
-    [[nodiscard]] Real from_angle() const
+    [[nodiscard]] Real angle_from() const
     {
         return nnm::normalize_angle(pivot.angle_to(from));
     }
 
-    [[nodiscard]] Real to_angle() const
+    [[nodiscard]] Real angle_to() const
     {
-        return from_angle() + angle;
+        return angle_from() + angle;
     }
 
     [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
@@ -1041,7 +1041,7 @@ public:
         }
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real point_angle = remainder(pivot.angle_to(point), two_pi);
-        return angle_in_range(point_angle, from_angle(), to_angle());
+        return angle_in_range(point_angle, angle_from(), angle_to());
     }
 
     [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle) const
@@ -1053,7 +1053,7 @@ public:
     [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle) const
     {
         const Real r = radius();
-        if (!angle_in_range(angle, from_angle(), to_angle())) {
+        if (!angle_in_range(angle, angle_from(), angle_to())) {
             return std::nullopt;
         }
         return Vector2<Real> { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
@@ -1061,7 +1061,7 @@ public:
 
     [[nodiscard]] Vector2<Real> to() const
     {
-        return unchecked_point_at(to_angle());
+        return unchecked_point_at(angle_to());
     }
 
     [[nodiscard]] Real length() const
@@ -1085,7 +1085,7 @@ public:
         const Vector2<Real> proj = pivot + dir * radius();
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(proj) + two_pi, two_pi);
-            angle_in_range(proj_angle, from_angle(), to_angle())) {
+            angle_in_range(proj_angle, angle_from(), angle_to())) {
             return proj;
         }
         if (const Vector2<Real> to_ = to(); point.distance_sqrd(from) >= point.distance_sqrd(to_)) {
@@ -1103,7 +1103,7 @@ public:
         const Vector2<Real> proj = pivot + dir * radius();
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(proj) + two_pi, two_pi);
-            angle_in_range(proj_angle, from_angle(), to_angle())) {
+            angle_in_range(proj_angle, angle_from(), angle_to())) {
             return point.distance(proj);
         }
         const Real from_dist = point.distance(from);
@@ -1133,7 +1133,7 @@ public:
         const Vector2<Real> closest_point_on_line = line.origin + line.direction * proj_scalar;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_line), two_pi);
-            angle_in_range(proj_angle, from_angle(), to_angle())) {
+            angle_in_range(proj_angle, angle_from(), angle_to())) {
             return min(abs(pivot.distance(closest_point_on_line) - radius()), to_from_min_dist);
         }
         return to_from_min_dist;
@@ -1150,7 +1150,7 @@ public:
             const Vector2<Real> closest_point_on_ray = ray.origin + ray.direction * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_ray), two_pi);
-                angle_in_range(proj_angle, from_angle(), to_angle())) {
+                angle_in_range(proj_angle, angle_from(), angle_to())) {
                 return min(abs(pivot.distance(closest_point_on_ray) - radius()), to_from_origin_min_dist);
             }
         }
@@ -1169,7 +1169,7 @@ public:
             const Vector2<Real> closest_point_on_seg = segment.from + segment.direction_unnormalized() * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_seg), two_pi);
-                angle_in_range(proj_angle, from_angle(), to_angle())) {
+                angle_in_range(proj_angle, angle_from(), angle_to())) {
                 return min(abs(pivot.distance(closest_point_on_seg) - radius()), ends_min_dist);
             }
         }
@@ -1192,8 +1192,8 @@ public:
         const Vector2<Real> intersection1 = line.origin + line.direction * t1;
         const Vector2<Real> intersection2 = line.origin + line.direction * t2;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const Real intersection1_angle = remainder(pivot.angle_to(intersection1), two_pi);
         const Real intersection2_angle = remainder(pivot.angle_to(intersection2), two_pi);
         return angle_in_range(intersection1_angle, from_angle_, to_angle_)
@@ -1216,8 +1216,8 @@ public:
         const Vector2<Real> intersection1 = line.origin + line.direction * t1;
         const Vector2<Real> intersection2 = line.origin + line.direction * t2;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const Real intersection1_angle = remainder(pivot.angle_to(intersection1), two_pi);
         const Real intersection2_angle = remainder(pivot.angle_to(intersection2), two_pi);
         const bool in_arc1 = angle_in_range(intersection1_angle, from_angle_, to_angle_);
@@ -1250,8 +1250,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Real t) -> bool {
             const Vector2<Real> intersection = ray.origin + ray.direction * t;
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
@@ -1276,8 +1276,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const auto intersection = [&](const Real t) -> std::optional<Vector2<Real>> {
             const Vector2<Real> point = ray.origin + ray.direction * t;
             if (const Real intersection_angle = mod(pivot.angle_to(point) + two_pi, two_pi);
@@ -1318,8 +1318,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
@@ -1349,8 +1349,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = from_angle();
-        const Real to_angle_ = to_angle();
+        const Real from_angle_ = angle_from();
+        const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
@@ -1398,10 +1398,10 @@ public:
         const Vector2<Real> intersection2
             = pivots_line_base - Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle1 = from_angle();
-        const Real to_angle1 = to_angle();
-        const Real from_angle2 = other.from_angle();
-        const Real to_angle2 = other.to_angle();
+        const Real from_angle1 = angle_from();
+        const Real to_angle1 = angle_to();
+        const Real from_angle2 = other.angle_from();
+        const Real to_angle2 = other.angle_to();
         const auto in_arc
             = [&](const Vector2<Real>& intersection,
                   const Vector2<Real>& pivot,
@@ -1440,10 +1440,10 @@ public:
         const Vector2<Real> intersection2
             = pivots_line_base - Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle1 = from_angle();
-        const Real to_angle1 = to_angle();
-        const Real from_angle2 = other.from_angle();
-        const Real to_angle2 = other.to_angle();
+        const Real from_angle1 = angle_from();
+        const Real to_angle1 = angle_to();
+        const Real from_angle2 = other.angle_from();
+        const Real to_angle2 = other.angle_to();
         const auto in_arc
             = [&](const Vector2<Real>& intersection,
                   const Vector2<Real>& pivot,

@@ -311,8 +311,8 @@ Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real an
 Arc2 normalize_angle() const;
 Real radius() const;
 Real radius_sqrd() const;
-Real from_angle() const;
-REal to_angle() const;
+Real angle_from() const;
+REal angle_to() const;
 bool approx_contains(const Vector2& point) const;
 Vector2 unchecked_point_at(Real angle) const;
 std::optional<Vector2> point_at(Real angle) const;

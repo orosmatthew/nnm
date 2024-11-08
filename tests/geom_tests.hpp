@@ -1887,32 +1887,32 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(arc2.radius_sqrd(), nnm::sqrd(7.21110255f)));
         }
 
-        test_section("from_angle");
+        test_section("angle_from");
         {
-            ASSERT(nnm::approx_equal(arc1.from_angle(), -0.9827937232473f));
-            ASSERT(nnm::approx_equal(arc2.from_angle(), 0.5880026035f));
+            ASSERT(nnm::approx_equal(arc1.angle_from(), -0.9827937232473f));
+            ASSERT(nnm::approx_equal(arc2.angle_from(), 0.5880026035f));
             constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
             constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
-            ASSERT(nnm::approx_equal(arc3.from_angle(), 2.67794504459f));
-            ASSERT(nnm::approx_equal(arc4.from_angle(), 0.463647608991f));
+            ASSERT(nnm::approx_equal(arc3.angle_from(), 2.67794504459f));
+            ASSERT(nnm::approx_equal(arc4.angle_from(), 0.463647608991f));
             constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
             constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
-            ASSERT(nnm::approx_equal(arc5.from_angle(), 2.55359005f));
-            ASSERT(nnm::approx_equal(arc6.from_angle(), -0.339292614454f));
+            ASSERT(nnm::approx_equal(arc5.angle_from(), 2.55359005f));
+            ASSERT(nnm::approx_equal(arc6.angle_from(), -0.339292614454f));
         }
 
-        test_section("to_angle");
+        test_section("angle_to");
         {
-            ASSERT(nnm::approx_equal(arc1.to_angle(), 0.5880026035f));
-            ASSERT(nnm::approx_equal(arc2.to_angle(), -0.9827937232473f));
+            ASSERT(nnm::approx_equal(arc1.angle_to(), 0.5880026035f));
+            ASSERT(nnm::approx_equal(arc2.angle_to(), -0.9827937232473f));
             constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
             constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
-            ASSERT(nnm::approx_equal(arc3.to_angle(), 0.463647608991f));
-            ASSERT(nnm::approx_equal(arc4.to_angle(), 2.67794504459f));
+            ASSERT(nnm::approx_equal(arc3.angle_to(), 0.463647608991f));
+            ASSERT(nnm::approx_equal(arc4.angle_to(), 2.67794504459f));
             constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
             constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
-            ASSERT(nnm::approx_equal(arc5.to_angle(), 5.9438926927255f));
-            ASSERT(nnm::approx_equal(arc6.to_angle(), -3.7295952571374f));
+            ASSERT(nnm::approx_equal(arc5.angle_to(), 5.9438926927255f));
+            ASSERT(nnm::approx_equal(arc6.angle_to(), -3.7295952571374f));
         }
 
         test_section("approx_contains");
