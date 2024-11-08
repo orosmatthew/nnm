@@ -1862,6 +1862,20 @@ inline void geom_tests()
                        .approx_equal({ { 0.0f, 3.0f }, { 3.0f, -1.0f }, -5.355890089f }));
         }
 
+        test_section("from_points_unchecked");
+        {
+            ASSERT(nnm::Arc2f::from_points_unchecked({ -3.0f, 2.0f }, { -1.0f, 4.0f }, { 1.0f, 4.0f })
+                       .approx_equal({ { 0.0f, 1.0f }, { -3.0f, 2.0f }, -nnm::pi() / 2.0f }));
+            ASSERT(nnm::Arc2f::from_points_unchecked({ 1.0f, 4.0f }, { -1.0f, 4.0f }, { -3.0f, 2.0f })
+                       .approx_equal({ { 0.0f, 1.0f }, { 1.0f, 4.0f }, nnm::pi() / 2.0f }));
+            ASSERT(nnm::Arc2f::from_points_unchecked({ -3.0f, 2.0f }, { 1.0f, 4.0f }, { -1.0f, 4.0f })
+                       .approx_equal({ { 0.0f, 1.0f }, { -3.0f, 2.0f }, 5.355890089f }));
+            ASSERT(nnm::Arc2f::from_points_unchecked({ 1.0f, -1.0f }, { -1.0f, 4.0f }, { 1.0f, 4.0f })
+                       .approx_equal({ { 0.0f, 1.5f }, { 1.0f, -1.0f }, -3.9026054f }));
+            ASSERT(nnm::Arc2f::from_points_unchecked({ 1.0f, 4.0f }, { -1.0f, 4.0f }, { 1.0f, -1.0f })
+                       .approx_equal({ { 0.0f, 1.5f }, { 1.0f, 4.0f }, 3.9026054f }));
+        }
+
         test_section("from_points");
         {
             const auto a1 = nnm::Arc2f::from_points({ -3.0f, 2.0f }, { -1.0f, 4.0f }, { 1.0f, 4.0f });

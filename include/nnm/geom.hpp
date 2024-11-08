@@ -1008,7 +1008,6 @@ public:
         return { pivot, from, angle };
     }
 
-    // TODO: test
     static Arc2 from_points_unchecked(const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
     {
         const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
