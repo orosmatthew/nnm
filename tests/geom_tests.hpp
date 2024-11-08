@@ -3081,9 +3081,15 @@ inline void geom_tests()
                 tri2.angle_bisector(2).approx_coincident(nnm::Line2f::from_point_slope({ -4.0f, 2.0f }, -0.56273853f)));
         }
 
-        // TODO: finish
         test_section("altitude");
         {
+            ASSERT(tri1.altitude(0).approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
+            ASSERT(tri1.altitude(1).approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
+            ASSERT(tri1.altitude(2).approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
+
+            ASSERT(tri2.altitude(0).approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
+            ASSERT(tri2.altitude(1).approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
+            ASSERT(tri2.altitude(2).approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
         }
 
         test_section("lerp_point");
