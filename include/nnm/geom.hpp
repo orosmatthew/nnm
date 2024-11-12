@@ -2490,6 +2490,27 @@ public:
         return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
             && vertices[2].approx_equal(other.vertices[2]);
     }
+
+    [[nodiscard]] constexpr bool operator==(const Triangle2& other) const
+    {
+        return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
+    }
+
+    [[nodiscard]] constexpr bool operator!=(const Triangle2& other) const
+    {
+        return vertices[0] != other.vertices[0] || vertices[1] != other.vertices[1] || vertices[2] != other.vertices[2];
+    }
+
+    [[nodiscard]] constexpr bool operator<(const Triangle2& other) const
+    {
+        if (vertices[0] == other.vertices[0]) {
+            if (vertices[1] == other.vertices[1]) {
+                return vertices[2] < other.vertices[2];
+            }
+            return vertices[1] < other.vertices[1];
+        }
+        return vertices[0] < other.vertices[0];
+    }
 };
 
 template <typename Real = float>

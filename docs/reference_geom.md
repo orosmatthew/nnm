@@ -504,3 +504,11 @@ bool approx_coincident(const Triangle2& other) const;
 bool approx_equal(const Triangle2& other) const;
 ```
 
+### Operators
+
+```cpp
+bool operator==(const Triangle2& other) const;
+bool operator!=(const Triangle2& other) const;
+bool operator<(const Triangle2& other) const;
+```
+

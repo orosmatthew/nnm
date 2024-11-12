@@ -3741,5 +3741,34 @@ inline void geom_tests()
             ASSERT(result);
             ASSERT_FALSE(tri1.approx_equal(tri2));
         }
+
+        test_section("operator==");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = tri1 == tri1;
+            ASSERT(result);
+            ASSERT(tri2 == tri2);
+            ASSERT_FALSE(tri1 == tri2);
+            ASSERT_FALSE(tri2 == tri1);
+        }
+
+        test_section("operator!=");
+        {
+            // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+            constexpr auto result = tri1 != tri1;
+            ASSERT_FALSE(result);
+            ASSERT_FALSE(tri2 != tri2);
+            ASSERT(tri1 != tri2);
+            ASSERT(tri2 != tri1);
+        }
+
+        test_section("operator<");
+        {
+            constexpr auto result = tri1 < tri2;
+            ASSERT(result);
+            ASSERT_FALSE(tri2 < tri1);
+            ASSERT_FALSE(tri1 < tri1);
+            ASSERT_FALSE(tri2 < tri2);
+        }
     }
 }
