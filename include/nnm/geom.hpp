@@ -2401,10 +2401,15 @@ public:
             for (int j = 0; j < 3; ++j) {
                 if (nnm::approx_equal(angles[i], angles_other[j])) {
                     ++equal_count;
+                    if (equal_count >= 2) {
+                        goto is_similar;
+                    }
                 }
             }
         }
-        return equal_count >= 2;
+        return false;
+    is_similar:
+        return true;
     }
 
     [[nodiscard]] bool approx_right() const
