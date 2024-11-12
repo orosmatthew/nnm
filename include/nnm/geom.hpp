@@ -2385,6 +2385,17 @@ public:
         return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
+    // TODO: test
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
+    {
+        for (int i = 0; i < 3; ++i) {
+            if (edge(i).intersects(arc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
