@@ -488,6 +488,7 @@ std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
 bool approx_equilateral() const;
+bool approx_similar() const;
 bool approx_right() const;
 ```
 

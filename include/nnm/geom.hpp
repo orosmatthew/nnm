@@ -2392,6 +2392,21 @@ public:
             && approx_equal(edge(2).length_sqrd(), edge(0).length_sqrd());
     }
 
+    [[nodiscard]] bool approx_similar(const Triangle2& other) const
+    {
+        std::array angles { angle(0), angle(1), angle(2) };
+        std::array angles_other { other.angle(0), other.angle(1), other.angle(2) };
+        int equal_count = 0;
+        for (int i = 0; i < 3; ++i) {
+            for (int j = 0; j < 3; ++j) {
+                if (nnm::approx_equal(angles[i], angles_other[j])) {
+                    ++equal_count;
+                }
+            }
+        }
+        return equal_count >= 2;
+    }
+
     [[nodiscard]] bool approx_right() const
     {
         constexpr Real right_angle = pi() / static_cast<Real>(2);

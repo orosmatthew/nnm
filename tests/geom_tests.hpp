@@ -3625,6 +3625,24 @@ inline void geom_tests()
             ASSERT_FALSE(tri4.approx_equilateral());
         }
 
+        test_section("approx_similar");
+        {
+            ASSERT(tri1.approx_similar(tri1));
+            ASSERT(tri1.approx_similar(tri2));
+            ASSERT(tri2.approx_similar(tri1));
+            ASSERT(tri2.approx_similar(tri2));
+            ASSERT_FALSE(tri1.approx_similar(nnm::Triangle2f({ 4.0f, 4.0f }, { -4.0f, 4.0f }, { -4.0f, 8.0f })));
+            ASSERT_FALSE(tri2.approx_similar(nnm::Triangle2f({ 4.0f, 4.0f }, { -4.0f, 4.0f }, { -4.0f, 8.0f })));
+            ASSERT(tri1.approx_similar(nnm::Triangle2f({ 4.0f, -3.0f }, { -2.0f, -4.0f }, { -4.0f, 1.0f })));
+            ASSERT(tri2.approx_similar(nnm::Triangle2f({ 4.0f, -3.0f }, { -2.0f, -4.0f }, { -4.0f, 1.0f })));
+            ASSERT(tri1.approx_similar(nnm::Triangle2f(
+                { 4.0f / 2.0f, -3.0f / 2.0f }, { -2.0f / 2.0f, -4.0f / 2.0f }, { -4.0f / 2.0f, 1.0f / 2.0f })));
+            ASSERT(tri2.approx_similar(nnm::Triangle2f(
+                { 4.0f / 2.0f, -3.0f / 2.0f }, { -2.0f / 2.0f, -4.0f / 2.0f }, { -4.0f / 2.0f, 1.0f / 2.0f })));
+            ASSERT_FALSE(tri1.approx_similar(nnm::Triangle2f({ -2.0f, -4.0f }, { -2.0f, 1.0f }, { 4.0f, -3.0f })));
+            ASSERT_FALSE(tri2.approx_similar(nnm::Triangle2f({ -2.0f, -4.0f }, { -2.0f, 1.0f }, { 4.0f, -3.0f })));
+        }
+
         test_section("approx_right");
         {
             ASSERT_FALSE(tri1.approx_right())
