@@ -3257,6 +3257,14 @@ inline void geom_tests()
             ASSERT_FALSE(c1.scale(2.0f).approx_equal({ { -6.0f, 9.0f }, 15.0f }));
         }
 
+        test_section("approx_coincident");
+        {
+            constexpr auto result = c1.approx_coincident(c1);
+            ASSERT(result);
+            ASSERT_FALSE(c1.approx_coincident(nnm::Circle2f { { -1.0f, -100.0f }, 10.0f }));
+            ASSERT(c1.approx_coincident(nnm::Circle2f { { 2.00000001f, -3.000000000001f }, 4.999999f }));
+        }
+
         test_section("approx_equal");
         {
             constexpr auto result = c1.approx_equal(c1);

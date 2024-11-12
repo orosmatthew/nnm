@@ -428,6 +428,7 @@ Circle2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Circle2 rotate(Real angle) const;
 Circle2 scale_at(const Vector2& scale_origin, Real by) const;
 Circle2 scale(Real by) const;
+bool approx_coincident(const Circle2& other) const;
 bool approx_equal(const Circle2& other) const;
 ```
 

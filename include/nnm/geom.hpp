@@ -2111,6 +2111,11 @@ public:
         return { center.scale(Vector2<Real>::all(by)), abs(radius * by) };
     }
 
+    [[nodiscard]] constexpr bool approx_coincident(const Circle2& other) const
+    {
+        return approx_equal(other);
+    }
+
     [[nodiscard]] constexpr bool approx_equal(const Circle2& other) const
     {
         return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
