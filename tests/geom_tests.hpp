@@ -3651,5 +3651,95 @@ inline void geom_tests()
             constexpr nnm::Triangle2f tri4 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
             ASSERT(tri4.approx_right());
         }
+
+        test_section("translate");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].translate({ -1.0f, 2.0f }),
+                                             tri1.vertices[1].translate({ -1.0f, 2.0f }),
+                                             tri1.vertices[2].translate({ -1.0f, 2.0f }) };
+            ASSERT(tri1.translate({ -1.0f, 2.0f }).approx_equal(expected));
+        }
+
+        test_section("rotate_at");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f),
+                                             tri1.vertices[1].rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f),
+                                             tri1.vertices[2].rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f) };
+            ASSERT(tri1.rotate_at({ -1.0f, 2.0f }, nnm::pi() / 5.0f).approx_equal(expected));
+        }
+
+        test_section("rotate");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].rotate(-nnm::pi() / 3.0f),
+                                             tri1.vertices[1].rotate(-nnm::pi() / 3.0f),
+                                             tri1.vertices[2].rotate(-nnm::pi() / 3.0f) };
+            ASSERT(tri1.rotate(-nnm::pi() / 3.0f).approx_equal(expected));
+        }
+
+        test_section("scale_at");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }),
+                                             tri1.vertices[1].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }),
+                                             tri1.vertices[2].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }) };
+            ASSERT(tri1.scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }).approx_equal(expected));
+        }
+
+        test_section("scale");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].scale({ 3.0f, -0.5f }),
+                                             tri1.vertices[1].scale({ 3.0f, -0.5f }),
+                                             tri1.vertices[2].scale({ 3.0f, -0.5f }) };
+            ASSERT(tri1.scale({ 3.0f, -0.5f }).approx_equal(expected));
+        }
+
+        test_section("shear_x_at");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].shear_x_at({ 3.0f, -0.5f }, nnm::pi() / 7.0f),
+                                             tri1.vertices[1].shear_x_at({ 3.0f, -0.5f }, nnm::pi() / 7.0f),
+                                             tri1.vertices[2].shear_x_at({ 3.0f, -0.5f }, nnm::pi() / 7.0f) };
+            ASSERT(tri1.shear_x_at({ 3.0f, -0.5f }, nnm::pi() / 7.0f).approx_equal(expected));
+        }
+
+        test_section("shear_x");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].shear_x(-nnm::pi() / 7.0f),
+                                             tri1.vertices[1].shear_x(-nnm::pi() / 7.0f),
+                                             tri1.vertices[2].shear_x(-nnm::pi() / 7.0f) };
+            ASSERT(tri1.shear_x(-nnm::pi() / 7.0f).approx_equal(expected));
+        }
+
+        test_section("shear_y_at");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].shear_y_at({ 4.0f, -6.7f }, -nnm::pi() / 6.0f),
+                                             tri1.vertices[1].shear_y_at({ 4.0f, -6.7f }, -nnm::pi() / 6.0f),
+                                             tri1.vertices[2].shear_y_at({ 4.0f, -6.7f }, -nnm::pi() / 6.0f) };
+            ASSERT(tri1.shear_y_at({ 4.0f, -6.7f }, -nnm::pi() / 6.0f).approx_equal(expected));
+        }
+
+        test_section("shear_y");
+        {
+            const nnm::Triangle2f expected { tri1.vertices[0].shear_y(nnm::pi() / 6.0f),
+                                             tri1.vertices[1].shear_y(nnm::pi() / 6.0f),
+                                             tri1.vertices[2].shear_y(nnm::pi() / 6.0f) };
+            ASSERT(tri1.shear_y(nnm::pi() / 6.0f).approx_equal(expected));
+        }
+
+        test_section("approx_coincident");
+        {
+            constexpr auto result = tri1.approx_coincident(tri1);
+            ASSERT(result);
+            ASSERT(tri1.approx_coincident(tri2));
+            ASSERT(tri2.approx_coincident(tri1));
+            ASSERT(tri2.approx_coincident(tri2));
+            ASSERT_FALSE(tri1.approx_coincident({ { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 5.0f } }));
+            ASSERT_FALSE(tri2.approx_coincident({ { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 5.0f } }));
+        }
+
+        test_section("approx_equal");
+        {
+            constexpr auto result = tri1.approx_equal(tri1);
+            ASSERT(result);
+            ASSERT_FALSE(tri1.approx_equal(tri2));
+        }
     }
 }

@@ -9,6 +9,7 @@ Reference for NNM math library geometry extension.
 * [Segment2](#Segment2)
 * [Arc2](#Arc2)
 * [Circle2](#Circle2)
+* [Triangle2](#Triangle2)
 
 ## Line2
 
@@ -490,5 +491,16 @@ std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) con
 bool approx_equilateral() const;
 bool approx_similar() const;
 bool approx_right() const;
+Triangle2 translate(const Vector2& by) const;
+Triangle2 rotate_at(const Vector2& rotate_origin, Real angle) const;
+Triangle2 rotate(Real angle) const;
+Triangle2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
+Triangle2 scale(const Vector2& by) const;
+Triangle2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
+Triangle2 shear_x(Real angle_y) const;
+Triangle2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
+Triangle2 shear_y(Real angle_x) const;
+bool approx_coincident(const Triangle2& other) const;
+bool approx_equal(const Triangle2& other) const;
 ```
 

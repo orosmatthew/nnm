@@ -2387,9 +2387,9 @@ public:
 
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
-        return approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
-            && approx_equal(edge(1).length_sqrd(), edge(2).length_sqrd())
-            && approx_equal(edge(2).length_sqrd(), edge(0).length_sqrd());
+        return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
+            && nnm::approx_equal(edge(1).length_sqrd(), edge(2).length_sqrd())
+            && nnm::approx_equal(edge(2).length_sqrd(), edge(0).length_sqrd());
     }
 
     [[nodiscard]] bool approx_similar(const Triangle2& other) const
@@ -2413,17 +2413,15 @@ public:
     [[nodiscard]] bool approx_right() const
     {
         constexpr Real right_angle = pi() / static_cast<Real>(2);
-        return approx_equal(angle(0), right_angle) || approx_equal(angle(1), right_angle)
-            || approx_equal(angle(2), right_angle);
+        return nnm::approx_equal(angle(0), right_angle) || nnm::approx_equal(angle(1), right_angle)
+            || nnm::approx_equal(angle(2), right_angle);
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 translate(const Vector2<Real>& by) const
     {
         return { vertices[0].translate(by), vertices[1].translate(by), vertices[2].translate(by) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { vertices[0].rotate_at(rotate_origin, angle),
@@ -2431,13 +2429,11 @@ public:
                  vertices[2].rotate_at(rotate_origin, angle) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 rotate(const Real angle) const
     {
         return { vertices[0].rotate(angle), vertices[1].rotate(angle), vertices[2].rotate(angle) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
         return { vertices[0].scale_at(scale_origin, by),
@@ -2445,27 +2441,23 @@ public:
                  vertices[2].scale_at(scale_origin, by) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 scale(const Vector2<Real>& by) const
     {
         return { vertices[0].scale(by), vertices[1].scale(by), vertices[2].scale(by) };
     }
 
-    // TODO: test
-    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
     {
-        return { vertices[0].shear_x_at(shear_origin, angle_x),
-                 vertices[1].shear_x_at(shear_origin, angle_x),
-                 vertices[2].shear_x_at(shear_origin, angle_x) };
+        return { vertices[0].shear_x_at(shear_origin, angle_y),
+                 vertices[1].shear_x_at(shear_origin, angle_y),
+                 vertices[2].shear_x_at(shear_origin, angle_y) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 shear_x(const Real angle_y) const
     {
         return { vertices[0].shear_x(angle_y), vertices[1].shear_x(angle_y), vertices[2].shear_x(angle_y) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
         return { vertices[0].shear_y_at(shear_origin, angle_x),
@@ -2473,10 +2465,30 @@ public:
                  vertices[2].shear_y_at(shear_origin, angle_x) };
     }
 
-    // TODO: test
     [[nodiscard]] Triangle2 shear_y(const Real angle_x) const
     {
         return { vertices[0].shear_y(angle_x), vertices[1].shear_y(angle_x), vertices[2].shear_y(angle_x) };
+    }
+
+    [[nodiscard]] constexpr bool approx_coincident(const Triangle2& other) const
+    {
+        const std::array permutations {
+            Triangle2 { vertices[0], vertices[1], vertices[2] }, Triangle2 { vertices[0], vertices[2], vertices[1] },
+            Triangle2 { vertices[1], vertices[0], vertices[2] }, Triangle2 { vertices[1], vertices[2], vertices[0] },
+            Triangle2 { vertices[2], vertices[0], vertices[1] }, Triangle2 { vertices[2], vertices[1], vertices[0] }
+        };
+        for (const Triangle2& permutation : permutations) {
+            if (permutation.approx_equal(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool approx_equal(const Triangle2& other) const
+    {
+        return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
+            && vertices[2].approx_equal(other.vertices[2]);
     }
 };
 
