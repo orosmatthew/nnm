@@ -2402,14 +2402,12 @@ public:
                 if (nnm::approx_equal(angles[i], angles_other[j])) {
                     ++equal_count;
                     if (equal_count >= 2) {
-                        goto is_similar;
+                        return true;
                     }
                 }
             }
         }
         return false;
-    is_similar:
-        return true;
     }
 
     [[nodiscard]] bool approx_right() const
