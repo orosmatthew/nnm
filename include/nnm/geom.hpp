@@ -2416,6 +2416,68 @@ public:
         return approx_equal(angle(0), right_angle) || approx_equal(angle(1), right_angle)
             || approx_equal(angle(2), right_angle);
     }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 translate(const Vector2<Real>& by) const
+    {
+        return { vertices[0].translate(by), vertices[1].translate(by), vertices[2].translate(by) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return { vertices[0].rotate_at(rotate_origin, angle),
+                 vertices[1].rotate_at(rotate_origin, angle),
+                 vertices[2].rotate_at(rotate_origin, angle) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 rotate(const Real angle) const
+    {
+        return { vertices[0].rotate(angle), vertices[1].rotate(angle), vertices[2].rotate(angle) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    {
+        return { vertices[0].scale_at(scale_origin, by),
+                 vertices[1].scale_at(scale_origin, by),
+                 vertices[2].scale_at(scale_origin, by) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 scale(const Vector2<Real>& by) const
+    {
+        return { vertices[0].scale(by), vertices[1].scale(by), vertices[2].scale(by) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    {
+        return { vertices[0].shear_x_at(shear_origin, angle_x),
+                 vertices[1].shear_x_at(shear_origin, angle_x),
+                 vertices[2].shear_x_at(shear_origin, angle_x) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 shear_x(const Real angle_y) const
+    {
+        return { vertices[0].shear_x(angle_y), vertices[1].shear_x(angle_y), vertices[2].shear_x(angle_y) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    {
+        return { vertices[0].shear_y_at(shear_origin, angle_x),
+                 vertices[1].shear_y_at(shear_origin, angle_x),
+                 vertices[2].shear_y_at(shear_origin, angle_x) };
+    }
+
+    // TODO: test
+    [[nodiscard]] Triangle2 shear_y(const Real angle_x) const
+    {
+        return { vertices[0].shear_y(angle_x), vertices[1].shear_y(angle_x), vertices[2].shear_y(angle_x) };
+    }
 };
 
 template <typename Real = float>
