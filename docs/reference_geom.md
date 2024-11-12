@@ -7,6 +7,8 @@ Reference for NNM math library geometry extension.
 * [Line2](#Line2)
 * [Ray2](#Ray2)
 * [Segment2](#Segment2)
+* [Arc2](#Arc2)
+* [Circle2](#Circle2)
 
 ## Line2
 
@@ -34,7 +36,7 @@ Line2(const Vector2& origin, const Vector2& direction);
 ### Static Methods
 
 ```c++
-static Line2 from_points(const Vector2<Real>& point1, const Vector2<Real>& point2);
+static Line2 from_points(const Vector2& point1, const Vector2& point2);
 static Line2 from_segment(const Segment2& segment);
 static Line2 from_ray(const Ray2& ray);
 static std::optional<Line2> from_tangent(const Arc2& arc, Real angle);
@@ -335,7 +337,9 @@ std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
 bool intersects(const Arc2& other) const;
-std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const;
+std::optional<std::array<Vector2, 2>> intersections(const Arc2& other) const;
+bool intersects(const Circle2& circle) const;
+std::optional<std::array<Vector2, 2>> intersections(const Circle2& circle) const;
 bool approx_tangent(const Line2& line) const;
 bool approx_tangent(const Ray2& ray) const;
 bool approx_tangent(const Segment2& segment) const;
@@ -402,13 +406,15 @@ Real distance(const Line2& line) const;
 Real distance(const Ray2& ray) const;
 Real distance(const Segment2& segment) const;
 Real distance(const Arc2& arc) const;
-Vector2<Real> point_at(Real angle) const;
+Vector2 point_at(Real angle) const;
 bool intersects(const Line2& line) const;
 std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;
 bool intersects(const Ray2& ray) const;
 std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
+bool intersects(const Arc2& arc) const;
+std::optional<std::array<Vector2, 2>> intersections(const Arc2& arc) const;
 bool intersects(const Circle2& other) const;
 Vector2 intersect_depth(const Circle2& other) const;
 bool approx_tangent(const Line2& line) const;
@@ -443,7 +449,7 @@ using Triangle2d = Triangle2<double>;
 ### Members
 
 ```cpp
-Vector2<Real> vertices[3];
+Vector2 vertices[3];
 ```
 
 ### Constructors

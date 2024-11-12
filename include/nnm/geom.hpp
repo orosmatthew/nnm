@@ -1553,6 +1553,10 @@ public:
         return std::nullopt;
     }
 
+    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
+
     [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -2827,6 +2831,18 @@ template <typename Real>
 Real Arc2<Real>::distance(const Circle2<Real>& circle) const
 {
     return circle.distance(*this);
+}
+
+template <typename Real>
+bool Arc2<Real>::intersects(const Circle2<Real>& circle) const
+{
+    return circle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Arc2<Real>::intersections(const Circle2<Real>& circle) const
+{
+    return circle.intersections(*this);
 }
 
 template <typename Real>
