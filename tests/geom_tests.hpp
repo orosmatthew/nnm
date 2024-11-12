@@ -3010,6 +3010,58 @@ inline void geom_tests()
             ASSERT_FALSE(result4.has_value());
         }
 
+        test_section("intersects(const Arc2&)");
+        {
+            ASSERT(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi() / 2.0f)));
+            ASSERT(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi() / 2.0f)));
+            ASSERT_FALSE(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi() / 2.0f)));
+            ASSERT(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi())));
+            ASSERT(c1.intersects(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi())));
+            ASSERT(c1.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi() / 3.0f)));
+            ASSERT(c1.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi() / 3.0f)));
+            ASSERT(c1.intersects(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi())));
+            ASSERT(c1.intersects(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi())));
+            ASSERT_FALSE(c1.intersects(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(c1.intersects(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi() / 2.0f)));
+        }
+
+        test_section("intersections(const Arc2&)");
+        {
+            ASSERT_FALSE(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi() / 2.0f)).has_value());
+            ASSERT_FALSE(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi() / 2.0f)).has_value());
+            ASSERT_FALSE(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi() / 2.0f)).has_value());
+            ASSERT_FALSE(
+                c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi() / 2.0f)).has_value());
+            const auto i1 = c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi()));
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -2.97493719f, -2.5f })
+                && i1.value()[1].approx_equal({ -2.97493719f, -2.5f }));
+            const auto i2 = c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi()));
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ -2.97493719f, -2.5f })
+                && i2.value()[1].approx_equal({ -2.97493719f, -2.5f }));
+            const auto i3 = c1.intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi() / 3.0f));
+            ASSERT(
+                i3.has_value() && i3.value()[0].approx_equal({ -1.0f, 1.0f })
+                && i3.value()[1].approx_equal({ -1.0f, 1.0f }));
+            const auto i4
+                = c1.intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi() / 3.0f));
+            ASSERT(
+                i4.has_value() && i4.value()[0].approx_equal({ -1.0f, 1.0f })
+                && i4.value()[1].approx_equal({ -1.0f, 1.0f }));
+            const auto i5 = c1.intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi()));
+            ASSERT(
+                i5.has_value() && i5.value()[0].approx_equal({ 5.1918968f, -6.8486079f })
+                && i5.value()[1].approx_equal({ 6.26756078f, -0.394635339f }));
+            const auto i6 = c1.intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi()));
+            ASSERT(
+                i6.has_value() && i6.value()[0].approx_equal({ 5.1918968f, -6.8486079f })
+                && i6.value()[1].approx_equal({ 6.26756078f, -0.394635339f }));
+            ASSERT_FALSE(c1.intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi() / 2.0f)).has_value());
+            ASSERT_FALSE(c1.intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi() / 2.0f)).has_value());
+        }
+
         test_section("intersects(const Circle2&)");
         {
             constexpr auto result = c1.intersects(c1);

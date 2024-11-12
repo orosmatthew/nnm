@@ -1944,27 +1944,63 @@ public:
         return std::nullopt;
     }
 
-    // TODO: finish implementation and test
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
             return true;
         }
-        const Real dist = center.distance_sqrd(arc.pivot);
+        const Real dist = center.distance(arc.pivot);
         const Real arc_radius = arc.radius();
         if (dist > radius + arc_radius || dist < abs(radius - arc_radius) || (dist == 0 && radius == arc_radius)) {
             return false;
         }
         const Real a = (sqrd(radius) - sqrd(arc_radius) + sqrd(dist)) / (static_cast<Real>(2) * dist);
-        const Real h = sqrt(sqrt(radius) - sqrd(a));
+        const Real h = sqrt(sqrd(radius) - sqrd(a));
         const Vector2<Real> diff = arc.pivot - center;
         const Vector2<Real> p = center + a * diff / dist;
         const Vector2<Real> inter1 { p.x + h * diff.y / dist, p.y - h * diff.x / dist };
         const Vector2<Real> inter2 { p.x - h * diff.y / dist, p.y + h * diff.x / dist };
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real inter1_angle = remainder(arc.pivot.angle_to(inter1), two_pi);
+        const Real inter2_angle = remainder(arc.pivot.angle_to(inter2), two_pi);
+        const Real arc_from_angle = arc.angle_from();
+        const Real arc_to_angle = arc.angle_to();
+        const bool in_arc = angle_in_range(inter1_angle, arc_from_angle, arc_to_angle)
+            || angle_in_range(inter2_angle, arc_from_angle, arc_to_angle);
+        return in_arc;
     }
 
-    // TODO: implement and test
-    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const
+    {
+        const Real dist = center.distance(arc.pivot);
+        const Real arc_radius = arc.radius();
+        if (dist > radius + arc_radius || dist < abs(radius - arc_radius) || (dist == 0 && radius == arc_radius)) {
+            return std::nullopt;
+        }
+        const Real a = (sqrd(radius) - sqrd(arc_radius) + sqrd(dist)) / (static_cast<Real>(2) * dist);
+        const Real h = sqrt(sqrd(radius) - sqrd(a));
+        const Vector2<Real> diff = arc.pivot - center;
+        const Vector2<Real> p = center + a * diff / dist;
+        const Vector2<Real> inter1 { p.x + h * diff.y / dist, p.y - h * diff.x / dist };
+        const Vector2<Real> inter2 { p.x - h * diff.y / dist, p.y + h * diff.x / dist };
+        const Real two_pi = static_cast<Real>(2) * pi<Real>();
+        const Real inter1_angle = remainder(arc.pivot.angle_to(inter1), two_pi);
+        const Real inter2_angle = remainder(arc.pivot.angle_to(inter2), two_pi);
+        const Real arc_from_angle = arc.angle_from();
+        const Real arc_to_angle = arc.angle_to();
+        const bool inter1_in_arc = angle_in_range(inter1_angle, arc_from_angle, arc_to_angle);
+        const bool inter2_in_arc = angle_in_range(inter2_angle, arc_from_angle, arc_to_angle);
+        if (inter1_in_arc && inter2_in_arc) {
+            return inter2 < inter1 ? std::array { inter2, inter1 } : std::array { inter1, inter2 };
+        }
+        if (inter1_in_arc) {
+            return std::array { inter1, inter1 };
+        }
+        if (inter2_in_arc) {
+            return std::array { inter2, inter2 };
+        }
+        return std::nullopt;
+    }
 
     [[nodiscard]] constexpr bool intersects(const Circle2& other) const
     {
