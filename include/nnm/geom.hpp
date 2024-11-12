@@ -1622,6 +1622,8 @@ public:
         return (approx_contains(p1) && other.approx_contains(p1)) || (approx_contains(p2) && other.approx_contains(p2));
     }
 
+    [[nodiscard]] bool approx_tangent(const Circle2<Real>& circle) const;
+
     [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
     {
         return Arc2 { pivot.translate(by), from.translate(by), angle };
@@ -2056,6 +2058,22 @@ public:
         }
         const Real t = -twice_dot / (static_cast<Real>(2) * len_sqrd);
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
+    }
+
+    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const
+    {
+        if (center == arc.pivot) {
+            return false;
+        }
+        const Real dist_sqrd = center.distance_sqrd(arc.pivot);
+        const Real arc_radius = arc.radius();
+        const bool is_circle_tangent = nnm::approx_equal(dist_sqrd, sqrd(radius + arc_radius))
+            || nnm::approx_equal(dist_sqrd, sqrd(radius - arc_radius));
+        if (!is_circle_tangent) {
+            return false;
+        }
+        const Real arc_circle_angle = contains(arc.pivot) ? center.angle_to(arc.pivot) : arc.pivot.angle_to(center);
+        return angle_in_range(arc_circle_angle, arc.angle_from(), arc.angle_to());
     }
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2& other) const
@@ -2843,6 +2861,12 @@ template <typename Real>
 std::optional<std::array<Vector2<Real>, 2>> Arc2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
+}
+
+template <typename Real>
+bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
+{
+    return circle.approx_tangent(*this);
 }
 
 template <typename Real>

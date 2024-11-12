@@ -2736,6 +2736,21 @@ inline void geom_tests()
                              .approx_tangent(nnm::Arc2f({ -3.0f, 2.0f }, { -3.0f, 0.0f }, 2.41604f)));
         }
 
+        test_section("approx_tangent(const Circle2&)");
+        {
+            constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
+            ASSERT(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, 0.0f }, nnm::pi()).approx_tangent(c1));
+            ASSERT(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, -6.0f }, -nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, 0.0f }, -nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, -6.0f }, nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 10.0f, -2.0f }, { 10.0f, 0.0f }, nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 10.0f, -2.0f }, { 10.0f, -4.0f }, -nnm::pi()).approx_tangent(c1));
+            ASSERT(nnm::Arc2f({ 2.0f, 0.0f }, { 4.0f, 0.0f }, nnm::pi()).approx_tangent(c1));
+            ASSERT(nnm::Arc2f({ 2.0f, 0.0f }, { 0.0f, 0.0f }, -nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 2.0f, 0.0f }, { 4.0f, 0.0f }, -nnm::pi()).approx_tangent(c1));
+            ASSERT_FALSE(nnm::Arc2f({ 2.0f, 0.0f }, { 0.0f, 0.0f }, nnm::pi()).approx_tangent(c1));
+        }
+
         test_section("translate");
         {
             ASSERT(arc1.translate({ -1.0f, 2.0f }).approx_equal({ { -4.0f, 6.0f }, { 0.0f, 0.0f }, nnm::pi() / 2.0f }));
@@ -3176,6 +3191,20 @@ inline void geom_tests()
             ASSERT_FALSE(c2.approx_tangent(seg3));
             constexpr nnm::Segment2f seg4 { { 2.0f, 2.0f }, { 4.0f, 0.0f } };
             ASSERT_FALSE(c2.approx_tangent(seg4));
+        }
+
+        test_section("approx_tangent(const Arc2&)");
+        {
+            ASSERT(c1.approx_tangent(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, 0.0f }, nnm::pi())));
+            ASSERT(c1.approx_tangent(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, -6.0f }, -nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, 0.0f }, -nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 10.0f, -3.0f }, { 10.0f, -6.0f }, nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 10.0f, -2.0f }, { 10.0f, 0.0f }, nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 10.0f, -2.0f }, { 10.0f, -4.0f }, -nnm::pi())));
+            ASSERT(c1.approx_tangent(nnm::Arc2f({ 2.0f, 0.0f }, { 4.0f, 0.0f }, nnm::pi())));
+            ASSERT(c1.approx_tangent(nnm::Arc2f({ 2.0f, 0.0f }, { 0.0f, 0.0f }, -nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 2.0f, 0.0f }, { 4.0f, 0.0f }, -nnm::pi())));
+            ASSERT_FALSE(c1.approx_tangent(nnm::Arc2f({ 2.0f, 0.0f }, { 0.0f, 0.0f }, nnm::pi())));
         }
 
         test_section("approx_tangent(const Circle2&)");
