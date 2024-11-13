@@ -3916,4 +3916,55 @@ inline void geom_tests()
             ASSERT_FALSE(tri2 < tri2);
         }
     }
+
+    test_case("Rectangle2");
+    {
+        test_section("Rectangle2()");
+        {
+            constexpr nnm::Rectangle2f r {};
+            ASSERT(r.center == nnm::Vector2f::zero());
+            ASSERT(r.size == nnm::Vector2f::zero());
+            ASSERT(r.angle == 0.0f);
+        }
+
+        test_section("Rectangle2(const Vector2&, const Vector2&, Real)");
+        {
+            constexpr nnm::Rectangle2f r { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            ASSERT(r.center == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(r.size == nnm::Vector2f(3.0f, 4.0f));
+            ASSERT(r.angle == nnm::pi() / 3.0f);
+        }
+
+        constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+        constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+        constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+
+        test_section("vertex_nx_ny");
+        {
+            ASSERT(r1.vertex_nx_ny().approx_equal({ 1.9820508f, -4.299038f }));
+            ASSERT(r2.vertex_nx_ny().approx_equal({ -2.5f, 0.0f }));
+            ASSERT(r3.vertex_nx_ny().approx_equal({ 1.5f, -2.5f }));
+        }
+
+        test_section("vertex_nx_py");
+        {
+            ASSERT(r1.vertex_nx_py().approx_equal({ -1.48205081f, -2.29903811f }));
+            ASSERT(r2.vertex_nx_py().approx_equal({ -2.5f, 4.0f }));
+            ASSERT(r3.vertex_nx_py().approx_equal({ 6.5f, -2.5f }));
+        }
+
+        test_section("vertex_px_ny");
+        {
+            ASSERT(r1.vertex_px_ny().approx_equal({ 3.48205081f, -1.7009619f }));
+            ASSERT(r2.vertex_px_ny().approx_equal({ 0.5f, 0.0f }));
+            ASSERT(r3.vertex_px_ny().approx_equal({ 1.5f, -3.5f }));
+        }
+
+        test_section("vertex_px_py");
+        {
+            ASSERT(r1.vertex_px_py().approx_equal({ 0.01794919f, 0.29903811f }));
+            ASSERT(r2.vertex_px_py().approx_equal({ 0.5f, 4.0f }));
+            ASSERT(r3.vertex_px_py().approx_equal({ 6.5f, -3.5f }));
+        }
+    }
 }

@@ -7,6 +7,8 @@
 #ifndef NNM_GEOM_HPP
 #define NNM_GEOM_HPP
 
+// ReSharper disable CppDFATimeOver
+
 #include <nnm/nnm.hpp>
 
 #include <array>
@@ -38,6 +40,10 @@ template <typename Real>
 class Triangle2;
 using Triangle2f = Triangle2<float>;
 using Triangle2d = Triangle2<double>;
+template<typename Real>
+class Rectangle2;
+using Rectangle2f = Rectangle2<float>;
+using Rectangle2d = Rectangle2<double>;
 
 template <typename Real>
 class Line2 {
@@ -2588,6 +2594,95 @@ public:
             return vertices[1] < other.vertices[1];
         }
         return vertices[0] < other.vertices[0];
+    }
+};
+
+template <typename Real>
+class Rectangle2 {
+public:
+    Vector2<Real> center;
+    Vector2<Real> size;
+    Real angle;
+
+    constexpr Rectangle2()
+        : center { Vector2<Real>::zero() }
+        , size { Vector2<Real>::zero() }
+        , angle { static_cast<Real>(0) }
+    {
+    }
+
+    constexpr Rectangle2(const Vector2<Real>& center, const Vector2<Real>& size, const Real angle)
+        : center { center }
+        , size { size }
+        , angle { angle }
+    {
+    }
+
+    [[nodiscard]] Vector2<Real> vertex_nx_ny() const
+    {
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        return (center - half_size).rotate_at(center, angle);
+    }
+
+    [[nodiscard]] Vector2<Real> vertex_nx_py() const
+    {
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        return Vector2<Real> { center.x - half_size.x, center.y + half_size.y }.rotate_at(center, angle);
+    }
+
+    [[nodiscard]] Vector2<Real> vertex_px_ny() const
+    {
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        return Vector2<Real> { center.x + half_size.x, center.y - half_size.y }.rotate_at(center, angle);
+    }
+
+    [[nodiscard]] Vector2<Real> vertex_px_py() const
+    {
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        return (center + half_size).rotate_at(center, angle);
+    }
+
+    // TODO: test
+    [[nodiscard]] Segment2<Real> edge_nx() const
+    {
+        return { vertex_nx_ny(), vertex_nx_py() };
+    }
+
+    // TODO: test
+    [[nodiscard]] Segment2<Real> edge_ny() const
+    {
+        return { vertex_nx_ny(), vertex_px_ny() };
+    }
+
+    // TODO: test
+    [[nodiscard]] Segment2<Real> edge_px() const
+    {
+        return { vertex_px_ny(), vertex_px_py() };
+    }
+
+    // TODO: test
+    [[nodiscard]] Segment2<Real> edge_py() const
+    {
+        return { vertex_nx_py(), vertex_px_py() };
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real area() const
+    {
+        return size.x * size.y;
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real perimeter() const
+    {
+        return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
+    }
+
+    // TODO: test
+    [[nodiscard]] bool approx_equal(const Rectangle2& other) const
+    {
+        return center.approx_equal(other.center) && size.approx_equal(other.size)
+            && nnm::approx_equal(angle, other.angle);
     }
 };
 
