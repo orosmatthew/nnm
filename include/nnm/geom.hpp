@@ -2385,9 +2385,11 @@ public:
         return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
+        if (contains(arc.from) || contains(arc.to())) {
+            return true;
+        }
         for (int i = 0; i < 3; ++i) {
             if (edge(i).intersects(arc)) {
                 return true;

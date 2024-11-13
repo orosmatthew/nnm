@@ -3615,6 +3615,22 @@ inline void geom_tests()
                 && (*result6)[1].approx_equal({ -0.33333333f, 1.3333333f }));
         }
 
+        test_section("intersects");
+        {
+            ASSERT(tri1.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
+            ASSERT(tri2.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(tri1.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, -nnm::pi() / 2.0f)));
+            ASSERT_FALSE(tri2.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, -nnm::pi() / 2.0f)));
+            ASSERT(tri1.intersects(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
+            ASSERT(tri2.intersects(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
+            ASSERT_FALSE(tri1.intersects(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, -nnm::pi())));
+            ASSERT_FALSE(tri2.intersects(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, -nnm::pi())));
+            ASSERT(tri1.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, nnm::pi())));
+            ASSERT(tri2.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, nnm::pi())));
+            ASSERT(tri1.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi())));
+            ASSERT(tri2.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi())));
+        }
+
         test_section("approx_equilateral");
         {
             constexpr auto result = tri1.approx_equilateral();
