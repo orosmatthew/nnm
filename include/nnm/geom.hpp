@@ -2269,6 +2269,17 @@ public:
         return { x, y, z };
     }
 
+    [[nodiscard]] Circle2<Real> circumcircle() const
+    {
+        return Circle2<Real>::from_points_unchecked(vertices[0], vertices[1], vertices[2]);
+    }
+
+    [[nodiscard]] Circle2<Real> incircle() const
+    {
+        const Vector2<Real> center = incenter();
+        return { center, edge(0).distance(center) };
+    }
+
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector3<Real> b = barycentric(point);

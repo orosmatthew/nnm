@@ -481,6 +481,8 @@ Line2 angle_bisector(int index) const;
 Segment2 altitude(int index) const;
 Vector2 lerp_point(const Vector3& weights) const;
 Vector3 barycentric(const Vector2& point) const;
+Circle2 circumcircle() const;
+Circle2 incircle() const;
 bool contains(const Vector2& point) const;
 bool intersects(const Triangle2& other) const;
 bool intersects(const Line2& line) const;

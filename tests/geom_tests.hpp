@@ -3508,6 +3508,24 @@ inline void geom_tests()
             ASSERT(tri2.lerp_point(tri2.barycentric({ -2.0f, 1.0f })).approx_equal({ -2.0f, 1.0f }));
         }
 
+        test_section("circumcircle");
+        {
+            ASSERT(tri1.circumcircle().approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
+            ASSERT(tri2.circumcircle().approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
+            ASSERT(nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f })
+                       .circumcircle()
+                       .approx_equal({ { 0.0f, 6.0f }, 4.47213595f }));
+        }
+
+        test_section("incircle");
+        {
+            ASSERT(tri1.incircle().approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
+            ASSERT(tri2.incircle().approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
+            ASSERT(nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f })
+                       .incircle()
+                       .approx_equal(nnm::Circle2f { { -2.47213595f, 5.52786405f }, 1.52786398f }));
+        }
+
         test_section("contains");
         {
             constexpr auto result = tri1.contains({ 0.0f, 0.0f });
