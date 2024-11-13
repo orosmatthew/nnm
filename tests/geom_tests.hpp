@@ -3640,6 +3640,32 @@ inline void geom_tests()
             ASSERT(tri1.intersects(nnm::Circle2f({ 1.0f, 2.0f }, 9.0f)));
         }
 
+        test_section("intersect_depth(const Circle2&)");
+        {
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f))
+                       .approx_equal({ -0.988854374f, 0.494427187f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f))
+                       .approx_equal({ -0.988854374f, 0.494427187f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f))
+                       .approx_equal({ -2.094427191f, 1.0472135955f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f))
+                       .approx_equal({ -2.094427191f, 1.0472135955f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f)).approx_equal({ 0.0f, 1.0f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f)).approx_equal({ 0.0f, 1.0f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f))
+                       .approx_equal({ 0.2095290885f, 0.9778024141f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f))
+                       .approx_equal({ 0.2095290885f, 0.9778024141f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f))
+                       .approx_equal({ -0.894427191f, 0.4472135955f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f))
+                       .approx_equal({ -0.894427191f, 0.4472135955f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f))
+                       .approx_equal({ 0.7427813525f, -1.8569533819f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f))
+                       .approx_equal({ 0.7427813525f, -1.8569533819f }));
+        }
+
         test_section("approx_equilateral");
         {
             constexpr auto result = tri1.approx_equilateral();

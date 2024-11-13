@@ -2411,6 +2411,41 @@ public:
         return false;
     }
 
+    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const
+    {
+        std::optional<Real> closest_dist_sqrd;
+        std::optional<Vector2<Real>> closest_point;
+        for (const Vector2<Real>& vertex : vertices) {
+            if (vertex == circle.center) {
+                return circle.center.direction(centroid()) * circle.radius;
+            }
+        }
+        for (int i = 0; i < 3; ++i) {
+            const Vector2<Real> point = edge(i).project_point(circle.center);
+            const Real dist_sqrd = circle.center.distance_sqrd(point);
+            if (point == circle.center) {
+                const Vector2<Real> edge_dir = edge(i).direction();
+                const Vector2<Real> edge_normal = edge(i).direction().arbitrary_perpendicular();
+                const Vector2<Real> edge_normal_towards_center
+                    = point.direction_unnormalized(centroid()).dot(edge_normal) < static_cast<Real>(0)
+                    ? -edge_normal
+                    : edge_normal;
+                return edge_normal_towards_center * circle.radius;
+            }
+            if (!closest_dist_sqrd.has_value() || dist_sqrd < closest_dist_sqrd.value()) {
+                closest_dist_sqrd = dist_sqrd;
+                closest_point = point;
+            }
+        }
+        const Real closest_dist = sqrt(closest_dist_sqrd.value());
+        const bool contains_circle = contains(circle.center);
+        const Real depth = contains_circle ? circle.radius + closest_dist : circle.radius - closest_dist;
+        const Vector2<Real> dir = contains_circle
+            ? -circle.center.direction(closest_point.value())
+            : circle.center.direction(closest_point.value());
+        return dir * depth;
+    }
+
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())

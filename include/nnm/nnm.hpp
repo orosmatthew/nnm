@@ -451,6 +451,13 @@ public:
         return (to - *this).normalize();
     }
 
+
+    // TODO: test
+    [[nodiscard]] Vector2 direction_unnormalized(const Vector2& to) const
+    {
+        return to - *this;
+    }
+
     [[nodiscard]] constexpr Real distance_sqrd(const Vector2& to) const
     {
         const Real diff_x = to.x - x;
