@@ -40,7 +40,7 @@ template <typename Real>
 class Triangle2;
 using Triangle2f = Triangle2<float>;
 using Triangle2d = Triangle2<double>;
-template<typename Real>
+template <typename Real>
 class Rectangle2;
 using Rectangle2f = Rectangle2<float>;
 using Rectangle2d = Rectangle2<double>;
@@ -965,6 +965,12 @@ public:
     [[nodiscard]] Segment2 shear_y(const Real angle_x) const
     {
         return { from.shear_y(angle_x), to.shear_y(angle_x) };
+    }
+
+    [[nodiscard]] constexpr bool approx_coincident(const Segment2& other) const
+    {
+        return (from.approx_equal(other.from) && to.approx_equal(other.to))
+            || (from.approx_equal(other.to) && to.approx_equal(other.from));
     }
 
     [[nodiscard]] constexpr bool approx_equal(const Segment2& other) const

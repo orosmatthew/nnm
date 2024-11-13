@@ -1837,6 +1837,22 @@ inline void geom_tests()
             ASSERT(result.to.approx_equal({ -3.0f, 1.82037f }));
         }
 
+        test_section("approx_coincident");
+        {
+            constexpr auto result = s1.approx_coincident(s1);
+            ASSERT(result);
+            ASSERT(s1.approx_coincident({ { -3.0f, 4.0f }, { 1.0f, -2.0f } }));
+            ASSERT_FALSE(s1.approx_coincident({ { 5.0f, 10.0f }, { 1.0f, -2.0f } }));
+        }
+
+        test_section("approx_equal");
+        {
+            constexpr auto result = s1.approx_equal(s1);
+            ASSERT(result);
+            ASSERT_FALSE(s1.approx_equal({ { -3.0f, 4.0f }, { 1.0f, -2.0f } }));
+            ASSERT_FALSE(s1.approx_equal({ { 5.0f, 10.0f }, { 1.0f, -2.0f } }));
+        }
+
         test_section("operator==");
         {
             // ReSharper disable once CppIdenticalOperandsInBinaryExpression
