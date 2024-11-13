@@ -551,5 +551,8 @@ Segment2 edge_nx() const;
 Segment2 edge_ny() const;
 Segment2 edge_px() const;
 Segment2 edge_py() const;
+Real area() const;
+Real perimeter() const;
+bool approx_equal() const;
 ```
 

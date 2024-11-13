@@ -4010,5 +4010,28 @@ inline void geom_tests()
             ASSERT(r2.edge_py().approx_coincident({ { -2.5f, 4.0f }, { 0.5f, 4.0f } }));
             ASSERT(r3.edge_py().approx_coincident({ { 6.5f, -2.5f }, { 6.5f, -3.5f } }));
         }
+
+        test_section("area");
+        {
+            constexpr auto result = r1.area();
+            ASSERT(nnm::approx_equal(result, 12.0f));
+            ASSERT(nnm::approx_equal(r2.area(), 12.0f));
+            ASSERT(nnm::approx_equal(r3.area(), 5.0f));
+        }
+
+        test_section("perimeter");
+        {
+            constexpr auto result = r1.perimeter();
+            ASSERT(nnm::approx_equal(result, 14.0f));
+            ASSERT(nnm::approx_equal(r2.perimeter(), 14.0f));
+            ASSERT(nnm::approx_equal(r3.perimeter(), 12.0f));
+        }
+
+        test_section("approx_equal");
+        {
+            ASSERT(r1.approx_equal(r1));
+            ASSERT_FALSE(r1.approx_equal(r2));
+            ASSERT_FALSE(r2.approx_equal(r3));
+        }
     }
 }

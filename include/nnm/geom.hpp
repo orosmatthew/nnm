@@ -2668,19 +2668,44 @@ public:
         return { vertex_nx_py(), vertex_px_py() };
     }
 
-    // TODO: test
     [[nodiscard]] constexpr Real area() const
     {
         return size.x * size.y;
     }
 
-    // TODO: test
     [[nodiscard]] constexpr Real perimeter() const
     {
         return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
     }
 
     // TODO: test
+    [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
+    {
+        const Vector2<Real> v1 = vertex_nx_ny();
+        const Vector2<Real> v2 = vertex_nx_py();
+        const Vector2<Real> v3 = vertex_px_ny();
+        const Vector2<Real> v4 = vertex_px_py();
+        std::array<Vector2<Real>, 4> vertices_other
+            = { other.vertex_nx_ny(), other.vertex_nx_py(), other.vertex_px_ny(), other.vertex_px_py() };
+        const std::array<std::array<Vector2<Real>, 4>, 8> permutations {
+            { v1, v2, v3, v4 }, { v2, v3, v4, v1 }, { v3, v4, v1, v2 }, { v4, v1, v2, v3 },
+            { v4, v3, v2, v1 }, { v3, v2, v1, v4 }, { v2, v1, v4, v3 }, { v1, v4, v3, v2 }
+        };
+        for (const std::array<Vector2<Real>, 4> permutation : permutations) {
+            bool equal = true;
+            for (int i = 0; i < 4; ++i) {
+                if (!vertices_other[i].approx_equal(permutation[i])) {
+                    equal = false;
+                    break;
+                }
+            }
+            if (equal) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] bool approx_equal(const Rectangle2& other) const
     {
         return center.approx_equal(other.center) && size.approx_equal(other.size)
