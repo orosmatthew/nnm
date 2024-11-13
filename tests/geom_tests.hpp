@@ -2659,6 +2659,24 @@ inline void geom_tests()
             ASSERT_FALSE(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi() / 2.0f).intersections(c1).has_value());
         }
 
+        test_section("intersects(const Triangle&)");
+        {
+            constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+            constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
+            ASSERT(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f).intersects(tri1));
+            ASSERT(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f).intersects(tri2));
+            ASSERT_FALSE(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, -nnm::pi() / 2.0f).intersects(tri1));
+            ASSERT_FALSE(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, -nnm::pi() / 2.0f).intersects(tri2));
+            ASSERT(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f).intersects(tri1));
+            ASSERT(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f).intersects(tri2));
+            ASSERT_FALSE(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, -nnm::pi()).intersects(tri1));
+            ASSERT_FALSE(nnm::Arc2f({ 1.0f, -4.0f }, { 1.0f, 3.0f }, -nnm::pi()).intersects(tri2));
+            ASSERT(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, nnm::pi()).intersects(tri1));
+            ASSERT(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, nnm::pi()).intersects(tri2));
+            ASSERT(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi()).intersects(tri1));
+            ASSERT(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi()).intersects(tri2));
+        }
+
         test_section("approx_tangent(const Line2&)");
         {
             ASSERT(arc1.approx_tangent(
@@ -3151,6 +3169,60 @@ inline void geom_tests()
             ASSERT(result3.approx_equal({ 1.86410332f, -96.0013198f }));
             const auto result4 = c1.intersect_depth(nnm::Circle2f { { -4.0f, -4.0f }, 2.0f });
             ASSERT(result4.approx_equal({ -0.9047574669f, -0.1507929111f }));
+        }
+
+        test_section("intersects(const Triangle2&)");
+        {
+            constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+            ASSERT(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f).intersects(tri1));
+            ASSERT(nnm::Circle2f({ -2.0f, 1.0f }, 6.0f).intersects(tri1));
+            ASSERT_FALSE(nnm::Circle2f({ 1.0f, 1.0f }, 1.0f).intersects(tri1));
+            ASSERT(nnm::Circle2f({ 1.0f, 1.0f }, 3.0f).intersects(tri1));
+            ASSERT(nnm::Circle2f({ 1.0f, 2.0f }, 9.0f).intersects(tri1));
+        }
+
+        test_section("intersect_depth(const Triangle2&)");
+        {
+            constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+            constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
+            ASSERT(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ 0.988854374f, -0.494427187f }));
+            ASSERT(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ 0.988854374f, -0.494427187f }));
+            ASSERT(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ 2.094427191f, -1.0472135955f }));
+            ASSERT(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ 2.094427191f, -1.0472135955f }));
+            ASSERT(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f).intersect_depth(tri1).approx_equal({ 0.0f, -1.0f }));
+            ASSERT(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f).intersect_depth(tri2).approx_equal({ 0.0f, -1.0f }));
+            ASSERT(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ -0.2095290885f, -0.9778024141f }));
+            ASSERT(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ -0.2095290885f, -0.9778024141f }));
+            ASSERT(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ 0.894427191f, -0.4472135955f }));
+            ASSERT(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ 0.894427191f, -0.4472135955f }));
+            ASSERT(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ -0.7427813525f, 1.8569533819f }));
+            ASSERT(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ -0.7427813525f, 1.8569533819f }));
+            ASSERT(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f)
+                       .intersect_depth(tri1)
+                       .approx_equal({ -0.705572809f, 0.3527864045f }));
+            ASSERT(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f)
+                       .intersect_depth(tri2)
+                       .approx_equal({ -0.705572809f, 0.3527864045f }));
         }
 
         test_section("approx_tangent(const Line2&)");
@@ -3664,6 +3736,10 @@ inline void geom_tests()
                        .approx_equal({ 0.7427813525f, -1.8569533819f }));
             ASSERT(tri2.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f))
                        .approx_equal({ 0.7427813525f, -1.8569533819f }));
+            ASSERT(tri1.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f))
+                       .approx_equal({ 0.705572809f, -0.3527864045f }));
+            ASSERT(tri2.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f))
+                       .approx_equal({ 0.705572809f, -0.3527864045f }));
         }
 
         test_section("approx_equilateral");

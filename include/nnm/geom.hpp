@@ -204,6 +204,10 @@ public:
 
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
+
     [[nodiscard]] constexpr bool intersects(const Circle2<Real>& circle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
@@ -211,10 +215,6 @@ public:
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
-
-    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
-
-    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
 
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
@@ -1557,6 +1557,8 @@ public:
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
+
     [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -2022,6 +2024,10 @@ public:
         const Real depth = radius_sum - dist;
         return diff.normalize() * depth;
     }
+
+    [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] Vector2<Real> intersect_depth(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
     {
@@ -3043,9 +3049,27 @@ std::optional<std::array<Vector2<Real>, 2>> Arc2<Real>::intersections(const Circ
 }
 
 template <typename Real>
+bool Arc2<Real>::intersects(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
 bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
+}
+
+template <typename Real>
+bool Circle2<Real>::intersects(const Triangle2<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
+Vector2<Real> Circle2<Real>::intersect_depth(const Triangle2<Real>& triangle) const
+{
+    return -triangle.intersect_depth(*this);
 }
 
 template <typename Real>
