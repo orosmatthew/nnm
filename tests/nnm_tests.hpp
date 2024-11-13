@@ -631,6 +631,39 @@ inline void nnm_tests()
             ASSERT(nnm::approx_equal(direction5.y, 0.0f));
         }
 
+        test_section("direction_unnormalized");
+        {
+            constexpr nnm::Vector2 from1(1.0f, 1.0f);
+            constexpr nnm::Vector2 to1(2.0f, 2.0f);
+            auto direction1 = from1.direction_unnormalized(to1);
+            ASSERT(nnm::approx_equal(direction1.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction1.y, 1.0f));
+
+            constexpr nnm::Vector2 from2(-1.0f, -1.0f);
+            constexpr nnm::Vector2 to2(1.0f, 1.0f);
+            auto direction2 = from2.direction_unnormalized(to2);
+            ASSERT(nnm::approx_equal(direction2.x, 2.0f));
+            ASSERT(nnm::approx_equal(direction2.y, 2.0f));
+
+            constexpr nnm::Vector2 from3(0.0f, 0.0f);
+            constexpr nnm::Vector2 to3(1.0f, 0.0f);
+            auto direction3 = from3.direction_unnormalized(to3);
+            ASSERT(nnm::approx_equal(direction3.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction3.y, 0.0f));
+
+            constexpr nnm::Vector2 from4(0.0f, 0.0f);
+            constexpr nnm::Vector2 to4(0.0f, 1.0f);
+            auto direction4 = from4.direction_unnormalized(to4);
+            ASSERT(nnm::approx_equal(direction4.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction4.y, 1.0f));
+
+            constexpr nnm::Vector2 from5(1.0f, 2.0f);
+            constexpr nnm::Vector2 to5(1.0f, 2.0f);
+            auto direction5 = from5.direction_unnormalized(to5);
+            ASSERT(nnm::approx_equal(direction5.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction5.y, 0.0f));
+        }
+
         test_section("distance_sqrd");
         {
             constexpr nnm::Vector2 from1(1.0f, 1.0f);
@@ -1734,6 +1767,47 @@ inline void nnm_tests()
             from = nnm::Vector3(1.0f, 2.0f, 3.0f);
             to = nnm::Vector3(1.0f, 2.0f, 3.0f);
             direction = from.direction(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+        }
+
+        test_section("direction_unnormalized");
+        {
+            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            nnm::Vector3 to(2.0f, 2.0f, 2.0f);
+            auto direction = from.direction_unnormalized(to);
+            ASSERT(direction.approx_equal(nnm::Vector3f::all(1.0f)));
+
+            from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
+            to = nnm::Vector3(1.0f, 1.0f, 1.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(direction.approx_equal(nnm::Vector3f::all(2.0f)));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(1.0f, 0.0f, 0.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(0.0f, 1.0f, 0.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 1.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(0.0f, 0.0f, 1.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 1.0f));
+
+            from = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            to = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            direction = from.direction_unnormalized(to);
             ASSERT(nnm::approx_equal(direction.x, 0.0f));
             ASSERT(nnm::approx_equal(direction.y, 0.0f));
             ASSERT(nnm::approx_equal(direction.z, 0.0f));
