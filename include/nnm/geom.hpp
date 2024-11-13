@@ -2648,25 +2648,21 @@ public:
         return (center + half_size).rotate_at(center, angle);
     }
 
-    // TODO: test
     [[nodiscard]] Segment2<Real> edge_nx() const
     {
         return { vertex_nx_ny(), vertex_nx_py() };
     }
 
-    // TODO: test
     [[nodiscard]] Segment2<Real> edge_ny() const
     {
         return { vertex_nx_ny(), vertex_px_ny() };
     }
 
-    // TODO: test
     [[nodiscard]] Segment2<Real> edge_px() const
     {
         return { vertex_px_ny(), vertex_px_py() };
     }
 
-    // TODO: test
     [[nodiscard]] Segment2<Real> edge_py() const
     {
         return { vertex_nx_py(), vertex_px_py() };

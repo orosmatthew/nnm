@@ -3982,5 +3982,33 @@ inline void geom_tests()
             ASSERT(r2.vertex_px_py().approx_equal({ 0.5f, 4.0f }));
             ASSERT(r3.vertex_px_py().approx_equal({ 6.5f, -3.5f }));
         }
+
+        test_section("edge_nx");
+        {
+            ASSERT(r1.edge_nx().approx_coincident({ { -1.48205081f, -2.29903811f }, { 1.98205081f, -4.29903811f } }));
+            ASSERT(r2.edge_nx().approx_coincident({ { -2.5f, 4.0f }, { -2.5f, 0.0f } }));
+            ASSERT(r3.edge_nx().approx_coincident({ { 1.5f, -2.5f }, { 6.5f, -2.5f } }));
+        }
+
+        test_section("edge_ny");
+        {
+            ASSERT(r1.edge_ny().approx_coincident({ { 1.98205081f, -4.29903811f }, { 3.482051f, -1.700962f } }));
+            ASSERT(r2.edge_ny().approx_coincident({ { -2.5f, 0.0f }, { 0.5f, 0.0f } }));
+            ASSERT(r3.edge_ny().approx_coincident({ { 1.5f, -2.5f }, { 1.5f, -3.5f } }));
+        }
+
+        test_section("edge_px");
+        {
+            ASSERT(r1.edge_px().approx_coincident({ { 3.482051f, -1.700962f }, { 0.01794919f, 0.2990381f } }));
+            ASSERT(r2.edge_px().approx_coincident({ { 0.5f, 4.0f }, { 0.5f, 0.0f } }));
+            ASSERT(r3.edge_px().approx_coincident({ { 1.5f, -3.5f }, { 6.5f, -3.5f } }));
+        }
+
+        test_section("edge_py");
+        {
+            ASSERT(r1.edge_py().approx_coincident({ { -1.48205081f, -2.29903811f }, { 0.01794919f, 0.2990381f } }));
+            ASSERT(r2.edge_py().approx_coincident({ { -2.5f, 4.0f }, { 0.5f, 4.0f } }));
+            ASSERT(r3.edge_py().approx_coincident({ { 6.5f, -2.5f }, { 6.5f, -3.5f } }));
+        }
     }
 }

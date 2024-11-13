@@ -267,6 +267,7 @@ Segment2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
 Segment2 shear_x(Real angle_y) const;
 Segment2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
 Segment2 shear_y(Real angle_x) const;
+bool approx_coincident(const Segment2& other) const;
 bool approx_equal(const Segment2& other) const;
 ```
 
@@ -513,5 +514,42 @@ bool approx_equal(const Triangle2& other) const;
 bool operator==(const Triangle2& other) const;
 bool operator!=(const Triangle2& other) const;
 bool operator<(const Triangle2& other) const;
+```
+
+## Rectangle2
+
+### Aliases
+
+```cpp
+using Rectangle2f = Rectangle2<float>;
+using Rectangle2d = Rectangle2<double>;
+```
+
+### Members
+
+```cpp
+Vector2 center;
+Vector2 size;
+Real angle;
+```
+
+### Constructors
+
+```cpp
+Rectangle2();
+Rectangle2(const Vector2& center, const Vector2& size, Real angle);
+```
+
+### Methods
+
+```cpp
+Vector2 vertex_nx_ny() const;
+Vector2 vertex_nx_py() const;
+Vector2 vertex_px_ny() const;
+Vector2 vertex_px_py() const;
+Segment2 edge_nx() const;
+Segment2 edge_ny() const;
+Segment2 edge_px() const;
+Segment2 edge_py() const;
 ```
 
