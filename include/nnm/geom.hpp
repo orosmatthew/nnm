@@ -2398,6 +2398,19 @@ public:
         return false;
     }
 
+    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
+    {
+        if (contains(circle.center)) {
+            return true;
+        }
+        for (int i = 0; i < 3; ++i) {
+            if (edge(i).intersects(circle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())

@@ -3615,7 +3615,7 @@ inline void geom_tests()
                 && (*result6)[1].approx_equal({ -0.33333333f, 1.3333333f }));
         }
 
-        test_section("intersects");
+        test_section("intersects(const Arc2&)");
         {
             ASSERT(tri1.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
             ASSERT(tri2.intersects(nnm::Arc2f({ 1.0f, 1.0f }, { 1.0f, 3.0f }, nnm::pi() / 2.0f)));
@@ -3629,6 +3629,15 @@ inline void geom_tests()
             ASSERT(tri2.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, nnm::pi())));
             ASSERT(tri1.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi())));
             ASSERT(tri2.intersects(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi())));
+        }
+
+        test_section("intersects(const Circle2&)");
+        {
+            ASSERT(tri1.intersects(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f)));
+            ASSERT(tri1.intersects(nnm::Circle2f({ -2.0f, 1.0f }, 6.0f)));
+            ASSERT_FALSE(tri1.intersects(nnm::Circle2f({ 1.0f, 1.0f }, 1.0f)));
+            ASSERT(tri1.intersects(nnm::Circle2f({ 1.0f, 1.0f }, 3.0f)));
+            ASSERT(tri1.intersects(nnm::Circle2f({ 1.0f, 2.0f }, 9.0f)));
         }
 
         test_section("approx_equilateral");
