@@ -1260,7 +1260,7 @@ public:
             p2 = other.point_at(angle2);
         }
         Real min_dist
-            = p1.has_value() & p2.has_value() ? min(p1->distance(*p2), other.distance(from)) : other.distance(from);
+            = p1.has_value() && p2.has_value() ? min(p1->distance(*p2), other.distance(from)) : other.distance(from);
         min_dist = min(min_dist, other.distance(to()));
         min_dist = min(min_dist, distance(other.from));
         min_dist = min(min_dist, distance(other.to()));
