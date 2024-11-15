@@ -10,6 +10,7 @@ Reference for NNM math library geometry extension.
 * [Arc2](#Arc2)
 * [Circle2](#Circle2)
 * [Triangle2](#Triangle2)
+* [Rectangle2](#Rectangle2)
 
 ## Line2
 
@@ -553,6 +554,7 @@ Segment2 edge_px() const;
 Segment2 edge_py() const;
 Real area() const;
 Real perimeter() const;
+bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
 ```
 

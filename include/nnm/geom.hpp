@@ -2678,7 +2678,6 @@ public:
         return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
@@ -2688,8 +2687,14 @@ public:
         std::array<Vector2<Real>, 4> vertices_other
             = { other.vertex_nx_ny(), other.vertex_nx_py(), other.vertex_px_ny(), other.vertex_px_py() };
         const std::array<std::array<Vector2<Real>, 4>, 8> permutations {
-            { v1, v2, v3, v4 }, { v2, v3, v4, v1 }, { v3, v4, v1, v2 }, { v4, v1, v2, v3 },
-            { v4, v3, v2, v1 }, { v3, v2, v1, v4 }, { v2, v1, v4, v3 }, { v1, v4, v3, v2 }
+            { { v1, v2, v3, v4 },
+              { v2, v3, v4, v1 },
+              { v3, v4, v1, v2 },
+              { v4, v1, v2, v3 },
+              { v4, v3, v2, v1 },
+              { v3, v2, v1, v4 },
+              { v2, v1, v4, v3 },
+              { v1, v4, v3, v2 } }
         };
         for (const std::array<Vector2<Real>, 4> permutation : permutations) {
             bool equal = true;

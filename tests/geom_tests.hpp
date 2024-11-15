@@ -4027,6 +4027,18 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(r3.perimeter(), 12.0f));
         }
 
+        test_section("approx_coincident");
+        {
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { -3.0f, 4.0f }, 0.0f)));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, -4.0f }, 0.0f)));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { -3.0f, -4.0f }, 0.0f)));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, nnm::pi())));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { -3.0f, 4.0f }, nnm::pi())));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, -4.0f }, nnm::pi())));
+            ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { -3.0f, -4.0f }, nnm::pi())));
+        }
+
         test_section("approx_equal");
         {
             ASSERT(r1.approx_equal(r1));
