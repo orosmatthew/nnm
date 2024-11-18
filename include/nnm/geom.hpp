@@ -2777,6 +2777,22 @@ public:
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
+    // TODO: test
+    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
+    {
+        if (contains(circle.center)) {
+            return true;
+        }
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
+        const Vector2<Real> closest = circle_local.center.clamp(-half_size, half_size);
+        const Real dist_sqrd = circle_local.center.distance_sqrd(closest);
+        return dist_sqrd <= sqrd(circle.radius());
+    }
+
+    // TODO: implement and test
+    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const;
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
