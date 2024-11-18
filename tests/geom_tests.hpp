@@ -4110,6 +4110,38 @@ inline void geom_tests()
             ASSERT_FALSE(i5.has_value());
         }
 
+        test_section("intersects(const Segment2&)");
+        {
+            ASSERT(r1.intersects(nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f })));
+            ASSERT(r1.intersects(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f })));
+            ASSERT_FALSE(r1.intersects(nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f })));
+            ASSERT(r2.intersects(nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f })));
+            ASSERT(r3.intersects(nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0 })));
+            ASSERT_FALSE(r3.intersects(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f })));
+        }
+
+        test_section("intersections(const Segment2&)");
+        {
+            const auto i1 = r1.intersections(nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f }));
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -0.154700637f, 0.0f })
+                && i1.value()[1].approx_equal({ -0.154700637f, 0.0f }));
+            const auto i2 = r1.intersections(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }));
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 0.535898447f, 0.0f })
+                && i2.value()[1].approx_equal({ 0.535898447f, 0.0f }));
+            const auto i3 = r1.intersections(nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f }));
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = r2.intersections(nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f }));
+            ASSERT_FALSE(i4.has_value());
+            const auto i5 = r3.intersections(nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0f }));
+            ASSERT(
+                i5.has_value() && i5.value()[0].approx_equal({ 4.0f, -3.5f })
+                && i5.value()[1].approx_equal({ 4.0f, -2.5f }));
+            const auto i6 = r3.intersections(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f }));
+            ASSERT_FALSE(i6.has_value());
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));

@@ -2742,6 +2742,35 @@ public:
         return std::nullopt;
     }
 
+    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
+    {
+        return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
+            || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
+    {
+        std::array<Vector2<Real>, 2> inters;
+        int inter_count = 0;
+        const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (const std::optional<Vector2<Real>> intersection = edge.intersection(segment);
+                intersection.has_value()) {
+                inters[inter_count++] = intersection.value();
+            }
+            if (inter_count >= 2) {
+                break;
+            }
+        }
+        if (inter_count >= 2) {
+            return inters[1] < inters[0] ? std::array { inters[1], inters[0] } : inters;
+        }
+        if (inter_count == 1) {
+            return std::array { inters[0], inters[0] };
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
