@@ -2678,6 +2678,13 @@ public:
         return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
     }
 
+    [[nodiscard]] bool contains(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> p = point.translate(-center).rotate(-angle);
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        return p.x >= -half_size.x && p.x <= half_size.x && p.y >= -half_size.y && p.y <= half_size.y;
+    }
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();

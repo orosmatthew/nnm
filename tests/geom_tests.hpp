@@ -4027,6 +4027,18 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(r3.perimeter(), 12.0f));
         }
 
+        test_section("contains(const Vector2&)");
+        {
+            ASSERT(r1.contains(nnm::Vector2f::zero()));
+            ASSERT_FALSE(r1.contains(nnm::Vector2f(2.0f, -0.5f)));
+            ASSERT(r1.contains(nnm::Vector2f(1.5f, -3.5f)));
+            ASSERT(r2.contains(nnm::Vector2f(0.0f, 2.0f)));
+            ASSERT(r2.contains(nnm::Vector2f(-2.0, 3.5f)));
+            ASSERT_FALSE(r2.contains(nnm::Vector2f(2.0, 0.5f)));
+            ASSERT(r3.contains(nnm::Vector2f(5.5f, -3.0f)));
+            ASSERT_FALSE(r3.contains(nnm::Vector2f(4.0f, -2.0f)));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));

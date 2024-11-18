@@ -554,6 +554,7 @@ Segment2 edge_px() const;
 Segment2 edge_py() const;
 Real area() const;
 Real perimeter() const;
+bool contains(const Vector2& point) const;
 bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
 ```
