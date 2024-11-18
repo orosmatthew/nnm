@@ -2771,6 +2771,12 @@ public:
         return std::nullopt;
     }
 
+    [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
+    {
+        return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
+            || edge_px().intersects(arc) || edge_py().intersects(arc);
+    }
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();

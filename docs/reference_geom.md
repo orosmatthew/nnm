@@ -561,6 +561,7 @@ bool intersects(const Ray2& ray) const;
 std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
 bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersects(const Segment2& segment) const;
+bool intersects(const Arc2& arc) const;
 bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
 ```

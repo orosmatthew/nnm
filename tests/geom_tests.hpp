@@ -4142,6 +4142,16 @@ inline void geom_tests()
             ASSERT_FALSE(i6.has_value());
         }
 
+        test_section("intersects(const Arc2&)");
+        {
+            ASSERT(r1.intersects(nnm::Arc2f({ 3.0f, -1.0f }, { 3.0f, 0.0f }, nnm::pi() / 2.0f)));
+            ASSERT(r1.intersects(nnm::Arc2f({ 0.5f, -1.5f }, { 0.5f, -1.0f }, -nnm::pi())));
+            ASSERT_FALSE(r2.intersects(nnm::Arc2f({ -2.0f, 2.0f }, { -2.0f, -2.0f }, -nnm::pi() / 2.0f)));
+            ASSERT(r2.intersects(nnm::Arc2f({ -2.0f, 2.0f }, { -2.0f, 1.0f }, -nnm::pi() / 2.0f)));
+            ASSERT_FALSE(r3.intersects(nnm::Arc2f({ 4.0f, -1.5f }, { 4.0f, -1.0f }, nnm::pi() / 6.0f)));
+            ASSERT(r3.intersects(nnm::Arc2f({ 5.0f, -2.2f }, { 5.4f, -2.2f }, 3.0f * nnm::pi() / 2.0f)));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));
