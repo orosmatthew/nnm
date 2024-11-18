@@ -2680,9 +2680,38 @@ public:
 
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
-        const Vector2<Real> p = point.translate(-center).rotate(-angle);
+        const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
         const Vector2<Real> half_size = size / static_cast<Real>(2);
-        return p.x >= -half_size.x && p.x <= half_size.x && p.y >= -half_size.y && p.y <= half_size.y;
+        return local_point.x >= -half_size.x && local_point.x <= half_size.x && local_point.y >= -half_size.y
+            && local_point.y <= half_size.y;
+    }
+
+    [[nodiscard]] bool intersects(const Line2<Real>& line) const
+    {
+        return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
+            || edge_py().intersects(line);
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
+    {
+        std::array<Vector2<Real>, 2> inters;
+        int inter_count = 0;
+        const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (const std::optional<Vector2<Real>> intersection = edge.intersection(line); intersection.has_value()) {
+                inters[inter_count++] = intersection.value();
+            }
+            if (inter_count >= 2) {
+                break;
+            }
+        }
+        if (inter_count >= 2) {
+            return inters[1] < inters[0] ? std::array { inters[1], inters[0] } : inters;
+        }
+        if (inter_count == 1) {
+            return std::array { inters[0], inters[0] };
+        }
+        return std::nullopt;
     }
 
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const

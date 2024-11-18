@@ -555,6 +555,8 @@ Segment2 edge_py() const;
 Real area() const;
 Real perimeter() const;
 bool contains(const Vector2& point) const;
+bool intersects(const Line2& line) const;
+std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;
 bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
 ```

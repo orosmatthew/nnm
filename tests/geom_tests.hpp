@@ -4039,6 +4039,48 @@ inline void geom_tests()
             ASSERT_FALSE(r3.contains(nnm::Vector2f(4.0f, -2.0f)));
         }
 
+        test_section("intersects(const Line2&)");
+        {
+            ASSERT(r1.intersects(nnm::Line2f::axis_x()));
+            ASSERT(r1.intersects(nnm::Line2f::axis_y()));
+            ASSERT_FALSE(r1.intersects(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f })));
+            ASSERT(r2.intersects(nnm::Line2f::axis_y()));
+            ASSERT_FALSE(r2.intersects(nnm::Line2f::axis_x_offset(-1.0f)));
+            ASSERT_FALSE(r3.intersects(nnm::Line2f::axis_x_offset(-2.0f)));
+            ASSERT(r3.intersects(nnm::Line2f::axis_x_offset(-3.0f)));
+            ASSERT(r3.intersects(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f })));
+        }
+
+        test_section("intersections(const Line2&)");
+        {
+            const auto i1 = r1.intersections(nnm::Line2f::axis_x());
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -0.154700637f, 0.0f })
+                && i1.value()[1].approx_equal({ 0.535898447f, 0.0f }));
+            const auto i2 = r1.intersections(nnm::Line2f::axis_y());
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 0.0f, -3.15470052f })
+                && i2.value()[1].approx_equal({ 0.0f, 0.267949343f }));
+            const auto i3 = r1.intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = r2.intersections(nnm::Line2f::axis_y());
+            ASSERT(
+                i4.has_value() && i4.value()[0].approx_equal({ 0.0f, 0.0f })
+                && i4.value()[1].approx_equal({ 0.0f, 4.0f }));
+            const auto i5 = r2.intersections(nnm::Line2f::axis_x_offset(-1.0f));
+            ASSERT_FALSE(i5.has_value());
+            const auto i6 = r3.intersections(nnm::Line2f::axis_x_offset(-2.0f));
+            ASSERT_FALSE(i6.has_value());
+            const auto i7 = r3.intersections(nnm::Line2f::axis_x_offset(-3.0f));
+            ASSERT(
+                i7.has_value() && i7.value()[0].approx_equal({ 1.5f, -3.0f })
+                && i7.value()[1].approx_equal({ 6.5f, -3.0f }));
+            const auto i8 = r3.intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
+            ASSERT(
+                i8.has_value() && i8.value()[0].approx_equal({ 5.0f, -2.5f })
+                && i8.value()[1].approx_equal({ 6.333333f, -3.5f }));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));
