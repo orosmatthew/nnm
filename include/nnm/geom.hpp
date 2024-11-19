@@ -2777,7 +2777,6 @@ public:
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -2787,11 +2786,23 @@ public:
         const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
         const Vector2<Real> closest = circle_local.center.clamp(-half_size, half_size);
         const Real dist_sqrd = circle_local.center.distance_sqrd(closest);
-        return dist_sqrd <= sqrd(circle.radius());
+        return dist_sqrd <= sqrd(circle.radius);
     }
 
-    // TODO: implement and test
-    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const;
+    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const
+    {
+        const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        const Vector2<Real> min_pos = -half_size - Vector2<Real>::all(circle.radius);
+        const Vector2<Real> max_pos = half_size + Vector2<Real>::all(circle.radius);
+        const Vector2<Real> diff_min = min_pos - circle_local.center;
+        const Vector2<Real> diff_max = max_pos - circle_local.center;
+        const Real diff_x = abs(diff_min.x) <= abs(diff_max.x) ? diff_min.x : diff_max.x;
+        const Real diff_y = abs(diff_min.y) <= abs(diff_max.y) ? diff_min.y : diff_max.y;
+        return abs(diff_x) <= abs(diff_y)
+            ? Vector2<Real> { diff_x, static_cast<Real>(0) }.rotate(angle)
+            : Vector2<Real> { static_cast<Real>(0), diff_y }.rotate(angle);
+    }
 
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {

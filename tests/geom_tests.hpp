@@ -4152,6 +4152,37 @@ inline void geom_tests()
             ASSERT(r3.intersects(nnm::Arc2f({ 5.0f, -2.2f }, { 5.4f, -2.2f }, 3.0f * nnm::pi() / 2.0f)));
         }
 
+        test_section("intersects(const Circle2&)");
+        {
+            ASSERT(r1.intersects(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f)));
+            ASSERT_FALSE(r1.intersects(nnm::Circle2f({ 2.5f, 0.5f }, 1.0f)));
+            ASSERT(r2.intersects(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f)));
+            ASSERT(r2.intersects(nnm::Circle2f({ -1.0f, 2.0f }, 1.0f)));
+            ASSERT(r2.intersects(nnm::Circle2f({ -1.5f, 3.0f }, 0.5f)));
+            ASSERT_FALSE(r3.intersects(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f)));
+            ASSERT(r3.intersects(nnm::Circle2f({ 5.0f, -4.0f }, 4.0f)));
+        }
+
+        test_section("intersect_depth(const Circle2&)");
+        {
+            const auto d1 = r1.intersect_depth(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f));
+            ASSERT(d1.approx_equal({ 0.41746816f, 0.723076164f }))
+            const auto d2 = r1.intersect_depth(nnm::Circle2f({ 2.5f, 0.5f }, 1.0f));
+            ASSERT(d2.approx_equal({ -0.207531795f, -0.359455645f }));
+            const auto d3 = r2.intersect_depth(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f));
+            ASSERT(d3.approx_equal({ 0.5f, 0.0f }));
+            const auto d4 = r2.intersect_depth(nnm::Circle2f({ -1.0f, 2.0f }, 1.0f));
+            ASSERT(d4.approx_equal({ 2.5f, 0.0f }) || d4.approx_equal({ -2.5f, 0.0f }));
+            const auto d5 = r2.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 0.5f));
+            ASSERT(d5.approx_equal({ -1.5f, 0.0f }) || d5.approx_equal({ 0.0f, 1.5f }));
+            const auto d6 = r2.intersect_depth(nnm::Circle2f({ -2.0f, 2.5f }, 1.0f));
+            ASSERT(d6.approx_equal({ -1.5f, 0.0f }));
+            const auto d7 = r3.intersect_depth(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f));
+            ASSERT(d7.approx_equal({ 0.0f, -1.0f }));
+            const auto d8 = r3.intersect_depth(nnm::Circle2f({ 5.0f, -4.0f }, 4.0f));
+            ASSERT(d8.approx_equal({ 0.0f, -3.5f }));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));
