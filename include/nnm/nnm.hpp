@@ -3900,30 +3900,34 @@ public:
 
     static constexpr Basis3 from_scale(const Vector3<Real>& factor)
     {
-        return Basis3({ { factor.x, static_cast<Real>(0), static_cast<Real>(0) },
-                        { static_cast<Real>(0), factor.y, static_cast<Real>(0) },
-                        { static_cast<Real>(0), static_cast<Real>(0), factor.z } });
+        return Basis3(
+            { { factor.x, static_cast<Real>(0), static_cast<Real>(0) },
+              { static_cast<Real>(0), factor.y, static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(0), factor.z } });
     }
 
     static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
     {
-        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
-                        { tan(angle_y), static_cast<Real>(1), static_cast<Real>(0) },
-                        { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+              { tan(angle_y), static_cast<Real>(1), static_cast<Real>(0) },
+              { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
     {
-        return Basis3({ { static_cast<Real>(1), tan(angle_x), static_cast<Real>(0) },
-                        { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
-                        { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), tan(angle_x), static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+              { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
     }
 
     static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
-        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
-                        { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
-                        { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
+              { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
+              { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     [[nodiscard]] Real trace() const
