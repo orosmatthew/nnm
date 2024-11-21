@@ -4291,6 +4291,14 @@ inline void geom_tests()
             ASSERT(d8.approx_equal({ 0.0f, -3.5f }));
         }
 
+        test_section("intersect_depth(const Triangle2&)");
+        {
+            const auto d1 = r2.intersect_depth(nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f }));
+            ASSERT(d1.approx_equal({ -0.5f, 0.0f }));
+            const auto d2 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f }));
+            ASSERT(d2.approx_equal({ 0.5f, 0.0f }));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));
