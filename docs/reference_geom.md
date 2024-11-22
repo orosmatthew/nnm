@@ -578,7 +578,7 @@ bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
 std::optional<Vector2> intersect_depth(const Circle2& circle) const;
 bool intersects(const Triangle2& triangle) const;
-Vector2 intersect_depth(const Triangle2& triangle) const;
+std::optional<Vector2> intersect_depth(const Triangle2& triangle) const;
 bool intersects(const Rectangle2& other) const;
 std::optional<Vector2> intersect_depth(const Rectangle2& other) const;
 bool approx_coincident(const Rectangle2& other) const;

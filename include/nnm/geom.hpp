@@ -2916,30 +2916,34 @@ public:
         return false;
     }
 
-    [[nodiscard]] Vector2<Real> intersect_depth(const Triangle2<Real>& triangle) const
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const
     {
         const auto depth_on_normal
             = [](const std::array<Vector2<Real>, 4>& rect_verts,
                  const std::array<Vector2<Real>, 3>& tri_verts,
                  const Vector2<Real>& normal,
                  float& min_overlap,
-                 Vector2<Real>& min_normal) {
-                  Real rect_max = std::numeric_limits<Real>::lowest();
-                  Real tri_min = std::numeric_limits<Real>::max();
-                  for (const Vector2<Real>& v : rect_verts) {
-                      const Real proj = v.dot(normal);
-                      rect_max = max(rect_max, proj);
-                  }
-                  for (const Vector2<Real>& v : tri_verts) {
-                      const Real proj = v.dot(normal);
-                      tri_min = min(tri_min, proj);
-                  }
-                  const Real overlap = rect_max - tri_min;
-                  if (overlap < min_overlap) {
-                      min_overlap = overlap;
-                      min_normal = normal;
-                  }
-              };
+                 Vector2<Real>& min_normal) -> bool {
+            Real rect_max = std::numeric_limits<Real>::lowest();
+            Real tri_min = std::numeric_limits<Real>::max();
+            for (const Vector2<Real>& v : rect_verts) {
+                const Real proj = v.dot(normal);
+                rect_max = max(rect_max, proj);
+            }
+            for (const Vector2<Real>& v : tri_verts) {
+                const Real proj = v.dot(normal);
+                tri_min = min(tri_min, proj);
+            }
+            const Real overlap = rect_max - tri_min;
+            if (overlap < static_cast<Real>(0)) {
+                return false;
+            }
+            if (overlap < min_overlap) {
+                min_overlap = overlap;
+                min_normal = normal;
+            }
+            return true;
+        };
         const std::array<Vector2<Real>, 7> normals = {
             normal_nx(),         normal_ny(),         normal_px(),         normal_py(),
             -triangle.normal(0), -triangle.normal(1), -triangle.normal(2),
@@ -2951,7 +2955,9 @@ public:
         Real min_overlap = std::numeric_limits<Real>::max();
         Vector2<Real> min_normal;
         for (const Vector2<Real>& axis : normals) {
-            depth_on_normal(rect_verts, tri_verts, axis, min_overlap, min_normal);
+            if (!depth_on_normal(rect_verts, tri_verts, axis, min_overlap, min_normal)) {
+                return std::nullopt;
+            }
         }
         return min_normal * min_overlap;
     }
