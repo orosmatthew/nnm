@@ -2880,10 +2880,15 @@ public:
         return dist_sqrd <= sqrd(circle.radius);
     }
 
-    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
         const Vector2<Real> half_size = size / static_cast<Real>(2);
+        const Vector2<Real> closest = circle_local.center.clamp(-half_size, half_size);
+        const Real dist_sqrd = circle_local.center.distance_sqrd(closest);
+        if (dist_sqrd > sqrd(circle.radius)) {
+            return std::nullopt;
+        }
         const Vector2<Real> min_pos = -half_size - Vector2<Real>::all(circle.radius);
         const Vector2<Real> max_pos = half_size + Vector2<Real>::all(circle.radius);
         const Vector2<Real> diff_min = min_pos - circle_local.center;

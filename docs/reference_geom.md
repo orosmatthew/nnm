@@ -501,7 +501,7 @@ bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
 std::optional<Vector2> intersect_depth(const Circle2& circle) const;
 bool intersects(const Triangle2& other) const;
-std::optional<Vector2>
+std::optional<Vector2> intersect_depth(const Triangle2& )
 bool approx_equilateral() const;
 bool approx_similar() const;
 bool approx_right() const;
@@ -576,7 +576,7 @@ bool intersects(const Segment2& segment) const;
 std::optional<std::array<Vector2, 2>> intersects(const Segment2& segment) const;
 bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
-Vector2 intersect_depth(const Circle2& circle) const;
+std::optional<Vector2> intersect_depth(const Circle2& circle) const;
 bool intersects(const Triangle2& triangle) const;
 Vector2 intersect_depth(const Triangle2& triangle) const;
 bool intersects(const Rectangle2& other) const;
