@@ -480,6 +480,7 @@ Segment2 median(int index) const;
 Line2 perpendicular_bisector(int index) const;
 Real angle(int index) const;
 Line2 angle_bisector(int index) const;
+Vector2 normal(int index) const;
 Segment2 altitude(int index) const;
 Vector2 lerp_point(const Vector3& weights) const;
 Vector3 barycentric(const Vector2& point) const;

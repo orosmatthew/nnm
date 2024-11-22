@@ -1820,6 +1820,12 @@ public:
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
     }
 
+    // TODO: test
+    [[nodiscard]] Vector2<Real> normal_at(const Real angle) const
+    {
+        return Vector2<Real>::axis_x().rotate(angle);
+    }
+
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         if (contains(line.origin)) {
@@ -2248,6 +2254,17 @@ public:
         const Vector2<Real> dir2 = (vertices[next_index] - vertices[index]).normalize();
         const Vector2<Real> bisector_dir = (dir1 + dir2).normalize();
         return { vertices[index], bisector_dir };
+    }
+
+    [[nodiscard]] Vector2<Real> normal(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
+        const Vector2<Real> edge1_dir = edge(1).direction_unnormalized();
+        const Vector2<Real> edge2_dir = edge(2).direction_unnormalized();
+        const bool reverse = edge1_dir.cross(edge2_dir) > static_cast<Real>(0);
+        const Vector2<Real> edge_dir = edge(index).direction();
+        const Vector2<Real> normal = { -edge_dir.y, edge_dir.x };
+        return reverse ? -normal : normal;
     }
 
     [[nodiscard]] Segment2<Real> altitude(const int index) const
