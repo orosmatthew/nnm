@@ -2805,11 +2805,10 @@ public:
         return local_point.distance(closest);
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(line);
             if (dist == static_cast<Real>(0)) {
@@ -2822,11 +2821,10 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(ray);
             if (dist == static_cast<Real>(0)) {
@@ -2839,14 +2837,13 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.from)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(segment);
             if (dist == static_cast<Real>(0)) {
