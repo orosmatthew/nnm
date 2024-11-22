@@ -2900,6 +2900,69 @@ public:
         return min_normal * min_overlap;
     }
 
+    [[nodiscard]] bool intersects(const Rectangle2& other) const
+    {
+        const std::array<Vector2<Real>, 4> vertices_other
+            = { other.vertex_nx_ny(), other.vertex_nx_py(), other.vertex_px_ny(), other.vertex_px_py() };
+        for (const Vector2<Real>& vertex : vertices_other) {
+            if (contains(vertex)) {
+                return true;
+            }
+        }
+        const std::array edges = { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (other.intersects(edge)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2& other) const
+    {
+        const auto depth_on_normal
+            = [](const std::array<Vector2<Real>, 4>& verts,
+                 const std::array<Vector2<Real>, 4>& verts_other,
+                 const Vector2<Real>& normal,
+                 float& min_overlap,
+                 Vector2<Real>& min_normal) -> bool {
+            Real this_max = std::numeric_limits<Real>::lowest();
+            Real other_min = std::numeric_limits<Real>::max();
+            for (const Vector2<Real>& v : verts) {
+                const Real proj = v.dot(normal);
+                this_max = max(this_max, proj);
+            }
+            for (const Vector2<Real>& v : verts_other) {
+                const Real proj = v.dot(normal);
+                other_min = min(other_min, proj);
+            }
+            const Real overlap = this_max - other_min;
+            if (overlap < static_cast<Real>(0)) {
+                return false;
+            }
+            if (overlap < min_overlap) {
+                min_overlap = overlap;
+                min_normal = normal;
+            }
+            return true;
+        };
+        const std::array<Vector2<Real>, 8> normals = {
+            normal_nx(),        normal_ny(),        normal_px(),        normal_py(),
+            -other.normal_nx(), -other.normal_ny(), -other.normal_px(), -other.normal_py(),
+        };
+        const std::array<Vector2<Real>, 4> verts = { vertex_nx_ny(), vertex_nx_py(), vertex_px_ny(), vertex_px_py() };
+        const std::array<Vector2<Real>, 4> verts_other
+            = { other.vertex_nx_ny(), other.vertex_nx_py(), other.vertex_px_ny(), other.vertex_px_py() };
+        Real min_overlap = std::numeric_limits<Real>::max();
+        Vector2<Real> min_normal;
+        for (const Vector2<Real>& axis : normals) {
+            if (!depth_on_normal(verts, verts_other, axis, min_overlap, min_normal)) {
+                return std::nullopt;
+            }
+        }
+        return min_normal * min_overlap;
+    }
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();

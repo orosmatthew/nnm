@@ -412,6 +412,7 @@ Real distance(const Ray2& ray) const;
 Real distance(const Segment2& segment) const;
 Real distance(const Arc2& arc) const;
 Vector2 point_at(Real angle) const;
+Vector2 normal_at(Real angle) const;
 bool intersects(const Line2& line) const;
 std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;
 bool intersects(const Ray2& ray) const;
@@ -569,6 +570,10 @@ std::optional<std::array<Vector2, 2>> intersects(const Segment2& segment) const;
 bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
 Vector2 intersect_depth(const Circle2& circle) const;
+bool intersects(const Triangle2& triangle) const;
+Vector2 intersect_depth(const Triangle2& triangle) const;
+bool intersects(const Rectangle2& other) const;
+std::optional<Vector2> intersect_depth(const Rectangle2& other) const;
 bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
 ```
