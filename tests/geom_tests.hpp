@@ -3278,13 +3278,15 @@ inline void geom_tests()
         test_section("intersect_depth");
         {
             const auto result1 = c1.intersect_depth(c1);
-            ASSERT(result1.approx_equal({ 0.0f, 0.0f }));
+            ASSERT(result1.has_value() && nnm::approx_equal(result1->length(), 10.0f));
             const auto result2 = c1.intersect_depth({ { 1.0f, -4.0f }, 2.0f });
-            ASSERT(result2.approx_equal({ -3.9497474683f, -3.9497474683f }));
+            ASSERT(result2.has_value() && result2->approx_equal({ -3.9497474683f, -3.9497474683f }));
             const auto result3 = c1.intersect_depth(nnm::Circle2f { { 0.0f, 100.0f }, 2.0f });
-            ASSERT(result3.approx_equal({ 1.86410332f, -96.0013198f }));
+            ASSERT_FALSE(result3.has_value());
             const auto result4 = c1.intersect_depth(nnm::Circle2f { { -4.0f, -4.0f }, 2.0f });
-            ASSERT(result4.approx_equal({ -0.9047574669f, -0.1507929111f }));
+            ASSERT(result4.has_value() && result4->approx_equal({ -0.9047574669f, -0.1507929111f }));
+            const auto result5 = c1.intersect_depth(nnm::Circle2f({ 2.0f, -3.0f }, 1.0f));
+            ASSERT(result5.has_value() && nnm::approx_equal(result5->length(), 6.0f));
         }
 
         test_section("intersects(const Triangle2&)");
@@ -3301,56 +3303,32 @@ inline void geom_tests()
         {
             constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
             constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
-            ASSERT(
-                nnm::Circle2f({ 1.0f, 2.0f }, 2.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ 0.988854374f, -0.494427187f }));
-            ASSERT(
-                nnm::Circle2f({ 1.0f, 2.0f }, 2.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ 0.988854374f, -0.494427187f }));
-            ASSERT(
-                nnm::Circle2f({ -2.0f, 1.0f }, 1.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ 2.094427191f, -1.0472135955f }));
-            ASSERT(
-                nnm::Circle2f({ -2.0f, 1.0f }, 1.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ 2.094427191f, -1.0472135955f }));
-            ASSERT(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f).intersect_depth(tri1).approx_equal({ 0.0f, -1.0f }));
-            ASSERT(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f).intersect_depth(tri2).approx_equal({ 0.0f, -1.0f }));
-            ASSERT(
-                nnm::Circle2f({ -3.0f, -4.0f }, 1.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ -0.2095290885f, -0.9778024141f }));
-            ASSERT(
-                nnm::Circle2f({ -3.0f, -4.0f }, 1.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ -0.2095290885f, -0.9778024141f }));
-            ASSERT(
-                nnm::Circle2f({ -1.0f, 0.0f }, 1.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ 0.894427191f, -0.4472135955f }));
-            ASSERT(
-                nnm::Circle2f({ -1.0f, 0.0f }, 1.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ 0.894427191f, -0.4472135955f }));
-            ASSERT(
-                nnm::Circle2f({ -1.5f, 3.0f }, 2.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ -0.7427813525f, 1.8569533819f }));
-            ASSERT(
-                nnm::Circle2f({ -1.5f, 3.0f }, 2.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ -0.7427813525f, 1.8569533819f }));
-            ASSERT(
-                nnm::Circle2f({ 1.0f, 0.0f }, 1.0f)
-                    .intersect_depth(tri1)
-                    .approx_equal({ -0.705572809f, 0.3527864045f }));
-            ASSERT(
-                nnm::Circle2f({ 1.0f, 0.0f }, 1.0f)
-                    .intersect_depth(tri2)
-                    .approx_equal({ -0.705572809f, 0.3527864045f }));
+            const auto d1 = nnm::Circle2f({ 1.0f, 2.0f }, 2.0f).intersect_depth(tri1);
+            ASSERT(d1.has_value() && d1->approx_equal({ -0.988854374f, 0.494427187f }));
+            const auto d2 = nnm::Circle2f({ 1.0f, 2.0f }, 2.0f).intersect_depth(tri2);
+            ASSERT(d2.has_value() && d2->approx_equal({ -0.988854374f, 0.494427187f }));
+            const auto d3 = nnm::Circle2f({ -2.0f, 1.0f }, 1.0f).intersect_depth(tri1);
+            ASSERT(d3.has_value() && d3->approx_equal({ -2.094427191f, 1.0472135955f }));
+            const auto d4 = nnm::Circle2f({ -2.0f, 1.0f }, 1.0f).intersect_depth(tri2);
+            ASSERT(d4.has_value() && d4->approx_equal({ -2.094427191f, 1.0472135955f }));
+            const auto d5 = nnm::Circle2f({ -3.0f, -5.0f }, 2.0f).intersect_depth(tri2);
+            ASSERT(d5.has_value() && d5->approx_equal({ 0.0f, 1.0f }));
+            const auto d6 = nnm::Circle2f({ -3.0f, -4.0f }, 1.0f).intersect_depth(tri1);
+            ASSERT(d6.has_value() && (d6->approx_equal(-tri1.normal(0)) || d6->approx_equal(-tri1.normal(1))));
+            const auto d7 = nnm::Circle2f({ -3.0f, -4.0f }, 1.0f).intersect_depth(tri1);
+            ASSERT(d7.has_value() && (d7->approx_equal(-tri2.normal(0)) || d7->approx_equal(-tri2.normal(2))));
+            const auto d8 = nnm::Circle2f({ -1.0f, 0.0f }, 1.0f).intersect_depth(tri1);
+            ASSERT(d8.has_value() && d8->approx_equal({ -0.894427191f, 0.4472135955f }));
+            const auto d9 = nnm::Circle2f({ -1.0f, 0.0f }, 1.0f).intersect_depth(tri2);
+            ASSERT(d9.has_value() && d9->approx_equal({ -0.894427191f, 0.4472135955f }));
+            const auto d10 = nnm::Circle2f({ -1.5f, 3.0f }, 2.0f).intersect_depth(tri1);
+            ASSERT(d10.has_value() && d10->approx_equal({ 0.7427813525f, -1.8569533819f }));
+            const auto d11 = nnm::Circle2f({ -1.5f, 3.0f }, 2.0f).intersect_depth(tri1);
+            ASSERT(d11.has_value() && d11->approx_equal({ 0.7427813525f, -1.8569533819f }));
+            const auto d12 = nnm::Circle2f({ 1.0f, 0.0f }, 1.0f).intersect_depth(tri1);
+            ASSERT_FALSE(d12.has_value());
+            const auto d13 = nnm::Circle2f({ 1.0f, 0.0f }, 1.0f).intersect_depth(tri2);
+            ASSERT_FALSE(d13.has_value());
         }
 
         test_section("approx_tangent(const Line2&)");
@@ -3873,32 +3851,32 @@ inline void geom_tests()
 
         test_section("intersect_depth(const Circle2&)");
         {
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f))
-                       .approx_equal({ -0.988854374f, 0.494427187f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f))
-                       .approx_equal({ -0.988854374f, 0.494427187f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f))
-                       .approx_equal({ -2.094427191f, 1.0472135955f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f))
-                       .approx_equal({ -2.094427191f, 1.0472135955f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f)).approx_equal({ 0.0f, 1.0f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f)).approx_equal({ 0.0f, 1.0f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f))
-                       .approx_equal({ 0.2095290885f, 0.9778024141f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f))
-                       .approx_equal({ 0.2095290885f, 0.9778024141f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f))
-                       .approx_equal({ -0.894427191f, 0.4472135955f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f))
-                       .approx_equal({ -0.894427191f, 0.4472135955f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f))
-                       .approx_equal({ 0.7427813525f, -1.8569533819f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f))
-                       .approx_equal({ 0.7427813525f, -1.8569533819f }));
-            ASSERT(tri1.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f))
-                       .approx_equal({ 0.705572809f, -0.3527864045f }));
-            ASSERT(tri2.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f))
-                       .approx_equal({ 0.705572809f, -0.3527864045f }));
+            const auto d1 = tri1.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f));
+            ASSERT(d1.has_value() && d1->approx_equal({ 0.988854374f, -0.494427187f }));
+            const auto d2 = tri2.intersect_depth(nnm::Circle2f({ 1.0f, 2.0f }, 2.0f));
+            ASSERT(d2.has_value() && d2->approx_equal({ 0.988854374f, -0.494427187f }));
+            const auto d3 = tri1.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f));
+            ASSERT(d3.has_value() && d3->approx_equal({ 2.094427191f, -1.0472135955f }));
+            const auto d4 = tri2.intersect_depth(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f));
+            ASSERT(d4.has_value() && d4->approx_equal({ 2.094427191f, -1.0472135955f }));
+            const auto d5 = tri2.intersect_depth(nnm::Circle2f({ -3.0f, -5.0f }, 2.0f));
+            ASSERT(d5.has_value() && d5->approx_equal({ 0.0f, -1.0f }));
+            const auto d6 = tri1.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f));
+            ASSERT(d6.has_value() && (d6->approx_equal(tri1.normal(0)) || d6->approx_equal(tri1.normal(1))));
+            const auto d7 = tri1.intersect_depth(nnm::Circle2f({ -3.0f, -4.0f }, 1.0f));
+            ASSERT(d7.has_value() && (d7->approx_equal(tri2.normal(0)) || d7->approx_equal(tri2.normal(2))));
+            const auto d8 = tri1.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f));
+            ASSERT(d8.has_value() && d8->approx_equal({ 0.894427191f, -0.4472135955f }));
+            const auto d9 = tri2.intersect_depth(nnm::Circle2f({ -1.0f, 0.0f }, 1.0f));
+            ASSERT(d9.has_value() && d9->approx_equal({ 0.894427191f, -0.4472135955f }));
+            const auto d10 = tri1.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f));
+            ASSERT(d10.has_value() && d10->approx_equal({ -0.7427813525f, 1.8569533819f }));
+            const auto d11 = tri1.intersect_depth(nnm::Circle2f({ -1.5f, 3.0f }, 2.0f));
+            ASSERT(d11.has_value() && d11->approx_equal({ -0.7427813525f, 1.8569533819f }));
+            const auto d12 = tri1.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f));
+            ASSERT_FALSE(d12.has_value());
+            const auto d13 = tri2.intersect_depth(nnm::Circle2f({ 1.0f, 0.0f }, 1.0f));
+            ASSERT_FALSE(d13.has_value());
         }
 
         test_section("approx_equilateral");

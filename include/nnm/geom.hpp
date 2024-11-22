@@ -2032,19 +2032,25 @@ public:
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
     }
 
-    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2& other) const
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2& other) const
     {
         const Vector2<Real> diff = other.center - center;
-        const Real dist_sqrd = diff.length_sqrd();
         const Real radius_sum = radius + other.radius;
+        if (diff == Vector2<Real>::zero()) {
+            return Vector2<Real>::axis_x() * radius_sum;
+        }
+        const Real dist_sqrd = diff.length_sqrd();
         const Real dist = sqrt(dist_sqrd);
         const Real depth = radius_sum - dist;
+        if (depth < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
         return diff.normalize() * depth;
     }
 
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
-    [[nodiscard]] Vector2<Real> intersect_depth(const Triangle2<Real>& triangle) const;
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
     {
@@ -2456,39 +2462,58 @@ public:
         return false;
     }
 
-    [[nodiscard]] Vector2<Real> intersect_depth(const Circle2<Real>& circle) const
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
-        std::optional<Real> closest_dist_sqrd;
-        std::optional<Vector2<Real>> closest_point;
-        for (const Vector2<Real>& vertex : vertices) {
-            if (vertex == circle.center) {
-                return circle.center.direction(centroid()) * circle.radius;
+        const auto depth_on_normal
+            = [this, &circle](const Vector2<Real>& normal, float& min_overlap, Vector2<Real>& min_normal) -> bool {
+            Real tri_max = std::numeric_limits<Real>::lowest();
+            for (const Vector2<Real>& v : vertices) {
+                const Real proj = v.dot(normal);
+                tri_max = max(tri_max, proj);
+            }
+            const Real circle_proj = circle.center.dot(normal) - circle.radius;
+            const Real overlap = tri_max - circle_proj;
+            if (overlap < static_cast<Real>(0)) {
+                return false;
+            }
+            if (overlap < min_overlap) {
+                min_overlap = overlap;
+                min_normal = normal;
+            }
+            return true;
+        };
+        std::optional<Vector2<Real>> circle_normal;
+        if (!contains(circle.center)) {
+            Vector2<Real> closest;
+            Real closest_dist_sqrd = std::numeric_limits<Real>::max();
+            for (int i = 0; i < 3; ++i) {
+                const Vector2<Real> proj = edge(i).project_point(circle.center);
+                const Real dist_sqrd = circle.center.distance_sqrd(proj);
+                if (dist_sqrd < closest_dist_sqrd) {
+                    closest_dist_sqrd = dist_sqrd;
+                    closest = proj;
+                }
+            }
+            circle_normal = closest.direction(circle.center);
+        }
+        const std::array<Vector2<Real>, 3> normals = {
+            normal(0),
+            normal(1),
+            normal(2),
+        };
+        Real min_overlap = std::numeric_limits<Real>::max();
+        Vector2<Real> min_normal;
+        if (circle_normal.has_value()) {
+            if (!depth_on_normal(*circle_normal, min_overlap, min_normal)) {
+                return std::nullopt;
             }
         }
-        for (int i = 0; i < 3; ++i) {
-            const Vector2<Real> point = edge(i).project_point(circle.center);
-            const Real dist_sqrd = circle.center.distance_sqrd(point);
-            if (point == circle.center) {
-                const Vector2<Real> edge_dir = edge(i).direction();
-                const Vector2<Real> edge_normal = edge(i).direction().arbitrary_perpendicular();
-                const Vector2<Real> edge_normal_towards_center
-                    = point.direction_unnormalized(centroid()).dot(edge_normal) < static_cast<Real>(0)
-                    ? -edge_normal
-                    : edge_normal;
-                return edge_normal_towards_center * circle.radius;
-            }
-            if (!closest_dist_sqrd.has_value() || dist_sqrd < closest_dist_sqrd.value()) {
-                closest_dist_sqrd = dist_sqrd;
-                closest_point = point;
+        for (const Vector2<Real>& normal : normals) {
+            if (!depth_on_normal(normal, min_overlap, min_normal)) {
+                return std::nullopt;
             }
         }
-        const Real closest_dist = sqrt(closest_dist_sqrd.value());
-        const bool contains_circle = contains(circle.center);
-        const Real depth = contains_circle ? circle.radius + closest_dist : circle.radius - closest_dist;
-        const Vector2<Real> dir = contains_circle
-            ? -circle.center.direction(closest_point.value())
-            : circle.center.direction(closest_point.value());
-        return dir * depth;
+        return min_normal * min_overlap;
     }
 
     [[nodiscard]] constexpr bool approx_equilateral() const
@@ -3490,9 +3515,13 @@ bool Circle2<Real>::intersects(const Triangle2<Real>& triangle) const
 }
 
 template <typename Real>
-Vector2<Real> Circle2<Real>::intersect_depth(const Triangle2<Real>& triangle) const
+std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const Triangle2<Real>& triangle) const
 {
-    return -triangle.intersect_depth(*this);
+    const std::optional<Vector2<Real>> result = triangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
 }
 
 template <typename Real>
