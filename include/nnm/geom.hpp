@@ -2685,6 +2685,30 @@ public:
         return { vertex_nx_py(), vertex_px_py() };
     }
 
+    [[nodiscard]] Vector2<Real> normal_nx() const
+    {
+        const Vector2<Real> dir = edge_nx().direction();
+        return { -dir.y, dir.x };
+    }
+
+    [[nodiscard]] Vector2<Real> normal_ny() const
+    {
+        const Vector2<Real> dir = edge_ny().direction();
+        return { dir.y, -dir.x };
+    }
+
+    [[nodiscard]] Vector2<Real> normal_px() const
+    {
+        const Vector2<Real> dir = edge_px().direction();
+        return { dir.y, -dir.x };
+    }
+
+    [[nodiscard]] Vector2<Real> normal_py() const
+    {
+        const Vector2<Real> dir = edge_py().direction();
+        return { -dir.y, dir.x };
+    }
+
     [[nodiscard]] constexpr Real area() const
     {
         return size.x * size.y;

@@ -4130,6 +4130,30 @@ inline void geom_tests()
             ASSERT(r3.edge_py().approx_coincident({ { 6.5f, -2.5f }, { 6.5f, -3.5f } }));
         }
 
+        test_section("normal_nx");
+        {
+            ASSERT(r1.normal_nx().approx_equal({ -0.5f, -0.8660254f }));
+            ASSERT(r2.normal_nx().approx_equal({ -1.0f, 0.0f }));
+        }
+
+        test_section("normal_ny");
+        {
+            ASSERT(r1.normal_ny().approx_equal({ 0.8660254f, -0.5f }));
+            ASSERT(r2.normal_ny().approx_equal({ 0.0f, -1.0f }));
+        }
+
+        test_section("normal_px");
+        {
+            ASSERT(r1.normal_px().approx_equal({ 0.5f, 0.8660254f }));
+            ASSERT(r2.normal_px().approx_equal({ 1.0f, 0.0f }));
+        }
+
+        test_section("normal_py");
+        {
+            ASSERT(r1.normal_py().approx_equal({ -0.8660254f, 0.5f }));
+            ASSERT(r2.normal_py().approx_equal({ 0.0f, 1.0f }));
+        }
+
         test_section("area");
         {
             constexpr auto result = r1.area();
