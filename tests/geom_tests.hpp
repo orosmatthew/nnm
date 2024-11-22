@@ -4193,6 +4193,26 @@ inline void geom_tests()
             ASSERT_FALSE(r3.contains(nnm::Vector2f(4.0f, -2.0f)));
         }
 
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_equal(r1.signed_distance({ 0.0f, 0.0f }), -0.133974656f));
+            ASSERT(nnm::approx_equal(r1.signed_distance({ 2.0f, -0.5f }), 0.299038023f));
+            ASSERT(nnm::approx_equal(r1.signed_distance({ 1.5f, -3.5f }), -0.450961769f));
+            ASSERT(nnm::approx_equal(r2.signed_distance({ 0.0f, 2.0f }), -0.5f));
+            ASSERT(nnm::approx_equal(r2.signed_distance({ 2.0f, 3.5f }), 1.5f));
+            ASSERT(nnm::approx_equal(r3.signed_distance({ 7.5f, -0.5f }), 2.23606798f));
+        }
+
+        test_section("distance(const Vector2&)");
+        {
+            ASSERT(nnm::approx_zero(r1.distance({ 0.0f, 0.0f })));
+            ASSERT(nnm::approx_equal(r1.distance({ 2.0f, -0.5f }), 0.299038023f));
+            ASSERT(nnm::approx_zero(r1.distance({ 1.5f, -3.5f })));
+            ASSERT(nnm::approx_zero(r2.distance({ 0.0f, 2.0f })));
+            ASSERT(nnm::approx_equal(r2.distance({ 2.0f, 3.5f }), 1.5f));
+            ASSERT(nnm::approx_equal(r3.distance({ 7.5f, -0.5f }), 2.23606798f));
+        }
+
         test_section("intersects(const Line2&)");
         {
             ASSERT(r1.intersects(nnm::Line2f::axis_x()));

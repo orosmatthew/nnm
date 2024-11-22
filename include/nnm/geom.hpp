@@ -1815,6 +1815,14 @@ public:
         return max(static_cast<Real>(0), arc.distance(center) - radius);
     }
 
+    // TODO: test
+    [[nodiscard]] Real distance(const Circle2& other) const
+    {
+        const Real dist_sqrd = center.distance_sqrd(other.center);
+        const Real radius_sum_sqrd = sqrd(radius + other.radius);
+        return max(static_cast<Real>(0), dist_sqrd - radius_sum_sqrd);
+    }
+
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
@@ -2773,8 +2781,165 @@ public:
     {
         const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
         const Vector2<Real> half_size = size / static_cast<Real>(2);
-        return local_point.x >= -half_size.x && local_point.x <= half_size.x && local_point.y >= -half_size.y
-            && local_point.y <= half_size.y;
+        return abs(local_point.x) <= half_size.x && abs(local_point.y) <= half_size.y;
+    }
+
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return contains(point) ? -min_dist : min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
+        const Vector2<Real> half_size = size / static_cast<Real>(2);
+        const Vector2<Real> closest = local_point.clamp(-half_size, half_size);
+        return local_point.distance(closest);
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Line2<Real>& line) const
+    {
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(line);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Ray2<Real>& ray) const
+    {
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(ray);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Segment2<Real>& segment) const
+    {
+        if (contains(segment.from)) {
+            return static_cast<Real>(0);
+        }
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(segment);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Arc2<Real>& arc) const
+    {
+        if (contains(arc.from)) {
+            return static_cast<Real>(0);
+        }
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(arc);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const
+    {
+        if (intersects(circle)) {
+            return static_cast<Real>(0);
+        }
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(circle);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
+    {
+        if (contains(triangle.vertices[0])) {
+            return static_cast<Real>(0);
+        }
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = static_cast<Real>(0);
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(triangle);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Rectangle2& other) const
+    {
+        if (contains(other.vertex_nx_ny())) {
+            return static_cast<Real>(0);
+        }
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        const std::array<Segment2<Real>, 4> edges_other {
+            other.edge_nx(), other.edge_ny(), other.edge_px(), other.edge_py()
+        };
+        Real min_dist = static_cast<Real>(0);
+        for (int i = 0; i < 4; ++i) {
+            const Real dist = edges[i].distance(edges_other[i]);
+            if (dist == static_cast<Real>(0)) {
+                return static_cast<Real>(0);
+            }
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
     }
 
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
