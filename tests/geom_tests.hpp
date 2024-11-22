@@ -3048,6 +3048,14 @@ inline void geom_tests()
             ASSERT(c1.point_at(nnm::pi() / 3.0f).approx_equal({ 4.5f, 1.330127f }));
         }
 
+        test_section("normal_at");
+        {
+            ASSERT(c1.normal_at(0.0f).approx_equal({ 1.0f, 0.0f }));
+            ASSERT(c1.normal_at(nnm::pi()).approx_equal({ -1.0f, 0.0f }));
+            ASSERT(c1.normal_at(nnm::pi() / 2.0f).approx_equal({ 0.0f, 1.0f }));
+            ASSERT(c1.normal_at(nnm::pi() / 3.0f).approx_equal({ 0.5f, 0.8660254038f }));
+        }
+
         test_section("signed_distance");
         {
             ASSERT(nnm::approx_equal(c1.signed_distance({ -3.0f, 1.0f }), 1.403124237f));
@@ -4326,13 +4334,43 @@ inline void geom_tests()
             ASSERT(d8.approx_equal({ 0.0f, -3.5f }));
         }
 
-        // TODO: finish
-        test_section("intersect_depth(const Triangle2&)");
+        test_section("intersects(const Triangle2&)");
         {
             // const auto d1 = r2.intersect_depth(nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f }));
             // ASSERT(d1.approx_equal({ -0.5f, 0.0f }));
+            ASSERT_FALSE(r2.intersects(nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f })));
             // const auto d2 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f }));
-            // ASSERT(d2.approx_equal({ 0.5f, 0.0f }));
+            // ASSERT(d2.approx_equal({ 1.0f, 0.0f }));
+            ASSERT(r2.intersects(nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f })));
+            // const auto d3 = r2.intersect_depth(nnm::Triangle2f({ 1.0f, 3.0f }, { -0.5f, 4.5f }, { 1.5f, 5.0f }));
+            // ASSERT(d3.approx_equal({ 0.25f, 0.25f }));
+            ASSERT(r2.intersects(nnm::Triangle2f({ 1.0f, 3.0f }, { -0.5f, 4.5f }, { 1.5f, 5.0f })));
+            // const auto d4 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }));
+            // ASSERT(d4.approx_equal({ 0.0f, 2.0f }) || d4.approx_equal({ -2.0f, 0.0f }));
+            ASSERT(r2.intersects(nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f })));
+            // const auto d5 = r1.intersect_depth(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }));
+            // ASSERT(d5.approx_equal({ 0.482050896f, 0.0f }));
+            ASSERT(r1.intersects(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f })));
+            // const auto d6 = r1.intersect_depth(nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }));
+            // ASSERT(d6.approx_equal({ -0.451331675f, -0.300887734f }));
+            ASSERT_FALSE(r1.intersects(nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f })));
+            ASSERT(r2.intersects(nnm::Triangle2f({ -2.0f, -7.0f }, { -4.0f, 5.0f }, { 3.0f, 5.0f })));
+        }
+
+        test_section("intersect_depth(const Triangle2&)");
+        {
+            const auto d1 = r2.intersect_depth(nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f }));
+            ASSERT(d1.approx_equal({ -0.5f, 0.0f }));
+            const auto d2 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f }));
+            ASSERT(d2.approx_equal({ 1.0f, 0.0f }));
+            const auto d3 = r2.intersect_depth(nnm::Triangle2f({ 1.0f, 3.0f }, { -0.5f, 4.5f }, { 1.5f, 5.0f }));
+            ASSERT(d3.approx_equal({ 0.25f, 0.25f }));
+            const auto d4 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }));
+            ASSERT(d4.approx_equal({ 0.0f, 2.0f }) || d4.approx_equal({ -2.0f, 0.0f }));
+            const auto d5 = r1.intersect_depth(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }));
+            ASSERT(d5.approx_equal({ 0.482050896f, 0.0f }));
+            const auto d6 = r1.intersect_depth(nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }));
+            ASSERT(d6.approx_equal({ -0.451331675f, -0.300887734f }));
         }
 
         test_section("approx_coincident");

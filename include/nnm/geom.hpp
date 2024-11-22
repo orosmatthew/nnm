@@ -1820,7 +1820,6 @@ public:
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
     }
 
-    // TODO: test
     [[nodiscard]] Vector2<Real> normal_at(const Real angle) const
     {
         return Vector2<Real>::axis_x().rotate(angle);
@@ -2845,7 +2844,6 @@ public:
             : Vector2<Real> { static_cast<Real>(0), diff_y }.rotate(angle);
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -2855,64 +2853,51 @@ public:
         }
         const std::array edges = { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
-            for (int i = 0; i < 3; ++i) {
-                if (edge.intersects(triangle.edge(i))) {
-                    return true;
-                }
+            if (edge.intersects(triangle)) {
+                return true;
             }
         }
         return false;
     }
 
-    // TODO: test
     [[nodiscard]] Vector2<Real> intersect_depth(const Triangle2<Real>& triangle) const
     {
-        const auto depth_on_axis
+        const auto depth_on_normal
             = [](const std::array<Vector2<Real>, 4>& rect_verts,
                  const std::array<Vector2<Real>, 3>& tri_verts,
-                 const Vector2<Real>& axis,
+                 const Vector2<Real>& normal,
                  float& min_overlap,
-                 Vector2<Real>& min_axis) {
-                  Real rect_min = std::numeric_limits<Real>::max();
-                  Real rect_max = std::numeric_limits<Real>::min();
+                 Vector2<Real>& min_normal) {
+                  Real rect_max = std::numeric_limits<Real>::lowest();
                   Real tri_min = std::numeric_limits<Real>::max();
-                  Real tri_max = std::numeric_limits<Real>::min();
                   for (const Vector2<Real>& v : rect_verts) {
-                      const Real proj = v.dot(axis);
-                      rect_min = min(rect_min, proj);
+                      const Real proj = v.dot(normal);
                       rect_max = max(rect_max, proj);
                   }
                   for (const Vector2<Real>& v : tri_verts) {
-                      const Real proj = v.dot(axis);
+                      const Real proj = v.dot(normal);
                       tri_min = min(tri_min, proj);
-                      tri_max = max(tri_max, proj);
                   }
-                  const Real overlap = min(rect_max, tri_max) - max(rect_min, tri_min);
+                  const Real overlap = rect_max - tri_min;
                   if (overlap < min_overlap) {
                       min_overlap = overlap;
-                      min_axis = axis;
+                      min_normal = normal;
                   }
               };
-        // TODO: use normals instead of arbitrary perpendiculars
-        const std::array<Vector2<Real>, 7> perp_axes = {
-            edge_nx().direction().arbitrary_perpendicular(),
-            edge_ny().direction().arbitrary_perpendicular(),
-            edge_px().direction().arbitrary_perpendicular(),
-            edge_py().direction().arbitrary_perpendicular(),
-            triangle.edge(0).direction().arbitrary_perpendicular(),
-            triangle.edge(1).direction().arbitrary_perpendicular(),
-            triangle.edge(2).direction().arbitrary_perpendicular(),
+        const std::array<Vector2<Real>, 7> normals = {
+            normal_nx(),         normal_ny(),         normal_px(),         normal_py(),
+            -triangle.normal(0), -triangle.normal(1), -triangle.normal(2),
         };
         const std::array<Vector2<Real>, 4> rect_verts
             = { vertex_nx_ny(), vertex_nx_py(), vertex_px_ny(), vertex_px_py() };
         const std::array<Vector2<Real>, 3> tri_verts
             = { triangle.vertices[0], triangle.vertices[1], triangle.vertices[2] };
         Real min_overlap = std::numeric_limits<Real>::max();
-        Vector2<Real> min_axis;
-        for (const Vector2<Real>& axis : perp_axes) {
-            depth_on_axis(rect_verts, tri_verts, axis, min_overlap, min_axis);
+        Vector2<Real> min_normal;
+        for (const Vector2<Real>& axis : normals) {
+            depth_on_normal(rect_verts, tri_verts, axis, min_overlap, min_normal);
         }
-        return min_axis * min_overlap;
+        return min_normal * min_overlap;
     }
 
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
