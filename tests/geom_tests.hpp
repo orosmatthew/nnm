@@ -3679,6 +3679,31 @@ inline void geom_tests()
             ASSERT(tri5.intersects(tri1));
             ASSERT(tri2.intersects(tri5));
             ASSERT(tri5.intersects(tri1));
+            ASSERT(tri1.intersects(nnm::Triangle2f({ -6.0f, 3.0f }, { 4.0f, 5.0f }, { -3.0f, -6.0f })));
+            ASSERT(nnm::Triangle2f({ -6.0f, 3.0f }, { 4.0f, 5.0f }, { -3.0f, -6.0f }).intersects(tri1));
+        }
+
+        test_section("intersect_depth(const Triangle2&)");
+        {
+            const auto d1 = tri1.intersect_depth(tri1);
+            ASSERT(d1.has_value() && (d1->approx_equal({ 3.2f, -1.6f }) || d1->approx_equal({ -3.2f, 1.6f })));
+            const auto d2 = tri1.intersect_depth(tri2);
+            ASSERT(d2.has_value() && (d2->approx_equal({ 3.2f, -1.6f }) || d2->approx_equal({ -3.2f, 1.6f })));
+            constexpr nnm::Triangle2f tri3 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
+            ASSERT_FALSE(tri1.intersect_depth(tri3).has_value());
+            ASSERT_FALSE(tri3.intersect_depth(tri1).has_value());
+            ASSERT_FALSE(tri2.intersect_depth(tri3).has_value());
+            ASSERT_FALSE(tri3.intersect_depth(tri2).has_value());
+            constexpr nnm::Triangle2f tri4 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
+            const auto d3 = tri1.intersect_depth(tri4);
+            ASSERT(d3.has_value() && d3->approx_equal({ 1.2f, -0.6f }));
+            const auto d4 = tri4.intersect_depth(tri2);
+            ASSERT(d4.has_value() && d4->approx_equal({ -1.2f, 0.6f }));
+            constexpr nnm::Triangle2f tri5 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
+            const auto d5 = tri1.intersect_depth(tri5);
+            ASSERT(d5.has_value() && d5->approx_equal({ 2.8f, -1.4f }));
+            const auto d6 = tri5.intersect_depth(tri2);
+            ASSERT(d6.has_value() && d6->approx_equal({ -2.8f, 1.4f }));
         }
 
         test_section("intersects(const Line2&)");

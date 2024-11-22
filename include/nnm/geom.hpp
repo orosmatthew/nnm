@@ -2506,6 +2506,42 @@ public:
         return false;
     }
 
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2& other) const
+    {
+        const auto depth_on_normal
+            = [this, &other](const Vector2<Real>& normal, float& min_overlap, Vector2<Real>& min_normal) -> bool {
+            Real this_max = std::numeric_limits<Real>::lowest();
+            Real other_min = std::numeric_limits<Real>::max();
+            for (const Vector2<Real>& v : vertices) {
+                const Real proj = v.dot(normal);
+                this_max = max(this_max, proj);
+            }
+            for (const Vector2<Real>& v : other.vertices) {
+                const Real proj = v.dot(normal);
+                other_min = min(other_min, proj);
+            }
+            const Real overlap = this_max - other_min;
+            if (overlap < static_cast<Real>(0)) {
+                return false;
+            }
+            if (overlap < min_overlap) {
+                min_overlap = overlap;
+                min_normal = normal;
+            }
+            return true;
+        };
+        const std::array<Vector2<Real>, 6> normals
+            = { normal(0), normal(1), normal(2), -other.normal(0), -other.normal(1), -other.normal(2) };
+        Real min_overlap = std::numeric_limits<Real>::max();
+        Vector2<Real> min_normal;
+        for (const Vector2<Real>& axis : normals) {
+            if (!depth_on_normal(axis, min_overlap, min_normal)) {
+                return std::nullopt;
+            }
+        }
+        return min_normal * min_overlap;
+    }
+
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())

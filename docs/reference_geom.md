@@ -501,6 +501,7 @@ bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
 std::optional<Vector2> intersect_depth(const Circle2& circle) const;
 bool intersects(const Triangle2& other) const;
+std::optional<Vector2>
 bool approx_equilateral() const;
 bool approx_similar() const;
 bool approx_right() const;
