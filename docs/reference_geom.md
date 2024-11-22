@@ -500,6 +500,7 @@ std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) con
 bool intersects(const Arc2& arc) const;
 bool intersects(const Circle2& circle) const;
 std::optional<Vector2> intersect_depth(const Circle2& circle) const;
+bool intersects(const Triangle2& other) const;
 bool approx_equilateral() const;
 bool approx_similar() const;
 bool approx_right() const;

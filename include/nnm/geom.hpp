@@ -2321,31 +2321,6 @@ public:
             && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
     }
 
-    [[nodiscard]] bool intersects(const Triangle2& other) const
-    {
-        const std::array<Vector2<Real>, 6> axes {
-            edge(0).direction(),       edge(1).direction(),       edge(2).direction(),
-            other.edge(0).direction(), other.edge(1).direction(), other.edge(2).direction()
-        };
-        auto proj_min_max = [](const Triangle2& t, const Vector2<Real>& axis) -> std::array<Real, 2> {
-            const Real proj0 = t.vertices[0].dot(axis);
-            const Real proj1 = t.vertices[1].dot(axis);
-            const Real proj2 = t.vertices[2].dot(axis);
-            const Real min = nnm::min(proj0, nnm::min(proj1, proj2));
-            const Real max = nnm::max(proj0, nnm::max(proj1, proj2));
-            return { min, max };
-        };
-        for (const Vector2<Real>& axis : axes) {
-            const Vector2<Real> perp = axis.arbitrary_perpendicular();
-            auto [min1, max1] = proj_min_max(*this, perp);
-            auto [min2, max2] = proj_min_max(other, perp);
-            if (max1 < min2 || max2 < min1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         if (contains(line.origin)) {
@@ -2514,6 +2489,21 @@ public:
             }
         }
         return min_normal * min_overlap;
+    }
+
+    [[nodiscard]] bool intersects(const Triangle2& other) const
+    {
+        for (const Vector2<Real>& vertex : other.vertices) {
+            if (contains(vertex)) {
+                return true;
+            }
+        }
+        for (int i = 0; i < 3; ++i) {
+            if (other.intersects(edge(i))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     [[nodiscard]] constexpr bool approx_equilateral() const
