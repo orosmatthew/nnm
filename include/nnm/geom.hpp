@@ -2329,11 +2329,126 @@ public:
             && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
     }
 
+    [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return contains(point) ? -min_dist : min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Vector2<Real>& point) const
+    {
+        if (contains(point)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Line2<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(line);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Ray2<Real>& ray) const
+    {
+        if (intersects(ray)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(ray);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Segment2<Real>& segment) const
+    {
+        if (intersects(segment)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(segment);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Arc2<Real>& arc) const
+    {
+        if (intersects(arc)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(arc);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Circle2<Real>& circle) const
+    {
+        if (intersects(circle)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(circle);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Triangle2& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (int i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(other);
+        }
+    }
+
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
-        if (contains(line.origin)) {
-            return true;
-        }
         for (int i = 0; i < 3; ++i) {
             if (edge(i).intersects(line)) {
                 return true;
@@ -2421,7 +2536,7 @@ public:
 
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
-        if (contains(arc.from) || contains(arc.to())) {
+        if (contains(arc.from)) {
             return true;
         }
         for (int i = 0; i < 3; ++i) {
@@ -2894,14 +3009,13 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(triangle);
             if (dist == static_cast<Real>(0)) {

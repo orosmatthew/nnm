@@ -3665,6 +3665,42 @@ inline void geom_tests()
             ASSERT(tri2.contains({ -1.0f, 0.0f }));
         }
 
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_equal(tri1.signed_distance({ -1.0f, 2.0f }), -0.894427f));
+            ASSERT(nnm::approx_equal(tri2.signed_distance({ -1.0f, 2.0f }), -0.894427f));
+            ASSERT(nnm::approx_equal(tri1.signed_distance({ 1.0f, 2.0f }), 0.894427f));
+            ASSERT(nnm::approx_equal(tri2.signed_distance({ 1.0f, 2.0f }), 0.894427f));
+            ASSERT(nnm::approx_zero(tri1.signed_distance({ -1.0f, 0.0f })));
+            ASSERT(nnm::approx_zero(tri2.signed_distance({ -1.0f, 0.0f })));
+        }
+
+        test_section("distance(const Vector2&)");
+        {
+            ASSERT(nnm::approx_equal(tri1.distance({ -1.0f, 2.0f }), 0.0f));
+            ASSERT(nnm::approx_equal(tri2.distance({ -1.0f, 2.0f }), 0.0f));
+            ASSERT(nnm::approx_equal(tri1.distance({ 1.0f, 2.0f }), 0.894427f));
+            ASSERT(nnm::approx_equal(tri2.distance({ 1.0f, 2.0f }), 0.894427f));
+            ASSERT(nnm::approx_zero(tri1.distance({ -1.0f, 0.0f })));
+            ASSERT(nnm::approx_zero(tri2.distance({ -1.0f, 0.0f })));
+        }
+
+        test_section("distance(const Line2&)");
+        {
+            const auto d1 = tri1.distance(nnm::Line2f::from_points({ -2.0f, 2.0f }, { 1.0f, 1.0f }));
+            const auto d1n = tri2.distance(nnm::Line2f::from_points({ -2.0f, 2.0f }, { 1.0f, 1.0f }));
+            ASSERT(nnm::approx_zero(d1));
+            ASSERT(nnm::approx_zero(d1n));
+            const auto d2 = tri1.distance(nnm::Line2f::from_points({ 1.0f, 2.0f }, { 0.0f, -2.0f }));
+            const auto d2n = tri2.distance(nnm::Line2f::from_points({ 1.0f, 2.0f }, { 0.0f, -2.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.485071272f));
+            ASSERT(nnm::approx_equal(d2n, 0.485071272f));
+            const auto d3 = tri1.distance(nnm::Line2f::from_points({ 0.0f, 0.0f }, { 1.0f, 2.0f }));
+            const auto d3n = tri2.distance(nnm::Line2f::from_points({ 0.0f, 0.0f }, { 1.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.894427f));
+            ASSERT(nnm::approx_equal(d3n, 0.894427f));
+        }
+
         test_section("intersects(const Triangle2&)");
         {
             ASSERT(tri1.intersects(tri1));
@@ -4270,6 +4306,19 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d3, 0.618034005f));
             const auto d4 = r2.distance(nnm::Circle2f({ -0.5f, 3.0f }, 0.5f));
             ASSERT(nnm::approx_zero(d4));
+        }
+
+        // TODO: finish, have to implement Triangle2-Segment2 distance method
+        test_section("distance(const Triangle2&)");
+        {
+            // const auto d1 = r1.distance(nnm::Triangle2f({ 1.5f, 0.5f }, { 3.0f, -0.5f }, { 1.5f, -1.5f }));
+            // ASSERT(nnm::approx_zero(d1));
+            // const auto d2 = r1.distance(nnm::Triangle2f({ 1.5f, 0.5f }, { 3.0f, -0.5f }, { 2.0f, -0.5f }));
+            // ASSERT(nnm::approx_equal(d2, 0.299698f));
+            // const auto d3 = r2.distance(nnm::Triangle2f({ 2.0f, 1.0f }, { 1.0f, 1.5f }, { 1.0f, 2.5f }));
+            // ASSERT(nnm::approx_equal(d3, 1.0f));
+            // const auto d4 = r2.distance(nnm::Triangle2f({ 0.5f, 5.5f }, { 1.5f, 4.0f }, { 0.5f, 4.5f }));
+            // ASSERT(nnm::approx_equal(d4, 0.447214f));
         }
 
         test_section("intersects(const Line2&)");
