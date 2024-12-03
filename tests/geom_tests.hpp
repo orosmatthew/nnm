@@ -4240,6 +4240,17 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(r2.distance(nnm::Segment2f({ 2.5f, 5.0f }, { 1.0f, 4.5f })), 0.7071067812f));
         }
 
+        test_section("distance(const Arc2&)");
+        {
+            ASSERT(nnm::approx_zero(r1.distance(nnm::Arc2f({ 2.0f, -0.5f }, { 2.0f, 0.0f }, nnm::pi()))));
+            const auto d1 = r1.distance(nnm::Arc2f({ 3.5f, -1.0f }, { 3.5f, -1.5f }, -nnm::pi()));
+            ASSERT(nnm::approx_equal(d1, 0.116025329f));
+            const auto d2 = r1.distance(nnm::Arc2f({ 3.5f, -1.0f }, { 3.5f, -0.5f }, nnm::pi() / 2.0f));
+            ASSERT(nnm::approx_equal(d2, 0.366025358f));
+            const auto d3 = r2.distance(nnm::Arc2f({ 1.2f, 4.2f }, { 1.6f, 4.2f }, -nnm::pi()));
+            ASSERT(nnm::approx_equal(d3, 0.328010947f));
+        }
+
         test_section("intersects(const Line2&)");
         {
             ASSERT(r1.intersects(nnm::Line2f::axis_x()));

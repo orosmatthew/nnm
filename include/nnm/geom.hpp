@@ -1231,9 +1231,10 @@ public:
         }
         const Real ends_min_dist = min(
             distance(segment.from), min(distance(segment.to), min(segment.distance(from), segment.distance(to()))));
-        const Real proj_scalar = (pivot - segment.from).dot(segment.direction_unnormalized());
-        if (proj_scalar >= static_cast<Real>(0) && proj_scalar <= segment.length_sqrd()) {
-            const Vector2<Real> closest_point_on_seg = segment.from + segment.direction_unnormalized() * proj_scalar;
+        const Vector2<Real> seg_dir = segment.direction();
+        const Real proj_scalar = (pivot - segment.from).dot(seg_dir);
+        if (proj_scalar >= static_cast<Real>(0) && proj_scalar <= static_cast<Real>(1)) {
+            const Vector2<Real> closest_point_on_seg = segment.from + seg_dir * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_seg), two_pi);
                 angle_in_range(proj_angle, angle_from(), angle_to())) {
@@ -2856,14 +2857,13 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(arc);
             if (dist == static_cast<Real>(0)) {
