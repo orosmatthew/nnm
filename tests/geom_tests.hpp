@@ -3099,17 +3099,24 @@ inline void geom_tests()
 
         test_section("distance(const Arc2&)");
         {
-            ASSERT(
-                nnm::approx_zero(c1.distance(
-                    nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -2.0f, 1.0f }, { -1.0f, -2.0f }))));
-            ASSERT(
-                nnm::approx_equal(
-                    c1.distance(nnm::Arc2f::from_points_unchecked({ -1.0f, 3.0f }, { -2.0f, 1.0f }, { -4.0f, 1.0f })),
-                    0.60431089f));
-            ASSERT(
-                nnm::approx_equal(
-                    c1.distance(nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -5.0f, 3.0f }, { -1.0f, 3.0f })),
-                    1.70820393f));
+            const auto d1
+                = c1.distance(nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -2.0f, 1.0f }, { -1.0f, -2.0f }));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2
+                = c1.distance(nnm::Arc2f::from_points_unchecked({ -1.0f, 3.0f }, { -2.0f, 1.0f }, { -4.0f, 1.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.60431089f));
+            const auto d3
+                = c1.distance(nnm::Arc2f::from_points_unchecked({ -4.0f, 1.0f }, { -5.0f, 3.0f }, { -1.0f, 3.0f }));
+            ASSERT(nnm::approx_equal(d3, 1.70820393f));
+        }
+
+        test_section("distance(const Circle2&)");
+        {
+            ASSERT(nnm::approx_zero(c1.distance(c1)));
+            const auto d1 = c1.distance(nnm::Circle2f({ 8.0f, 0.0f }, 2.0f));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = c1.distance(nnm::Circle2f({ 10.0f, -4.0f }, 2.0f));
+            ASSERT(nnm::approx_equal(d2, 1.0622577f));
         }
 
         test_section("intersects(const Line2&)");

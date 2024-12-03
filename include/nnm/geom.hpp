@@ -1816,12 +1816,11 @@ public:
         return max(static_cast<Real>(0), arc.distance(center) - radius);
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Circle2& other) const
     {
-        const Real dist_sqrd = center.distance_sqrd(other.center);
-        const Real radius_sum_sqrd = sqrd(radius + other.radius);
-        return max(static_cast<Real>(0), dist_sqrd - radius_sum_sqrd);
+        const Real dist = center.distance(other.center);
+        const Real radius_sum = radius + other.radius;
+        return max(static_cast<Real>(0), dist - radius_sum);
     }
 
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
