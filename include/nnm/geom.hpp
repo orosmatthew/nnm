@@ -2875,14 +2875,13 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
             const Real dist = edge.distance(circle);
             if (dist == static_cast<Real>(0)) {

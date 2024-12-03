@@ -4260,6 +4260,18 @@ inline void geom_tests()
             ASSERT(nnm::approx_zero(d4));
         }
 
+        test_section("distance(const Circle2&)");
+        {
+            const auto d1 = r1.distance(nnm::Circle2f({ 3.0f, -0.5f }, 1.0f));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = r1.distance(nnm::Circle2f({ 3.0f, -0.5f }, 0.5f));
+            ASSERT(nnm::approx_equal(d2, 0.299038053f));
+            const auto d3 = r2.distance(nnm::Circle2f({ 1.0f, 5.0f }, 0.5f));
+            ASSERT(nnm::approx_equal(d3, 0.618034005f));
+            const auto d4 = r2.distance(nnm::Circle2f({ -0.5f, 3.0f }, 0.5f));
+            ASSERT(nnm::approx_zero(d4));
+        }
+
         test_section("intersects(const Line2&)");
         {
             ASSERT(r1.intersects(nnm::Line2f::axis_x()));
