@@ -4256,6 +4256,8 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d2, 0.366025358f));
             const auto d3 = r2.distance(nnm::Arc2f({ 1.2f, 4.2f }, { 1.6f, 4.2f }, -nnm::pi()));
             ASSERT(nnm::approx_equal(d3, 0.328010947f));
+            const auto d4 = r2.distance(nnm::Arc2f({ -1.5f, 3.0f }, { -1.5f, 3.5f }, nnm::pi()));
+            ASSERT(nnm::approx_zero(d4));
         }
 
         test_section("intersects(const Line2&)");
