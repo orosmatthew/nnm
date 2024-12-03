@@ -1231,8 +1231,8 @@ public:
         }
         const Real ends_min_dist = min(
             distance(segment.from), min(distance(segment.to), min(segment.distance(from), segment.distance(to()))));
-        const Vector2<Real> seg_dir = segment.direction();
-        const Real proj_scalar = (pivot - segment.from).dot(seg_dir);
+        const Vector2<Real> seg_dir = segment.direction_unnormalized();
+        const Real proj_scalar = (pivot - segment.from).dot(seg_dir) / seg_dir.dot(seg_dir);
         if (proj_scalar >= static_cast<Real>(0) && proj_scalar <= static_cast<Real>(1)) {
             const Vector2<Real> closest_point_on_seg = segment.from + seg_dir * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
@@ -2401,7 +2401,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (intersects(arc)) {
