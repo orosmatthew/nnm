@@ -3701,6 +3701,36 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d3n, 0.894427f));
         }
 
+        test_section("distance(const Ray2&)");
+        {
+            const auto d1 = tri1.distance(nnm::Ray2f::from_point_to_point({ -2.0f, 1.0f }, { 1.0f, 2.0f }));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = tri1.distance(nnm::Ray2f::from_point_to_point({ 1.0f, 2.0f }, { -2.0f, 1.0f }));
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = tri1.distance(nnm::Ray2f::from_point_to_point({ 0.0f, 1.0f }, { 1.0f, 1.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.447214f));
+            const auto d4 = tri1.distance(nnm::Ray2f::from_point_to_point({ 1.0f, 1.0f }, { 0.0f, 1.0f }));
+            ASSERT(nnm::approx_zero(d4));
+            const auto d5 = tri1.distance(nnm::Ray2f::from_point_to_point({ -4.0f, -5.0f }, { -2.0f, -4.0f }));
+            ASSERT(nnm::approx_equal(d5, 0.447214f));
+            const auto d6 = tri1.distance(nnm::Ray2f::from_point_to_point({ -3.0f, -4.5f }, { -2.5f, -5.0f }));
+            ASSERT(nnm::approx_equal(d6, 0.5f));
+        }
+
+        test_section("distance(const Segment2&)");
+        {
+            const auto d1 = tri1.distance(nnm::Segment2f({ 0.5f, 1.0f }, { -1.5f, 1.5f }));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = tri1.distance(nnm::Segment2f({ 0.5f, 2.0f }, { 0.5f, 1.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.447214f));
+            const auto d3 = tri1.distance(nnm::Segment2f({ 0.5f, 1.0f }, { 1.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.89442719f));
+            const auto d4 = tri1.distance(nnm::Segment2f({ -3.5f, -4.5f }, { -2.5f, -4.5f }));
+            ASSERT(nnm::approx_equal(d4, 0.5f));
+            const auto d5 = tri1.distance(nnm::Segment2f({ -2.0f, -4.5f }, { -2.5f, -4.5f }));
+            ASSERT(nnm::approx_equal(d5, 0.7071067812f));
+        }
+
         test_section("intersects(const Triangle2&)");
         {
             ASSERT(tri1.intersects(tri1));

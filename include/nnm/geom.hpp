@@ -2371,7 +2371,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -2387,7 +2386,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -2444,7 +2442,11 @@ public:
         Real min_dist = std::numeric_limits<Real>::max();
         for (int i = 0; i < 3; ++i) {
             const Real dist = edge(i).distance(other);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
         }
+        return min_dist;
     }
 
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
