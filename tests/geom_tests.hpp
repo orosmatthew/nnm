@@ -4959,6 +4959,36 @@ inline void geom_tests()
             ASSERT(d8.has_value() && d8->approx_equal({ -3.5f, 0.0f }));
         }
 
+        test_section("translate");
+        {
+            const auto t1 = r1.translate({ 1.0f, -2.0f });
+            ASSERT(t1.approx_equal({ { 2.0f, -4.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f }));
+        }
+
+        test_section("rotate_at");
+        {
+            const auto t1 = r1.rotate_at({ 1.0f, -1.0f }, -nnm::pi() / 4.0f);
+            ASSERT(t1.approx_equal({ { 0.292893231f, -1.70710683f }, { 3.0f, 4.0f }, nnm::pi() / 12.0f }));
+        }
+
+        test_section("rotate");
+        {
+            const auto t1 = r1.rotate(nnm::pi());
+            ASSERT(t1.approx_equal({ { -1.0f, 2.0f }, { 3.0f, 4.0f }, -2.0f * nnm::pi() / 3.0f }))
+        }
+
+        test_section("scale_at");
+        {
+            const auto t1 = r1.scale_at({ 1.0f, -1.0f }, { -1.5f, 2.0f });
+            ASSERT(t1.approx_equal({ { 1.0f, -3.0f }, { -4.5f, 8.0f }, nnm::pi() / 3.0f }));
+        }
+
+        test_section("scale");
+        {
+            const auto t1 = r1.scale({ 2.0f, -0.5f });
+            ASSERT(t1.approx_equal({ { 2.0f, 1.0f }, { 6.0f, -2.0f }, nnm::pi() / 3.0f }));
+        }
+
         test_section("approx_coincident");
         {
             ASSERT(r2.approx_coincident(nnm::Rectangle2f({ -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f)));

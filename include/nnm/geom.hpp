@@ -3343,6 +3343,31 @@ public:
         return min_normal * min_overlap;
     }
 
+    [[nodiscard]] Rectangle2 translate(const Vector2<Real>& by) const
+    {
+        return { center.translate(by), size, angle };
+    }
+
+    [[nodiscard]] Rectangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    {
+        return { center.rotate_at(rotate_origin, angle), size, normalize_angle(this->angle + angle) };
+    }
+
+    [[nodiscard]] Rectangle2 rotate(const Real angle) const
+    {
+        return { center.rotate(angle), size, normalize_angle(this->angle + angle) };
+    }
+
+    [[nodiscard]] Rectangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    {
+        return { center.scale_at(scale_origin, by), size.scale(by), angle };
+    }
+
+    [[nodiscard]] Rectangle2 scale(const Vector2<Real>& by) const
+    {
+        return { center.scale(by), size.scale(by), angle };
+    }
+
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
