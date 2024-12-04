@@ -4388,6 +4388,18 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d4, 0.447214f));
         }
 
+        test_section("distance(const Rectangle2&)");
+        {
+            const auto d1 = r1.distance(nnm::Rectangle2f({ 2.25f, -0.25f }, { 1.5f, 1.5f }, 0.0f));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = r1.distance(nnm::Rectangle2f({ 2.5f, 0.25f }, { 1.0f, 1.5f }, 0.0f));
+            ASSERT(nnm::approx_equal(d2, 0.299038023f));
+            const auto d3 = r2.distance(nnm::Rectangle2f({ 1.5f, 2.25f }, { 1.0f, 1.5f }, 0.0f));
+            ASSERT(nnm::approx_equal(d3, 0.5f));
+            const auto d4 = r2.distance(nnm::Rectangle2f({ 1.75f, 4.75f }, { 1.5f, 0.5f }, 0.0f));
+            ASSERT(nnm::approx_equal(d4, 0.7071067812f));
+        }
+
         test_section("intersects(const Line2&)");
         {
             ASSERT(r1.intersects(nnm::Line2f::axis_x()));

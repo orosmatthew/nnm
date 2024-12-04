@@ -3027,7 +3027,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Rectangle2& other) const
     {
         if (contains(other.vertex_nx_ny())) {
@@ -3037,14 +3036,16 @@ public:
         const std::array<Segment2<Real>, 4> edges_other {
             other.edge_nx(), other.edge_ny(), other.edge_px(), other.edge_py()
         };
-        Real min_dist = static_cast<Real>(0);
+        Real min_dist = std::numeric_limits<Real>::max();
         for (int i = 0; i < 4; ++i) {
-            const Real dist = edges[i].distance(edges_other[i]);
-            if (dist == static_cast<Real>(0)) {
-                return static_cast<Real>(0);
-            }
-            if (dist < min_dist) {
-                min_dist = dist;
+            for (int j = 0; j < 4; ++j) {
+                const Real dist = edges[i].distance(edges_other[j]);
+                if (dist == static_cast<Real>(0)) {
+                    return static_cast<Real>(0);
+                }
+                if (dist < min_dist) {
+                    min_dist = dist;
+                }
             }
         }
         return min_dist;
