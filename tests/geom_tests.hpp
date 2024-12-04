@@ -3731,7 +3731,6 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d5, 0.7071067812f));
         }
 
-        // TODO: finish
         test_section("distance(const Arc2&)");
         {
             const auto d1 = tri1.distance(nnm::Arc2f({ 0.0f, 1.0f }, { 2.0f, 1.0f }, nnm::pi() / 2.0f));
@@ -3740,9 +3739,9 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d2, 1.341640786f));
             const auto d3 = tri1.distance(nnm::Arc2f({ 1.0f, 0.0f }, { 0.0f, 0.0f }, -3.0 * nnm::pi() / 2.0f));
             ASSERT(nnm::approx_equal(d3, 0.7888544f));
-            const auto d4 = tri1.distance(nnm::Arc2f({ -3.0f, -5.0f }, { -3.5f, -5.0f }, nnm::pi()));
+            const auto d4 = tri1.distance(nnm::Arc2f({ -3.0f, -5.0f }, { -3.5f, -5.0f }, -nnm::pi()));
             ASSERT(nnm::approx_equal(d4, 0.5f));
-            const auto d5 = tri1.distance(nnm::Arc2f({ -3.0f, -5.0f }, { -3.5f, -5.0f }, -nnm::pi()));
+            const auto d5 = tri1.distance(nnm::Arc2f({ -3.0f, -5.0f }, { -3.5f, -5.0f }, nnm::pi()));
             ASSERT(nnm::approx_equal(d5, 1.11803399f));
         }
 
