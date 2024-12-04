@@ -1282,6 +1282,10 @@ public:
 
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -3841,6 +3845,18 @@ template <typename Real>
 Real Arc2<Real>::distance(const Circle2<Real>& circle) const
 {
     return circle.distance(*this);
+}
+
+template <typename Real>
+Real Arc2<Real>::distance(const Triangle2<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+Real Arc2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>
