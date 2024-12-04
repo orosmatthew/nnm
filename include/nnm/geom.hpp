@@ -1839,6 +1839,10 @@ public:
         return max(static_cast<Real>(0), dist - radius_sum);
     }
 
+    [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
@@ -3881,6 +3885,18 @@ template <typename Real>
 bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
+}
+
+template <typename Real>
+Real Circle2<Real>::distance(const Triangle2<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+Real Circle2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>
