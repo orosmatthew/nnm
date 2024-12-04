@@ -251,6 +251,34 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(nnm::Line2f::axis_x_offset(3.0f).distance(c1), 1.0f));
         }
 
+        test_section("distance(const Triangle2&)");
+        {
+            constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+            constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
+            const auto d1 = nnm::Line2f::from_points({ -2.0f, 2.0f }, { 1.0f, 1.0f }).distance(tri1);
+            const auto d1n = nnm::Line2f::from_points({ -2.0f, 2.0f }, { 1.0f, 1.0f }).distance(tri2);
+            ASSERT(nnm::approx_zero(d1));
+            ASSERT(nnm::approx_zero(d1n));
+            const auto d2 = nnm::Line2f::from_points({ 1.0f, 2.0f }, { 0.0f, -2.0f }).distance(tri1);
+            const auto d2n = nnm::Line2f::from_points({ 1.0f, 2.0f }, { 0.0f, -2.0f }).distance(tri2);
+            ASSERT(nnm::approx_equal(d2, 0.485071272f));
+            ASSERT(nnm::approx_equal(d2n, 0.485071272f));
+            const auto d3 = nnm::Line2f::from_points({ 0.0f, 0.0f }, { 1.0f, 2.0f }).distance(tri1);
+            const auto d3n = nnm::Line2f::from_points({ 0.0f, 0.0f }, { 1.0f, 2.0f }).distance(tri2);
+            ASSERT(nnm::approx_equal(d3, 0.894427f));
+            ASSERT(nnm::approx_equal(d3n, 0.894427f));
+        }
+
+        test_section("distance(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            ASSERT(nnm::approx_zero(nnm::Line2f::from_points({ 2.0f, 2.0f }, { 1.0f, 1.0f }).distance(r1)));
+            ASSERT(
+                nnm::approx_equal(nnm::Line2f::from_points({ 3.0f, 0.5f }, { 2.0f, 2.0f }).distance(r1), 0.819783329f));
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            ASSERT(nnm::approx_equal(nnm::Line2f({ 1.0f, 1.0f }, { 0.0f, 1.0f }).distance(r2), 0.5f));
+        }
+
         test_section("approx_parallel(const Line2&)");
         {
             constexpr auto result = line1.approx_parallel(line2);
