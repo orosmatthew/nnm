@@ -1478,6 +1478,32 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(nnm::Segment2f({ 0.0f, 3.0f }, { 1.0f, 3.0f }).distance(c1), 1.0827625f));
         }
 
+        test_section("distance(const Triangle2&)");
+        {
+            constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
+            const auto d1 = nnm::Segment2f({ 0.5f, 1.0f }, { -1.5f, 1.5f }).distance(tri1);
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = nnm::Segment2f({ 0.5f, 2.0f }, { 0.5f, 1.0f }).distance(tri1);
+            ASSERT(nnm::approx_equal(d2, 0.447214f));
+            const auto d3 = nnm::Segment2f({ 0.5f, 1.0f }, { 1.0f, 2.0f }).distance(tri1);
+            ASSERT(nnm::approx_equal(d3, 0.89442719f));
+            const auto d4 = nnm::Segment2f({ -3.5f, -4.5f }, { -2.5f, -4.5f }).distance(tri1);
+            ASSERT(nnm::approx_equal(d4, 0.5f));
+            const auto d5 = nnm::Segment2f({ -2.0f, -4.5f }, { -2.5f, -4.5f }).distance(tri1);
+            ASSERT(nnm::approx_equal(d5, 0.7071067812f));
+        }
+
+        test_section("distance(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            ASSERT(nnm::approx_zero(nnm::Segment2f({ 0.5f, -1.0f }, { 1.0f, -1.5f }).distance(r1)));
+            ASSERT(nnm::approx_equal(nnm::Segment2f({ 1.0f, 1.0f }, { 1.5f, 0.5f }).distance(r1), 0.91506344f));
+            ASSERT(nnm::approx_equal(nnm::Segment2f({ 4.5f, -2.0f }, { 3.5f, -0.5f }).distance(r1), 0.681108176f));
+            ASSERT(nnm::approx_equal(nnm::Segment2f({ 1.0f, 3.0f }, { 1.0f, -10.0f }).distance(r2), 0.5f));
+            ASSERT(nnm::approx_equal(nnm::Segment2f({ 2.5f, 5.0f }, { 1.0f, 4.5f }).distance(r2), 0.7071067812f));
+        }
+
         test_section("signed_distance");
         {
             ASSERT(nnm::approx_equal(s1.signed_distance({ 2.0f, 3.0f }), -3.6055512755f));
