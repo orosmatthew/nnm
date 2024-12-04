@@ -426,6 +426,10 @@ public:
 
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
+    [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
@@ -3719,6 +3723,18 @@ template <typename Real>
 Real Ray2<Real>::distance(const Circle2<Real>& circle) const
 {
     return circle.distance(*this);
+}
+
+template <typename Real>
+Real Ray2<Real>::distance(const Triangle2<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+Real Ray2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>
