@@ -3781,6 +3781,97 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] bool intersects(const Line2<Real>& line) const
+    {
+        return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
+            || edge_py().intersects(line);
+    }
+
+    // TODO: test
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
+    {
+        std::array<Vector2<Real>, 2> inters;
+        int inter_count = 0;
+        const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (const std::optional<Vector2<Real>> intersection = edge.intersection(line); intersection.has_value()) {
+                inters[inter_count++] = intersection.value();
+            }
+            if (inter_count >= 2) {
+                break;
+            }
+        }
+        if (inter_count >= 2) {
+            return inters[1] < inters[0] ? std::array { inters[1], inters[0] } : inters;
+        }
+        if (inter_count == 1) {
+            return std::array { inters[0], inters[0] };
+        }
+        return std::nullopt;
+    }
+
+    // TODO: test
+    [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
+    {
+        return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
+            || edge_py().intersects(ray);
+    }
+
+    // TODO: test
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
+    {
+        std::array<Vector2<Real>, 2> inters;
+        int inter_count = 0;
+        const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (const std::optional<Vector2<Real>> intersection = edge.intersection(ray); intersection.has_value()) {
+                inters[inter_count++] = intersection.value();
+            }
+            if (inter_count >= 2) {
+                break;
+            }
+        }
+        if (inter_count >= 2) {
+            return inters[1] < inters[0] ? std::array { inters[1], inters[0] } : inters;
+        }
+        if (inter_count == 1) {
+            return std::array { inters[0], inters[0] };
+        }
+        return std::nullopt;
+    }
+
+    // TODO: test
+    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
+    {
+        return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
+            || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
+    }
+
+    // TODO: test
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
+    {
+        std::array<Vector2<Real>, 2> inters;
+        int inter_count = 0;
+        const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        for (const Segment2<Real>& edge : edges) {
+            if (const std::optional<Vector2<Real>> intersection = edge.intersection(segment);
+                intersection.has_value()) {
+                inters[inter_count++] = intersection.value();
+            }
+            if (inter_count >= 2) {
+                break;
+            }
+        }
+        if (inter_count >= 2) {
+            return inters[1] < inters[0] ? std::array { inters[1], inters[0] } : inters;
+        }
+        if (inter_count == 1) {
+            return std::array { inters[0], inters[0] };
+        }
+        return std::nullopt;
+    }
+
     [[nodiscard]] bool approx_equal(const AlignedRectangle2& rectangle) const
     {
         return min.approx_equal(rectangle.min) && max.approx_equal(rectangle.max);
