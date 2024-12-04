@@ -2466,6 +2466,8 @@ public:
         return min_dist;
     }
 
+    [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -3913,6 +3915,12 @@ std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const Triangle2<Real
         return std::nullopt;
     }
     return -result.value();
+}
+
+template <typename Real>
+Real Triangle2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>

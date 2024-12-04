@@ -3909,6 +3909,20 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d4, 0.7071067812f));
         }
 
+        test_section("distance(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            const auto d1 = nnm::Triangle2f({ 1.5f, 0.5f }, { 3.0f, -0.5f }, { 1.5f, -1.5f }).distance(r1);
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = nnm::Triangle2f({ 1.5f, 0.5f }, { 3.0f, -0.5f }, { 2.0f, -0.5f }).distance(r1);
+            ASSERT(nnm::approx_equal(d2, 0.299038023f));
+            const auto d3 = nnm::Triangle2f({ 2.0f, 1.0f }, { 1.0f, 1.5f }, { 1.0f, 2.5f }).distance(r2);
+            ASSERT(nnm::approx_equal(d3, 0.5f));
+            const auto d4 = nnm::Triangle2f({ 0.5f, 5.5f }, { 1.5f, 4.0f }, { 0.5f, 4.5f }).distance(r2);
+            ASSERT(nnm::approx_equal(d4, 0.447214f));
+        }
+
         test_section("intersects(const Triangle2&)");
         {
             ASSERT(tri1.intersects(tri1));
