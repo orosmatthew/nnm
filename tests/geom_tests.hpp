@@ -3753,8 +3753,20 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d2, 1.23606798f));
             const auto d3 = tri1.distance(nnm::Circle2f({ -3.0f, -5.0f }, 0.5f));
             ASSERT(nnm::approx_equal(d3, 0.5f));
-            const auto d4 = tri1.distance(nnm::Circle2f({-2.0f, 1.0f}, 1.0f));
+            const auto d4 = tri1.distance(nnm::Circle2f({ -2.0f, 1.0f }, 1.0f));
             ASSERT(nnm::approx_zero(d4));
+        }
+
+        test_section("distance(const Triangle2&)");
+        {
+            const auto d1 = tri1.distance(nnm::Triangle2f({ -1.0f, 2.0f }, { 1.0f, 2.0f }, { 0.0f, 0.0f }));
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = tri1.distance(nnm::Triangle2f({ 1.0f, 2.0f }, { 3.0f, 2.0f }, { 2.0f, 3.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.894427f));
+            const auto d3 = tri1.distance(nnm::Triangle2f({ 2.0f, 1.0f }, { 1.0f, 2.0f }, { 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.894427f));
+            const auto d4 = tri1.distance(nnm::Triangle2f({ -2.0f, -6.0f }, { -5.0f, -6.0f }, { -4.0f, -4.0f }));
+            ASSERT(nnm::approx_equal(d4, 0.7071067812f));
         }
 
         test_section("intersects(const Triangle2&)");

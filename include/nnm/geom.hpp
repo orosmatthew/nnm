@@ -2431,7 +2431,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Triangle2& other) const
     {
         if (intersects(other)) {
@@ -2439,7 +2438,7 @@ public:
         }
         Real min_dist = std::numeric_limits<Real>::max();
         for (int i = 0; i < 3; ++i) {
-            const Real dist = edge(i).distance(other);
+            const Real dist = other.distance(edge(i));
             if (dist < min_dist) {
                 min_dist = dist;
             }
