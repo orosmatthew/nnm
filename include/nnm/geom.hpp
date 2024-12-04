@@ -3406,6 +3406,27 @@ public:
         return center.approx_equal(other.center) && size.approx_equal(other.size)
             && nnm::approx_equal(angle, other.angle);
     }
+
+    [[nodiscard]] bool operator==(const Rectangle2& other) const
+    {
+        return center == other.center && size == other.size && angle == other.angle;
+    }
+
+    [[nodiscard]] bool operator!=(const Rectangle2& other) const
+    {
+        return center != other.center || size != other.size || angle != other.angle;
+    }
+
+    [[nodiscard]] bool operator<(const Rectangle2& other) const
+    {
+        if (center == other.center) {
+            if (size == other.size) {
+                return angle < other.angle;
+            }
+            return size < other.size;
+        }
+        return center < other.center;
+    }
 };
 
 template <typename Real = float>

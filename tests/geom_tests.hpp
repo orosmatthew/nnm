@@ -5007,5 +5007,25 @@ inline void geom_tests()
             ASSERT_FALSE(r1.approx_equal(r2));
             ASSERT_FALSE(r2.approx_equal(r3));
         }
+
+        test_section("operator==");
+        {
+            ASSERT(r1 == r1);
+            ASSERT_FALSE(r1 == r2);
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT(r1 != r2);
+            ASSERT_FALSE(r2 != r2);
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(r2 < r1);
+            ASSERT_FALSE(r1 < r2);
+            ASSERT_FALSE(r1 < r1);
+            ASSERT_FALSE(r2 < r2);
+        }
     }
 }

@@ -626,7 +626,20 @@ bool intersects(const Triangle2& triangle) const;
 std::optional<Vector2> intersect_depth(const Triangle2& triangle) const;
 bool intersects(const Rectangle2& other) const;
 std::optional<Vector2> intersect_depth(const Rectangle2& other) const;
+Rectangle2 translate(const Vector2& by) const;
+Rectangle2 rotate_at(const Vector2& rotate_origin, Real angle) const;
+Rectangle2 rotate(const Real angle) const;
+Rectangle2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
+Rectangle2 scale(const Vector2& by) const;
 bool approx_coincident(const Rectangle2& other) const;
 bool approx_equal() const;
+```
+
+### Operators
+
+```cpp
+bool operator==(const Rectangle2& other) const;
+bool operator!=(const Rectangle2& other) const;
+bool operator<(const Rectangle2& other) const;
 ```
 
