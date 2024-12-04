@@ -44,6 +44,10 @@ template <typename Real>
 class Rectangle2;
 using Rectangle2f = Rectangle2<float>;
 using Rectangle2d = Rectangle2<double>;
+template <typename Real>
+class AlignedRectangle2;
+using AlignedRectangle2f = AlignedRectangle2<float>;
+using AlignedRectangle2d = AlignedRectangle2<double>;
 
 template <typename Real>
 class Line2 {
@@ -3429,29 +3433,22 @@ public:
     }
 };
 
-template <typename Real = float>
-class AlignedRectangle {
+template <typename Real>
+class AlignedRectangle2 {
 public:
     Vector2<Real> min;
     Vector2<Real> max;
 
-    AlignedRectangle()
+    constexpr AlignedRectangle2()
         : min { Vector2<Real>::zero() }
         , max { Vector2<Real>::zero() }
     {
     }
 
-    AlignedRectangle(const Vector2<Real>& min, const Vector2<Real>& max)
+    constexpr AlignedRectangle2(const Vector2<Real>& min, const Vector2<Real>& max)
         : min { min }
         , max { max }
     {
-    }
-
-    static AlignedRectangle from_center_size(const Vector2<Real>& center, const Vector2<Real>& size)
-    {
-        const Vector2<Real> half_size = size / static_cast<Real>(2);
-        return { { center.x - half_size.x, center.y - half_size.y },
-                 { center.x + half_size.x, center.y + half_size.y } };
     }
 
     [[nodiscard]] Vector2<Real> vertex_nx_ny() const
@@ -3474,118 +3471,64 @@ public:
         return max;
     }
 
-    [[nodiscard]] Vector2<Real> center() const
+    [[nodiscard]] Segment2<Real> edge_nx() const
     {
-        return (min + max) / static_cast<Real>(2);
+        return { vertex_nx_ny(), vertex_nx_py() };
+    }
+
+    [[nodiscard]] Segment2<Real> edge_ny() const
+    {
+        return { vertex_nx_ny(), vertex_px_ny() };
+    }
+
+    [[nodiscard]] Segment2<Real> edge_px() const
+    {
+        return { vertex_px_ny(), vertex_px_py() };
+    }
+
+    [[nodiscard]] Segment2<Real> edge_py() const
+    {
+        return { vertex_nx_py(), vertex_px_py() };
+    }
+
+    [[nodiscard]] Vector2<Real> normal_nx() const
+    {
+        return -Vector2<Real>::axis_x();
+    }
+
+    [[nodiscard]] Vector2<Real> normal_ny() const
+    {
+        return -Vector2<Real>::axis_y();
+    }
+
+    [[nodiscard]] Vector2<Real> normal_px() const
+    {
+        return Vector2<Real>::axis_x();
+    }
+
+    [[nodiscard]] Vector2<Real> normal_py() const
+    {
+        return Vector2<Real>::axis_y();
     }
 
     [[nodiscard]] Vector2<Real> size() const
     {
-        return { max.x - min.x, max.y - min.y };
+        return max - min;
     }
 
-    [[nodiscard]] AlignedRectangle center_to_origin() const
+    [[nodiscard]] Real area() const
     {
-        const Vector2<Real> c = center();
-        return { { min.x - c.x, min.y - c.y }, { max.x - c.x, max.y - c.y } };
+        const Vector2<Real> s = size();
+        return s.x * s.y;
     }
 
-    [[nodiscard]] AlignedRectangle translate(const Vector2<Real>& by) const
+    [[nodiscard]] Real perimeter() const
     {
-        return transform(Transform2<Real>::from_translation(by));
-    }
-
-    [[nodiscard]] AlignedRectangle scale(const Vector2<Real>& by) const
-    {
-        return transform(Basis2<Real>::from_scale(by));
-    }
-
-    [[nodiscard]] AlignedRectangle scale_local(const Vector2<Real>& by) const
-    {
-        return transform_local(Basis2<Real>::from_scale(by));
-    }
-
-    [[nodiscard]] AlignedRectangle transform(const Basis2<Real>& by) const
-    {
-        return { min.transform(by), max.transform(by) };
-    }
-
-    [[nodiscard]] AlignedRectangle transform_local(const Basis2<Real>& by) const
-    {
-        const Vector2<Real> saved_center = center();
-        return center_to_origin().transform(by).translate(saved_center);
-    }
-
-    [[nodiscard]] AlignedRectangle transform(const Transform2<Real>& by) const
-    {
-        return { min.transform(by), max.transform(by) };
-    }
-
-    [[nodiscard]] AlignedRectangle transform_local(const Transform2<Real>& by) const
-    {
-        const Vector2<Real> saved_center = center();
-        return center_to_origin().transform(by).translate(saved_center);
+        const Vector2<Real> s = size();
+        return static_cast<Real>(2) * s.x + static_cast<Real>(2) * s.y;
     }
 
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
-    {
-        return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
-    }
-};
-
-class AlignedRectangleI {
-public:
-    Vector2i min;
-    Vector2i max;
-
-    AlignedRectangleI()
-        : min { Vector2i::zero() }
-        , max { Vector2i::zero() }
-    {
-    }
-
-    AlignedRectangleI(const Vector2i& min, const Vector2i& max)
-        : min { min }
-        , max { max }
-    {
-    }
-
-    [[nodiscard]] Vector2i vertex_nx_ny() const
-    {
-        return min;
-    }
-
-    [[nodiscard]] Vector2i vertex_nx_py() const
-    {
-        return { min.x, max.y };
-    }
-
-    [[nodiscard]] Vector2i vertex_px_ny() const
-    {
-        return { max.x, min.y };
-    }
-
-    [[nodiscard]] Vector2i vertex_px_py() const
-    {
-        return max;
-    }
-
-    [[nodiscard]] Vector2i center_truncated() const
-    {
-        return (min + max) / 2;
-    }
-
-    [[nodiscard]] Vector2i size() const
-    {
-        return { max.x - min.x, max.y - min.y };
-    }
-
-    [[nodiscard]] AlignedRectangleI translate(const Vector2i& by) const
-    {
-        return { min + by, max + by };
-    }
-
-    [[nodiscard]] bool contains(const Vector2i& point) const
     {
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }

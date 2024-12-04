@@ -5028,4 +5028,106 @@ inline void geom_tests()
             ASSERT_FALSE(r2 < r2);
         }
     }
+
+    test_case("AlignedRectangle2");
+    {
+        test_section("AlignedRectangle2()");
+        {
+            constexpr nnm::AlignedRectangle2f a1 {};
+            ASSERT(a1.min.approx_zero());
+            ASSERT(a1.max.approx_zero());
+        }
+
+        test_section("AlignedRectangle2(const Vector2&, const Vector2&)");
+        {
+            constexpr nnm::AlignedRectangle2f a1 { { -2.0f, -2.0f }, { 1.0f, 3.0f } };
+            ASSERT(a1.min.approx_equal({ -2.0f, -2.0f }));
+            ASSERT(a1.max.approx_equal({ 1.0f, 3.0f }));
+        }
+
+        constexpr nnm::AlignedRectangle2f a1 { { -2.0f, -2.0f }, { 1.0f, 3.0f } };
+
+        test_section("vertex_nx_ny");
+        {
+            ASSERT(a1.vertex_nx_ny().approx_equal({ -2.0f, -2.0f }));
+        }
+
+        test_section("vertex_nx_py");
+        {
+            ASSERT(a1.vertex_nx_py().approx_equal({ -2.0f, 3.0f }));
+        }
+
+        test_section("vertex_px_ny");
+        {
+            ASSERT(a1.vertex_px_ny().approx_equal({ 1.0f, -2.0f }));
+        }
+
+        test_section("vertex_px_py");
+        {
+            ASSERT(a1.vertex_px_py().approx_equal({ 1.0f, 3.0f }));
+        }
+
+        test_section("edge_nx");
+        {
+            ASSERT(a1.edge_nx().approx_coincident(nnm::Segment2f({ -2.0f, 3.0f }, { -2.0f, -2.0f })));
+        }
+
+        test_section("edge_ny");
+        {
+            ASSERT(a1.edge_ny().approx_coincident(nnm::Segment2f({ -2.0f, -2.0f }, { 1.0f, -2.0f })));
+        }
+
+        test_section("edge_px");
+        {
+            ASSERT(a1.edge_px().approx_coincident(nnm::Segment2f({ 1.0f, 3.0f }, { 1.0f, -2.0f })));
+        }
+
+        test_section("edge_py");
+        {
+            ASSERT(a1.edge_py().approx_coincident(nnm::Segment2f({ -2.0f, 3.0f }, { 1.0f, 3.0f })));
+        }
+
+        test_section("normal_nx");
+        {
+            ASSERT(a1.normal_nx().approx_equal({ -1.0f, 0.0f }));
+        }
+
+        test_section("normal_ny");
+        {
+            ASSERT(a1.normal_ny().approx_equal({ 0.0f, -1.0f }));
+        }
+
+        test_section("normal_px");
+        {
+            ASSERT(a1.normal_px().approx_equal({ 1.0f, 0.0f }));
+        }
+
+        test_section("normal_py");
+        {
+            ASSERT(a1.normal_py().approx_equal({ 0.0f, 1.0f }));
+        }
+
+        test_section("size");
+        {
+            ASSERT(a1.size().approx_equal({ 3.0f, 5.0f }));
+        }
+
+        test_section("area");
+        {
+            ASSERT(nnm::approx_equal(a1.area(), 15.0f));
+        }
+
+        test_section("perimeter");
+        {
+            ASSERT(nnm::approx_equal(a1.perimeter(), 16.0f));
+        }
+
+        test_section("contains");
+        {
+            ASSERT_FALSE(a1.contains({ 2.0f, 4.0f }));
+            ASSERT(a1.contains({ 0.0f, 2.0f }));
+            ASSERT_FALSE(a1.contains({ -1.0f, -3.0f }));
+            ASSERT(a1.contains({ -1.0f, -1.0f }));
+        }
+    }
 }
