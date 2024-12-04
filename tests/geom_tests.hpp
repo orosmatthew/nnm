@@ -5081,7 +5081,7 @@ inline void geom_tests()
 
         test_section("from_bounding_rectangle");
         {
-            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f ;}
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
             const auto a = nnm::AlignedRectangle2f::from_bounding_rectangle(r1);
             ASSERT(a.approx_equal({ { -1.4820509f, -4.29903793f }, { 3.4820509f, 0.299038172f } }));
         }
