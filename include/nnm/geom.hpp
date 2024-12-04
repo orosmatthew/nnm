@@ -2416,7 +2416,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
