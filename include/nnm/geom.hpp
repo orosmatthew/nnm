@@ -3016,7 +3016,7 @@ public:
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
-            const Real dist = edge.distance(triangle);
+            const Real dist = triangle.distance(edge);
             if (dist == static_cast<Real>(0)) {
                 return static_cast<Real>(0);
             }
