@@ -5045,6 +5045,47 @@ inline void geom_tests()
             ASSERT(a1.max.approx_equal({ 1.0f, 3.0f }));
         }
 
+        test_section("from_bounding_points");
+        {
+            constexpr auto a = nnm::AlignedRectangle2f::from_bounding_points({ -1.0f, 2.0f }, { 2.0f, -1.0f });
+            ASSERT(a.approx_equal({ { -1.0f, -1.0f }, { 2.0f, 2.0f } }));
+        }
+
+        test_section("from_bounding_segment");
+        {
+            constexpr auto a = nnm::AlignedRectangle2f::from_bounding_segment({ { 3.0f, 0.0f }, { -1.0f, 1.0f } });
+            ASSERT(a.approx_equal({ { -1.0f, 0.0f }, { 3.0f, 1.0f } }));
+        }
+
+        test_section("from_bounding_arc");
+        {
+            const auto a1 = nnm::AlignedRectangle2f::from_bounding_arc({ { 0.0f, 1.0f }, { 0.0f, 2.0f }, nnm::pi() });
+            ASSERT(a1.approx_equal({ { -1.0f, 0.0f }, { 0.0f, 2.0f } }));
+            const auto a2
+                = nnm::AlignedRectangle2f::from_bounding_arc({ { -1.0f, 1.0f }, { -1.0f, 2.0f }, -nnm::pi() / 2.0f });
+            ASSERT(a2.approx_equal({ { -1.0f, 1.0f }, { 0.0f, 2.0f } }));
+        }
+
+        test_section("from_bounding_circle");
+        {
+            const auto a = nnm::AlignedRectangle2f::from_bounding_circle({ { 2.0f, 1.0f }, 2.0f });
+            ASSERT(a.approx_equal({ { 0.0f, -1.0f }, { 4.0f, 3.0f } }));
+        }
+
+        test_section("from_bounding_triangle");
+        {
+            const auto a
+                = nnm::AlignedRectangle2f::from_bounding_triangle({ { 0.0f, -1.0f }, { -3.0f, 1.0f }, { 2.0f, 2.0f } });
+            ASSERT(a.approx_equal({ { -3.0f, -1.0f }, { 2.0f, 2.0f } }));
+        }
+
+        test_section("from_bounding_rectangle");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f ;}
+            const auto a = nnm::AlignedRectangle2f::from_bounding_rectangle(r1);
+            ASSERT(a.approx_equal({ { -1.4820509f, -4.29903793f }, { 3.4820509f, 0.299038172f } }));
+        }
+
         constexpr nnm::AlignedRectangle2f a1 { { -2.0f, -2.0f }, { 1.0f, 3.0f } };
 
         test_section("vertex_nx_ny");
@@ -5128,6 +5169,12 @@ inline void geom_tests()
             ASSERT(a1.contains({ 0.0f, 2.0f }));
             ASSERT_FALSE(a1.contains({ -1.0f, -3.0f }));
             ASSERT(a1.contains({ -1.0f, -1.0f }));
+        }
+
+        test_section("approx_equal");
+        {
+            ASSERT(a1.approx_equal(a1));
+            ASSERT_FALSE(a1.approx_equal({ { 1.0f, -2.0f }, { 3.0f, 6.0f } }));
         }
     }
 }

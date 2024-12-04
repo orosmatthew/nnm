@@ -3451,6 +3451,79 @@ public:
     {
     }
 
+    static constexpr AlignedRectangle2 from_bounding_points(const Vector2<Real>& point1, const Vector2<Real>& point2)
+    {
+        const Vector2<Real> min = { nnm::min(point1.x, point2.x), nnm::min(point1.y, point2.y) };
+        const Vector2<Real> max = { nnm::max(point1.x, point2.x), nnm::max(point1.y, point2.y) };
+        return { min, max };
+    }
+
+    static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment)
+    {
+        return from_bounding_points(segment.from, segment.to);
+    }
+
+    static AlignedRectangle2 from_bounding_arc(const Arc2<Real>& arc)
+    {
+        const Real half_pi = pi() / static_cast<Real>(2);
+        std::array<std::optional<Vector2<Real>>, 6> points {
+            arc.from,
+            arc.to(),
+            arc.point_at(static_cast<Real>(0)),
+            arc.point_at(half_pi),
+            arc.point_at(pi()),
+            arc.point_at(-half_pi)
+        };
+        Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
+        Vector2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
+        for (const std::optional<Vector2<Real>>& point : points) {
+            if (!point.has_value()) {
+                continue;
+            }
+            min.x = nnm::min(min.x, point->x);
+            min.y = nnm::min(min.y, point->y);
+            max.x = nnm::max(max.x, point->x);
+            max.y = nnm::max(max.y, point->y);
+        }
+        return { min, max };
+    }
+
+    static AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle)
+    {
+        const Vector2<Real> min = circle.center - Vector2<Real>::all(circle.radius);
+        const Vector2<Real> max = circle.center + Vector2<Real>::all(circle.radius);
+        return { min, max };
+    }
+
+    static AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle)
+    {
+        Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
+        Vector2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
+        for (const Vector2<Real>& v : triangle.vertices) {
+            min.x = nnm::min(min.x, v.x);
+            min.y = nnm::min(min.y, v.y);
+            max.x = nnm::max(max.x, v.x);
+            max.y = nnm::max(max.y, v.y);
+        }
+        return { min, max };
+    }
+
+    static AlignedRectangle2 from_bounding_rectangle(const Rectangle2<Real>& rectangle)
+    {
+        Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
+        Vector2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
+        const std::array<Vector2<Real>, 4> vertices {
+            rectangle.vertex_nx_ny(), rectangle.vertex_nx_py(), rectangle.vertex_px_ny(), rectangle.vertex_px_py()
+        };
+        for (const Vector2<Real>& v : vertices) {
+            min.x = nnm::min(min.x, v.x);
+            min.y = nnm::min(min.y, v.y);
+            max.x = nnm::max(max.x, v.x);
+            max.y = nnm::max(max.y, v.y);
+        }
+        return { min, max };
+    }
+
     [[nodiscard]] Vector2<Real> vertex_nx_ny() const
     {
         return min;
@@ -3531,6 +3604,11 @@ public:
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
+    }
+
+    [[nodiscard]] bool approx_equal(const AlignedRectangle2& rectangle) const
+    {
+        return min.approx_equal(rectangle.min) && max.approx_equal(rectangle.max);
     }
 };
 
