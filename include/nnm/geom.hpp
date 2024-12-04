@@ -226,6 +226,10 @@ public:
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
 
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
@@ -521,6 +525,10 @@ public:
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
@@ -883,6 +891,10 @@ public:
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
@@ -1588,6 +1600,8 @@ public:
 
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -2079,6 +2093,10 @@ public:
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const;
+
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
     {
@@ -2685,6 +2703,10 @@ public:
         }
         return min_normal * min_overlap;
     }
+
+    [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
@@ -3644,6 +3666,18 @@ std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Tri
 }
 
 template <typename Real>
+bool Line2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersections(*this);
+}
+
+template <typename Real>
 bool Line2<Real>::intersects(const Arc2<Real>& arc) const
 {
     return arc.intersects(*this);
@@ -3782,6 +3816,18 @@ std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Tria
 }
 
 template <typename Real>
+bool Ray2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersections(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::approx_tangent(const Arc2<Real>& arc) const
 {
     return arc.approx_tangent(*this);
@@ -3842,6 +3888,18 @@ std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const 
 }
 
 template <typename Real>
+bool Segment2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersections(*this);
+}
+
+template <typename Real>
 bool Segment2<Real>::approx_tangent(const Arc2<Real>& arc) const
 {
     return arc.approx_tangent(*this);
@@ -3884,6 +3942,12 @@ bool Arc2<Real>::intersects(const Triangle2<Real>& triangle) const
 }
 
 template <typename Real>
+bool Arc2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
 bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
@@ -3918,9 +3982,41 @@ std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const Triangle2<Real
 }
 
 template <typename Real>
+bool Circle2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const Rectangle2<Real>& rectangle) const
+{
+    const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
+}
+
+template <typename Real>
 Real Triangle2<Real>::distance(const Rectangle2<Real>& rectangle) const
 {
     return rectangle.distance(*this);
+}
+
+template <typename Real>
+bool Triangle2<Real>::intersects(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Triangle2<Real>::intersect_depth(const Rectangle2<Real>& rectangle) const
+{
+    const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
 }
 
 template <typename Real>

@@ -475,6 +475,54 @@ inline void geom_tests()
                 && (*result8)[1].approx_equal({ -0.538461548f, 0.923076923f }));
         }
 
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Line2f::axis_x().intersects(r1));
+            ASSERT(nnm::Line2f::axis_y().intersects(r1));
+            ASSERT_FALSE(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }).intersects(r1));
+            ASSERT(nnm::Line2f::axis_y().intersects(r2));
+            ASSERT_FALSE(nnm::Line2f::axis_x_offset(-1.0f).intersects(r2));
+            ASSERT_FALSE(nnm::Line2f::axis_x_offset(-2.0f).intersects(r3));
+            ASSERT(nnm::Line2f::axis_x_offset(-3.0f).intersects(r3));
+            ASSERT(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }).intersects(r3));
+        }
+
+        test_section("intersections(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            const auto i1 = nnm::Line2f::axis_x().intersections(r1);
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -0.154700637f, 0.0f })
+                && i1.value()[1].approx_equal({ 0.535898447f, 0.0f }));
+            const auto i2 = nnm::Line2f::axis_y().intersections(r1);
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 0.0f, -3.15470052f })
+                && i2.value()[1].approx_equal({ 0.0f, 0.267949343f }));
+            const auto i3 = nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }).intersections(r1);
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = nnm::Line2f::axis_y().intersections(r2);
+            ASSERT(
+                i4.has_value() && i4.value()[0].approx_equal({ 0.0f, 0.0f })
+                && i4.value()[1].approx_equal({ 0.0f, 4.0f }));
+            const auto i5 = nnm::Line2f::axis_x_offset(-1.0f).intersections(r2);
+            ASSERT_FALSE(i5.has_value());
+            const auto i6 = nnm::Line2f::axis_x_offset(-2.0f).intersections(r3);
+            ASSERT_FALSE(i6.has_value());
+            const auto i7 = nnm::Line2f::axis_x_offset(-3.0f).intersections(r3);
+            ASSERT(
+                i7.has_value() && i7.value()[0].approx_equal({ 1.5f, -3.0f })
+                && i7.value()[1].approx_equal({ 6.5f, -3.0f }));
+            const auto i8 = nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }).intersections(r3);
+            ASSERT(
+                i8.has_value() && i8.value()[0].approx_equal({ 5.0f, -2.5f })
+                && i8.value()[1].approx_equal({ 6.333333f, -3.5f }));
+        }
+
         test_section("intersects(const Arc2&)");
         {
             constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
@@ -1184,6 +1232,41 @@ inline void geom_tests()
             ASSERT_FALSE(result9.has_value());
         }
 
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Ray2f({ -0.5f, 0.0f }, { 1.0f, 0.0f }).intersects(r1));
+            ASSERT_FALSE(nnm::Ray2f({ 2.0f, -0.5f }, { 1.0f, 0.0f }).intersects(r1));
+            ASSERT(nnm::Ray2f({ -1.5f, 3.0f }, { -1.0f, 0.0f }).intersects(r2));
+            ASSERT(nnm::Ray2f({ 4.0f, 0.0f }, { 0.0f, -1.0f }).intersects(r3));
+            ASSERT_FALSE(nnm::Ray2f({ 4.0f, -2.0f }, { 0.0f, 1.0f }).intersects(r3));
+        }
+
+        test_section("intersections(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            const auto i1 = nnm::Ray2f({ -0.5f, 0.0f }, { 1.0f, 0.0f }).intersections(r1);
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -0.154700637f, 0.0f })
+                && i1.value()[1].approx_equal({ 0.535898447f, 0.0f }));
+            const auto i2 = nnm::Ray2f({ 2.0f, -0.5f }, { 1.0f, 0.0f }).intersections(r1);
+            ASSERT_FALSE(i2.has_value());
+            const auto i3 = nnm::Ray2f({ -1.5f, 3.0f }, { 1.0f, 0.0f }).intersections(r2);
+            ASSERT(
+                i3.has_value() && i3.value()[0].approx_equal({ 0.5f, 3.0f })
+                && i3.value()[1].approx_equal({ 0.5f, 3.0f }));
+            const auto i4 = nnm::Ray2f({ 4.0f, 0.0f }, { 0.0f, -1.0f }).intersections(r3);
+            ASSERT(
+                i4.has_value() && i4.value()[0].approx_equal({ 4.0f, -3.5f })
+                && i4.value()[1].approx_equal({ 4.0f, -2.5f }));
+            const auto i5 = nnm::Ray2f({ 4.0f, -2.0f }, { 0.0f, 1.0f }).intersections(r3);
+            ASSERT_FALSE(i5.has_value());
+        }
+
         test_section("approx_tangent(const Arc2&)");
         {
             constexpr nnm::Arc2f arc1 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, nnm::pi() / 2.0f };
@@ -1803,6 +1886,44 @@ inline void geom_tests()
             ASSERT(
                 result6.has_value() && (*result6)[0].approx_equal({ -3.7272727f, 0.36363636f })
                 && (*result6)[1].approx_equal({ -0.33333333f, 1.3333333f }));
+        }
+
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f }).intersects(r1));
+            ASSERT(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }).intersects(r1));
+            ASSERT_FALSE(nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f }).intersects(r1));
+            ASSERT(nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f }).intersects(r2));
+            ASSERT(nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0 }).intersects(r3));
+            ASSERT_FALSE(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f }).intersects(r3));
+        }
+
+        test_section("intersections(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            const auto i1 = nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f }).intersections(r1);
+            ASSERT(
+                i1.has_value() && i1.value()[0].approx_equal({ -0.154700637f, 0.0f })
+                && i1.value()[1].approx_equal({ -0.154700637f, 0.0f }));
+            const auto i2 = nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }).intersections(r1);
+            ASSERT(
+                i2.has_value() && i2.value()[0].approx_equal({ 0.535898447f, 0.0f })
+                && i2.value()[1].approx_equal({ 0.535898447f, 0.0f }));
+            const auto i3 = nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f }).intersections(r1);
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f }).intersections(r2);
+            ASSERT_FALSE(i4.has_value());
+            const auto i5 = nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0f }).intersections(r3);
+            ASSERT(
+                i5.has_value() && i5.value()[0].approx_equal({ 4.0f, -3.5f })
+                && i5.value()[1].approx_equal({ 4.0f, -2.5f }));
+            const auto i6 = nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f }).intersections(r3);
+            ASSERT_FALSE(i6.has_value());
         }
 
         test_section("approx_tangent(const Arc2&)");
@@ -2888,6 +3009,19 @@ inline void geom_tests()
             ASSERT(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -nnm::pi()).intersects(tri2));
         }
 
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Arc2f({ 3.0f, -1.0f }, { 3.0f, 0.0f }, nnm::pi() / 2.0f).intersects(r1));
+            ASSERT(nnm::Arc2f({ 0.5f, -1.5f }, { 0.5f, -1.0f }, -nnm::pi()).intersects(r1));
+            ASSERT_FALSE(nnm::Arc2f({ -2.0f, 2.0f }, { -2.0f, -2.0f }, -nnm::pi() / 2.0f).intersects(r2));
+            ASSERT(nnm::Arc2f({ -2.0f, 2.0f }, { -2.0f, 1.0f }, -nnm::pi() / 2.0f).intersects(r2));
+            ASSERT_FALSE(nnm::Arc2f({ 4.0f, -1.5f }, { 4.0f, -1.0f }, nnm::pi() / 6.0f).intersects(r3));
+            ASSERT(nnm::Arc2f({ 5.0f, -2.2f }, { 5.4f, -2.2f }, 3.0f * nnm::pi() / 2.0f).intersects(r3));
+        }
+
         test_section("approx_tangent(const Line2&)");
         {
             ASSERT(arc1.approx_tangent(
@@ -3478,6 +3612,43 @@ inline void geom_tests()
             ASSERT_FALSE(d13.has_value());
         }
 
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            ASSERT(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersects(r1));
+            ASSERT_FALSE(nnm::Circle2f({ 2.5f, 0.5f }, 1.0f).intersects(r1));
+            ASSERT(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersects(r2));
+            ASSERT(nnm::Circle2f({ -1.0f, 2.0f }, 1.0f).intersects(r2));
+            ASSERT(nnm::Circle2f({ -1.5f, 3.0f }, 0.5f).intersects(r2));
+            ASSERT_FALSE(nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersects(r3));
+            ASSERT(nnm::Circle2f({ 5.0f, -4.0f }, 4.0f).intersects(r3));
+        }
+
+        test_section("intersect_depth(const Rectangle&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            constexpr nnm::Rectangle2f r3 { { 4.0f, -3.0f }, { 1.0f, 5.0f }, -nnm::pi() / 2.0f };
+            const auto d1 = nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersect_depth(r1);
+            ASSERT(d1.has_value() && d1->approx_equal({ -0.41746816f, -0.723076164f }));
+            const auto d2 = nnm::Circle2f({ 2.5f, 0.5f }, 1.0f).intersect_depth(r1);
+            ASSERT_FALSE(d2.has_value());
+            const auto d3 = nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersect_depth(r2);
+            ASSERT(d3.has_value() && d3->approx_equal({ -0.5f, 0.0f }));
+            const auto d4 = nnm::Circle2f({ -1.0f, 2.0f }, 1.0f).intersect_depth(r2);
+            ASSERT(d4.has_value() && (d4->approx_equal({ -2.5f, 0.0f }) || d4->approx_equal({ 2.5f, 0.0f })));
+            const auto d5 = nnm::Circle2f({ -1.5f, 3.0f }, 0.5f).intersect_depth(r2);
+            ASSERT(d5.has_value() && (d5->approx_equal({ 1.5f, 0.0f }) || d5->approx_equal({ 0.0f, -1.5f })));
+            const auto d6 = nnm::Circle2f({ -2.0f, 2.5f }, 1.0f).intersect_depth(r2);
+            ASSERT(d6.has_value() && d6->approx_equal({ 1.5f, 0.0f }));
+            const auto d7 = nnm::Circle2f({ 2.0f, 0.5f }, 2.0f).intersect_depth(r3);
+            ASSERT_FALSE(d7.has_value());
+            const auto d8 = nnm::Circle2f({ 5.0f, -4.0f }, 4.0f).intersect_depth(r3);
+            ASSERT(d8.has_value() && d8->approx_equal({ 0.0f, 3.5f }));
+        }
+
         test_section("approx_tangent(const Line2&)");
         {
             constexpr nnm::Circle2f circle { { 2.0f, -3.0f }, 5.0f };
@@ -3969,6 +4140,37 @@ inline void geom_tests()
             ASSERT(d5.has_value() && d5->approx_equal({ 2.8f, -1.4f }));
             const auto d6 = tri5.intersect_depth(tri2);
             ASSERT(d6.has_value() && d6->approx_equal({ -2.8f, 1.4f }));
+        }
+
+        test_section("intersects(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            ASSERT_FALSE(nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f }).intersects(r2));
+            ASSERT(nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f }).intersects(r2));
+            ASSERT(nnm::Triangle2f({ 1.0f, 3.0f }, { -0.5f, 4.5f }, { 1.5f, 5.0f }).intersects(r2));
+            ASSERT(nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }).intersects(r2));
+            ASSERT(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }).intersects(r1));
+            ASSERT_FALSE(nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }).intersects(r1));
+            ASSERT(nnm::Triangle2f({ -2.0f, -7.0f }, { -4.0f, 5.0f }, { 3.0f, 5.0f }).intersects(r2));
+        }
+
+        test_section("intersect_depth(const Rectangle2&)");
+        {
+            constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi() / 3.0f };
+            constexpr nnm::Rectangle2f r2 { { -1.0f, 2.0f }, { 3.0f, 4.0f }, 0.0f };
+            const auto d1 = nnm::Triangle2f({ 1.0f, 1.5f }, { 1.0f, 3.0f }, { 2.0f, 2.5f }).intersect_depth(r2);
+            ASSERT_FALSE(d1.has_value());
+            const auto d2 = nnm::Triangle2f({ -0.5f, 2.0f }, { 1.0f, 2.5f }, { 1.0f, 1.5f }).intersect_depth(r2);
+            ASSERT(d2.has_value() && d2->approx_equal({ -1.0f, 0.0f }));
+            const auto d3 = nnm::Triangle2f({ 1.0f, 3.0f }, { -0.5f, 4.5f }, { 1.5f, 5.0f }).intersect_depth(r2);
+            ASSERT(d3.has_value() && d3->approx_equal({ -0.25f, -0.25f }));
+            const auto d4 = nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }).intersect_depth(r2);
+            ASSERT(d4.has_value() && (d4->approx_equal({ 0.0f, -2.0f }) || d4->approx_equal({ 2.0f, 0.0f })))
+            const auto d5 = nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }).intersect_depth(r1);
+            ASSERT(d5.has_value() && d5->approx_equal({ -0.482050896f, 0.0f }));
+            const auto d6 = nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }).intersect_depth(r1);
+            ASSERT_FALSE(d6.has_value());
         }
 
         test_section("intersects(const Line2&)");
