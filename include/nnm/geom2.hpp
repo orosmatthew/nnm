@@ -4,8 +4,8 @@
  * Licensed under MIT
  */
 
-#ifndef NNM_GEOM_HPP
-#define NNM_GEOM_HPP
+#ifndef NNM_GEOM2_HPP
+#define NNM_GEOM2_HPP
 
 // ReSharper disable CppDFATimeOver
 
