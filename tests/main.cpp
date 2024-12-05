@@ -9,6 +9,6 @@
 int main()
 {
     nnm_tests();
-    geom_tests();
+    geom2_tests();
     END_TESTS
 }

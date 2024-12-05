@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nnm/geom.hpp>
+#include <nnm/geom2.hpp>
 
 #include <algorithm>
 #include <functional>
@@ -10,7 +10,7 @@
 // ReSharper disable CppUseStructuredBinding
 // ReSharper disable CppDFATimeOver
 
-inline void geom_tests()
+inline void geom2_tests()
 {
     test_case("Line2");
     {
