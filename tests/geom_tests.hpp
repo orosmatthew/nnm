@@ -5171,6 +5171,83 @@ inline void geom_tests()
             ASSERT(a1.contains({ -1.0f, -1.0f }));
         }
 
+        test_section("signed_distance");
+        {
+            ASSERT(nnm::approx_equal(a1.signed_distance({ 2.0f, 4.0f }), 1.4142135624f));
+            ASSERT(nnm::approx_equal(a1.signed_distance({ 0.0f, 2.0f }), -1.0f));
+            ASSERT(nnm::approx_equal(a1.signed_distance({ -1.0f, 4.0f }), 1.0f));
+        }
+
+        test_section("distance(const Vector2&)");
+        {
+            ASSERT(nnm::approx_equal(a1.distance({ 2.0f, 4.0f }), 1.4142135624f));
+            ASSERT(nnm::approx_zero(a1.distance({ 0.0f, 2.0f })));
+            ASSERT(nnm::approx_equal(a1.distance({ -1.0f, 4.0f }), 1.0f));
+        }
+
+        test_section("distance(const Line2&)");
+        {
+            const auto d1 = a1.distance(nnm::Line2f::axis_y_offset(2.0f));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Line2f::from_points({ 1.0f, 4.0f }, { 2.0f, 1.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.3162278f));
+            const auto d3 = a1.distance(nnm::Line2f::from_points({ 2.0f, 1.0f }, { -2.0f, 4.0f }));
+            ASSERT(nnm::approx_zero(d3));
+        }
+
+        test_section("distance(const Ray2&)");
+        {
+            const auto d1 = a1.distance(nnm::Ray2f::from_point_to_point({ 2.0f, 1.0f }, { 2.f, 2.0f }));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Ray2f::from_point_to_point({ 2.0f, 2.0f }, { 3.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d2, 1.0f));
+            const auto d3 = a1.distance(nnm::Ray2f::from_point_to_point({ 3.0f, 2.0f }, { 2.0f, 2.0f }));
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = a1.distance(nnm::Ray2f::from_point_to_point({ 2.0f, 3.0f }, { 1.0f, 4.0f }));
+            ASSERT(nnm::approx_equal(d4, 0.7071067812f));
+        }
+
+        test_section("distance(const Segment2&)");
+        {
+            const auto d1 = a1.distance(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Segment2f({ 2.0f, 1.0f }, { 3.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d2, 1.0f));
+            const auto d3 = a1.distance(nnm::Segment2f({ -3.0f, 1.0f }, { 3.0f, 2.0f }));
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = a1.distance(nnm::Segment2f({ 2.0f, 3.0f }, { 1.0f, 4.0f }));
+            ASSERT(nnm::approx_equal(d4, 0.7071067812f));
+            const auto d5 = a1.distance(nnm::Segment2f({ -1.0f, 2.0f }, { 0.0f, 1.0f }));
+            ASSERT(nnm::approx_zero(d5));
+        }
+
+        test_section("distance(const Arc2&)");
+        {
+            const auto d1 = a1.distance(nnm::Arc2f({ 3.0f, 1.0f }, { 3.0f, 2.0f }, nnm::pi()));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Arc2f({ 3.0f, 1.0f }, { 3.0f, 2.0f }, -nnm::pi()));
+            ASSERT(nnm::approx_equal(d2, 2.0f));
+            const auto d3 = a1.distance(nnm::Arc2f({ 2.0f, 1.0f }, { 2.0f, 3.0f }, nnm::pi()));
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = a1.distance(nnm::Arc2f({ 3.0f, 4.0f }, { 3.0f, 3.0f }, -nnm::pi() / 2.0f));
+            ASSERT(nnm::approx_equal(d4, 1.23606798f));
+        }
+
+        // TODO: finish, need to finish intersection methods
+        test_section("distance(const Circle2&)");
+        {
+            // const auto d1 = a1.distance(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
+            // ASSERT(nnm::approx_equal(d1, 1.0f));
+            // const auto d2 = a1.distance(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f));
+            // ASSERT(nnm::approx_zero(d2));
+            // const auto d3 = a1.distance(nnm::Circle2f({ 0.0f, 1.0f }, 0.5f));
+            // ASSERT(nnm::approx_zero(d3));
+            // const auto d4 = a1.distance(nnm::Circle2f({ -1.0f, 1.0f }, 4.0f));
+            // ASSERT(nnm::approx_zero(d4));
+            // const auto d5 = a1.distance(nnm::Circle2f({ 3.0f, 5.0f }, 1.0f));
+            // ASSERT(nnm::approx_equal(d5, 1.82842712f));
+        }
+
         test_section("approx_equal");
         {
             ASSERT(a1.approx_equal(a1));

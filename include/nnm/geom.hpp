@@ -3606,7 +3606,6 @@ public:
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }
 
-    // TODO: test
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -3620,14 +3619,12 @@ public:
         return contains(point) ? -min_dist : min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> closest = point.clamp(min, max);
         return point.distance(closest);
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -3644,7 +3641,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -3661,7 +3657,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.from)) {
@@ -3681,7 +3676,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
@@ -3701,7 +3695,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
