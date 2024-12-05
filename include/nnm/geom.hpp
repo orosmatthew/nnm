@@ -3714,7 +3714,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
@@ -3734,7 +3733,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const
     {
         if (intersects(rectangle)) {
@@ -3754,7 +3752,6 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const AlignedRectangle2& other) const
     {
         if (intersects(other)) {
@@ -3763,7 +3760,7 @@ public:
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         Real min_dist = std::numeric_limits<Real>::max();
         for (const Segment2<Real>& edge : edges) {
-            const Real dist = edge.distance(other);
+            const Real dist = other.distance(edge);
             if (dist == static_cast<Real>(0)) {
                 return static_cast<Real>(0);
             }

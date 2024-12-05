@@ -5233,19 +5233,50 @@ inline void geom_tests()
             ASSERT(nnm::approx_equal(d4, 1.23606798f));
         }
 
-        // TODO: finish, need to finish intersection methods
         test_section("distance(const Circle2&)");
         {
-            // const auto d1 = a1.distance(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
-            // ASSERT(nnm::approx_equal(d1, 1.0f));
-            // const auto d2 = a1.distance(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f));
-            // ASSERT(nnm::approx_zero(d2));
-            // const auto d3 = a1.distance(nnm::Circle2f({ 0.0f, 1.0f }, 0.5f));
-            // ASSERT(nnm::approx_zero(d3));
-            // const auto d4 = a1.distance(nnm::Circle2f({ -1.0f, 1.0f }, 4.0f));
-            // ASSERT(nnm::approx_zero(d4));
-            // const auto d5 = a1.distance(nnm::Circle2f({ 3.0f, 5.0f }, 1.0f));
-            // ASSERT(nnm::approx_equal(d5, 1.82842712f));
+            const auto d1 = a1.distance(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f));
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = a1.distance(nnm::Circle2f({ 0.0f, 1.0f }, 0.5f));
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = a1.distance(nnm::Circle2f({ -1.0f, 1.0f }, 4.0f));
+            ASSERT(nnm::approx_zero(d4));
+            const auto d5 = a1.distance(nnm::Circle2f({ 3.0f, 5.0f }, 1.0f));
+            ASSERT(nnm::approx_equal(d5, 1.82842712f));
+        }
+
+        test_section("distance(const Triangle2&)");
+        {
+            const auto d1 = a1.distance(nnm::Triangle2f({ 3.0f, 2.0f }, { 2.0f, 2.0f }, { 2.0f, 1.0f }));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Triangle2f({ 0.0f, 1.0f }, { 2.0f, 2.0f }, { 3.0f, 2.0f }));
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = a1.distance(nnm::Triangle2f({ 2.0f, 2.0f }, { 3.0f, 2.0f }, { 1.0f, 4.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.4472136f));
+            const auto d4 = a1.distance(nnm::Triangle2f({ 2.0f, 4.0f }, { 3.0f, 5.0f }, { 3.0f, 4.0f }));
+            ASSERT(nnm::approx_equal(d4, 1.4142135624f));
+        }
+
+        test_section("distance(const Rectangle2&)");
+        {
+            const auto d1 = a1.distance(nnm::Rectangle2f({ 3.0f, 1.5f }, { 1.0f, 2.0f }, nnm::pi() / 2.0f));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::Rectangle2f({ 1.0f, 1.0f }, { 1.0f, 2.0f }, nnm::pi() / 2.0f));
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = a1.distance(nnm::Rectangle2f({ 2.0f, 4.0f }, { 1.0f, 2.0f }, nnm::pi() / 2.0f));
+            ASSERT(nnm::approx_equal(d3, 0.5f));
+        }
+
+        test_section("distance(const AlignedRectangle2&)");
+        {
+            const auto d1 = a1.distance(nnm::AlignedRectangle2f({ 2.0f, 1.0f }, { 4.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d1, 1.0f));
+            const auto d2 = a1.distance(nnm::AlignedRectangle2f({ 0.0f, 1.0f }, { 2.0f, 2.0f }));
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = a1.distance(nnm::AlignedRectangle2f({ 1.0f, 3.5f }, { 3.0f, 4.5f }));
+            ASSERT(nnm::approx_equal(d3, 0.5f));
         }
 
         test_section("approx_equal");
