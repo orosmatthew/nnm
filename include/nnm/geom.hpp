@@ -173,6 +173,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
@@ -438,6 +440,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
@@ -533,6 +537,11 @@ public:
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(
+        const AlignedRectangle2<Real>& rectangle) const;
 
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
@@ -755,6 +764,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
     {
         return to - from;
@@ -899,6 +910,11 @@ public:
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(
+        const AlignedRectangle2<Real>& rectangle) const;
 
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
@@ -1302,6 +1318,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -1606,6 +1624,8 @@ public:
 
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -1861,6 +1881,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
@@ -2101,6 +2123,10 @@ public:
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
     {
@@ -2490,6 +2516,8 @@ public:
 
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -2711,6 +2739,10 @@ public:
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
@@ -3099,6 +3131,8 @@ public:
         return min_dist;
     }
 
+    [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
+
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
@@ -3346,6 +3380,10 @@ public:
         }
         return min_normal * min_overlap;
     }
+
+    [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
+
+    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     [[nodiscard]] Rectangle2 translate(const Vector2<Real>& by) const
     {
@@ -4215,6 +4253,12 @@ Real Line2<Real>::distance(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
+Real Line2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
 constexpr Real Line2<Real>::distance(const Segment2<Real>& segment) const
 {
     return segment.distance(*this);
@@ -4353,6 +4397,12 @@ Real Ray2<Real>::distance(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
+Real Ray2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::intersects(const Arc2<Real>& arc) const
 {
     return arc.intersects(*this);
@@ -4395,6 +4445,18 @@ std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Rect
 }
 
 template <typename Real>
+bool Ray2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersections(*this);
+}
+
+template <typename Real>
 bool Ray2<Real>::approx_tangent(const Arc2<Real>& arc) const
 {
     return arc.approx_tangent(*this);
@@ -4420,6 +4482,12 @@ Real Segment2<Real>::distance(const Triangle2<Real>& triangle) const
 
 template <typename Real>
 Real Segment2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Segment2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.distance(*this);
 }
@@ -4467,6 +4535,19 @@ std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(const 
 }
 
 template <typename Real>
+bool Segment2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(
+    const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersections(*this);
+}
+
+template <typename Real>
 bool Segment2<Real>::approx_tangent(const Arc2<Real>& arc) const
 {
     return arc.approx_tangent(*this);
@@ -4486,6 +4567,12 @@ Real Arc2<Real>::distance(const Triangle2<Real>& triangle) const
 
 template <typename Real>
 Real Arc2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Arc2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.distance(*this);
 }
@@ -4515,6 +4602,12 @@ bool Arc2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
+bool Arc2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
 bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
 {
     return circle.approx_tangent(*this);
@@ -4528,6 +4621,12 @@ Real Circle2<Real>::distance(const Triangle2<Real>& triangle) const
 
 template <typename Real>
 Real Circle2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Circle2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.distance(*this);
 }
@@ -4565,7 +4664,29 @@ std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const Rectangle2<Rea
 }
 
 template <typename Real>
+bool Circle2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Circle2<Real>::intersect_depth(const AlignedRectangle2<Real>& rectangle) const
+{
+    const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
+}
+
+template <typename Real>
 Real Triangle2<Real>::distance(const Rectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Triangle2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.distance(*this);
 }
@@ -4578,6 +4699,44 @@ bool Triangle2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 
 template <typename Real>
 std::optional<Vector2<Real>> Triangle2<Real>::intersect_depth(const Rectangle2<Real>& rectangle) const
+{
+    const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
+}
+
+template <typename Real>
+bool Triangle2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Triangle2<Real>::intersect_depth(const AlignedRectangle2<Real>& rectangle) const
+{
+    const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
+    if (!result.has_value()) {
+        return std::nullopt;
+    }
+    return -result.value();
+}
+
+template <typename Real>
+Real Rectangle2<Real>::distance(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+bool Rectangle2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector2<Real>> Rectangle2<Real>::intersect_depth(const AlignedRectangle2<Real>& rectangle) const
 {
     const std::optional<Vector2<Real>> result = rectangle.intersect_depth(*this);
     if (!result.has_value()) {
