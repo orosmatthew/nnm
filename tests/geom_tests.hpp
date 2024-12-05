@@ -5432,5 +5432,24 @@ inline void geom_tests()
             ASSERT(a1.approx_equal(a1));
             ASSERT_FALSE(a1.approx_equal({ { 1.0f, -2.0f }, { 3.0f, 6.0f } }));
         }
+
+        test_section("operator==");
+        {
+            ASSERT(a1 == a1);
+            ASSERT_FALSE(a1 == nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }));
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT_FALSE(a1 != a1);
+            ASSERT(a1 != nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }))
+        }
+
+        test_section("operator<");
+        {
+            ASSERT_FALSE(a1 < a1);
+            ASSERT(a1 < nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }));
+            ASSERT_FALSE(nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }) < a1);
+        }
     }
 }

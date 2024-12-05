@@ -11,6 +11,7 @@ Reference for NNM math library geometry extension.
 * [Circle2](#Circle2)
 * [Triangle2](#Triangle2)
 * [Rectangle2](#Rectangle2)
+* [AlignedRectangle2](#AlignedRectangle2)
 
 ## Line2
 
@@ -641,5 +642,94 @@ bool approx_equal() const;
 bool operator==(const Rectangle2& other) const;
 bool operator!=(const Rectangle2& other) const;
 bool operator<(const Rectangle2& other) const;
+```
+
+## AlignedRectangle2
+
+### Aliases
+
+```cpp
+using AlignedRectangle2f = AlignedRectangle2<float>;
+using AlignedRectangle2d = AlignedRectangle2<double>;
+```
+
+### Members
+
+```cpp
+Vector2 min;
+Vector2 max;
+```
+
+### Constructors
+
+```cpp
+AlignedRectangle2();
+AlignedRectangle2(const Vector2& min, const Vector2& max);
+```
+
+### Static Methods
+
+```cpp
+static AlignedRectangle2 from_bounding_points(const Vector2& point1, const Vector2& point2);
+static AlignedRectangle2 from_bounding_segment2(const Segment2& segment);
+static AlignedRectangle2 from_bounding_arc(const Arc2& arc);
+static AlignedRectangle2 from_bounding_circle(const Circle2& circle);
+static AlignedRectangle2 from_bounding_triangle(const Triangle2& triangle);
+static AlignedRectangle2 from_bounding_rectangle(const Rectangle2& rectangle);
+```
+
+### Methods
+
+```cpp
+Vector2 vertex_nx_ny() const;
+Vector2 vertex_nx_py() const;
+Vector2 vertex_px_ny() const;
+Vector2 vertex_px_py() const;
+Segment2 edge_nx() const;
+Segment2 edge_ny() const;
+Segment2 edge_px() const;
+Segment2 edge_py() const;
+Vector2 normal_nx() const;
+Vector2 normal_ny() const;
+Vector2 normal_px() const;
+Vector2 normal_py() const;
+Vector2 size() const;
+Real area() const;
+Real perimeter() const;
+bool contains(const Vector2& point) const;
+Real signed_distance(const Vector2& point) const;
+Real distance(const Vector2& point) const;
+Real distance(const Line2& line) const;
+Real distance(const Ray2& ray) const;
+Real distance(const Segment2& segment) const;
+Real distance(const Arc2& arc) const;
+Real distance(const Circle2& circle) const;
+Real distance(const Triangle2& triangle) const;
+Real distance(const Rectangle& rectangle) const;
+Real distance(const AlignedRectangle2& other) const;
+bool intersects(const Line2& line) const;
+std::optional<std::array<Vector2, 2>> intersections(const Line2& line) const;
+bool intersects(const Ray2& ray) const;
+std::optional<std::array<Vector2, 2>> intersections(const Ray2& ray) const;
+bool intersects(const Segment2& segment) const;
+std::optional<std::array<Vector2, 2>> intersections(const Segment2& segment) const;
+bool intersects(const Arc2& arc) const;
+bool intersects(const Circle2& circle) const;
+std::optional<Vector2> intersect_depth(const Circle2& circle) const;
+bool intersects(const Triangle2& triangle) const;
+std::optional<Vector2> intersect_depth(const Triangle2& triangle) const;
+bool intersects(const Rectangle2& rectangle) const;
+std::optional<Vector2> intersect_depth(const Rectangle2& rectangle) const;
+bool intersects(const AlignedRectangle& other) const;
+std::optional<Vector2> intersect_depth(const AlignedRectangle2& other) const;
+bool approx_equal(const AlignedRectangle2& rectangle) const;
+```
+
+### Operators
+
+```cpp
+bool operator==(const AlignedRectangle2& other) const;
+bool operator!=(const AlignedRectangle2& other) const;
+bool operator<(const AlignedRectangle2& other) const;
 ```
 

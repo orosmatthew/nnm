@@ -4092,6 +4092,24 @@ public:
     {
         return min.approx_equal(rectangle.min) && max.approx_equal(rectangle.max);
     }
+
+    [[nodiscard]] bool operator==(const AlignedRectangle2& other) const
+    {
+        return min == other.min && max == other.max;
+    }
+
+    [[nodiscard]] bool operator!=(const AlignedRectangle2& other) const
+    {
+        return min != other.min || max != other.max;
+    }
+
+    [[nodiscard]] bool operator<(const AlignedRectangle2& other) const
+    {
+        if (min == other.min) {
+            return max < other.max;
+        }
+        return min < other.min;
+    }
 };
 
 template <typename Real>
