@@ -3771,14 +3771,12 @@ public:
         return min_dist;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
             || edge_py().intersects(line);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -3801,14 +3799,12 @@ public:
         return std::nullopt;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
             || edge_py().intersects(ray);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -3831,14 +3827,12 @@ public:
         return std::nullopt;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -3862,14 +3856,12 @@ public:
         return std::nullopt;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -3880,7 +3872,6 @@ public:
         return dist_sqrd <= sqrd(circle.radius);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Vector2<Real> closest = circle.center.clamp(min, max);
@@ -3899,7 +3890,6 @@ public:
             : Vector2<Real> { static_cast<Real>(0), diff_y };
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -3916,7 +3906,6 @@ public:
         return false;
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const
     {
         const auto depth_on_normal
@@ -3963,7 +3952,6 @@ public:
         return min_normal * min_overlap;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const
     {
         const std::array<Vector2<Real>, 4> vertices_rect = {
@@ -3983,7 +3971,6 @@ public:
         return false;
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const
     {
         const auto depth_on_normal
@@ -4036,7 +4023,6 @@ public:
         return min_normal * min_overlap;
     }
 
-    // TODO: test
     [[nodiscard]] bool intersects(const AlignedRectangle2& other) const
     {
         const std::array<Vector2<Real>, 4> vertices_other
@@ -4055,7 +4041,6 @@ public:
         return false;
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2& other) const
     {
         const auto depth_on_normal
