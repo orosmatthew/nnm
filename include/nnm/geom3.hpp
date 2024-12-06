@@ -132,7 +132,6 @@ public:
         return p.approx_equal(p_other);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
