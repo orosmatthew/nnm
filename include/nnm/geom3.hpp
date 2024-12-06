@@ -43,7 +43,6 @@ public:
         return { point1, point1.direction(point2) };
     }
 
-    // TODO: test
     static Line3 from_ray(const Ray3<Real>& ray);
 
     static constexpr Line3 axis_x()

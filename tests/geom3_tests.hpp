@@ -32,6 +32,14 @@ inline void geom3_tests()
             ASSERT(l.direction.approx_equal({ 0.5144957554f, -0.5144957554f, 0.6859943406f }));
         }
 
+        test_section("from_ray");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 6.0f, -7.0f } };
+            const auto l1 = nnm::Line3f::from_ray(r1);
+            ASSERT(l1.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+            ASSERT(l1.direction.approx_equal({ -5.0f, 6.0f, -7.0f }));
+        }
+
         test_section("axis_x");
         {
             constexpr auto l = nnm::Line3f::axis_x();
