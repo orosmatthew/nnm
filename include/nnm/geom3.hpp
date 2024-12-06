@@ -334,6 +334,34 @@ public:
         const Vector3<Real> p2 = line.origin + line.direction * t_line;
         return p1.distance(p2);
     }
+
+    [[nodiscard]] Real distance(const Ray3& other) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        const Vector3<Real> diff = other.origin - origin;
+        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+            const Real d1 = other.origin.distance(project_point(other.origin));
+            const Real d2 = origin.distance(other.project_point(origin));
+            return min(d1, d2);
+        }
+        Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t = max(static_cast<Real>(0), t);
+        t_other = max(static_cast<Real>(0), t_other);
+        const Vector3<Real> p1 = origin + direction * t;
+        const Vector3<Real> p2 = other.origin + other.direction * t_other;
+        const Real origin_proj = other.origin.distance(project_point(other.origin));
+        return min(origin_proj, p1.distance(p2));
+    }
+
+    // TODO: test
+    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> dir = point - origin;
+        const Real t = max(static_cast<Real>(0), dir.dot(direction));
+        return origin + direction * t;
+    }
 };
 
 template <typename Real>
