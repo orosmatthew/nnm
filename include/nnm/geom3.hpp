@@ -149,7 +149,6 @@ public:
         return p;
     }
 
-    // TODO: test
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -157,35 +156,30 @@ public:
         return origin + direction * t;
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_coincident(const Line3& other) const
     {
         if (!approx_parallel(other)) {
             return false;
         }
-        const Vector2<Real> diff = origin - other.origin;
-        return approx_zero(diff.cross(other.direction));
+        const Vector3<Real> diff = origin - other.origin;
+        return diff.cross(other.direction).approx_zero();
     }
 
-    // TODO: test
     [[nodiscard]] Line3 translate(const Vector3<Real>& by) const
     {
         return { origin.translate(by), direction };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& by) const
     {
         return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 scale(const Vector3<Real>& by) const
     {
         return { origin.scale(by), direction.scale(by).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -193,13 +187,11 @@ public:
                  direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -207,58 +199,62 @@ public:
                  direction.rotate_quaternion(quaternion).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real angle_y, const Real angle_z) const
     {
         return { origin.shear_x_at(shear_origin, angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return { origin.shear_x(angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_z) const
     {
         return { origin.shear_y_at(shear_origin, angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_y(const Real angle_x, const Real angle_z) const
     {
         return { origin.shear_y(angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_y) const
     {
         return { origin.shear_z_at(shear_origin, angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
     }
 
-    // TODO: test
     [[nodiscard]] Line3 shear_z(const Real angle_x, const Real angle_y) const
     {
-        return { origin.shear_z(angle_x, angle_y), direction.shear_y(angle_x, angle_y).normalize() };
+        return { origin.shear_z(angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
     }
 
-    // TODO: test
+    [[nodiscard]] bool approx_equal(const Line3& other) const
+    {
+        return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
+    }
+
     [[nodiscard]] bool operator==(const Line3& other) const
     {
         return origin == other.origin && direction == other.direction;
     }
 
-    // TODO: test
     [[nodiscard]] bool operator!=(const Line3& other) const
     {
         return origin != other.origin || direction != other.direction;
+    }
+
+    [[nodiscard]] bool operator<(const Line3& other) const
+    {
+        if (origin == other.origin) {
+            return direction < other.direction;
+        }
+        return origin < other.origin;
     }
 };
 

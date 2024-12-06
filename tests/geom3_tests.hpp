@@ -169,5 +169,132 @@ inline void geom3_tests()
                                 .approx_intersection(nnm::Line3f::axis_x());
             ASSERT(i6.has_value() && i6.value().approx_equal({ 0.0f, 0.0f, 0.0f }));
         }
+
+        test_section("project_point");
+        {
+            const auto p1 = l1.project_point({ 0.0f, 0.0f, 0.0f });
+            ASSERT(p1.approx_equal({ -1.0f, 0.0f, 1.0f }));
+            const auto p2 = l1.project_point({ 0.0f, -1.0f, 2.0f });
+            ASSERT(p2.approx_equal({ 0.0f, -1.0f, 2.0f }));
+        }
+
+        test_section("approx_coincident");
+        {
+            ASSERT(l1.approx_coincident(l1));
+            ASSERT_FALSE(l1.approx_coincident(nnm::Line3f::axis_x()));
+            ASSERT_FALSE(nnm::Line3f::axis_y().approx_coincident(nnm::Line3f::axis_y_offset(1.0f, -2.0f)));
+            ASSERT(
+                nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })
+                    .approx_coincident(nnm::Line3f::from_points({ -1.0f, -1.0f, -1.0f }, { 2.0f, 2.0f, 2.0f })));
+        }
+
+        test_section("translate");
+        {
+            const auto t1 = l1.translate({ 5.0f, 6.0f, -7.0f });
+            ASSERT(t1.approx_equal({ { 6.0f, 4.0f, -4.0f }, l1.direction }));
+        }
+
+        test_section("scale_at");
+        {
+            const auto s1 = l1.scale_at({ 5.0f, 6.0f, -7.0f }, { 0.5f, -2.0f, 3.0f });
+            ASSERT(s1.approx_equal({ { 3.0f, 22.0f, 23.0f }, { 0.137361f, 0.549442f, 0.824163f } }));
+        }
+
+        test_section("scale");
+        {
+            const auto s1 = l1.scale({ 0.5f, -2.0f, 3.0f });
+            ASSERT(s1.approx_equal({ { 0.5f, 4.0f, 9.0f }, { 0.137361f, 0.549442f, 0.824163f } }));
+        }
+
+        test_section("rotate_axis_angle_at");
+        {
+            const auto r1 = l1.rotate_axis_angle_at({ 5.0f, 6.0f, -7.0f }, { 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            ASSERT(r1.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
+        }
+
+        test_section("rotate_axis_angle");
+        {
+            const auto r1 = l1.rotate_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            ASSERT(r1.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
+        }
+
+        test_section("rotate_quaternion_at");
+        {
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1 = l1.rotate_quaternion_at({ 5.0f, 6.0f, -7.0f }, q1);
+            ASSERT(r1.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
+        }
+
+        test_section("rotate_quaternion");
+        {
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1 = l1.rotate_quaternion(q1);
+            ASSERT(r1.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
+        }
+
+        test_section("shear_x_at");
+        {
+            const auto s1 = l1.shear_x_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { -10.5858f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
+        }
+
+        test_section("shear_x");
+        {
+            const auto s1 = l1.shear_x(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { -2.18514f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
+        }
+
+        test_section("shear_y_at");
+        {
+            const auto s1 = l1.shear_y_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { 1.0f, -10.6796f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
+        }
+
+        test_section("shear_y");
+        {
+            const auto s1 = l1.shear_y(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { 1.0f, -3.00551f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
+        }
+
+        test_section("shear_z_at");
+        {
+            const auto s1 = l1.shear_z_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.7126f }, { 0.369916f, -0.369916f, 0.852246f } }));
+        }
+
+        test_section("shear_z");
+        {
+            const auto s1 = l1.shear_z(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.88124275f }, { 0.369916f, -0.369916f, 0.852246f } }));
+        }
+
+        test_section("approx_equal");
+        {
+            ASSERT(l1.approx_equal(l1));
+            ASSERT_FALSE(l1.approx_equal(nnm::Line3f::axis_x()));
+            ASSERT_FALSE(nnm::Line3f::axis_x_offset(1.0f, -2.0f).approx_equal(nnm::Line3f::axis_x()));
+            ASSERT_FALSE(
+                nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })
+                    .approx_equal(nnm::Line3f::from_points({ -1.0f, -1.0f, -1.0f }, { 2.0f, 2.0f, 2.0f })));
+        }
+
+        test_section("operator==");
+        {
+            ASSERT(l1 == l1);
+            ASSERT_FALSE(l1 == nnm::Line3f::axis_x());
+        }
+
+        test_section("operator!=");
+        {
+            ASSERT(l1 != nnm::Line3f::axis_x());
+            ASSERT_FALSE(l1 != l1);
+        }
+
+        test_section("operator<");
+        {
+            ASSERT(nnm::Line3f::axis_x() < l1);
+            ASSERT_FALSE(l1 < l1);
+            ASSERT_FALSE(l1 < nnm::Line3f::axis_x());
+        }
     }
 }
