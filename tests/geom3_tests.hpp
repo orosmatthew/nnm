@@ -297,4 +297,86 @@ inline void geom3_tests()
             ASSERT_FALSE(l1 < nnm::Line3f::axis_x());
         }
     }
+
+    test_case("Ray3");
+    {
+        test_section("Ray3()");
+        {
+            constexpr nnm::Ray3f r1 {};
+            ASSERT(r1.origin.approx_zero());
+            ASSERT(r1.direction.approx_equal({ 1.0f, 0.0f, 0.0f }));
+        }
+
+        test_section("Ray3(const Vector3&, const Vector3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+            ASSERT(r1.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+            ASSERT(r1.direction.approx_equal({ -4.0f, 5.0f, -6.0f }));
+        }
+
+        test_section("from_point_to_point");
+        {
+            const auto r1 = nnm::Ray3f::from_point_to_point({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f });
+            ASSERT(r1.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+            ASSERT(r1.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
+        }
+
+        test_section("normalize");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 7.0f, -9.0f } };
+            const auto r2 = r1.normalize();
+            ASSERT(r2.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+            ASSERT(r2.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
+        }
+
+        constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+
+        test_section("approx_collinear(const Vector3&)");
+        {
+            ASSERT(r1.approx_collinear({ -2.0f, 2.0f, -2.0f }));
+            ASSERT_FALSE(r1.approx_collinear({ 0.0f, 0.0f, 0.0f }));
+            ASSERT(r1.approx_collinear({ 4.0f, -6.0f, 8.0f }));
+        }
+
+        test_section("approx_collinear(const Line3&)");
+        {
+            ASSERT(r1.approx_collinear(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -5.0f, 6.0f, -7.0f })));
+            ASSERT_FALSE(r1.approx_collinear(nnm::Line3f::axis_x()));
+        }
+
+        test_section("approx_collinear(const Ray3&)");
+        {
+            ASSERT(r1.approx_collinear(r1));
+            ASSERT_FALSE(
+                r1.approx_collinear(nnm::Ray3f::from_point_to_point({ 1.0f, 2.0f, 3.0f }, { 10.0f, 20.0f, -0.5f })))
+            ASSERT(r1.approx_collinear(
+                nnm::Ray3f::from_point_to_point({ 4.0f, -6.0f, 8.0f }, { 5.8099f, -8.4132f, 11.0165f })));
+            ASSERT(r1.approx_collinear(
+                nnm::Ray3f::from_point_to_point({ 5.8099f, -8.4132f, 11.0165f }, { 4.0f, -6.0f, 8.0f })));
+        }
+
+        test_section("distance(const Vector3&)");
+        {
+            const auto d1 = r1.distance({ 0.0f, 0.0f, 0.0f });
+            ASSERT(nnm::approx_equal(d1, 0.692820311f));
+            const auto d2 = r1.distance({ -2.0f, 2.0f, -2.0f });
+            ASSERT(nnm::approx_zero(d2));
+            const auto d3 = r1.distance({ 4.0f, -6.0f, 8.0f });
+            ASSERT(nnm::approx_equal(d3, 7.0711f));
+            const auto d4 = r1.distance({ 4.0f, -5.0f, 9.0f });
+            ASSERT(nnm::approx_equal(d4, 7.3485f));
+        }
+
+        test_section("distance(const Line3&)");
+        {
+            const auto d1 = r1.distance(nnm::Line3f::axis_x());
+            ASSERT(nnm::approx_equal(d1, 0.31234777f));
+            const auto d2 = r1.distance(nnm::Line3f::axis_x_offset(-4.0f, 5.0f));
+            ASSERT(nnm::approx_equal(d2, 2.82842708f));
+            const auto d3 = r1.distance(nnm::Line3f::axis_z_offset(-2.0f, 2.0f));
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = r1.distance(nnm::Line3f::from_ray(r1));
+            ASSERT(nnm::approx_zero(d4));
+        }
+    }
 }

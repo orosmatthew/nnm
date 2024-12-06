@@ -15,6 +15,10 @@ template <typename Real>
 class Line3;
 using Line3f = Line3<float>;
 using Line3d = Line3<double>;
+template <typename Real>
+class Ray3;
+using Ray3f = Ray3<float>;
+using Ray3d = Ray3<double>;
 
 template <typename Real>
 class Line3 {
@@ -38,6 +42,9 @@ public:
     {
         return { point1, point1.direction(point2) };
     }
+
+    // TODO: test
+    static Line3 from_ray(const Ray3<Real>& ray);
 
     static constexpr Line3 axis_x()
     {
@@ -257,6 +264,84 @@ public:
         return origin < other.origin;
     }
 };
+
+template <typename Real>
+class Ray3 {
+public:
+    Vector3<Real> origin;
+    Vector3<Real> direction;
+
+    constexpr Ray3()
+        : origin { Vector3<Real>::zero() }
+        , direction { Vector3<Real>::axis_x() }
+    {
+    }
+
+    constexpr Ray3(const Vector3<Real>& origin, const Vector3<Real>& direction)
+        : origin { origin }
+        , direction { direction }
+    {
+    }
+
+    static Ray3 from_point_to_point(const Vector3<Real>& from, const Vector3<Real>& to)
+    {
+        return { from, from.direction(to) };
+    }
+
+    [[nodiscard]] Ray3 normalize() const
+    {
+        return { origin, direction.normalize() };
+    }
+
+    [[nodiscard]] bool approx_collinear(const Vector3<Real>& point) const
+    {
+        return Line3<Real>::from_ray(*this).approx_contains(point);
+    }
+
+    [[nodiscard]] bool approx_collinear(const Line3<Real>& line) const
+    {
+        return Line3<Real>::from_ray(*this).approx_coincident(line);
+    }
+
+    [[nodiscard]] bool approx_collinear(const Ray3& other) const
+    {
+        return Line3<Real>::from_ray(*this).approx_coincident(Line3<Real>::from_ray(other));
+    }
+
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> dir = point - origin;
+        const Real t = dir.dot(direction);
+        if (t < static_cast<Real>(0)) {
+            return origin.distance(point);
+        }
+        return dir.cross(direction).length();
+    }
+
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(line.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        const Vector3<Real> diff = line.origin - origin;
+        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+            return diff.cross(direction).length();
+        }
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        const Real t_line = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return line.distance(origin);
+        }
+        const Vector3<Real> p1 = origin + direction * t;
+        const Vector3<Real> p2 = line.origin + line.direction * t_line;
+        return p1.distance(p2);
+    }
+};
+
+template <typename Real>
+Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
+{
+    return { ray.origin, ray.direction };
+}
 
 }
 
