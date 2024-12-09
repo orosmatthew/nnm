@@ -387,19 +387,26 @@ inline void geom3_tests()
             ASSERT(nnm::approx_zero(d4));
         }
 
-        // TODO: Add more cases
         test_section("distance(const Ray3&)");
         {
             const auto d1 = r1.distance(r1);
             ASSERT(nnm::approx_zero(d1));
             const auto d2 = r1.distance(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
             ASSERT(nnm::approx_equal(d2, 0.692820311f));
-            const auto d3 = r1.distance(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
-            ASSERT(nnm::approx_equal(d3, 0.31234777f));
-            const auto d4 = r1.distance(nnm::Ray3f::from_point_to_point({ 3.0f, -4.0f, 5.0f }, { 4.0f, -4.0f, 5.0f }));
-            ASSERT(nnm::approx_equal(d4, 3.4641f));
-            const auto d5 = r1.distance(nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 0.0f }, { 8.0f, -8.0f, 10.0f }));
-            ASSERT(nnm::approx_equal(d5, 2.4495f));
+            const auto d3 = nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }).distance(r1);
+            ASSERT(nnm::approx_equal(d3, 0.692820311f));
+            const auto d4 = r1.distance(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d4, 0.31234777f));
+            const auto d5 = nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }).distance(r1);
+            ASSERT(nnm::approx_equal(d5, 0.31234777f));
+            const auto d6 = r1.distance(nnm::Ray3f::from_point_to_point({ 3.0f, -4.0f, 5.0f }, { 4.0f, -4.0f, 5.0f }));
+            ASSERT(nnm::approx_equal(d6, 3.4641f));
+            const auto d7 = nnm::Ray3f::from_point_to_point({ 3.0f, -4.0f, 5.0f }, { 4.0f, -4.0f, 5.0f }).distance(r1);
+            ASSERT(nnm::approx_equal(d7, 3.4641f));
+            const auto d8 = r1.distance(nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 0.0f }, { 8.0f, -8.0f, 10.0f }));
+            ASSERT(nnm::approx_equal(d8, 2.4495f));
+            const auto d9 = nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 0.0f }, { 8.0f, -8.0f, 10.0f }).distance(r1);
+            ASSERT(nnm::approx_equal(d9, 2.4495f));
         }
     }
 }
