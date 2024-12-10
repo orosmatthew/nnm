@@ -418,5 +418,32 @@ inline void geom3_tests()
             const auto p3 = r1.project_point({ -2.0f, 2.0f, -2.0f });
             ASSERT(p3.approx_equal({ -2.0f, 2.0f, -2.0f }));
         }
+
+        test_section("approx_parallel(const Line3&)");
+        {
+            ASSERT_FALSE(r1.approx_parallel(nnm::Line3f::axis_x()));
+            ASSERT(r1.approx_parallel(nnm::Line3f::from_points({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f })));
+        }
+
+        test_section("approx_parallel(const Ray3&)");
+        {
+            ASSERT_FALSE(
+                r1.approx_parallel(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
+            ASSERT(r1.approx_parallel(nnm::Ray3f::from_point_to_point({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f })));
+        }
+
+        test_section("approx_perpendicular(const Line3&)");
+        {
+            ASSERT_FALSE(r1.approx_perpendicular(nnm::Line3f::axis_x()));
+            ASSERT(r1.approx_perpendicular(nnm::Line3f::from_points({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f })));
+        }
+
+        test_section("approx_perpendicular(const Ray3&)");
+        {
+            ASSERT_FALSE(
+                r1.approx_perpendicular(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
+            ASSERT(
+                r1.approx_perpendicular(nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f })));
+        }
     }
 }

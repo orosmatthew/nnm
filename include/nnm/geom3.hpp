@@ -355,6 +355,26 @@ public:
         return min(origin_proj_min, p1.distance(p2));
     }
 
+    [[nodiscard]] bool approx_parallel(const Line3<Real>& line) const
+    {
+        return direction.cross(line.direction).approx_zero();
+    }
+
+    [[nodiscard]] bool approx_parallel(const Ray3& other) const
+    {
+        return direction.cross(other.direction).approx_zero();
+    }
+
+    [[nodiscard]] bool approx_perpendicular(const Line3<Real>& line) const
+    {
+        return nnm::approx_zero(direction.dot(line.direction));
+    }
+
+    [[nodiscard]] bool approx_perpendicular(const Ray3& other) const
+    {
+        return nnm::approx_zero(direction.dot(other.direction));
+    }
+
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
