@@ -355,7 +355,6 @@ public:
         return min(origin_proj_min, p1.distance(p2));
     }
 
-    // TODO: test
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;

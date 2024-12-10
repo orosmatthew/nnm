@@ -408,5 +408,15 @@ inline void geom3_tests()
             const auto d9 = nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 0.0f }, { 8.0f, -8.0f, 10.0f }).distance(r1);
             ASSERT(nnm::approx_equal(d9, 2.4495f));
         }
+
+        test_section("project_point");
+        {
+            const auto p1 = r1.project_point({ 2.0f, 0.0f, 0.0f });
+            ASSERT(p1.approx_equal({ -0.2f, -0.4f, 1.0f }));
+            const auto p2 = r1.project_point({ 6.0f, -4.0f, 6.0f });
+            ASSERT(p2.approx_equal({ 1.0f, -2.0f, 3.0f }));
+            const auto p3 = r1.project_point({ -2.0f, 2.0f, -2.0f });
+            ASSERT(p3.approx_equal({ -2.0f, 2.0f, -2.0f }));
+        }
     }
 }
