@@ -375,6 +375,42 @@ public:
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
+    // TODO: test
+    [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(line.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+            return approx_contains(line.origin);
+        }
+        const Vector3<Real> diff = line.origin - origin;
+        Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t = max(static_cast<Real>(0), t);
+        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        const Vector3<Real> p = origin + direction * t;
+        const Vector3<Real> p_other = line.origin + line.direction * t_other;
+        return p.approx_equal(p_other);
+    }
+
+    // TODO: test
+    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(line.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = line.origin - origin;
+        Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t = max(static_cast<Real>(0), t);
+        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        const Vector3<Real> p = origin + direction * t;
+        if (const Vector3<Real> p_other = line.origin + line.direction * t_other; !p.approx_equal(p_other)) {
+            return std::nullopt;
+        }
+        return p;
+    }
+
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
