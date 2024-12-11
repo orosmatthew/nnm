@@ -106,6 +106,13 @@ inline void geom3_tests()
             ASSERT(l.direction.approx_equal({ 0.5773502692f, -0.5773502692f, 0.5773502692f }));
         }
 
+        test_section("approx_collinear(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -5.0f, 6.0f, -7.0f }).approx_collinear(r1));
+            ASSERT_FALSE(nnm::Line3f::axis_x().approx_collinear(r1));
+        }
+
         test_section("approx_contains");
         {
             ASSERT_FALSE(l1.approx_contains({ 0.0f, 0.0f, 0.0f }));

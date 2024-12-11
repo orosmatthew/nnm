@@ -90,6 +90,8 @@ public:
         return { origin, direction.normalize() };
     }
 
+    [[nodiscard]] bool approx_collinear(const Ray3<Real>& ray) const;
+
     [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -565,6 +567,12 @@ template <typename Real>
 Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
 {
     return { ray.origin, ray.direction };
+}
+
+template <typename Real>
+bool Line3<Real>::approx_collinear(const Ray3<Real>& ray) const
+{
+    return ray.approx_collinear(*this);
 }
 
 template <typename Real>

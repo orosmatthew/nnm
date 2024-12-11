@@ -34,6 +34,7 @@ Line3(const Vector3& origin, const Vector3& direction);
 
 ```cpp
 Line3 from_points(const Vector3& point1, const Vector3& point2);
+Line3 from_ray(const Ray3& ray);
 Line3 axis_x();
 Line3 axis_y();
 Line3 axis_z();
@@ -51,10 +52,15 @@ Line3 normalize() const;
 bool approx_contains(const Vector3& point) const;
 Real distance(const Vector3& point) const;
 Real distance(const Line3& other) const;
-bool approx_parallel(const line3& other) const;
-bool approx_perpendicular(const line3& other) const;
+Real distance(const Ray3& ray) const;
+bool approx_parallel(const Line3& other) const;
+bool approx_parallel(const Ray3& ray) const;
+bool approx_perpendicular(const Line3& other) const;
+bool approx_perpendicular(const Ray3& ray) const;
 bool approx_intersects(const Line3& other) const;
 std::optional<Vector3> approx_intersection(const Line3& other) const;
+bool approx_intersects(const Ray3& ray) const;
+std::optional<Vector3> approx_intersection(const Ray3& ray) const;
 Vector3 project_point(const Vector3& point) const;
 bool approx_coincident(const Line3& other) const;
 Line3 translate(const Vector3& by) const;
