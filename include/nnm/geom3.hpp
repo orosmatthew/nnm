@@ -113,15 +113,21 @@ public:
         return distance(other.origin);
     }
 
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const;
+
     [[nodiscard]] bool approx_parallel(const Line3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
 
+    [[nodiscard]] bool approx_parallel(const Ray3<Real>& ray) const;
+
     [[nodiscard]] bool approx_perpendicular(const Line3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
+
+    [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const;
 
     [[nodiscard]] bool approx_intersects(const Line3& other) const
     {
@@ -154,6 +160,10 @@ public:
         }
         return p;
     }
+
+    [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const;
+
+    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3<Real>& ray) const;
 
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
@@ -555,6 +565,36 @@ template <typename Real>
 Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
 {
     return { ray.origin, ray.direction };
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Ray3<Real>& ray) const
+{
+    return ray.distance(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::approx_parallel(const Ray3<Real>& ray) const
+{
+    return ray.approx_parallel(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::approx_perpendicular(const Ray3<Real>& ray) const
+{
+    return ray.approx_perpendicular(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::approx_intersects(const Ray3<Real>& ray) const
+{
+    return ray.approx_intersects(*this);
+}
+
+template <typename Real>
+std::optional<Vector3<Real>> Line3<Real>::approx_intersection(const Ray3<Real>& ray) const
+{
+    return ray.approx_intersection(*this);
 }
 
 }

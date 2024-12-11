@@ -132,14 +132,34 @@ inline void geom3_tests()
             ASSERT(nnm::approx_equal(d3, 0.7071067812f));
         }
 
-        test_section("approx_parallel");
+        test_section("distance(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            const auto d1 = nnm::Line3f::axis_x().distance(r1);
+            ASSERT(nnm::approx_equal(d1, 0.31234777f));
+            const auto d2 = nnm::Line3f::axis_x_offset(-4.0f, 5.0f).distance(r1);
+            ASSERT(nnm::approx_equal(d2, 2.82842708f));
+            const auto d3 = nnm::Line3f::axis_z_offset(-2.0f, 2.0f).distance(r1);
+            ASSERT(nnm::approx_zero(d3));
+            const auto d4 = nnm::Line3f::from_ray(r1).distance(r1);
+            ASSERT(nnm::approx_zero(d4));
+        }
+
+        test_section("approx_parallel(const Line3&)");
         {
             ASSERT(l1.approx_parallel(l1));
             ASSERT_FALSE(l1.approx_parallel(nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
             ASSERT(nnm::Line3f::axis_x().approx_parallel(nnm::Line3f::axis_x_offset(2.0f, -3.0f)));
         }
 
-        test_section("approx_perpendicular");
+        test_section("approx_parallel(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            ASSERT_FALSE(nnm::Line3f::axis_x().approx_parallel(r1));
+            ASSERT(nnm::Line3f::from_points({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f }).approx_parallel(r1));
+        }
+
+        test_section("approx_perpendicular(const Line3&)");
         {
             ASSERT_FALSE(l1.approx_perpendicular(l1));
             ASSERT(nnm::Line3f::axis_x().approx_perpendicular(nnm::Line3f::axis_y_offset(2.0f, -3.0f)));
@@ -147,6 +167,13 @@ inline void geom3_tests()
             ASSERT(
                 nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })
                     .approx_perpendicular(nnm::Line3f::from_points({ 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, 1.0f })));
+        }
+
+        test_section("approx_perpendicular(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            ASSERT_FALSE(nnm::Line3f::axis_x().approx_perpendicular(r1));
+            ASSERT(nnm::Line3f::from_points({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f }).approx_perpendicular(r1));
         }
 
         test_section("approx_intersects(const Line3&)");
@@ -177,6 +204,32 @@ inline void geom3_tests()
             const auto i6 = nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })
                                 .approx_intersection(nnm::Line3f::axis_x());
             ASSERT(i6.has_value() && i6.value().approx_equal({ 0.0f, 0.0f, 0.0f }));
+        }
+
+        test_section("approx_intersects(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            ASSERT_FALSE(nnm::Line3f::axis_x().approx_intersects(r1));
+            ASSERT(nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f }).approx_intersects(r1));
+            ASSERT(nnm::Line3f::from_points({ -2.0f, 2.0f, -2.0f }, { -0.2f, -0.4f, 1.0f }).approx_intersects(r1));
+            ASSERT_FALSE(
+                nnm::Line3f::from_points({ 1.54f, -2.72f, 3.9f }, { -2.0f, -4.0f, 5.0f }).approx_intersects(r1));
+        }
+
+        test_section("approx_intersection(const Ray3&)");
+        {
+            constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
+            const auto i1 = nnm::Line3f::axis_x().approx_intersection(r1);
+            ASSERT_FALSE(i1.has_value());
+            const auto i2
+                = nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f }).approx_intersection(r1);
+            ASSERT(i2.has_value() && i2.value().approx_equal({ -0.2f, -0.4f, 1.0f }));
+            const auto i3
+                = nnm::Line3f::from_points({ -2.0f, 2.0f, -2.0f }, { -0.2f, -0.4f, 1.0f }).approx_intersection(r1);
+            ASSERT_FALSE(i3.has_value());
+            const auto i4
+                = nnm::Line3f::from_points({ 1.54f, -2.72f, 3.9f }, { -2.0f, -4.0f, 5.0f }).approx_intersection(r1);
+            ASSERT_FALSE(i4.has_value());
         }
 
         test_section("project_point");
