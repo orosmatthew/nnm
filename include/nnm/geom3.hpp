@@ -810,6 +810,49 @@ public:
         }
         return p;
     }
+
+    // TODO: test
+    [[nodiscard]] bool approx_intersects(const Segment3& other) const
+    {
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> dir_other = other.direction_unnormalized();
+        const Vector3<Real> dir_cross = dir.cross(dir_other);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
+            return approx_contains(other.from) || approx_contains(other.to) || other.approx_contains(from)
+                || other.approx_contains(to);
+        }
+        const Vector3<Real> diff = other.from - from;
+        Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
+        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        t_other = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        const Vector3<Real> p = from.lerp(to, t);
+        const Vector3<Real> p_other = from.lerp(to, t_other);
+        return p.approx_equal(p_other);
+    }
+
+    // TODO: test
+    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Segment3& other) const
+    {
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> dir_other = other.direction_unnormalized();
+        const Vector3<Real> dir_cross = dir.cross(dir_other);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = other.from - from;
+        Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
+        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        t_other = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        const Vector3<Real> p = from.lerp(to, t);
+        if (const Vector3<Real> p_other = from.lerp(to, t_other); !p.approx_equal(p_other)) {
+            return std::nullopt;
+        }
+        return p;
+    }
 };
 
 template <typename Real>
