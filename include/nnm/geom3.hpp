@@ -531,6 +531,24 @@ public:
     {
         return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
     }
+
+    [[nodiscard]] bool operator==(const Ray3& other) const
+    {
+        return origin == other.origin && direction == other.direction;
+    }
+
+    [[nodiscard]] bool operator!=(const Ray3& other) const
+    {
+        return origin != other.origin || direction != other.direction;
+    }
+
+    [[nodiscard]] bool operator<(const Ray3& other) const
+    {
+        if (origin == other.origin) {
+            return direction < other.direction;
+        }
+        return origin < other.origin;
+    }
 };
 
 template <typename Real>
