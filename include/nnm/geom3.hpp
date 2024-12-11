@@ -457,6 +457,80 @@ public:
         const Real t = max(static_cast<Real>(0), dir.dot(direction));
         return origin + direction * t;
     }
+
+    [[nodiscard]] Ray3 translate(const Vector3<Real>& by) const
+    {
+        return { origin.translate(by), direction };
+    }
+
+    [[nodiscard]] Ray3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& by) const
+    {
+        return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
+    }
+
+    [[nodiscard]] Ray3 scale(const Vector3<Real>& by) const
+    {
+        return { origin.scale(by), direction.scale(by).normalize() };
+    }
+
+    [[nodiscard]] Ray3 rotate_axis_angle_at(
+        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { origin.rotate_axis_angle_at(rotate_origin, axis, angle),
+                 direction.rotate_axis_angle(axis, angle).normalize() };
+    }
+
+    [[nodiscard]] Ray3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
+    }
+
+    [[nodiscard]] Ray3 rotate_quaternion_at(
+        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    {
+        return { origin.rotate_quaternion_at(rotate_origin, quaternion),
+                 direction.rotate_quaternion(quaternion).normalize() };
+    }
+
+    [[nodiscard]] Ray3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_x_at(const Vector3<Real>& shear_origin, const Real angle_y, const Real angle_z) const
+    {
+        return { origin.shear_x_at(shear_origin, angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_x(const Real angle_y, const Real angle_z) const
+    {
+        return { origin.shear_x(angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_y_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_z) const
+    {
+        return { origin.shear_y_at(shear_origin, angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_y(const Real angle_x, const Real angle_z) const
+    {
+        return { origin.shear_y(angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_z_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_y) const
+    {
+        return { origin.shear_z_at(shear_origin, angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
+    }
+
+    [[nodiscard]] Ray3 shear_z(const Real angle_x, const Real angle_y) const
+    {
+        return { origin.shear_z(angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
+    }
+
+    [[nodiscard]] bool approx_equal(const Ray3& other) const
+    {
+        return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
+    }
 };
 
 template <typename Real>
