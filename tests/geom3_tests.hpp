@@ -676,4 +676,107 @@ inline void geom3_tests()
             ASSERT_FALSE(r2 < r1);
         }
     }
+
+    test_case("Segment3");
+    {
+
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+
+        test_section("approx_intersects(const Line3&)");
+        {
+            ASSERT_FALSE(s1.approx_intersects(nnm::Line3f::axis_x()));
+            ASSERT(s1.approx_intersects(nnm::Line3f::from_points({ 1, 2, 3 }, { -0.666667f, -3.0476f, 0.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Line3f::from_points({ -6.3161401722f, -5.0466531233f, 6.9171254442f }, { 5.0f, -2.0f, 3.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Line3f::from_points({ 6.340530911f, 6.2880512604f, -11.4095884147f }, { -7.0f, 5.0f, -5.0f })));
+            ASSERT(s1.approx_intersects(nnm::Line3f(s1.from, s1.direction())));
+        }
+
+        test_section("approx_intersection(const Line3&)");
+        {
+            const auto i1 = s1.approx_intersection(nnm::Line3f::axis_x());
+            ASSERT_FALSE(i1.has_value());
+            const auto i2
+                = s1.approx_intersection(nnm::Line3f::from_points({ 1, 2, 3 }, { -0.666667f, -3.0476f, 0.0f }));
+            ASSERT(i2.has_value() && i2.value().approx_equal({ 0.0967741935f, -0.735483871f, 1.3741935484f }));
+            const auto i3 = s1.approx_intersection(
+                nnm::Line3f::from_points({ -6.3161401722f, -5.0466531233f, 6.9171254442f }, { 5.0f, -2.0f, 3.0f }));
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = s1.approx_intersection(
+                nnm::Line3f::from_points({ 6.340530911f, 6.2880512604f, -11.4095884147f }, { -7.0f, 5.0f, -5.0f }));
+            ASSERT_FALSE(i4.has_value());
+            const auto i5 = s1.approx_intersection(nnm::Line3f(s1.from, s1.direction()));
+            ASSERT_FALSE(i5.has_value());
+        }
+
+        test_section("approx_intersects(const Ray3&)");
+        {
+            ASSERT_FALSE(
+                s1.approx_intersects(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point({ 1.0f, 2.0f, 3.0f }, { 2.0323377426f, 5.126508592f, 4.8582079368f })));
+            ASSERT(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point({ 2.0323377426f, 5.126508592f, 4.8582079368f }, { 1.0f, 2.0f, 3.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { 5.0f, -2.0f, 3.0f }, { 8.4624090164f, -1.0678129571f, 1.801473802f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { 8.4624090164f, -1.0678129571f, 1.801473802f }, { 5.0f, -2.0f, 3.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { -7.0f, 5.0f, -5.0f }, { -10.7888017215f, 4.6341846614f, -3.1796331959f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { -10.7888017215f, 4.6341846614f, -3.1796331959f }, { -7.0f, 5.0f, -5.0f })));
+            ASSERT(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { 3.1803758203f, -5.0525261484f, 6.9246764765f },
+                    { 2.2353232409f, -3.7294525373f, 5.2235818337f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Ray3f::from_point_to_point(
+                    { 2.2353232409f, -3.7294525373f, 5.2235818337f },
+                    { 3.1803758203f, -5.0525261484f, 6.9246764765f })));
+        }
+
+        test_section("approx_intersection(const Ray3&)");
+        {
+            const auto i1
+                = s1.approx_intersection(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+            ASSERT_FALSE(i1.has_value());
+            const auto i2 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point({ 1.0f, 2.0f, 3.0f }, { 2.0323377426f, 5.126508592f, 4.8582079368f }));
+            ASSERT_FALSE(i2.has_value());
+            const auto i3 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point({ 2.0323377426f, 5.126508592f, 4.8582079368f }, { 1.0f, 2.0f, 3.0f }));
+            ASSERT(i3.has_value() && i3.value().approx_equal({ 0.0967741935f, -0.735483871f, 1.3741935484f }));
+            const auto i4 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { 5.0f, -2.0f, 3.0f }, { 8.4624090164f, -1.0678129571f, 1.801473802f }));
+            ASSERT_FALSE(i4.has_value());
+            const auto i5 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { 8.4624090164f, -1.0678129571f, 1.801473802f }, { 5.0f, -2.0f, 3.0f }));
+            ASSERT_FALSE(i5.has_value());
+            const auto i6 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { -7.0f, 5.0f, -5.0f }, { -10.7888017215f, 4.6341846614f, -3.1796331959f }));
+            ASSERT_FALSE(i6.has_value());
+            const auto i7 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { -10.7888017215f, 4.6341846614f, -3.1796331959f }, { -7.0f, 5.0f, -5.0f }));
+            ASSERT_FALSE(i7.has_value());
+            const auto i8 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { 3.1803758203f, -5.0525261484f, 6.9246764765f },
+                    { 2.2353232409f, -3.7294525373f, 5.2235818337f }));
+            ASSERT_FALSE(i8.has_value());
+            const auto i9 = s1.approx_intersection(
+                nnm::Ray3f::from_point_to_point(
+                    { 2.2353232409f, -3.7294525373f, 5.2235818337f },
+                    { 3.1803758203f, -5.0525261484f, 6.9246764765f }));
+            ASSERT_FALSE(i9.has_value());
+        }
+    }
 }
