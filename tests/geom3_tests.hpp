@@ -363,6 +363,14 @@ inline void geom3_tests()
                 nnm::Ray3f::from_point_to_point({ 5.8099f, -8.4132f, 11.0165f }, { 4.0f, -6.0f, 8.0f })));
         }
 
+        test_section("approx_contains");
+        {
+            ASSERT(r1.approx_contains({ -0.2f, -0.4f, 1.0f }));
+            ASSERT(r1.approx_contains({ -2.0f, 2.0f, -2.0f }));
+            ASSERT_FALSE(r1.approx_contains({ 0.0f, 0.0f, 0.0f }));
+            ASSERT_FALSE(r1.approx_contains({ 1.54f, -2.72f, 3.9f }));
+        }
+
         test_section("distance(const Vector3&)");
         {
             const auto d1 = r1.distance({ 0.0f, 0.0f, 0.0f });
@@ -444,6 +452,30 @@ inline void geom3_tests()
                 r1.approx_perpendicular(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
             ASSERT(
                 r1.approx_perpendicular(nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f })));
+        }
+
+        test_section("approx_intersects(const Line3&)");
+        {
+            ASSERT_FALSE(r1.approx_intersects(nnm::Line3f::axis_x()));
+            ASSERT(r1.approx_intersects(nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f })));
+            ASSERT(r1.approx_intersects(nnm::Line3f::from_points({ -2.0f, 2.0f, -2.0f }, { -0.2f, -0.4f, 1.0f })));
+            ASSERT_FALSE(
+                r1.approx_intersects(nnm::Line3f::from_points({ 1.54f, -2.72f, 3.9f }, { -2.0f, -4.0f, 5.0f })));
+        }
+
+        test_section("approx_intersection(const Line3&)");
+        {
+            const auto i1 = r1.approx_intersection(nnm::Line3f::axis_x());
+            ASSERT_FALSE(i1.has_value());
+            const auto i2
+                = r1.approx_intersection(nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f }));
+            ASSERT(i2.has_value() && i2.value().approx_equal({ -0.2f, -0.4f, 1.0f }));
+            const auto i3
+                = r1.approx_intersection(nnm::Line3f::from_points({ -2.0f, 2.0f, -2.0f }, { -0.2f, -0.4f, 1.0f }));
+            ASSERT_FALSE(i3.has_value());
+            const auto i4
+                = r1.approx_intersection(nnm::Line3f::from_points({ 1.54f, -2.72f, 3.9f }, { -2.0f, -4.0f, 5.0f }));
+            ASSERT_FALSE(i4.has_value());
         }
     }
 }

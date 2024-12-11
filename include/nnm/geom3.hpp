@@ -127,7 +127,7 @@ public:
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return approx_contains(other.origin);
         }
         const Vector3<Real> diff = other.origin - origin;
@@ -142,7 +142,7 @@ public:
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return std::nullopt;
         }
         const Vector3<Real> diff = other.origin - origin;
@@ -307,6 +307,12 @@ public:
         return Line3<Real>::from_ray(*this).approx_coincident(Line3<Real>::from_ray(other));
     }
 
+    [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> proj = project_point(point);
+        return proj.approx_equal(point);
+    }
+
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -375,13 +381,12 @@ public:
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
-            return approx_contains(line.origin);
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
+            return line.approx_contains(origin);
         }
         const Vector3<Real> diff = line.origin - origin;
         Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
@@ -392,7 +397,6 @@ public:
         return p.approx_equal(p_other);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
