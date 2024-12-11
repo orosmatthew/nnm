@@ -415,6 +415,42 @@ public:
         return p;
     }
 
+    [[nodiscard]] bool approx_intersects(const Ray3& other) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
+            return other.approx_contains(origin) || approx_contains(other.origin);
+        }
+        const Vector3<Real> diff = other.origin - origin;
+        Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t = max(static_cast<Real>(0), t);
+        Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t_other = max(static_cast<Real>(0), t_other);
+        const Vector3<Real> p = origin + direction * t;
+        const Vector3<Real> p_other = other.origin + other.direction * t_other;
+        return p.approx_equal(p_other);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3& other) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
+        if (nnm::approx_zero(dir_cross_len_sqrd)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = other.origin - origin;
+        Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t = max(static_cast<Real>(0), t);
+        Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        t_other = max(static_cast<Real>(0), t_other);
+        const Vector3<Real> p = origin + direction * t;
+        if (const Vector3<Real> p_other = other.origin + other.direction * t_other; !p.approx_equal(p_other)) {
+            return std::nullopt;
+        }
+        return p;
+    }
+
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
