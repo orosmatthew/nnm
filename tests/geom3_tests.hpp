@@ -679,8 +679,37 @@ inline void geom3_tests()
 
     test_case("Segment3");
     {
+        test_section("Segment3()");
+        {
+            constexpr nnm::Segment3f s {};
+            ASSERT(s.from == nnm::Vector3f::zero());
+            ASSERT(s.to == nnm::Vector3f::zero());
+        }
+
+        test_section("Segment3(const Vector3&, const Vector3&)");
+        {
+            constexpr nnm::Segment3f s { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+            ASSERT(s.from == nnm::Vector3f(1.0f, -2.0f, 3.0f));
+            ASSERT(s.to == nnm::Vector3f(-4.0f, 5.0f, -6.0f));
+        }
 
         constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+
+        test_section("approx_collinear(const Vector3&)");
+        {
+            ASSERT(s1.approx_collinear({ 2.9833236933f, -4.7766531707f, 6.569982648f }));
+            ASSERT_FALSE(s1.approx_collinear({ 0.0f, 0.0f, 0.0f }));
+            ASSERT(s1.approx_collinear({ -1.4205585602f, 1.3887819843f, -1.3570054084f }));
+            ASSERT(s1.approx_collinear({ -6.1127619882f, 7.9578667834f, -9.8029715787f }));
+        }
+
+        test_section("approx_collinear(const Line3&)");
+        {
+            ASSERT_FALSE(s1.approx_collinear(nnm::Line3f::axis_x()));
+            ASSERT_FALSE(s1.approx_collinear(nnm::Line3f::from_points({ 2.0f, -1.0f, 4.0f }, { -3.0f, 6.0f, -5.0f })));
+            ASSERT(s1.approx_collinear(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })));
+            ASSERT(s1.approx_collinear(nnm::Line3f::from_points({ -4.0f, 5.0f, -6.0f }, { 1.0f, -2.0f, 3.0f })));
+        }
 
         test_section("approx_intersects(const Line3&)");
         {

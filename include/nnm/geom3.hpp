@@ -573,21 +573,18 @@ public:
     Vector3<Real> from;
     Vector3<Real> to;
 
-    // TODO: test
     constexpr Segment3()
         : from { Vector3<Real>::zero() }
         , to { Vector3<Real>::zero() }
     {
     }
 
-    // TODO: test
     constexpr Segment3(const Vector3<Real>& from, const Vector3<Real>& to)
         : from { from }
         , to { to }
     {
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_collinear(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - from;
@@ -595,7 +592,6 @@ public:
         return diff1.cross(diff2).approx_zero();
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_collinear(const Line3<Real>& line) const
     {
         if (!approx_parallel(line)) {
