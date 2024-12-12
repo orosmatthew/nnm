@@ -711,6 +711,118 @@ inline void geom3_tests()
             ASSERT(s1.approx_collinear(nnm::Line3f::from_points({ -4.0f, 5.0f, -6.0f }, { 1.0f, -2.0f, 3.0f })));
         }
 
+        test_section("approx_collinear(const Ray3&)");
+        {
+            ASSERT_FALSE(
+                s1.approx_collinear(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ 2.9833236933f, -4.7766531707f, 6.569982648f }, s1.to.direction(s1.from))));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ 2.9833236933f, -4.7766531707f, 6.569982648f }, s1.from.direction(s1.to))));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ -1.4205585602f, 1.3887819843f, -1.3570054084f }, s1.to.direction(s1.from))));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ -1.4205585602f, 1.3887819843f, -1.3570054084f }, s1.from.direction(s1.to))));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ -6.1127619882f, 7.9578667834f, -9.8029715787f }, s1.to.direction(s1.from))));
+            ASSERT(s1.approx_collinear(
+                nnm::Ray3f({ -6.1127619882f, 7.9578667834f, -9.8029715787f }, s1.from.direction(s1.to))));
+        }
+
+        test_section("approx_collinear(const Segment3&)");
+        {
+            ASSERT_FALSE(s1.approx_collinear(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })));
+            ASSERT(s1.approx_collinear(s1));
+            ASSERT(s1.approx_collinear(
+                nnm::Segment3f(
+                    { 2.9833236933f, -4.7766531707f, 6.569982648f },
+                    { 4.5074673515f, -6.9104542922f, 9.3134412328f })));
+            ASSERT(s1.approx_collinear(
+                nnm::Segment3f(
+                    { -6.1127619882f, 7.9578667834f, -9.8029715787f },
+                    { -9.0362240787f, 12.0507137102f, -15.0652033417f })));
+            ASSERT_FALSE(s1.approx_collinear(nnm::Segment3f({ 0.0f, -3.0f, 2.0f }, { -5.0f, 4.0f, -7.0f })))
+        }
+
+        test_section("approx_contains(const Vector3&)");
+        {
+            ASSERT_FALSE(s1.approx_contains({ 0.0f, 0.0f, 0.0f }));
+            ASSERT_FALSE(s1.approx_contains({ 2.9833236933f, -4.7766531707f, 6.569982648f }));
+            ASSERT(s1.approx_contains({ -1.4205585602f, 1.3887819843f, -1.3570054084f }));
+            ASSERT_FALSE(s1.approx_contains({ -6.1127619882f, 7.9578667834f, -9.8029715787f }));
+        }
+
+        test_section("distance(const Vector3&)");
+        {
+            const auto d1 = s1.distance({ 0.0f, 0.0f, 0.0f });
+            ASSERT(nnm::approx_equal(d1, 0.5902432522f));
+            const auto d2 = s1.distance({ -5.0f, 7.0f, -7.0f });
+            ASSERT(nnm::approx_equal(d2, 2.4494897428f));
+            const auto d3 = s1.distance({ 0.0f, -5.0f, 3.0f });
+            ASSERT(nnm::approx_equal(d3, 3.1622776602f));
+            const auto d4 = s1.distance({ -1.4205585602f, 1.3887819843f, -1.3570054084f });
+            ASSERT(nnm::approx_zero(d4));
+        }
+
+        test_section("distance(const Line3&)");
+        {
+            const auto d1 = s1.distance(nnm::Line3f::axis_x());
+            ASSERT(nnm::approx_equal(d1, 0.263117403f));
+            const auto d2 = s1.distance(nnm::Line3f({ -6.0f, -4.0f, 7.0f }, { 1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d2, 4.472135955f));
+            const auto d3 = s1.distance(nnm::Line3f({ -6.0f, 7.0f, -7.0f }, { 0.0f, 0.0f, -1.0f }));
+            ASSERT(nnm::approx_equal(d3, 2.8284271247f));
+        }
+
+        test_section("distance(const Ray3&)");
+        {
+            const auto d1 = s1.distance(nnm::Ray3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d1, 0.5902432522f));
+            const auto d2 = s1.distance(nnm::Ray3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.263117403f));
+            const auto d3 = s1.distance(nnm::Ray3f::from_point_to_point({ 2.0f, -4.0f, 3.0f }, { 3.0f, -5.0f, 4.0f }));
+            ASSERT(nnm::approx_equal(d3, 2.2360679775f));
+            const auto d4 = s1.distance(nnm::Ray3f::from_point_to_point({ 2.0f, -4.0f, 3.0f }, { 1.0f, -3.0f, 2.0f }));
+            ASSERT(nnm::approx_equal(d4, 1.2247448f));
+            const auto d5
+                = s1.distance(nnm::Ray3f::from_point_to_point({ -5.0f, 7.0f, -7.0f }, { -6.0f, 9.0f, -7.0f }));
+            ASSERT(nnm::approx_equal(d5, 2.4494897428f));
+            const auto d6
+                = s1.distance(nnm::Ray3f::from_point_to_point({ -5.0f, 7.0f, -7.0f }, { -1.0f, 2.0f, -2.0f }));
+            ASSERT(nnm::approx_equal(d6, 0.593442202f));
+            const auto d7 = s1.distance(
+                nnm::Ray3f::from_point_to_point(
+                    { 0.0f, 0.0f, 0.0f }, { -1.3814812713f, 1.3340737798f, -1.2866662883f }));
+            ASSERT(nnm::approx_zero(d7));
+        }
+
+        test_section("distance(const Segment3&)");
+        {
+            const auto d1 = s1.distance(s1);
+            ASSERT(nnm::approx_zero(d1));
+            const auto d2 = s1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d2, 0.5902432522f));
+            const auto d3 = s1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d3, 0.263117403f));
+            const auto d4 = s1.distance(nnm::Segment3f({ -2.0f, 0.0f, 0.0f }, { -8.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_equal(d4, 1.3295645661f));
+            const auto d5 = s1.distance(nnm::Segment3f({ 4.0f, -4.0f, 6.0f }, { 5.0f, -4.0f, 6.0f }));
+            ASSERT(nnm::approx_equal(d5, 4.6904157598f));
+            const auto d6 = s1.distance(nnm::Segment3f({ -5.0f, -4.0f, 6.0f }, { 5.0f, -4.0f, 6.0f }));
+            ASSERT(nnm::approx_equal(d6, 3.6055512755f));
+            const auto d7 = s1.distance(nnm::Segment3f({ -3.0f, -4.0f, 6.0f }, { -5.0f, -4.0f, 6.0f }));
+            ASSERT(nnm::approx_equal(d7, 5.3851648071f));
+            const auto d8 = s1.distance(nnm::Segment3f({ -5.0f, 7.0f, -2.0f }, { -5.0f, 7.0f, -1.0f }));
+            ASSERT(nnm::approx_equal(d8, 4.582575695f));
+            const auto d9 = s1.distance(nnm::Segment3f({ -5.0f, 7.0f, -10.0f }, { -5.0f, 7.0f, -1.0f }));
+            ASSERT(nnm::approx_equal(d9, 2.2360679775f));
+            const auto d10 = s1.distance(nnm::Segment3f({ -5.0f, 7.0f, -8.0f }, { -5.0f, 7.0f, -9.0f }));
+            ASSERT(nnm::approx_equal(d10, 3.0f));
+            const auto d11
+                = s1.distance(nnm::Segment3f({ 1.3429285263f, 1.4817304819f, -0.7047254731f }, { -2.0f, 0.0f, 0.0f }));
+            ASSERT(nnm::approx_zero(d11));
+        }
+
         test_section("approx_intersects(const Line3&)");
         {
             ASSERT_FALSE(s1.approx_intersects(nnm::Line3f::axis_x()));
