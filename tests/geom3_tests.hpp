@@ -823,6 +823,46 @@ inline void geom3_tests()
             ASSERT(nnm::approx_zero(d11));
         }
 
+        test_section("direction_unnormalized");
+        {
+            ASSERT(s1.direction_unnormalized().approx_equal({ -5.0f, 7.0f, -9.0f }));
+        }
+
+        test_section("direction");
+        {
+            ASSERT(s1.direction().approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
+        }
+
+        test_section("approx_parallel(const Line3&)");
+        {
+            ASSERT_FALSE(s1.approx_parallel(nnm::Line3f::axis_x()));
+            ASSERT(s1.approx_parallel(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })))
+            ASSERT(s1.approx_parallel(nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f })))
+        }
+
+        test_section("approx_parallel(const Ray3&)");
+        {
+            ASSERT_FALSE(s1.approx_parallel(nnm::Ray3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f })));
+            ASSERT(s1.approx_parallel(nnm::Ray3f::from_point_to_point(s1.from, s1.to)));
+            ASSERT(s1.approx_parallel(nnm::Ray3f(s1.from + nnm::Vector3f(2.0f, -3.0f, 10.0f), -s1.direction())));
+        }
+
+        test_section("approx_parallel(const Segment3&)");
+        {
+            ASSERT_FALSE(s1.approx_parallel(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 2.0f, -2.0f })));
+            ASSERT(s1.approx_parallel(s1));
+            ASSERT(s1.approx_parallel(
+                nnm::Segment3f(s1.from + nnm::Vector3f(2.0f, -2.0f, 5.0f), s1.to + nnm::Vector3f(2.0f, -2.0f, 5.0f))));
+        }
+
+        test_section("approx_perpendicular(const Line3&)");
+        {
+            ;
+            ASSERT_FALSE(s1.approx_perpendicular(nnm::Line3f::axis_x()));
+            ASSERT(s1.approx_perpendicular(
+                nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { -1.1918502675f, 0.1906960428f, 0.8104581819f })));
+        }
+
         test_section("approx_intersects(const Line3&)");
         {
             ASSERT_FALSE(s1.approx_intersects(nnm::Line3f::axis_x()));

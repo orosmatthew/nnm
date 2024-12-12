@@ -673,7 +673,6 @@ public:
         return p1.distance(p2);
     }
 
-    // TODO: test
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -735,46 +734,40 @@ public:
         return p1.distance(p2);
     }
 
-    // TODO: test
     [[nodiscard]] Vector3<Real> direction_unnormalized() const
     {
         return to - from;
     }
 
-    // TODO: test
     [[nodiscard]] Vector3<Real> direction() const
     {
         return direction_unnormalized().normalize();
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_parallel(const Line3<Real>& line) const
     {
-        return direction_unnormalized().cross(line.direction).approx_zero();
+        return direction().approx_parallel(line.direction);
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_parallel(const Ray3<Real>& ray) const
     {
-        return direction_unnormalized().cross(ray.direction).approx_zero();
+        return direction().approx_parallel(ray.direction);
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_parallel(const Segment3& other) const
     {
-        return direction_unnormalized().cross(other.direction_unnormalized()).approx_zero();
+        return direction().approx_parallel(other.direction());
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_perpendicular(const Line3<Real>& line) const
     {
-        return approx_zero(direction_unnormalized().dot(line.direction));
+        return direction().approx_perpendicular(line.direction);
     }
 
     // TODO: test
     [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const
     {
-        return approx_zero(direction_unnormalized().dot(ray.direction));
+        return direction_unnormalized().approx_perpendicular(ray.direction);
     }
 
     // TODO: test
