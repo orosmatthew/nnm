@@ -408,8 +408,10 @@ public:
             return line.approx_contains(origin);
         }
         const Vector3<Real> diff = line.origin - origin;
-        Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = max(static_cast<Real>(0), t);
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return false;
+        }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = origin + direction * t;
         const Vector3<Real> p_other = line.origin + line.direction * t_other;
@@ -424,8 +426,10 @@ public:
             return std::nullopt;
         }
         const Vector3<Real> diff = line.origin - origin;
-        Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = max(static_cast<Real>(0), t);
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = origin + direction * t;
         if (const Vector3<Real> p_other = line.origin + line.direction * t_other; !p.approx_equal(p_other)) {
@@ -442,10 +446,14 @@ public:
             return other.approx_contains(origin) || approx_contains(other.origin);
         }
         const Vector3<Real> diff = other.origin - origin;
-        Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = max(static_cast<Real>(0), t);
-        Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t_other = max(static_cast<Real>(0), t_other);
+        const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return false;
+        }
+        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_other < static_cast<Real>(0)) {
+            return false;
+        }
         const Vector3<Real> p = origin + direction * t;
         const Vector3<Real> p_other = other.origin + other.direction * t_other;
         return p.approx_equal(p_other);
@@ -459,10 +467,14 @@ public:
             return std::nullopt;
         }
         const Vector3<Real> diff = other.origin - origin;
-        Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = max(static_cast<Real>(0), t);
-        Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t_other = max(static_cast<Real>(0), t_other);
+        const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_other < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
         const Vector3<Real> p = origin + direction * t;
         if (const Vector3<Real> p_other = other.origin + other.direction * t_other; !p.approx_equal(p_other)) {
             return std::nullopt;
@@ -783,8 +795,10 @@ public:
             return line.approx_contains(from);
         }
         const Vector3<Real> diff = line.origin - from;
-        Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return false;
+        }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = from.lerp(to, t);
         const Vector3<Real> p_other = line.origin + line.direction * t_line;
@@ -801,8 +815,11 @@ public:
         }
         const Vector3<Real> diff = line.origin - from;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p = from.lerp_clamped(to, t);
+        const Vector3<Real> p = from.lerp(to, t);
         if (const Vector3<Real> p_other = line.origin + line.direction * t_line; !p.approx_equal(p_other)) {
             return std::nullopt;
         }
@@ -819,10 +836,14 @@ public:
             return ray.approx_contains(from) || ray.approx_contains(to);
         }
         const Vector3<Real> diff = ray.origin - from;
-        Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
-        Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        t_ray = max(static_cast<Real>(0), t_ray);
+        const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return false;
+        }
+        const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_ray < static_cast<Real>(0)) {
+            return false;
+        }
         const Vector3<Real> p = from.lerp(to, t);
         const Vector3<Real> p_ray = ray.origin + ray.direction * t_ray;
         return p.approx_equal(p_ray);
