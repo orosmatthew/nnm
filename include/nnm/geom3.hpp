@@ -928,6 +928,21 @@ public:
         const Real t = clamp(diff.dot(dir) / dir.length_sqrd(), static_cast<Real>(0), static_cast<Real>(1));
         return from.lerp(to, t);
     }
+
+    [[nodiscard]] constexpr Real length_sqrd() const
+    {
+        return sqrd(to.x - from.x) + sqrd(to.y - from.y) + sqrd(to.z - from.z);
+    }
+
+    [[nodiscard]] Real length() const
+    {
+        return sqrt(length_sqrd());
+    }
+
+    [[nodiscard]] Vector3<Real> midpoint() const
+    {
+        return (from + to) / static_cast<Real>(2);
+    }
 };
 
 template <typename Real>

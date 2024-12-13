@@ -1076,5 +1076,21 @@ inline void geom3_tests()
             const auto p3 = s1.project_point({ -5.0f, 7.0f, -7.0f });
             ASSERT(p3.approx_equal(s1.to));
         }
+
+        test_section("length_sqrd");
+        {
+            constexpr auto l = s1.length_sqrd();
+            ASSERT(nnm::approx_equal(l, 155.0f));
+        }
+
+        test_section("length");
+        {
+            ASSERT(nnm::approx_equal(s1.length(), 12.449899598f));
+        }
+
+        test_section("midpoint");
+        {
+            ASSERT(s1.midpoint().approx_equal({ -1.5f, 1.5f, -1.5f }));
+        }
     }
 }
