@@ -826,7 +826,6 @@ public:
         return p;
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -858,10 +857,14 @@ public:
             return std::nullopt;
         }
         const Vector3<Real> diff = ray.origin - from;
-        Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
-        Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        t_ray = max(static_cast<Real>(0), t_ray);
+        const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
+        const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_ray < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
         const Vector3<Real> p = from.lerp(to, t);
         if (const Vector3<Real> p_ray = ray.origin + ray.direction * t_ray; !p.approx_equal(p_ray)) {
             return std::nullopt;
@@ -869,7 +872,6 @@ public:
         return p;
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_intersects(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -881,16 +883,19 @@ public:
                 || other.approx_contains(to);
         }
         const Vector3<Real> diff = other.from - from;
-        Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
-        Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        t_other = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return false;
+        }
+        const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_other < static_cast<Real>(0) || t_other > static_cast<Real>(1)) {
+            return false;
+        }
         const Vector3<Real> p = from.lerp(to, t);
-        const Vector3<Real> p_other = from.lerp(to, t_other);
+        const Vector3<Real> p_other = other.from.lerp(other.to, t_other);
         return p.approx_equal(p_other);
     }
 
-    // TODO: test
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -901,12 +906,16 @@ public:
             return std::nullopt;
         }
         const Vector3<Real> diff = other.from - from;
-        Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        t = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
-        Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        t_other = clamp(t, static_cast<Real>(0), static_cast<Real>(1));
+        const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
+        const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
+        if (t_other < static_cast<Real>(0) || t_other > static_cast<Real>(1)) {
+            return std::nullopt;
+        }
         const Vector3<Real> p = from.lerp(to, t);
-        if (const Vector3<Real> p_other = from.lerp(to, t_other); !p.approx_equal(p_other)) {
+        if (const Vector3<Real> p_other = other.from.lerp(other.to, t_other); !p.approx_equal(p_other)) {
             return std::nullopt;
         }
         return p;

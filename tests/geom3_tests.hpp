@@ -977,5 +977,94 @@ inline void geom3_tests()
                     { 3.1803758203f, -5.0525261484f, 6.9246764765f }));
             ASSERT_FALSE(i9.has_value());
         }
+
+        test_section("approx_intersects(const Segment3&)");
+        {
+            ASSERT_FALSE(s1.approx_intersects(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -4.0f, 0.0f, 0.0f })));
+            ASSERT(s1.approx_intersects(s1));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f(s1.from + nnm::Vector3f(1.0f, 1.0f, 1.0f), s1.to + nnm::Vector3f(1.0f, 1.0f, 1.0f))));
+            ASSERT(s1.approx_intersects(
+                nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -1.3947151596f, 0.2231544255f, 0.9484063085f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.8903860212f, -0.1424617634f, -0.6054624944f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f(
+                    { -1.3947151596f, 0.2231544255f, 0.9484063085f },
+                    { -2.477689579f, 0.3964303326f, 1.6848289137f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f(
+                    { 2.9228521743f, -3.1715789131f, 4.9407197828f },
+                    { 4.4763315545f, -2.5022944544f, 4.8928270762f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ 2.9228521743f, -3.1715789131f, 4.9407197828f }, { 1.0f, -4.0f, 5.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ 1.0f, -4.0f, 5.0f }, { -0.2324762036f, -4.5309868797f, 5.0379963983f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f(
+                    { -4.3190323788f, 3.7446637121f, -8.843567106f },
+                    { -4.5930027693f, 5.0543673254f, -8.1018537201f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ -4.5930027693f, 5.0543673254f, -8.1018537201f }, { -5.0f, 7.0f, -7.0f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ -5.0f, 7.0f, -7.0f }, { -5.5960814905f, 9.8495418077f, -5.3862430547f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f({ -1.3071995174f, 3.5612991571f, 3.8583174565f }, { -2.0f, 3.0f, -0.6802903382f })));
+            ASSERT_FALSE(s1.approx_intersects(
+                nnm::Segment3f(
+                    { -2.8239641345f, 2.3324335277f, -6.0781648164f },
+                    { -3.5475337817f, 1.7462055396f, -10.8183445985f })));
+        }
+
+        test_section("approx_intersection(const Segment3&");
+        {
+            const auto i1 = s1.approx_intersection(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -4.0f, 0.0f, 0.0f }));
+            ASSERT_FALSE(i1.has_value());
+            const auto i2 = s1.approx_intersection(s1);
+            ASSERT_FALSE(i2.has_value());
+            const auto i3 = s1.approx_intersection(
+                nnm::Segment3f(s1.from + nnm::Vector3f(1.0f, 1.0f, 1.0f), s1.to + nnm::Vector3f(1.0f, 1.0f, 1.0f)));
+            ASSERT_FALSE(i3.has_value());
+            const auto i4 = s1.approx_intersection(
+                nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -1.3947151596f, 0.2231544255f, 0.9484063085f }));
+            ASSERT(i4.has_value() && i4.value().approx_equal({ -0.4838709677f, 0.0774193548f, 0.3290322581f }));
+            const auto i5 = s1.approx_intersection(
+                nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.8903860212f, -0.1424617634f, -0.6054624944f }));
+            ASSERT_FALSE(i5.has_value());
+            const auto i6 = s1.approx_intersection(
+                nnm::Segment3f(
+                    { -1.3947151596f, 0.2231544255f, 0.9484063085f }, { -2.477689579f, 0.3964303326f, 1.6848289137f }));
+            ASSERT_FALSE(i6.has_value());
+            const auto i7 = s1.approx_intersection(
+                nnm::Segment3f(
+                    { 2.9228521743f, -3.1715789131f, 4.9407197828f },
+                    { 4.4763315545f, -2.5022944544f, 4.8928270762f }));
+            ASSERT_FALSE(i7.has_value());
+            const auto i8 = s1.approx_intersection(
+                nnm::Segment3f({ 2.9228521743f, -3.1715789131f, 4.9407197828f }, { 1.0f, -4.0f, 5.0f }));
+            ASSERT_FALSE(i8.has_value());
+            const auto i9 = s1.approx_intersection(
+                nnm::Segment3f({ 1.0f, -4.0f, 5.0f }, { -0.2324762036f, -4.5309868797f, 5.0379963983f }));
+            ASSERT_FALSE(i9.has_value());
+            const auto i10 = s1.approx_intersection(
+                nnm::Segment3f(
+                    { -4.3190323788f, 3.7446637121f, -8.843567106f },
+                    { -4.5930027693f, 5.0543673254f, -8.1018537201f }));
+            ASSERT_FALSE(i10.has_value());
+            const auto i11 = s1.approx_intersection(
+                nnm::Segment3f({ -4.5930027693f, 5.0543673254f, -8.1018537201f }, { -5.0f, 7.0f, -7.0f }));
+            ASSERT_FALSE(i11.has_value());
+            const auto i12 = s1.approx_intersection(
+                nnm::Segment3f({ -5.0f, 7.0f, -7.0f }, { -5.5960814905f, 9.8495418077f, -5.3862430547f }));
+            ASSERT_FALSE(i12.has_value());
+            const auto i13 = s1.approx_intersection(
+                nnm::Segment3f({ -1.3071995174f, 3.5612991571f, 3.8583174565f }, { -2.0f, 3.0f, -0.6802903382f }));
+            ASSERT_FALSE(i13.has_value());
+            const auto i14 = s1.approx_intersection(
+                nnm::Segment3f(
+                    { -2.8239641345f, 2.3324335277f, -6.0781648164f },
+                    { -3.5475337817f, 1.7462055396f, -10.8183445985f }));
+            ASSERT_FALSE(i14.has_value());
+        }
     }
 }
