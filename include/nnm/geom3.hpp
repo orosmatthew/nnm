@@ -920,6 +920,14 @@ public:
         }
         return p;
     }
+
+    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> diff = point - from;
+        const Vector3<Real> dir = direction_unnormalized();
+        const Real t = clamp(diff.dot(dir) / dir.length_sqrd(), static_cast<Real>(0), static_cast<Real>(1));
+        return from.lerp(to, t);
+    }
 };
 
 template <typename Real>

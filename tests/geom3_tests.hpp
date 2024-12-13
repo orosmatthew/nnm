@@ -1066,5 +1066,15 @@ inline void geom3_tests()
                     { -3.5475337817f, 1.7462055396f, -10.8183445985f }));
             ASSERT_FALSE(i14.has_value());
         }
+
+        test_section("project_point");
+        {
+            const auto p1 = s1.project_point({ 0.0f, 0.0f, 0.0f });
+            ASSERT(p1.approx_equal({ -0.4838709677f, 0.0774193548f, 0.3290322581f }))
+            const auto p2 = s1.project_point({ 2.0f, -3.0f, 4.0f });
+            ASSERT(p2.approx_equal(s1.from));
+            const auto p3 = s1.project_point({ -5.0f, 7.0f, -7.0f });
+            ASSERT(p3.approx_equal(s1.to));
+        }
     }
 }
