@@ -764,16 +764,14 @@ public:
         return direction().approx_perpendicular(line.direction);
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const
     {
-        return direction_unnormalized().approx_perpendicular(ray.direction);
+        return direction().approx_perpendicular(ray.direction);
     }
 
-    // TODO: test
     [[nodiscard]] bool approx_perpendicular(const Segment3& other) const
     {
-        return approx_zero(direction_unnormalized().dot(other.direction_unnormalized()));
+        return direction().approx_perpendicular(other.direction());
     }
 
     [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const

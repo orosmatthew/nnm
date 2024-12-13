@@ -857,10 +857,28 @@ inline void geom3_tests()
 
         test_section("approx_perpendicular(const Line3&)");
         {
-            ;
             ASSERT_FALSE(s1.approx_perpendicular(nnm::Line3f::axis_x()));
             ASSERT(s1.approx_perpendicular(
                 nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { -1.1918502675f, 0.1906960428f, 0.8104581819f })));
+        }
+
+        test_section("approx_perpendicular(const Ray3&)");
+        {
+            ASSERT_FALSE(s1.approx_perpendicular(
+                nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, -1.0f, -1.0f })));
+            const auto r1 = nnm::Ray3f::from_point_to_point(
+                { 0.0f, 0.0f, 0.0f }, { -1.1918502675f, 0.1906960428f, 0.8104581819f });
+            ASSERT(s1.approx_perpendicular(r1));
+            ASSERT(s1.approx_perpendicular(nnm::Ray3f(r1.origin, -r1.direction)));
+        }
+
+        test_section("approx_perpendicular(const Segment3&)");
+        {
+            ASSERT_FALSE(s1.approx_perpendicular(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
+            ASSERT(s1.approx_perpendicular(
+                nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -1.1918502675f, 0.1906960428f, 0.8104581819f })));
+            ASSERT(s1.approx_perpendicular(
+                nnm::Segment3f({ -1.1918502675f, 0.1906960428f, 0.8104581819f }, { 0.0f, 0.0f, 0.0f })));
         }
 
         test_section("approx_intersects(const Line3&)");
