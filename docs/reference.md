@@ -2,7 +2,8 @@
 
 Reference for NNM math library.
 
-Many functions and classes are templated with `template<typename Real = float>` and thus any function/class that references the `Real` type is templated with a default template value of float.
+Many functions and classes are templated with `template<typename Real = float>` and thus any function/class that
+references the `Real` type is templated with a default template value of float.
 
 ## Contents
 
@@ -428,6 +429,7 @@ explicit Vector3i(const Vector3& vector);
 Vector3i(const Vector2i& vector, int z);
 Vector3i(int x, int y, int z);
 ```
+
 ### Static Methods
 
 ```c++
@@ -686,16 +688,7 @@ using Matrix2d = Matrix2<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col1_row0;
-        Real col1_row1;
-    };
-    Vector2 columns[2];
-    Real data[4] {};
-};
+Vector2 columns[2];
 ```
 
 ### Constructors
@@ -844,21 +837,7 @@ using Matrix3d = Matrix3<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col0_row2;
-        Real col1_row0;
-        Real col1_row1;
-        Real col1_row2;
-        Real col2_row0;
-        Real col2_row1;
-        Real col2_row2;
-    };
-    Vector3 columns[3];
-    Real data[9] {};
-};
+Vector3 columns[3];
 ```
 
 ### Constructors
@@ -948,11 +927,13 @@ using Transform2d = Transform2<double>;
 ```
 
 ### Members
+
 ```c++
 Matrix3 matrix;
 ```
 
 ### Constructors
+
 ```c++
 Transform2();
 explicit Transform2(const Transform2<Other>& transform);
@@ -967,6 +948,7 @@ static Transform2 from_shear_y(Real angle_x);
 ```
 
 ### Methods
+
 ```c++
 Real trace() const;
 Real determinant() const;
@@ -1090,28 +1072,7 @@ using Matrix4d = Matrix4<double>;
 ### Members
 
 ```cpp
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col0_row2;
-        Real col0_row3;
-        Real col1_row0;
-        Real col1_row1;
-        Real col1_row2;
-        Real col1_row3;
-        Real col2_row0;
-        Real col2_row1;
-        Real col2_row2;
-        Real col2_row3;
-        Real col3_row0;
-        Real col3_row1;
-        Real col3_row2;
-        Real col3_row3;
-    };
-    Vector4 columns[4];
-    Real data[16] {};
-};
+Vector4 columns[4];
 ```
 
 ### Constructors

@@ -1982,10 +1982,11 @@ inline void nnm_tests()
         test_section("transform(const Transform3&, Real)");
         {
             nnm::Vector3 v1(2.0f, -3.0f, 4.0f);
-            nnm::Transform3 transform({ { 1.0f, 2.0f, -3.0f, 4.0f },
-                                        { -10.0f, 0.5f, 20.6f, 0.0f },
-                                        { 1.0f, 3.0f, 3.3f, -1.0f },
-                                        { 9.9f, -7.54f, 20.0f, 0.1f } });
+            nnm::Transform3 transform(
+                { { 1.0f, 2.0f, -3.0f, 4.0f },
+                  { -10.0f, 0.5f, 20.6f, 0.0f },
+                  { 1.0f, 3.0f, 3.3f, -1.0f },
+                  { 9.9f, -7.54f, 20.0f, 0.1f } });
             ASSERT(v1.transform(transform).approx_equal({ 45.9f, 6.96f, -34.6f }));
             ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
         }
@@ -2862,10 +2863,11 @@ inline void nnm_tests()
 
         test_section("transform");
         {
-            nnm::Transform3 transform({ { 1.0f, 2.0f, -3.0f, 4.0f },
-                                        { -10.0f, 0.5f, 20.6f, 0.0f },
-                                        { 1.0f, 3.0f, 3.3f, -1.0f },
-                                        { 9.9f, -7.54f, 20.0f, 0.1f } });
+            nnm::Transform3 transform(
+                { { 1.0f, 2.0f, -3.0f, 4.0f },
+                  { -10.0f, 0.5f, 20.6f, 0.0f },
+                  { 1.0f, 3.0f, 3.3f, -1.0f },
+                  { 9.9f, -7.54f, 20.0f, 0.1f } });
             ASSERT(v1.transform(transform).approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
         }
 
@@ -3290,74 +3292,58 @@ inline void nnm_tests()
         test_section("Matrix2()");
         {
             constexpr nnm::Matrix2 mat_default;
-            ASSERT(mat_default.col0_row0 == 1.0f);
-            ASSERT(mat_default.col0_row1 == 0.0f);
-            ASSERT(mat_default.col1_row0 == 0.0f);
-            ASSERT(mat_default.col1_row1 == 1.0f);
+            ASSERT(mat_default.columns[0] == nnm::Vector2f(1.0f, 0.0f));
+            ASSERT(mat_default.columns[1] == nnm::Vector2f(0.0f, 1.0f));
         }
 
         test_section("Matrix2(const Matrix2<Other>&)");
         {
             constexpr nnm::Matrix2d m1({ 1.0, -2.0 }, { 3.0, -4.5 });
             constexpr nnm::Matrix2f m2(m1);
-            ASSERT(m2.col0_row0 == 1.0f);
-            ASSERT(m2.col0_row1 == -2.0f);
-            ASSERT(m2.col1_row0 == 3.0f);
-            ASSERT(m2.col1_row1 == -4.5f);
+            ASSERT(m2.columns[0] == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(m2.columns[1] == nnm::Vector2f(3.0f, -4.5f));
         }
 
         test_section("Matrix2(const Vector2&, const Vector2&)");
         {
             constexpr nnm::Matrix2 mat_cols({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat_cols.col0_row0 == 1.0f);
-            ASSERT(mat_cols.col0_row1 == -2.0f);
-            ASSERT(mat_cols.col1_row0 == -3.0f);
-            ASSERT(mat_cols.col1_row1 == 4.0f);
+            ASSERT(mat_cols.columns[0] == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(mat_cols.columns[1] == nnm::Vector2f(-3.0f, 4.0f));
         }
 
         test_section("Matrix2(float, float, float, float)");
         {
             constexpr nnm::Matrix2 mat_elements(1.0f, -2.0f, -3.0f, 4.0f);
-            ASSERT(mat_elements.col0_row0 == 1.0f);
-            ASSERT(mat_elements.col0_row1 == -2.0f);
-            ASSERT(mat_elements.col1_row0 == -3.0f);
-            ASSERT(mat_elements.col1_row1 == 4.0f);
+            ASSERT(mat_elements.columns[0] == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(mat_elements.columns[1] == nnm::Vector2f(-3.0f, 4.0f));
         }
 
         test_section("all");
         {
             constexpr auto mat_all_three = nnm::Matrix2f::all(3.0f);
-            ASSERT(mat_all_three.col0_row0 == 3.0f);
-            ASSERT(mat_all_three.col0_row1 == 3.0f);
-            ASSERT(mat_all_three.col1_row0 == 3.0f);
-            ASSERT(mat_all_three.col1_row1 == 3.0f);
+            ASSERT(mat_all_three.columns[0] == nnm::Vector2f(3.0f, 3.0f));
+            ASSERT(mat_all_three.columns[1] == nnm::Vector2f(3.0f, 3.0f));
         }
 
         test_section("zero");
         {
             constexpr auto mat_zero = nnm::Matrix2f::zero();
-            ASSERT(mat_zero.col0_row0 == 0.0f);
-            ASSERT(mat_zero.col0_row1 == 0.0f);
-            ASSERT(mat_zero.col1_row0 == 0.0f);
-            ASSERT(mat_zero.col1_row1 == 0.0f);
+            ASSERT(mat_zero.columns[0] == nnm::Vector2f::zero());
+            ASSERT(mat_zero.columns[1] == nnm::Vector2f::zero());
         }
 
         test_section("one");
         {
             constexpr auto mat_one = nnm::Matrix2f::one();
-            ASSERT(mat_one.col0_row0 == 1.0f);
-            ASSERT(mat_one.col0_row1 == 1.0f);
-            ASSERT(mat_one.col1_row0 == 1.0f);
-            ASSERT(mat_one.col1_row1 == 1.0f);
+            ASSERT(mat_one.columns[0] == nnm::Vector2f::one());
+            ASSERT(mat_one.columns[1] == nnm::Vector2f::one());
         }
 
         test_section("identity");
         {
             constexpr auto mat_identity = nnm::Matrix2f::identity();
-            ASSERT(mat_identity.col0_row0 == 1.0f);
-            ASSERT(mat_identity.col0_row1 == 0.0f);
-            ASSERT(mat_identity.col1_row0 == 0.0f);
-            ASSERT(mat_identity.col1_row1 == 1.0f);
+            ASSERT(mat_identity.columns[0] == nnm::Vector2f(1.0f, 0.0f));
+            ASSERT(mat_identity.columns[1] == nnm::Vector2f(0.0f, 1.0f));
         }
 
         test_section("trace");
@@ -3457,13 +3443,13 @@ inline void nnm_tests()
         test_section("begin");
         {
             constexpr nnm::Matrix2 mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.begin() == mat.data);
+            ASSERT(mat.begin() == &mat.columns[0].x);
         }
 
         test_section("end");
         {
             constexpr nnm::Matrix2 mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.end() == mat.data + 4);
+            ASSERT(mat.end() == &mat.columns[1].y + 1);
         }
 
         test_section("operator[]");
@@ -3588,10 +3574,8 @@ inline void nnm_tests()
         {
             constexpr nnm::Basis2d b1({ { 1.0, -2.0 }, { 3.0, -4.5 } });
             constexpr nnm::Basis2f b2(b1);
-            ASSERT(b2.matrix.col0_row0 == 1.0f);
-            ASSERT(b2.matrix.col0_row1 == -2.0f);
-            ASSERT(b2.matrix.col1_row0 == 3.0f);
-            ASSERT(b2.matrix.col1_row1 == -4.5f);
+            ASSERT(b2.matrix.columns[0] == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(b2.matrix.columns[1] == nnm::Vector2f(3.0f, -4.5f));
         }
 
         test_section("Basis2(const Matrix2&)");
@@ -3815,15 +3799,9 @@ inline void nnm_tests()
         {
             constexpr nnm::Matrix3d m1({ 1.0, -2.0, 3.0 }, { 0.5, 0.75, -0.1 }, { 0.0, 2.0, -4.0 });
             constexpr nnm::Matrix3f m2(m1);
-            ASSERT(m2.col0_row0 == 1.0f);
-            ASSERT(m2.col0_row1 == -2.0f);
-            ASSERT(m2.col0_row2 == 3.0f);
-            ASSERT(m2.col1_row0 == 0.5f);
-            ASSERT(m2.col1_row1 == 0.75f);
-            ASSERT(m2.col1_row2 == -0.1f);
-            ASSERT(m2.col2_row0 == 0.0f);
-            ASSERT(m2.col2_row1 == 2.0f);
-            ASSERT(m2.col2_row2 == -4.0f);
+            ASSERT(m2.columns[0] == nnm::Vector3f(1.0f, -2.0f, 3.0f));
+            ASSERT(m2.columns[1] == nnm::Vector3f(0.5f, 0.75f, -0.1f));
+            ASSERT(m2.columns[2] == nnm::Vector3f(0.0f, 2.0f, -4.0f));
         }
 
         test_section("Matrix3(const Vector3&, const Vector3&, const Vector3&)");
@@ -3835,8 +3813,9 @@ inline void nnm_tests()
             ASSERT(cols.columns[2] == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
-        test_section("Matrix3(float, float, float, float, float, float, float, "
-                     "float, float)");
+        test_section(
+            "Matrix3(float, float, float, float, float, float, float, "
+            "float, float)");
         {
             constexpr nnm::Matrix3 elems(1.0f, 2.0f, 3.0f, -1.0f, -2.0f, -3.0f, 2.0f, 4.0f, 6.0f);
             ASSERT(elems.columns[0] == nnm::Vector3(1.0f, 2.0f, 3.0f));
@@ -3982,12 +3961,12 @@ inline void nnm_tests()
 
         test_section("begin");
         {
-            ASSERT(m1.begin() == &m1.col0_row0);
+            ASSERT(m1.begin() == &m1.columns[0].x);
         }
 
         test_section("end");
         {
-            ASSERT(m1.end() == &m1.col2_row2 + 1);
+            ASSERT(m1.end() == &m1.columns[2].z + 1);
         }
 
         test_section("operator[]");
@@ -4124,15 +4103,9 @@ inline void nnm_tests()
         {
             constexpr nnm::Transform2d t1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 4.0, 28.0, 100.0 } });
             constexpr nnm::Transform2f t2(t1);
-            ASSERT(t2.matrix.col0_row0 == 1.0f);
-            ASSERT(t2.matrix.col0_row1 == 2.0f);
-            ASSERT(t2.matrix.col0_row2 == 3.0f);
-            ASSERT(t2.matrix.col1_row0 == -0.5f);
-            ASSERT(t2.matrix.col1_row1 == -0.75f);
-            ASSERT(t2.matrix.col1_row2 == 0.1f);
-            ASSERT(t2.matrix.col2_row0 == 4.0f);
-            ASSERT(t2.matrix.col2_row1 == 28.0f);
-            ASSERT(t2.matrix.col2_row2 == 100.0f);
+            ASSERT(t2.matrix.columns[0] == nnm::Vector3f(1.0f, 2.0f, 3.0f));
+            ASSERT(t2.matrix.columns[1] == nnm::Vector3f(-0.5f, -0.75f, 0.1f));
+            ASSERT(t2.matrix.columns[2] == nnm::Vector3f(4.0f, 28.0f, 100.0f));
         }
 
         test_section("Transform2(const Matrix3&)");
@@ -4211,18 +4184,20 @@ inline void nnm_tests()
         test_section("unchecked_inverse");
         {
             constexpr nnm::Transform2 t({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            constexpr nnm::Transform2 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                                 { -0.559854f, -0.00455166f, 0.37096f },
-                                                 { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Transform2 expected(
+                { { -0.254893f, -0.0345926f, 0.819299f },
+                  { -0.559854f, -0.00455166f, 0.37096f },
+                  { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(t.unchecked_inverse().approx_equal(expected));
         }
 
         test_section("inverse");
         {
             constexpr nnm::Transform2 t({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            constexpr nnm::Transform2 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                                 { -0.559854f, -0.00455166f, 0.37096f },
-                                                 { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Transform2 expected(
+                { { -0.254893f, -0.0345926f, 0.819299f },
+                  { -0.559854f, -0.00455166f, 0.37096f },
+                  { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(t.inverse().has_value() && t.inverse().value().approx_equal(expected));
             ASSERT_FALSE(nnm::Transform2(nnm::Matrix3f::zero()).inverse().has_value());
         }
@@ -4415,15 +4390,9 @@ inline void nnm_tests()
         {
             constexpr nnm::Basis3d b1({ { 1.0, 2.0, 3.0 }, { -0.5, -0.75, 0.1 }, { 2.0, 88.0, -101.0 } });
             constexpr nnm::Basis3f b2(b1);
-            ASSERT(b2.matrix.col0_row0 == 1.0f);
-            ASSERT(b2.matrix.col0_row1 == 2.0f);
-            ASSERT(b2.matrix.col0_row2 == 3.0f);
-            ASSERT(b2.matrix.col1_row0 == -0.5f);
-            ASSERT(b2.matrix.col1_row1 == -0.75f);
-            ASSERT(b2.matrix.col1_row2 == 0.1f);
-            ASSERT(b2.matrix.col2_row0 == 2.0f);
-            ASSERT(b2.matrix.col2_row1 == 88.0f);
-            ASSERT(b2.matrix.col2_row2 == -101.0f);
+            ASSERT(b2.matrix.columns[0] == nnm::Vector3f(1.0f, 2.0f, 3.0f));
+            ASSERT(b2.matrix.columns[1] == nnm::Vector3f(-0.5f, -0.75f, 0.1f));
+            ASSERT(b2.matrix.columns[2] == nnm::Vector3f(2.0f, 88.0f, -101.0f));
         }
 
         test_section("Basis3(const Matrix3&)");
@@ -4499,18 +4468,20 @@ inline void nnm_tests()
         test_section("unchecked_inverse");
         {
             constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            constexpr nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                             { -0.559854f, -0.00455166f, 0.37096f },
-                                             { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Basis3 expected(
+                { { -0.254893f, -0.0345926f, 0.819299f },
+                  { -0.559854f, -0.00455166f, 0.37096f },
+                  { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(b.unchecked_inverse().approx_equal(expected));
         }
 
         test_section("inverse");
         {
             constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
-            constexpr nnm::Basis3 expected({ { -0.254893f, -0.0345926f, 0.819299f },
-                                             { -0.559854f, -0.00455166f, 0.37096f },
-                                             { 0.270369f, 0.0509786f, -0.154756f } });
+            constexpr nnm::Basis3 expected(
+                { { -0.254893f, -0.0345926f, 0.819299f },
+                  { -0.559854f, -0.00455166f, 0.37096f },
+                  { 0.270369f, 0.0509786f, -0.154756f } });
             ASSERT(b.inverse().has_value() && b.inverse().value().approx_equal(expected));
             ASSERT_FALSE(nnm::Basis3(nnm::Matrix3f::zero()).inverse().has_value());
         }
@@ -4547,9 +4518,10 @@ inline void nnm_tests()
         {
             constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            constexpr nnm::Basis3 expected({ { 0.956907f, -2.08189f, -0.0085175f },
-                                             { 0.623695f, 5.36143f, 21.7124f },
-                                             { 1.54226f, -0.447372f, 0.843373f } });
+            constexpr nnm::Basis3 expected(
+                { { 0.956907f, -2.08189f, -0.0085175f },
+                  { 0.623695f, 5.36143f, 21.7124f },
+                  { 1.54226f, -0.447372f, 0.843373f } });
             ASSERT(b.rotate_quaternion(q).approx_equal(expected));
         }
 
@@ -4557,9 +4529,10 @@ inline void nnm_tests()
         {
             constexpr nnm::Basis3 b({ { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } });
             constexpr nnm::Quaternion q(0.110511f, 0.0276278f, -0.0138139f, 0.9933948f);
-            constexpr nnm::Basis3 expected({ { 0.92718f, -2.19798f, 0.0143242f },
-                                             { -0.369645f, 9.64107f, 19.7394f },
-                                             { 1.67815f, -2.50174f, -3.40654f } });
+            constexpr nnm::Basis3 expected(
+                { { 0.92718f, -2.19798f, 0.0143242f },
+                  { -0.369645f, 9.64107f, 19.7394f },
+                  { 1.67815f, -2.50174f, -3.40654f } });
             ASSERT(b.rotate_quaternion_local(q).approx_equal(expected));
         }
 
@@ -4691,22 +4664,10 @@ inline void nnm_tests()
         test_section("Matrix4()");
         {
             constexpr nnm::Matrix4 m1;
-            ASSERT(m1.col0_row0 == 1.0f);
-            ASSERT(m1.col0_row1 == 0.0f);
-            ASSERT(m1.col0_row2 == 0.0f);
-            ASSERT(m1.col0_row3 == 0.0f);
-            ASSERT(m1.col1_row0 == 0.0f);
-            ASSERT(m1.col1_row1 == 1.0f);
-            ASSERT(m1.col1_row2 == 0.0f);
-            ASSERT(m1.col1_row3 == 0.0f);
-            ASSERT(m1.col2_row0 == 0.0f);
-            ASSERT(m1.col2_row1 == 0.0f);
-            ASSERT(m1.col2_row2 == 1.0f);
-            ASSERT(m1.col2_row3 == 0.0f);
-            ASSERT(m1.col3_row0 == 0.0f);
-            ASSERT(m1.col3_row1 == 0.0f);
-            ASSERT(m1.col3_row2 == 0.0f);
-            ASSERT(m1.col3_row3 == 1.0f);
+            ASSERT(m1.columns[0] == nnm::Vector4f(1.0f, 0.0f, 0.0f, 0.0f));
+            ASSERT(m1.columns[1] == nnm::Vector4f(0.0f, 1.0f, 0.0f, 0.0f));
+            ASSERT(m1.columns[2] == nnm::Vector4f(0.0f, 0.0f, 1.0f, 0.0f));
+            ASSERT(m1.columns[3] == nnm::Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
         }
 
         test_section("Matrix4(const Matrix4<Other>&)");
@@ -4717,155 +4678,73 @@ inline void nnm_tests()
                 { -100.0, -88.0, 28.0, 0.0 },
                 { 1.0, 29.0, -89.0, 67.0 });
             constexpr nnm::Matrix4f m2(m1);
-            ASSERT(m2.col0_row0 == 1.0f);
-            ASSERT(m2.col0_row1 == 2.0f);
-            ASSERT(m2.col0_row2 == 3.0f);
-            ASSERT(m2.col0_row3 == 4.0f);
-            ASSERT(m2.col1_row0 == -0.5f);
-            ASSERT(m2.col1_row1 == 0.75f);
-            ASSERT(m2.col1_row2 == 0.6f);
-            ASSERT(m2.col1_row3 == 0.1f);
-            ASSERT(m2.col2_row0 == -100.0f);
-            ASSERT(m2.col2_row1 == -88.0f);
-            ASSERT(m2.col2_row2 == 28.0f);
-            ASSERT(m2.col2_row3 == 0.0f);
-            ASSERT(m2.col3_row0 == 1.0f);
-            ASSERT(m2.col3_row1 == 29.0f);
-            ASSERT(m2.col3_row2 == -89.0f);
-            ASSERT(m2.col3_row3 == 67.0f);
+            ASSERT(m2.columns[0] == nnm::Vector4f(1.0f, 2.0f, 3.0f, 4.0f));
+            ASSERT(m2.columns[1] == nnm::Vector4f(-0.5f, 0.75f, 0.6f, 0.1f));
+            ASSERT(m2.columns[2] == nnm::Vector4f(-100.0f, -88.0f, 28.0f, 0.0f));
+            ASSERT(m2.columns[3] == nnm::Vector4f(1.0f, 29.0f, -89.0f, 67.0f));
         }
 
-        test_section("Matrix4(const Vector4&, const Vector4&, const Vector4&, "
-                     "const Vector4&)");
+        test_section(
+            "Matrix4(const Vector4&, const Vector4&, const Vector4&, "
+            "const Vector4&)");
         {
             constexpr nnm::Matrix4 m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
                                         { -1.0f, -2.0f, -3.0f, -4.0f },
                                         { 4.0f, 3.0f, 2.0f, 1.0f },
                                         { -4.0f, -3.0f, -2.0f, -1.0f } };
-            ASSERT(m3.col0_row0 == 1.0f);
-            ASSERT(m3.col0_row1 == 2.0f);
-            ASSERT(m3.col0_row2 == 3.0f);
-            ASSERT(m3.col0_row3 == 4.0f);
-            ASSERT(m3.col1_row0 == -1.0f);
-            ASSERT(m3.col1_row1 == -2.0f);
-            ASSERT(m3.col1_row2 == -3.0f);
-            ASSERT(m3.col1_row3 == -4.0f);
-            ASSERT(m3.col2_row0 == 4.0f);
-            ASSERT(m3.col2_row1 == 3.0f);
-            ASSERT(m3.col2_row2 == 2.0f);
-            ASSERT(m3.col2_row3 == 1.0f);
-            ASSERT(m3.col3_row0 == -4.0f);
-            ASSERT(m3.col3_row1 == -3.0f);
-            ASSERT(m3.col3_row2 == -2.0f);
-            ASSERT(m3.col3_row3 == -1.0f);
+            ASSERT(m3.columns[0] == nnm::Vector4f(1.0f, 2.0f, 3.0f, 4.0f));
+            ASSERT(m3.columns[1] == nnm::Vector4f(-1.0f, -2.0f, -3.0f, -4.0f));
+            ASSERT(m3.columns[2] == nnm::Vector4f(4.0f, 3.0f, 2.0f, 1.0f));
+            ASSERT(m3.columns[3] == nnm::Vector4f(-4.0f, -3.0f, -2.0f, -1.0f));
         }
 
-        test_section("Matrix4(float, float, float, float, float, float, float, "
-                     "float, float, float, float, float, "
-                     "float, float, float, float)");
+        test_section(
+            "Matrix4(float, float, float, float, float, float, float, "
+            "float, float, float, float, float, "
+            "float, float, float, float)");
         {
             constexpr nnm::Matrix4 m2 { 1.0f, 2.0f, 3.0f, 4.0f, -1.0f, -2.0f, -3.0f, -4.0f,
                                         4.0f, 3.0f, 2.0f, 1.0f, -4.0f, -3.0f, -2.0f, -1.0f };
-            ASSERT(m2.col0_row0 == 1.0f);
-            ASSERT(m2.col0_row1 == 2.0f);
-            ASSERT(m2.col0_row2 == 3.0f);
-            ASSERT(m2.col0_row3 == 4.0f);
-            ASSERT(m2.col1_row0 == -1.0f);
-            ASSERT(m2.col1_row1 == -2.0f);
-            ASSERT(m2.col1_row2 == -3.0f);
-            ASSERT(m2.col1_row3 == -4.0f);
-            ASSERT(m2.col2_row0 == 4.0f);
-            ASSERT(m2.col2_row1 == 3.0f);
-            ASSERT(m2.col2_row2 == 2.0f);
-            ASSERT(m2.col2_row3 == 1.0f);
-            ASSERT(m2.col3_row0 == -4.0f);
-            ASSERT(m2.col3_row1 == -3.0f);
-            ASSERT(m2.col3_row2 == -2.0f);
-            ASSERT(m2.col3_row3 == -1.0f);
+            ASSERT(m2.columns[0] == nnm::Vector4f(1.0f, 2.0f, 3.0f, 4.0f));
+            ASSERT(m2.columns[1] == nnm::Vector4f(-1.0f, -2.0f, -3.0f, -4.0f));
+            ASSERT(m2.columns[2] == nnm::Vector4f(4.0f, 3.0f, 2.0f, 1.0f));
+            ASSERT(m2.columns[3] == nnm::Vector4f(-4.0f, -3.0f, -2.0f, -1.0f));
         }
 
         test_section("all");
         {
             constexpr auto m1 = nnm::Matrix4f::all(3.0f);
-            ASSERT(m1.col0_row0 == 3.0f);
-            ASSERT(m1.col0_row1 == 3.0f);
-            ASSERT(m1.col0_row2 == 3.0f);
-            ASSERT(m1.col0_row3 == 3.0f);
-            ASSERT(m1.col1_row0 == 3.0f);
-            ASSERT(m1.col1_row1 == 3.0f);
-            ASSERT(m1.col1_row2 == 3.0f);
-            ASSERT(m1.col1_row3 == 3.0f);
-            ASSERT(m1.col2_row0 == 3.0f);
-            ASSERT(m1.col2_row1 == 3.0f);
-            ASSERT(m1.col2_row2 == 3.0f);
-            ASSERT(m1.col2_row3 == 3.0f);
-            ASSERT(m1.col3_row0 == 3.0f);
-            ASSERT(m1.col3_row1 == 3.0f);
-            ASSERT(m1.col3_row2 == 3.0f);
-            ASSERT(m1.col3_row3 == 3.0f);
+            ASSERT(m1.columns[0] == nnm::Vector4f::all(3.0f));
+            ASSERT(m1.columns[1] == nnm::Vector4f::all(3.0f));
+            ASSERT(m1.columns[2] == nnm::Vector4f::all(3.0f));
+            ASSERT(m1.columns[3] == nnm::Vector4f::all(3.0f));
         }
 
         test_section("zero");
         {
             constexpr auto m2 = nnm::Matrix4f::zero();
-            ASSERT(m2.col0_row0 == 0.0f);
-            ASSERT(m2.col0_row1 == 0.0f);
-            ASSERT(m2.col0_row2 == 0.0f);
-            ASSERT(m2.col0_row3 == 0.0f);
-            ASSERT(m2.col1_row0 == 0.0f);
-            ASSERT(m2.col1_row1 == 0.0f);
-            ASSERT(m2.col1_row2 == 0.0f);
-            ASSERT(m2.col1_row3 == 0.0f);
-            ASSERT(m2.col2_row0 == 0.0f);
-            ASSERT(m2.col2_row1 == 0.0f);
-            ASSERT(m2.col2_row2 == 0.0f);
-            ASSERT(m2.col2_row3 == 0.0f);
-            ASSERT(m2.col3_row0 == 0.0f);
-            ASSERT(m2.col3_row1 == 0.0f);
-            ASSERT(m2.col3_row2 == 0.0f);
-            ASSERT(m2.col3_row3 == 0.0f);
+            ASSERT(m2.columns[0] == nnm::Vector4f::zero());
+            ASSERT(m2.columns[1] == nnm::Vector4f::zero());
+            ASSERT(m2.columns[2] == nnm::Vector4f::zero());
+            ASSERT(m2.columns[3] == nnm::Vector4f::zero());
         }
 
         test_section("one");
         {
             constexpr auto m3 = nnm::Matrix4f::one();
-            ASSERT(m3.col0_row0 == 1.0f);
-            ASSERT(m3.col0_row1 == 1.0f);
-            ASSERT(m3.col0_row2 == 1.0f);
-            ASSERT(m3.col0_row3 == 1.0f);
-            ASSERT(m3.col1_row0 == 1.0f);
-            ASSERT(m3.col1_row1 == 1.0f);
-            ASSERT(m3.col1_row2 == 1.0f);
-            ASSERT(m3.col1_row3 == 1.0f);
-            ASSERT(m3.col2_row0 == 1.0f);
-            ASSERT(m3.col2_row1 == 1.0f);
-            ASSERT(m3.col2_row2 == 1.0f);
-            ASSERT(m3.col2_row3 == 1.0f);
-            ASSERT(m3.col3_row0 == 1.0f);
-            ASSERT(m3.col3_row1 == 1.0f);
-            ASSERT(m3.col3_row2 == 1.0f);
-            ASSERT(m3.col3_row3 == 1.0f);
+            ASSERT(m3.columns[0] == nnm::Vector4f::one());
+            ASSERT(m3.columns[1] == nnm::Vector4f::one());
+            ASSERT(m3.columns[2] == nnm::Vector4f::one());
+            ASSERT(m3.columns[3] == nnm::Vector4f::one());
         }
 
         test_section("identity");
         {
             constexpr auto m4 = nnm::Matrix4f::identity();
-            ASSERT(m4.col0_row0 == 1.0f);
-            ASSERT(m4.col0_row1 == 0.0f);
-            ASSERT(m4.col0_row2 == 0.0f);
-            ASSERT(m4.col0_row3 == 0.0f);
-            ASSERT(m4.col1_row0 == 0.0f);
-            ASSERT(m4.col1_row1 == 1.0f);
-            ASSERT(m4.col1_row2 == 0.0f);
-            ASSERT(m4.col1_row3 == 0.0f);
-            ASSERT(m4.col2_row0 == 0.0f);
-            ASSERT(m4.col2_row1 == 0.0f);
-            ASSERT(m4.col2_row2 == 1.0f);
-            ASSERT(m4.col2_row3 == 0.0f);
-            ASSERT(m4.col3_row0 == 0.0f);
-            ASSERT(m4.col3_row1 == 0.0f);
-            ASSERT(m4.col3_row2 == 0.0f);
-            ASSERT(m4.col3_row3 == 1.0f);
+            ASSERT(m4.columns[0] == nnm::Vector4f(1.0f, 0.0f, 0.0f, 0.0f));
+            ASSERT(m4.columns[1] == nnm::Vector4f(0.0f, 1.0f, 0.0f, 0.0f));
+            ASSERT(m4.columns[2] == nnm::Vector4f(0.0f, 0.0f, 1.0f, 0.0f));
+            ASSERT(m4.columns[3] == nnm::Vector4f(0.0f, 0.0f, 0.0f, 1.0f));
         }
 
         constexpr nnm::Matrix4 m1 { { 1.0f, 2.0f, 3.0f, 4.0f },
@@ -4989,12 +4868,12 @@ inline void nnm_tests()
 
         test_section("begin");
         {
-            ASSERT(m1.begin() == &m1.col0_row0);
+            ASSERT(m1.begin() == &m1.columns[0].x);
         }
 
         test_section("end");
         {
-            ASSERT(m1.end() == &m1.col3_row3 + 1);
+            ASSERT(m1.end() == &m1.columns[3].w + 1);
         }
 
         test_section("operator[]");
@@ -5175,27 +5054,16 @@ inline void nnm_tests()
 
         test_section("Transform3(const Transform3<Other>&)");
         {
-            constexpr nnm::Transform3d t1({ { 1.0, 2.0, 3.0, 4.0 },
-                                            { -0.5, 0.75, 0.6, 0.1 },
-                                            { -100.0, -88.0, 28.0, 0.0 },
-                                            { 1.0, 29.0, -89.0, 67.0 } });
+            constexpr nnm::Transform3d t1(
+                { { 1.0, 2.0, 3.0, 4.0 },
+                  { -0.5, 0.75, 0.6, 0.1 },
+                  { -100.0, -88.0, 28.0, 0.0 },
+                  { 1.0, 29.0, -89.0, 67.0 } });
             constexpr nnm::Transform3f t2(t1);
-            ASSERT(t2.matrix.col0_row0 == 1.0f);
-            ASSERT(t2.matrix.col0_row1 == 2.0f);
-            ASSERT(t2.matrix.col0_row2 == 3.0f);
-            ASSERT(t2.matrix.col0_row3 == 4.0f);
-            ASSERT(t2.matrix.col1_row0 == -0.5f);
-            ASSERT(t2.matrix.col1_row1 == 0.75f);
-            ASSERT(t2.matrix.col1_row2 == 0.6f);
-            ASSERT(t2.matrix.col1_row3 == 0.1f);
-            ASSERT(t2.matrix.col2_row0 == -100.0f);
-            ASSERT(t2.matrix.col2_row1 == -88.0f);
-            ASSERT(t2.matrix.col2_row2 == 28.0f);
-            ASSERT(t2.matrix.col2_row3 == 0.0f);
-            ASSERT(t2.matrix.col3_row0 == 1.0f);
-            ASSERT(t2.matrix.col3_row1 == 29.0f);
-            ASSERT(t2.matrix.col3_row2 == -89.0f);
-            ASSERT(t2.matrix.col3_row3 == 67.0f);
+            ASSERT(t2.matrix.columns[0] == nnm::Vector4f(1.0f, 2.0f, 3.0f, 4.0f));
+            ASSERT(t2.matrix.columns[1] == nnm::Vector4f(-0.5f, 0.75f, 0.6f, 0.1f));
+            ASSERT(t2.matrix.columns[2] == nnm::Vector4f(-100.0f, -88.0f, 28.0f, 0.0f));
+            ASSERT(t2.matrix.columns[3] == nnm::Vector4f(1.0f, 29.0f, -89.0f, 67.0f));
         }
 
         test_section("Transform3(const Matrix4&)");
@@ -5395,15 +5263,17 @@ inline void nnm_tests()
             ASSERT(t.approx_equal(expected));
         }
 
-        auto t1 = nnm::Transform3({ { 1.0f, 2.0f, 3.0f, 0.0f },
-                                    { -0.5f, 2.0f, 3.0f, 0.0f },
-                                    { 0.0f, 0.0f, 2.0f, 0.0f },
-                                    { 1.0f, -2.0f, 3.0f, 1.0f } });
+        auto t1 = nnm::Transform3(
+            { { 1.0f, 2.0f, 3.0f, 0.0f },
+              { -0.5f, 2.0f, 3.0f, 0.0f },
+              { 0.0f, 0.0f, 2.0f, 0.0f },
+              { 1.0f, -2.0f, 3.0f, 1.0f } });
 
-        auto t2 = nnm::Transform3({ { 1.0f, 2.0f, 3.0f, 4.0f },
-                                    { -0.5f, 2.0f, 3.0f, -3.0f },
-                                    { 0.0f, 0.0f, 2.0f, 0.0f },
-                                    { 1.0f, -2.0f, 3.0f, 1.0f } });
+        auto t2 = nnm::Transform3(
+            { { 1.0f, 2.0f, 3.0f, 4.0f },
+              { -0.5f, 2.0f, 3.0f, -3.0f },
+              { 0.0f, 0.0f, 2.0f, 0.0f },
+              { 1.0f, -2.0f, 3.0f, 1.0f } });
 
         test_section("trace");
         {
@@ -5608,11 +5478,12 @@ inline void nnm_tests()
 
         test_section("transform");
         {
-            auto t3 = t1.transform(nnm::Transform3(
-                { { 4.0f, 3.0f, 4.0f, 0.0f },
-                  { 2.0f, -1.0f, -2.0f, 0.0f },
-                  { 0.0f, 2.0f, -3.5f, 0.0f },
-                  { 10.0f, -5.5f, 25.0f, 1.0f } }));
+            auto t3 = t1.transform(
+                nnm::Transform3(
+                    { { 4.0f, 3.0f, 4.0f, 0.0f },
+                      { 2.0f, -1.0f, -2.0f, 0.0f },
+                      { 0.0f, 2.0f, -3.5f, 0.0f },
+                      { 10.0f, -5.5f, 25.0f, 1.0f } }));
             nnm::Matrix4 expected { { 8.0f, 7.0f, -10.5f, 0.0f },
                                     { 2.0f, 2.5f, -16.5f, 0.0f },
                                     { 0.0f, 4.0f, -7.0f, 0.0f },
@@ -5622,11 +5493,12 @@ inline void nnm_tests()
 
         test_section("transform_local");
         {
-            auto t3 = t1.transform_local(nnm::Transform3(
-                { { 4.0f, 3.0f, 4.0f, 0.0f },
-                  { 2.0f, -1.0f, -2.0f, 0.0f },
-                  { 0.0f, 2.0f, -3.5f, 0.0f },
-                  { 10.0f, -5.5f, 25.0f, 1.0f } }));
+            auto t3 = t1.transform_local(
+                nnm::Transform3(
+                    { { 4.0f, 3.0f, 4.0f, 0.0f },
+                      { 2.0f, -1.0f, -2.0f, 0.0f },
+                      { 0.0f, 2.0f, -3.5f, 0.0f },
+                      { 10.0f, -5.5f, 25.0f, 1.0f } }));
             nnm::Matrix4 expected { { 2.5f, 14.0f, 29.0f, 0.0f },
                                     { 2.5f, 2.0f, -1.0f, 0.0f },
                                     { -1.0f, 4.0f, -1.0f, 0.0f },
@@ -5636,10 +5508,11 @@ inline void nnm_tests()
 
         test_section("approx_equal");
         {
-            auto t3 = nnm::Transform3({ { 1.0000001f, 2.0f, 3.0000001f, 0.0f },
-                                        { -0.5f, 1.999999f, 3.0f, -0.0000001f },
-                                        { 0.0f, 0.0f, 2.0f, 0.0f },
-                                        { 1.0f, -1.999999f, 3.0f, 0.999999f } });
+            auto t3 = nnm::Transform3(
+                { { 1.0000001f, 2.0f, 3.0000001f, 0.0f },
+                  { -0.5f, 1.999999f, 3.0f, -0.0000001f },
+                  { 0.0f, 0.0f, 2.0f, 0.0f },
+                  { 1.0f, -1.999999f, 3.0f, 0.999999f } });
             ASSERT(t1.approx_equal(t3));
         }
 
