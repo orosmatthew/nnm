@@ -83,13 +83,8 @@ using Vector2d = Vector2<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-    };
-    Real data[2] {};
-};
+Real x;
+Real y;
 ```
 
 ### Constructors
@@ -200,13 +195,8 @@ operator bool() const;
 ### Members
 
 ```c++
-union {
-    struct {
-        int x;
-        int y;
-    };
-    int data[2] {};
-};
+int x;
+int y;
 ```
 
 ### Constructors
@@ -304,14 +294,9 @@ using Vector3d = Vector3<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-    };
-    Real data[3] {};
-};
+Real x;
+Real y;
+Real z;
 ```
 
 ### Constructors
@@ -430,14 +415,9 @@ operator bool() const;
 ### Members
 
 ```c++
-union {
-    struct {
-        int x;
-        int y;
-        int z;
-    };
-    int data[3] {};
-};
+int x;
+int y;
+int z;
 ```
 
 ### Constructors
@@ -536,15 +516,10 @@ using Vector4d = Vector4<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-        Real w;
-    };
-    Real data[4] {};
-};
+Real x;
+Real y;
+Real z;
+Real w;
 ```
 
 ### Constructors
@@ -560,6 +535,7 @@ Vector4(Real x, Real y, Real z, Real w);
 ### Static Methods
 
 ```c++
+static Vector4 from_quaternion(const Quaternion& quaternion);
 static Vector4 all(Real value);
 static Vector4 zero();
 static Vector4 one();
@@ -643,16 +619,10 @@ using QuaternionD = Quaternion<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-        Real w;
-    };
-    Vector4 vector;
-    Real data[4] {};
-}
+Real x;
+Real y;
+Real z;
+Real w;
 ```
 
 ### Constructors

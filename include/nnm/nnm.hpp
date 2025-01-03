@@ -315,14 +315,8 @@ using Transform3d = Transform3<double>;
 template <typename Real>
 class Vector2 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-        };
-
-        Real data[2] {};
-    };
+    Real x;
+    Real y;
 
     constexpr Vector2()
         : x(static_cast<Real>(0))
@@ -598,46 +592,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 2;
+        return &y + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 2;
+        return &y + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector2& other) const
@@ -765,14 +759,8 @@ Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 
 class Vector2i {
 public:
-    union {
-        struct {
-            int x;
-            int y;
-        };
-
-        int data[2] {};
-    };
+    int x;
+    int y;
 
     constexpr Vector2i()
         : x(0)
@@ -897,46 +885,46 @@ public:
 
     [[nodiscard]] const int* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data + 2;
+        return &y + 1;
     }
 
     int* begin()
     {
-        return data;
+        return &x;
     }
 
     int* end()
     {
-        return data + 2;
+        return &y + 1;
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector2i& other) const
@@ -1090,15 +1078,9 @@ constexpr Vector2i operator%(const int value, const Vector2i& vector)
 template <typename Real>
 class Vector3 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-        };
-
-        Real data[3] {};
-    };
+    Real x;
+    Real y;
+    Real z;
 
     constexpr Vector3()
         : x(static_cast<Real>(0))
@@ -1407,46 +1389,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 3;
+        return &z + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 3;
+        return &z + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector3& other) const
@@ -1552,10 +1534,10 @@ public:
     [[nodiscard]] bool operator<(const Vector3& other) const
     {
         for (int i = 0; i < 3; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -1582,15 +1564,9 @@ constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 
 class Vector3i {
 public:
-    union {
-        struct {
-            int x;
-            int y;
-            int z;
-        };
-
-        int data[3] {};
-    };
+    int x;
+    int y;
+    int z;
 
     constexpr Vector3i()
         : x(0)
@@ -1710,10 +1686,10 @@ public:
     [[nodiscard]] int max_index() const
     {
         int max_axis = 0;
-        if (y > data[max_axis]) {
+        if (y > at(max_axis)) {
             max_axis = 1;
         }
-        if (z > data[max_axis]) {
+        if (z > at(max_axis)) {
             max_axis = 2;
         }
         return max_axis;
@@ -1722,10 +1698,10 @@ public:
     [[nodiscard]] int min_index() const
     {
         int min_axis = 0;
-        if (y < data[min_axis]) {
+        if (y < at(min_axis)) {
             min_axis = 1;
         }
-        if (z < data[min_axis]) {
+        if (z < at(min_axis)) {
             min_axis = 2;
         }
         return min_axis;
@@ -1738,46 +1714,46 @@ public:
 
     [[nodiscard]] const int* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data + 3;
+        return &z + 1;
     }
 
     int* begin()
     {
-        return data;
+        return &x;
     }
 
     int* end()
     {
-        return data + 3;
+        return &z + 1;
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector3i& other) const
@@ -1907,10 +1883,10 @@ public:
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
         for (int i = 0; i < 3; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -1941,16 +1917,10 @@ constexpr Vector3i operator%(const int value, const Vector3i& vector)
 template <typename Real>
 class Vector4 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-            Real w;
-        };
-
-        Real data[4] {};
-    };
+    Real x;
+    Real y;
+    Real z;
+    Real w;
 
     constexpr Vector4()
         : x(static_cast<Real>(0))
@@ -1992,6 +1962,8 @@ public:
         , w(w)
     {
     }
+
+    static constexpr Vector4 from_quaternion(const Quaternion<Real>& quaternion);
 
     static constexpr Vector4 all(const Real value)
     {
@@ -2137,13 +2109,13 @@ public:
     [[nodiscard]] int max_index() const
     {
         int max_axis = 0;
-        if (y > data[max_axis]) {
+        if (y > at(max_axis)) {
             max_axis = 1;
         }
-        if (z > data[max_axis]) {
+        if (z > at(max_axis)) {
             max_axis = 2;
         }
-        if (w > data[max_axis]) {
+        if (w > at(max_axis)) {
             max_axis = 3;
         }
         return max_axis;
@@ -2152,13 +2124,13 @@ public:
     [[nodiscard]] int min_index() const
     {
         int min_axis = 0;
-        if (y < data[min_axis]) {
+        if (y < at(min_axis)) {
             min_axis = 1;
         }
-        if (z < data[min_axis]) {
+        if (z < at(min_axis)) {
             min_axis = 2;
         }
-        if (w < data[min_axis]) {
+        if (w < at(min_axis)) {
             min_axis = 3;
         }
         return min_axis;
@@ -2187,46 +2159,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 4;
+        return &w + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 4;
+        return &w + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector4& other) const
@@ -2328,10 +2300,10 @@ public:
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
         for (int i = 0; i < 4; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -2370,17 +2342,10 @@ Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 template <typename Real>
 class Quaternion {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-            Real w;
-        };
-
-        Vector4<Real> vector;
-        Real data[4] {};
-    };
+    Real x;
+    Real y;
+    Real z;
+    Real w;
 
     constexpr Quaternion()
         : x(static_cast<Real>(0))
@@ -2444,27 +2409,28 @@ public:
 
     [[nodiscard]] Quaternion normalize() const
     {
-        return Quaternion(vector.normalize());
+        return Quaternion(Vector4<Real>::from_quaternion(*this).normalize());
     }
 
     [[nodiscard]] Vector3<Real> axis(const Quaternion& to) const
     {
-        const Vector3<Real> cross = vector.xyz().cross(to.vector.xyz());
+        const Vector3<Real> cross
+            = Vector4<Real>::from_quaternion(*this).xyz().cross(Vector4<Real>::from_quaternion(to).xyz());
         return cross.normalize();
     }
 
     [[nodiscard]] Real angle(const Quaternion& to) const
     {
-        return 2 * acos(vector.dot(to.vector));
+        return 2 * acos(Vector4<Real>::from_quaternion(*this).dot(Vector4<Real>::from_quaternion(to)));
     }
 
     [[nodiscard]] Vector3<Real> axis() const
     {
         const Real sin_half_angle = sqrt(1 - sqrd(w));
         if (sin_half_angle == static_cast<Real>(0)) {
-            return vector.xyz();
+            return Vector4<Real>::from_quaternion(*this).xyz();
         }
-        return vector.xyz() / sin_half_angle;
+        return Vector4<Real>::from_quaternion(*this).xyz() / sin_half_angle;
     }
 
     [[nodiscard]] Real angle() const
@@ -2489,14 +2455,16 @@ public:
 
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const Real weight) const
     {
-        const Real dot = clamp(vector.dot(to.vector), static_cast<Real>(-1), static_cast<Real>(1));
+        const Vector4 vector = Vector4<Real>::from_quaternion(*this);
+        const Vector4 vector_to = Vector4<Real>::from_quaternion(to);
+        const Real dot = clamp(vector.dot(vector_to), static_cast<Real>(-1), static_cast<Real>(1));
         const Real angle = acos(dot);
         const Real sin_angle = sin(angle);
         if (sin_angle == static_cast<Real>(0)) {
-            return Quaternion(vector.lerp(to.vector, weight));
+            return Quaternion(vector.lerp(vector_to, weight));
         }
         return Quaternion(
-            (vector * sin((static_cast<Real>(1) - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
+            (vector * sin((static_cast<Real>(1) - weight) * angle) + vector_to * sin(weight * angle)) / sin_angle);
     }
 
     [[nodiscard]] Quaternion rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
@@ -2518,25 +2486,25 @@ public:
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector.at(index);
+        return *(&x + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector.at(index);
+        return *(&x + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector[index];
+        return *(&x + index);
     }
 
     [[nodiscard]] Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector[index];
+        return *(&x + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Quaternion& other) const
@@ -2567,7 +2535,7 @@ public:
 
     [[nodiscard]] bool operator<(const Quaternion& other) const
     {
-        return vector < other.vector;
+        return Vector4<Real>::from_quaternion(*this) < Vector4<Real>::from_quaternion(other);
     }
 
     [[nodiscard]] explicit constexpr operator bool() const
@@ -3838,30 +3806,34 @@ public:
 
     static constexpr Basis3 from_scale(const Vector3<Real>& factor)
     {
-        return Basis3({ { factor.x, static_cast<Real>(0), static_cast<Real>(0) },
-                        { static_cast<Real>(0), factor.y, static_cast<Real>(0) },
-                        { static_cast<Real>(0), static_cast<Real>(0), factor.z } });
+        return Basis3(
+            { { factor.x, static_cast<Real>(0), static_cast<Real>(0) },
+              { static_cast<Real>(0), factor.y, static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(0), factor.z } });
     }
 
     static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
     {
-        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
-                        { tan(angle_y), static_cast<Real>(1), static_cast<Real>(0) },
-                        { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+              { tan(angle_y), static_cast<Real>(1), static_cast<Real>(0) },
+              { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
     {
-        return Basis3({ { static_cast<Real>(1), tan(angle_x), static_cast<Real>(0) },
-                        { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
-                        { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), tan(angle_x), static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+              { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
     }
 
     static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
-        return Basis3({ { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
-                        { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
-                        { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
+        return Basis3(
+            { { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
+              { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
+              { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     [[nodiscard]] Real trace() const
@@ -5125,6 +5097,12 @@ Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
         }
     }
     return result;
+}
+
+template <typename Real>
+constexpr Vector4<Real> Vector4<Real>::from_quaternion(const Quaternion<Real>& quaternion)
+{
+    return { quaternion.x, quaternion.y, quaternion.z, quaternion.w };
 }
 
 template <typename Real>
