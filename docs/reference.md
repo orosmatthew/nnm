@@ -2,8 +2,8 @@
 
 Reference for NNM math library.
 
-Many functions and classes are templated with `template<typename Real = float>` and thus any function/class that
-references the `Real` type is templated with a default template value of float.
+Many functions and classes are templated with `template<typename Real>` where Real represents a floating point type such
+as float or double.
 
 ## Contents
 

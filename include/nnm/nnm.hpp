@@ -24,19 +24,19 @@
 
 namespace nnm {
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real pi()
 {
     return static_cast<Real>(3.141592653589793238462643383279502);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real epsilon()
 {
     return static_cast<Real>(0.00001);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real sign(const Real value)
 {
     if (value < static_cast<Real>(0)) {
@@ -53,7 +53,7 @@ constexpr int sign(const int value)
     return 1;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real abs(const Real value)
 {
     if (value < static_cast<Real>(0)) {
@@ -70,7 +70,7 @@ constexpr int abs(const int value)
     return value;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real max(const Real a, const Real b)
 {
     if (a > b) {
@@ -87,7 +87,7 @@ constexpr int max(const int a, const int b)
     return b;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr bool approx_zero(const Real value)
 {
     Real tolerance = epsilon<Real>() * abs(value);
@@ -95,7 +95,7 @@ constexpr bool approx_zero(const Real value)
     return abs(value) <= tolerance;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr bool approx_equal(const Real a, const Real b)
 {
     if (a == b) {
@@ -106,13 +106,13 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real ceil(const Real value)
 {
     return std::ceil(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real clamp(const Real value, const Real min, const Real max)
 {
     if (value < min) {
@@ -135,19 +135,19 @@ constexpr int clamp(const int value, const int min, const int max)
     return value;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real sqrt(const Real value)
 {
     return std::sqrt(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real pow(const Real base, const Real power)
 {
     return std::pow(base, power);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real sqrd(const Real value)
 {
     return value * value;
@@ -158,19 +158,19 @@ constexpr int sqrd(const int value)
     return value * value;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real floor(const Real value)
 {
     return std::floor(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real lerp(const Real from, const Real to, const Real weight)
 {
     return from + weight * (to - from);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
     if (weight >= static_cast<Real>(1)) {
@@ -182,67 +182,67 @@ constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
     return lerp(from, to, weight);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real sin(const Real value)
 {
     return std::sin(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real cos(const Real value)
 {
     return std::cos(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real tan(const Real value)
 {
     return std::tan(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real round(const Real value)
 {
     return std::round(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real atan(const Real value)
 {
     return std::atan(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real atan2(const Real a, const Real b)
 {
     return std::atan2(a, b);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real radians(const Real degrees)
 {
     return pi<Real>() / static_cast<Real>(180) * degrees;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real degrees(const Real radians)
 {
     return static_cast<Real>(180) / pi<Real>() * radians;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real asin(const Real value)
 {
     return std::asin(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real acos(const Real value)
 {
     return std::acos(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real min(const Real a, const Real b)
 {
     if (a < b) {
@@ -259,57 +259,57 @@ constexpr int min(const int a, const int b)
     return b;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real log2(const Real value)
 {
     return std::log2(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 class Vector2;
-using Vector2f = Vector2<>;
+using Vector2f = Vector2<float>;
 using Vector2d = Vector2<double>;
 class Vector2i;
-template <typename Real = float>
+template <typename Real>
 class Vector3;
-using Vector3f = Vector3<>;
+using Vector3f = Vector3<float>;
 using Vector3d = Vector3<double>;
 class Vector3i;
-template <typename Real = float>
+template <typename Real>
 class Vector4;
-using Vector4f = Vector4<>;
+using Vector4f = Vector4<float>;
 using Vector4d = Vector4<double>;
-template <typename Real = float>
+template <typename Real>
 class Quaternion;
-using QuaternionF = Quaternion<>;
+using QuaternionF = Quaternion<float>;
 using QuaternionD = Quaternion<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix2;
-using Matrix2f = Matrix2<>;
+using Matrix2f = Matrix2<float>;
 using Matrix2d = Matrix2<double>;
-template <typename Real = float>
+template <typename Real>
 class Basis2;
-using Basis2f = Basis2<>;
+using Basis2f = Basis2<float>;
 using Basis2d = Basis2<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix3;
-using Matrix3f = Matrix3<>;
+using Matrix3f = Matrix3<float>;
 using Matrix3d = Matrix3<double>;
-template <typename Real = float>
+template <typename Real>
 class Transform2;
-using Transform2f = Transform2<>;
+using Transform2f = Transform2<float>;
 using Transform2d = Transform2<double>;
-template <typename Real = float>
+template <typename Real>
 class Basis3;
-using Basis3f = Basis3<>;
+using Basis3f = Basis3<float>;
 using Basis3d = Basis3<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix4;
-using Matrix4f = Matrix4<>;
+using Matrix4f = Matrix4<float>;
 using Matrix4d = Matrix4<double>;
-template <typename Real = float>
+template <typename Real>
 class Transform3;
-using Transform3f = Transform3<>;
+using Transform3f = Transform3<float>;
 using Transform3d = Transform3<double>;
 
 template <typename Real>
@@ -745,13 +745,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Vector2<Real> constexpr operator*(const Real value, const Vector2<Real>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
-template <typename Real = float>
+template <typename Real>
 Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 {
     return { value / vector.x, value / vector.y };
@@ -768,7 +768,7 @@ public:
     {
     }
 
-    template <typename Real = float>
+    template <typename Real>
     explicit constexpr Vector2i(const Vector2<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
@@ -1550,13 +1550,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 constexpr Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
@@ -1575,7 +1575,7 @@ public:
     {
     }
 
-    template <typename Real = float>
+    template <typename Real>
     explicit constexpr Vector3i(const Vector3<Real>& vector)
         : x(static_cast<int>(vector.x))
         , y(static_cast<int>(vector.y))
@@ -2327,13 +2327,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
 
-template <typename Real = float>
+template <typename Real>
 Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
@@ -2868,7 +2868,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
@@ -2880,7 +2880,7 @@ Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
@@ -3450,7 +3450,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
@@ -3462,7 +3462,7 @@ Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
@@ -4345,7 +4345,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
@@ -4357,7 +4357,7 @@ Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
