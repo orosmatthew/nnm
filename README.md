@@ -55,16 +55,17 @@ NNM provides classes for:
 * Misc.
     * `Quaternion`
 
-where the trailing number represents the "dimension" of the class. Most of these classes, except for the integer
-variants, are templated for any `Real` value such as `float` or `double`. Aliases are created for those cases for
-example `Vector2f` and `Vector2d` for `float` and `double` respectively.
+where the trailing number represents the "dimension" of the class. These classes are templated with either `Real` or
+`Int` types that allow for various floating point and integer types. Aliases are created for those cases such
+as `Vector2f` and `Vector2d` for `float` and `double` respectively as well as `Vector3i32`, `Vector2u16`,
+`Vector3i64`, etc. for integer classes.
 
 In addition to these classes, NNM provides for a number of standalone math functions such as `lerp`, `clamp`,
 `approx_equal`, etc.
 
 Other notable features/qualities of NNM include:
 
-* No template magic, just the basics for your choice of `Real` value.
+* No template magic, just the basics for your choice of `Real` floating-point value and `Int` integer value.
 * Extremely readable. There are almost no macros and light use of templates.
 * Minimal abbreviations. It's the 21st century, we can afford readable function names!
 * Optional bounds checking for accessors with an optional `#define NNM_BOUNDS_CHECK` before including.
@@ -89,13 +90,21 @@ target_link_libraries(your_project PRIVATE nnm)
 
 ## Projection Matrices
 
-You might be asking, "What is up with all these variations of perspective/orthographic projection methods? Which one do I use??" This depends on the graphics API you are using as well as the coordinate system you choose for your application. There are two considerations to be aware of, the handedness and the normalization of the graphics API. Here is a short list of common graphics APIs' normalized device coordinate (NDC) conventions:
+You might be asking, "What is up with all these variations of perspective/orthographic projection methods? Which one do
+I use??" This depends on the graphics API you are using as well as the coordinate system you choose for your
+application. There are two considerations to be aware of, the handedness and the normalization of the graphics API. Here
+is a short list of common graphics APIs' normalized device coordinate (NDC) conventions:
 
 * OpenGL/WebGL/WebGPU/Metal: left-handed, -1 to 1
 * DirectX: left-handed, 0 to 1
 * Vulkan: right-handed, 0 to 1
 
-This means if your application and graphics API use the same coordinate system, you just need to choose the method with the correct handedness and normalization corresponding to that graphics API. However, if your application and chosen graphics API have mismatching handedness, you must flip the z-axis. For example, if you are using OpenGL (which is left-handed) but wish to use right-handed coordinates in your application, you would still use the projection method corresponding with OpenGL's convention of left-handed and -1 to 1 normalization but just need to flip the z-axis to account for the switched handedness:
+This means if your application and graphics API use the same coordinate system, you just need to choose the method with
+the correct handedness and normalization corresponding to that graphics API. However, if your application and chosen
+graphics API have mismatching handedness, you must flip the z-axis. For example, if you are using OpenGL (which is
+left-handed) but wish to use right-handed coordinates in your application, you would still use the projection method
+corresponding with OpenGL's convention of left-handed and -1 to 1 normalization but just need to flip the z-axis to
+account for the switched handedness:
 
 ```cpp
 const auto proj = nnm::Transform3f::from_perspective_left_hand_neg1to1(...).scale_local({1, 1, -1});
