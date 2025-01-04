@@ -1,5 +1,5 @@
 /* NNM - "No Nonsense Math"
- * v0.3.1
+ * v0.4.0
  * Copyright (c) 2024-present Matthew Oros
  * Licensed under MIT
  */
