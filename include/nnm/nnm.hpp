@@ -8,6 +8,7 @@
 #define NNM_HPP
 
 #include <cmath>
+#include <cstdint>
 #include <functional>
 #include <optional>
 
@@ -36,50 +37,26 @@ constexpr Real epsilon()
     return static_cast<Real>(0.00001);
 }
 
-template <typename Real>
-constexpr Real sign(const Real value)
+template <typename Num>
+constexpr Num sign(const Num value)
 {
-    if (value < static_cast<Real>(0)) {
-        return static_cast<Real>(-1);
+    if (value < static_cast<Num>(0)) {
+        return static_cast<Num>(-1);
     }
-    return static_cast<Real>(1);
+    return static_cast<Num>(1);
 }
 
-constexpr int sign(const int value)
+template <typename Num>
+constexpr Num abs(const Num value)
 {
-    if (value < 0) {
-        return -1;
-    }
-    return 1;
-}
-
-template <typename Real>
-constexpr Real abs(const Real value)
-{
-    if (value < static_cast<Real>(0)) {
+    if (value < static_cast<Num>(0)) {
         return -value;
     }
     return value;
 }
 
-constexpr int abs(const int value)
-{
-    if (value < 0) {
-        return -value;
-    }
-    return value;
-}
-
-template <typename Real>
-constexpr Real max(const Real a, const Real b)
-{
-    if (a > b) {
-        return a;
-    }
-    return b;
-}
-
-constexpr int max(const int a, const int b)
+template <typename Num>
+constexpr Num max(const Num a, const Num b)
 {
     if (a > b) {
         return a;
@@ -112,19 +89,8 @@ Real ceil(const Real value)
     return std::ceil(value);
 }
 
-template <typename Real>
-constexpr Real clamp(const Real value, const Real min, const Real max)
-{
-    if (value < min) {
-        return min;
-    }
-    if (value > max) {
-        return max;
-    }
-    return value;
-}
-
-constexpr int clamp(const int value, const int min, const int max)
+template <typename Num>
+constexpr Num clamp(const Num value, const Num min, const Num max)
 {
     if (value < min) {
         return min;
@@ -147,19 +113,14 @@ Real pow(const Real base, const Real power)
     return std::pow(base, power);
 }
 
-template <typename Real>
-constexpr Real sqrd(const Real value)
-{
-    return value * value;
-}
-
-constexpr int sqrd(const int value)
+template <typename Num>
+constexpr Num sqrd(const Num value)
 {
     return value * value;
 }
 
 template <typename Real>
-Real mod(const Real a, const Real b)
+Real modf(const Real a, const Real b)
 {
     const Real result = std::fmod(a, b);
     const Real zero = static_cast<Real>(0);
@@ -169,9 +130,10 @@ Real mod(const Real a, const Real b)
     return result;
 }
 
-constexpr int mod(const int a, const int b)
+template <typename Int>
+constexpr Int mod(const Int a, const Int b)
 {
-    const int result = a % b;
+    const Int result = a % b;
     if ((result < 0 && b > 0) || (result > 0 && b < 0)) {
         return result + b;
     }
@@ -179,12 +141,13 @@ constexpr int mod(const int a, const int b)
 }
 
 template <typename Real>
-Real rem(const Real a, const Real b)
+Real remf(const Real a, const Real b)
 {
     return std::fmod(a, b);
 }
 
-constexpr int rem(const int a, const int b)
+template <typename Int>
+constexpr Int rem(const Int a, const Int b)
 {
     return a % b;
 }
@@ -192,7 +155,7 @@ constexpr int rem(const int a, const int b)
 template <typename Real>
 Real normalize_angle(const Real angle)
 {
-    return mod(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
+    return modf(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
 }
 
 template <typename Real>
@@ -200,9 +163,9 @@ bool angle_in_range(const Real angle, const Real from, const Real to)
 {
     const Real two_pi = static_cast<Real>(2) * pi<Real>();
     if (from <= to) {
-        return mod(angle - from, two_pi) <= mod(to - from, two_pi);
+        return modf(angle - from, two_pi) <= modf(to - from, two_pi);
     }
-    return mod(angle - from, two_pi) >= mod(to - from, two_pi);
+    return modf(angle - from, two_pi) >= modf(to - from, two_pi);
 }
 
 template <typename Real>
@@ -289,16 +252,8 @@ Real acos(const Real value)
     return std::acos(value);
 }
 
-template <typename Real>
-constexpr Real min(const Real a, const Real b)
-{
-    if (a < b) {
-        return a;
-    }
-    return b;
-}
-
-constexpr int min(const int a, const int b)
+template <typename Num>
+constexpr Num min(const Num a, const Num b)
 {
     if (a < b) {
         return a;
@@ -316,12 +271,34 @@ template <typename Real>
 class Vector2;
 using Vector2f = Vector2<float>;
 using Vector2d = Vector2<double>;
+template <typename Int>
 class Vector2i;
+using Vector2ii = Vector2i<int>;
+using Vector2i8 = Vector2i<int8_t>;
+using Vector2i16 = Vector2i<int16_t>;
+using Vector2i32 = Vector2i<int32_t>;
+using Vector2i64 = Vector2i<int64_t>;
+using Vector2iu = Vector2i<unsigned int>;
+using Vector2u8 = Vector2i<uint8_t>;
+using Vector2u16 = Vector2i<uint16_t>;
+using Vector2u32 = Vector2i<uint32_t>;
+using Vector2u64 = Vector2i<uint64_t>;
 template <typename Real>
 class Vector3;
 using Vector3f = Vector3<float>;
 using Vector3d = Vector3<double>;
+template <typename Int>
 class Vector3i;
+using Vector3ii = Vector3i<int>;
+using Vector3i8 = Vector3i<int8_t>;
+using Vector3i16 = Vector3i<int16_t>;
+using Vector3i32 = Vector3i<int32_t>;
+using Vector3i64 = Vector3i<int64_t>;
+using Vector3iu = Vector3i<unsigned int>;
+using Vector3u8 = Vector3i<uint8_t>;
+using Vector3u16 = Vector3i<uint16_t>;
+using Vector3u32 = Vector3i<uint32_t>;
+using Vector3u64 = Vector3i<uint64_t>;
 template <typename Real>
 class Vector4;
 using Vector4f = Vector4<float>;
@@ -371,7 +348,8 @@ public:
     {
     }
 
-    explicit constexpr Vector2(const Vector2i& vector);
+    template <typename Int>
+    explicit constexpr Vector2(const Vector2i<Int>& vector);
 
     template <typename Other>
     explicit constexpr Vector2(const Vector2<Other>& vector)
@@ -616,7 +594,7 @@ public:
         return nnm::min(x, y);
     }
 
-    [[nodiscard]] constexpr int max_index() const
+    [[nodiscard]] constexpr uint8_t max_index() const
     {
         if (x > y) {
             return 0;
@@ -627,7 +605,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] constexpr int min_index() const
+    [[nodiscard]] constexpr uint8_t min_index() const
     {
         if (x < y) {
             return 0;
@@ -668,27 +646,27 @@ public:
         return &y + 1;
     }
 
-    [[nodiscard]] Real at(const int index) const
+    [[nodiscard]] Real at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
-    Real& at(const int index)
+    Real& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
-    [[nodiscard]] const Real& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
-    Real& operator[](const int index)
+    Real& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
@@ -815,10 +793,11 @@ Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
     return { value / vector.x, value / vector.y };
 }
 
+template <typename Int>
 class Vector2i {
 public:
-    int x;
-    int y;
+    Int x;
+    Int y;
 
     constexpr Vector2i()
         : x { 0 }
@@ -828,18 +807,18 @@ public:
 
     template <typename Real>
     explicit constexpr Vector2i(const Vector2<Real>& vector)
-        : x { static_cast<int>(vector.x) }
-        , y { static_cast<int>(vector.y) }
+        : x { static_cast<Int>(vector.x) }
+        , y { static_cast<Int>(vector.y) }
     {
     }
 
-    constexpr Vector2i(const int x, const int y)
+    constexpr Vector2i(const Int x, const Int y)
         : x { x }
         , y { y }
     {
     }
 
-    static constexpr Vector2i all(int value)
+    static constexpr Vector2i all(Int value)
     {
         return { value, value };
     }
@@ -874,22 +853,22 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
-    [[nodiscard]] constexpr int manhattan_distance(const Vector2i& to) const
+    [[nodiscard]] constexpr Int manhattan_distance(const Vector2i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    [[nodiscard]] constexpr int length_sqrd() const
+    [[nodiscard]] constexpr Int length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
-    [[nodiscard]] constexpr int dot(const Vector2i& other) const
+    [[nodiscard]] constexpr Int dot(const Vector2i& other) const
     {
         return x * other.x + y * other.y;
     }
 
-    [[nodiscard]] constexpr int cross(const Vector2i& other) const
+    [[nodiscard]] constexpr Int cross(const Vector2i& other) const
     {
         return x * other.y - y * other.x;
     }
@@ -909,17 +888,17 @@ public:
         return { -y, x };
     }
 
-    [[nodiscard]] constexpr int max() const
+    [[nodiscard]] constexpr Int max() const
     {
         return nnm::max(x, y);
     }
 
-    [[nodiscard]] constexpr int min() const
+    [[nodiscard]] constexpr Int min() const
     {
         return nnm::min(x, y);
     }
 
-    [[nodiscard]] constexpr int max_index() const
+    [[nodiscard]] constexpr uint8_t max_index() const
     {
         if (x > y) {
             return 0;
@@ -930,7 +909,7 @@ public:
         return 0;
     }
 
-    [[nodiscard]] constexpr int min_index() const
+    [[nodiscard]] constexpr uint8_t min_index() const
     {
         if (x < y) {
             return 0;
@@ -941,47 +920,47 @@ public:
         return 0;
     }
 
-    [[nodiscard]] const int* begin() const
+    [[nodiscard]] const Int* begin() const
     {
         return &x;
     }
 
-    [[nodiscard]] const int* end() const
+    [[nodiscard]] const Int* end() const
     {
         return &y + 1;
     }
 
-    int* begin()
+    Int* begin()
     {
         return &x;
     }
 
-    int* end()
+    Int* end()
     {
         return &y + 1;
     }
 
-    [[nodiscard]] int at(const int index) const
+    [[nodiscard]] Int at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
-    int& at(const int index)
+    Int& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
-    [[nodiscard]] int operator[](const int index) const
+    [[nodiscard]] Int operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
-    int& operator[](const int index)
+    Int& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
@@ -1031,12 +1010,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector2i operator*(const int value) const
+    [[nodiscard]] constexpr Vector2i operator*(const Int value) const
     {
         return { x * value, y * value };
     }
 
-    Vector2i& operator*=(const int value)
+    Vector2i& operator*=(const Int value)
     {
         x *= value;
         y *= value;
@@ -1055,12 +1034,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector2i operator/(const int value) const
+    [[nodiscard]] constexpr Vector2i operator/(const Int value) const
     {
         return { x / value, y / value };
     }
 
-    Vector2i& operator/=(const int value)
+    Vector2i& operator/=(const Int value)
     {
         x /= value;
         y /= value;
@@ -1079,12 +1058,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector2i operator%(const int value) const
+    [[nodiscard]] constexpr Vector2i operator%(const Int value) const
     {
         return { x % value, y % value };
     }
 
-    Vector2i& operator%=(const int value)
+    Vector2i& operator%=(const Int value)
     {
         x %= value;
         y %= value;
@@ -1118,17 +1097,20 @@ public:
     }
 };
 
-constexpr Vector2i operator*(const int value, const Vector2i& vector)
+template <typename Int>
+constexpr Vector2i<Int> operator*(const Int value, const Vector2i<Int>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
-constexpr Vector2i operator/(const int value, const Vector2i& vector)
+template <typename Int>
+constexpr Vector2i<Int> operator/(const Int value, const Vector2i<Int>& vector)
 {
     return { value / vector.x, value / vector.y };
 }
 
-constexpr Vector2i operator%(const int value, const Vector2i& vector)
+template <typename Int>
+constexpr Vector2i<Int> operator%(const Int value, const Vector2i<Int>& vector)
 {
     return { value % vector.x, value % vector.y };
 }
@@ -1147,7 +1129,8 @@ public:
     {
     }
 
-    explicit constexpr Vector3(const Vector3i& vector);
+    template <typename Int>
+    explicit constexpr Vector3(const Vector3i<Int>& vector);
 
     template <typename Other>
     explicit constexpr Vector3(const Vector3<Other>& vector)
@@ -1407,7 +1390,7 @@ public:
         return nnm::min(x, nnm::min(y, z));
     }
 
-    [[nodiscard]] constexpr int max_index() const
+    [[nodiscard]] constexpr uint8_t max_index() const
     {
         Real max_val = x;
         auto max_axis = 0;
@@ -1421,7 +1404,7 @@ public:
         return max_axis;
     }
 
-    [[nodiscard]] constexpr int min_index() const
+    [[nodiscard]] constexpr uint8_t min_index() const
     {
         Real min_val = x;
         auto min_axis = 0;
@@ -1470,27 +1453,27 @@ public:
         return &z + 1;
     }
 
-    [[nodiscard]] Real at(const int index) const
+    [[nodiscard]] Real at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
         return *(begin() + index);
     }
 
-    Real& at(const int index)
+    Real& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
         return *(begin() + index);
     }
 
-    [[nodiscard]] const Real& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
         return *(begin() + index);
     }
 
-    Real& operator[](const int index)
+    Real& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
         return *(begin() + index);
     }
 
@@ -1596,7 +1579,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3& other) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -1625,11 +1608,12 @@ constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
     return { value / vector.x, value / vector.y, value / vector.z };
 }
 
+template <typename Int>
 class Vector3i {
 public:
-    int x;
-    int y;
-    int z;
+    Int x;
+    Int y;
+    Int z;
 
     constexpr Vector3i()
         : x { 0 }
@@ -1640,27 +1624,27 @@ public:
 
     template <typename Real>
     explicit constexpr Vector3i(const Vector3<Real>& vector)
-        : x { static_cast<int>(vector.x) }
-        , y { static_cast<int>(vector.y) }
-        , z { static_cast<int>(vector.z) }
+        : x { static_cast<Int>(vector.x) }
+        , y { static_cast<Int>(vector.y) }
+        , z { static_cast<Int>(vector.z) }
     {
     }
 
-    constexpr Vector3i(const Vector2i& vector, const int z)
+    constexpr Vector3i(const Vector2i<Int>& vector, const Int z)
         : x { vector.x }
         , y { vector.y }
         , z { z }
     {
     }
 
-    constexpr Vector3i(const int x, const int y, const int z)
+    constexpr Vector3i(const Int x, const Int y, const Int z)
         : x { x }
         , y { y }
         , z { z }
     {
     }
 
-    static constexpr Vector3i all(const int value)
+    static constexpr Vector3i all(const Int value)
     {
         return { value, value, value };
     }
@@ -1700,17 +1684,17 @@ public:
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
-    [[nodiscard]] constexpr int manhattan_distance(const Vector3i& to) const
+    [[nodiscard]] constexpr Int manhattan_distance(const Vector3i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
-    [[nodiscard]] constexpr int length_sqrd() const
+    [[nodiscard]] constexpr Int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
-    [[nodiscard]] constexpr int dot(const Vector3i& other) const
+    [[nodiscard]] constexpr Int dot(const Vector3i& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
@@ -1736,19 +1720,19 @@ public:
         return cross(other);
     }
 
-    [[nodiscard]] constexpr int max() const
+    [[nodiscard]] constexpr Int max() const
     {
         return nnm::max(x, nnm::max(y, z));
     }
 
-    [[nodiscard]] constexpr int min() const
+    [[nodiscard]] constexpr Int min() const
     {
         return nnm::min(x, nnm::min(y, z));
     }
 
-    [[nodiscard]] int max_index() const
+    [[nodiscard]] uint8_t max_index() const
     {
-        int max_axis = 0;
+        uint8_t max_axis = 0;
         if (y > at(max_axis)) {
             max_axis = 1;
         }
@@ -1758,9 +1742,9 @@ public:
         return max_axis;
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] uint8_t min_index() const
     {
-        int min_axis = 0;
+        uint8_t min_axis = 0;
         if (y < at(min_axis)) {
             min_axis = 1;
         }
@@ -1770,52 +1754,52 @@ public:
         return min_axis;
     }
 
-    [[nodiscard]] constexpr Vector2i xy() const
+    [[nodiscard]] constexpr Vector2i<Int> xy() const
     {
         return { x, y };
     }
 
-    [[nodiscard]] const int* begin() const
+    [[nodiscard]] const Int* begin() const
     {
         return &x;
     }
 
-    [[nodiscard]] const int* end() const
+    [[nodiscard]] const Int* end() const
     {
         return &z + 1;
     }
 
-    int* begin()
+    Int* begin()
     {
         return &x;
     }
 
-    int* end()
+    Int* end()
     {
         return &z + 1;
     }
 
-    [[nodiscard]] int at(const int index) const
+    [[nodiscard]] Int at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
-    int& at(const int index)
+    Int& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
-    [[nodiscard]] int operator[](const int index) const
+    [[nodiscard]] Int operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
-    int& operator[](const int index)
+    Int& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
@@ -1868,12 +1852,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector3i operator*(const int value) const
+    [[nodiscard]] constexpr Vector3i operator*(const Int value) const
     {
         return { x * value, y * value, z * value };
     }
 
-    Vector3i& operator*=(const int value)
+    Vector3i& operator*=(const Int value)
     {
         x *= value;
         y *= value;
@@ -1894,12 +1878,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector3i operator/(const int value) const
+    [[nodiscard]] constexpr Vector3i operator/(const Int value) const
     {
         return { x / value, y / value, z / value };
     }
 
-    Vector3i& operator/=(const int value)
+    Vector3i& operator/=(const Int value)
     {
         x /= value;
         y /= value;
@@ -1920,12 +1904,12 @@ public:
         return *this;
     }
 
-    [[nodiscard]] constexpr Vector3i operator%(const int value) const
+    [[nodiscard]] constexpr Vector3i operator%(const Int value) const
     {
         return { x % value, y % value, z % value };
     }
 
-    Vector3i& operator%=(const int value)
+    Vector3i& operator%=(const Int value)
     {
         x %= value;
         y %= value;
@@ -1945,7 +1929,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -1962,17 +1946,20 @@ public:
     }
 };
 
-constexpr Vector3i operator*(const int value, const Vector3i& vector)
+template <typename Int>
+constexpr Vector3i<Int> operator*(const Int value, const Vector3i<Int>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
-constexpr Vector3i operator/(const int value, const Vector3i& vector)
+template <typename Int>
+constexpr Vector3i<Int> operator/(const Int value, const Vector3i<Int>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
 }
 
-constexpr Vector3i operator%(const int value, const Vector3i& vector)
+template <typename Int>
+constexpr Vector3i<Int> operator%(const Int value, const Vector3i<Int>& vector)
 {
     return { value % vector.x, value % vector.y, value % vector.z };
 }
@@ -2169,9 +2156,9 @@ public:
         return nnm::min(x, nnm::min(y, nnm::min(z, w)));
     }
 
-    [[nodiscard]] int max_index() const
+    [[nodiscard]] uint8_t max_index() const
     {
-        int max_axis = 0;
+        uint8_t max_axis = 0;
         if (y > at(max_axis)) {
             max_axis = 1;
         }
@@ -2184,9 +2171,9 @@ public:
         return max_axis;
     }
 
-    [[nodiscard]] int min_index() const
+    [[nodiscard]] uint8_t min_index() const
     {
-        int min_axis = 0;
+        uint8_t min_axis = 0;
         if (y < at(min_axis)) {
             min_axis = 1;
         }
@@ -2240,27 +2227,27 @@ public:
         return &w + 1;
     }
 
-    [[nodiscard]] Real at(const int index) const
+    [[nodiscard]] Real at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
-    Real& at(const int index)
+    Real& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
-    [[nodiscard]] const Real& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
-    Real& operator[](const int index)
+    Real& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
@@ -2362,7 +2349,7 @@ public:
 
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
-        for (int i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -2546,27 +2533,27 @@ public:
             && nnm::approx_equal(w, other.w);
     }
 
-    [[nodiscard]] Real at(const int index) const
+    [[nodiscard]] Real at(const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
         return *(&x + index);
     }
 
-    Real& at(const int index)
+    Real& at(const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
         return *(&x + index);
     }
 
-    [[nodiscard]] const Real& operator[](const int index) const
+    [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
         return *(&x + index);
     }
 
-    [[nodiscard]] Real& operator[](const int index)
+    [[nodiscard]] Real& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
         return *(&x + index);
     }
 
@@ -2665,28 +2652,28 @@ public:
         return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
     }
 
-    [[nodiscard]] Real minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
-        const int other_column = (column + 1) % 2;
-        const int other_row = (row + 1) % 2;
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
+        const uint8_t other_column = (column + 1) % 2;
+        const uint8_t other_row = (row + 1) % 2;
         return at(other_column, other_row);
     }
 
     [[nodiscard]] Matrix2 minor() const
     {
         Matrix2 result;
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
                 result.at(c, r) = minor_at(c, r);
             }
         }
         return result;
     }
 
-    [[nodiscard]] Real cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return pow(static_cast<Real>(-1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
@@ -2721,8 +2708,8 @@ public:
 
     [[nodiscard]] bool approx_equal(const Matrix2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
                 if (!nnm::approx_equal(at(c, r), other.at(c, r))) {
                     return false;
                 }
@@ -2733,8 +2720,8 @@ public:
 
     [[nodiscard]] bool approx_zero() const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
                 if (!nnm::approx_zero(at(c, r))) {
                     return false;
                 }
@@ -2743,27 +2730,27 @@ public:
         return true;
     }
 
-    [[nodiscard]] Vector2<Real> at(const int column) const
+    [[nodiscard]] Vector2<Real> at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
-    Vector2<Real>& at(const int column)
+    Vector2<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
-    [[nodiscard]] Real at(const int column, const int row) const
+    [[nodiscard]] Real at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
     }
 
@@ -2787,21 +2774,21 @@ public:
         return columns[1].end();
     }
 
-    const Vector2<Real>& operator[](const int column) const
+    const Vector2<Real>& operator[](const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
-    Vector2<Real>& operator[](const int column)
+    Vector2<Real>& operator[](const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
     bool operator==(const Matrix2& other) const
     {
-        for (int i = 0; i < 2; ++i) {
+        for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
                 return false;
             }
@@ -2811,7 +2798,7 @@ public:
 
     bool operator!=(const Matrix2& other) const
     {
-        for (int i = 0; i < 2; ++i) {
+        for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
                 return true;
             }
@@ -2822,7 +2809,7 @@ public:
     [[nodiscard]] Matrix2 operator+(const Matrix2& other) const
     {
         Matrix2 result;
-        for (int c = 0; c < 2; ++c) {
+        for (uint8_t c = 0; c < 2; ++c) {
             result.at(c) = at(c) + other.at(c);
         }
         return result;
@@ -2830,7 +2817,7 @@ public:
 
     Matrix2& operator+=(const Matrix2& other)
     {
-        for (int c = 0; c < 2; ++c) {
+        for (uint8_t c = 0; c < 2; ++c) {
             at(c) += other.at(c);
         }
         return *this;
@@ -2839,7 +2826,7 @@ public:
     [[nodiscard]] Matrix2 operator-(const Matrix2& other) const
     {
         Matrix2 result;
-        for (int c = 0; c < 2; ++c) {
+        for (uint8_t c = 0; c < 2; ++c) {
             result.at(c) = at(c) - other.at(c);
         }
         return result;
@@ -2847,7 +2834,7 @@ public:
 
     Matrix2& operator-=(const Matrix2& other)
     {
-        for (int c = 0; c < 2; ++c) {
+        for (uint8_t c = 0; c < 2; ++c) {
             at(c) -= other.at(c);
         }
         return *this;
@@ -2856,9 +2843,9 @@ public:
     [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
     {
         auto result = zero();
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
-                for (int i = 0; i < 2; ++i) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
+                for (uint8_t i = 0; i < 2; ++i) {
                     result.at(c, r) += at(i, r) * other.at(c, i);
                 }
             }
@@ -2875,7 +2862,7 @@ public:
     [[nodiscard]] Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
         Vector2<Real> result;
-        for (int r = 0; r < 2; ++r) {
+        for (uint8_t r = 0; r < 2; ++r) {
             result.at(r) = at(0, r) * vector.at(0) + at(1, r) * vector.at(1);
         }
         return result;
@@ -2907,7 +2894,7 @@ public:
 
     bool operator<(const Matrix2& other) const
     {
-        for (int i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -2920,8 +2907,8 @@ public:
 
     explicit operator bool() const
     {
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
                 if (at(c, r) != 0) {
                     return true;
                 }
@@ -2935,8 +2922,8 @@ template <typename Real>
 Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
-    for (int c = 0; c < 2; ++c) {
-        for (int r = 0; r < 2; ++r) {
+    for (uint8_t c = 0; c < 2; ++c) {
+        for (uint8_t r = 0; r < 2; ++r) {
             result.at(c, r) = value * matrix.at(c, r);
         }
     }
@@ -2947,8 +2934,8 @@ template <typename Real>
 Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
-    for (int c = 0; c < 2; ++c) {
-        for (int r = 0; r < 2; ++r) {
+    for (uint8_t c = 0; c < 2; ++c) {
+        for (uint8_t r = 0; r < 2; ++r) {
             result.at(c, r) = value / matrix.at(c, r);
         }
     }
@@ -3076,7 +3063,7 @@ public:
 
     [[nodiscard]] bool approx_equal(const Basis2& other) const
     {
-        for (int c = 0; c < 2; ++c) {
+        for (uint8_t c = 0; c < 2; ++c) {
             if (!at(c).approx_equal(other.at(c))) {
                 return false;
             }
@@ -3084,39 +3071,39 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector2<Real>& at(const int column) const
+    [[nodiscard]] const Vector2<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
     }
 
-    Vector2<Real>& at(const int column)
+    Vector2<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", column >= 0 && column <= 1 && row >= 0 && row <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
     }
 
-    const Vector2<Real>& operator[](const int index) const
+    const Vector2<Real>& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
     }
 
-    Vector2<Real>& operator[](const int index)
+    Vector2<Real>& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis2", index >= 0 && index <= 1);
+        NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
     }
 
@@ -3213,23 +3200,23 @@ public:
     [[nodiscard]] Real determinant() const
     {
         Real det = static_cast<Real>(0);
-        for (int c = 0; c < 3; ++c) {
+        for (uint8_t c = 0; c < 3; ++c) {
             const Real det_minor = minor_at(c, 0);
             det += (c % 2 == 0 ? static_cast<Real>(1) : -static_cast<Real>(1)) * at(c, 0) * det_minor;
         }
         return det;
     }
 
-    [[nodiscard]] Matrix2<Real> minor_matrix_at(const int column, const int row) const
+    [[nodiscard]] Matrix2<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
         Matrix2<Real> minor_matrix;
-        int minor_col = 0;
-        for (int c = 0; c < 3; ++c) {
+        uint8_t minor_col = 0;
+        for (uint8_t c = 0; c < 3; ++c) {
             if (c == column) {
                 continue;
             }
-            int minor_row = 0;
-            for (int r = 0; r < 3; ++r) {
+            uint8_t minor_row = 0;
+            for (uint8_t r = 0; r < 3; ++r) {
                 if (r == row) {
                     continue;
                 }
@@ -3241,34 +3228,34 @@ public:
         return minor_matrix;
     }
 
-    [[nodiscard]] Real minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return minor_matrix_at(column, row).determinant();
     }
 
     [[nodiscard]] Matrix3 minor() const
     {
         Matrix3 result;
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
                 result.at(c, r) = minor_at(c, r);
             }
         }
         return result;
     }
 
-    [[nodiscard]] Real cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix3 cofactor() const
     {
         Matrix3 result;
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
                 result.at(c, r) = cofactor_at(c, r);
             }
         }
@@ -3301,8 +3288,8 @@ public:
 
     [[nodiscard]] bool approx_equal(const Matrix3& other) const
     {
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
                 if (!nnm::approx_equal(at(c, r), other.at(c, r))) {
                     return false;
                 }
@@ -3313,8 +3300,8 @@ public:
 
     [[nodiscard]] bool approx_zero() const
     {
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
                 if (!nnm::approx_zero(at(c, r))) {
                     return false;
                 }
@@ -3323,27 +3310,27 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector3<Real>& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
-    Vector3<Real>& at(const int column)
+    Vector3<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
     }
 
@@ -3367,21 +3354,21 @@ public:
         return columns[2].end();
     }
 
-    const Vector3<Real>& operator[](const int column) const
+    const Vector3<Real>& operator[](const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
-    Vector3<Real>& operator[](const int column)
+    Vector3<Real>& operator[](const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
     [[nodiscard]] bool operator==(const Matrix3& other) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) != other.at(i)) {
                 return false;
             }
@@ -3391,7 +3378,7 @@ public:
 
     bool operator!=(const Matrix3& other) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) != other.at(i)) {
                 return true;
             }
@@ -3402,7 +3389,7 @@ public:
     [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
     {
         Matrix3 result;
-        for (int c = 0; c < 3; ++c) {
+        for (uint8_t c = 0; c < 3; ++c) {
             result.at(c) = at(c) + other.at(c);
         }
         return result;
@@ -3410,7 +3397,7 @@ public:
 
     Matrix3& operator+=(const Matrix3& other)
     {
-        for (int c = 0; c < 3; ++c) {
+        for (uint8_t c = 0; c < 3; ++c) {
             at(c) += other.at(c);
         }
         return *this;
@@ -3419,7 +3406,7 @@ public:
     [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
     {
         Matrix3 result;
-        for (int c = 0; c < 3; ++c) {
+        for (uint8_t c = 0; c < 3; ++c) {
             result.at(c) = at(c) - other.at(c);
         }
         return result;
@@ -3427,7 +3414,7 @@ public:
 
     Matrix3& operator-=(const Matrix3& other)
     {
-        for (int c = 0; c < 3; ++c) {
+        for (uint8_t c = 0; c < 3; ++c) {
             at(c) -= other.at(c);
         }
         return *this;
@@ -3436,9 +3423,9 @@ public:
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
     {
         auto result = zero();
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
-                for (int i = 0; i < 3; ++i) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
+                for (uint8_t i = 0; i < 3; ++i) {
                     result.at(c, r) += at(i, r) * other.at(c, i);
                 }
             }
@@ -3455,8 +3442,8 @@ public:
     [[nodiscard]] Vector3<Real> operator*(const Vector3<Real>& vector) const
     {
         auto result = Vector3<Real>::zero();
-        for (int r = 0; r < 3; ++r) {
-            for (int c = 0; c < 3; ++c) {
+        for (uint8_t r = 0; r < 3; ++r) {
+            for (uint8_t c = 0; c < 3; ++c) {
                 result.at(r) += at(c, r) * vector.at(c);
             }
         }
@@ -3491,7 +3478,7 @@ public:
 
     [[nodiscard]] bool operator<(const Matrix3& other) const
     {
-        for (int i = 0; i < 3; ++i) {
+        for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -3504,7 +3491,7 @@ public:
 
     explicit operator bool() const
     {
-        for (int c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
+        for (uint8_t c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
             if (!static_cast<bool>(at(c))) {
                 return false;
             }
@@ -3517,8 +3504,8 @@ template <typename Real>
 Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
-    for (int c = 0; c < 3; ++c) {
-        for (int r = 0; r < 3; ++r) {
+    for (uint8_t c = 0; c < 3; ++c) {
+        for (uint8_t r = 0; r < 3; ++r) {
             result.at(c, r) = value * matrix.at(c, r);
         }
     }
@@ -3529,8 +3516,8 @@ template <typename Real>
 Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
-    for (int c = 0; c < 3; ++c) {
-        for (int r = 0; r < 3; ++r) {
+    for (uint8_t c = 0; c < 3; ++c) {
+        for (uint8_t r = 0; r < 3; ++r) {
             result.at(c, r) = value / matrix.at(c, r);
         }
     }
@@ -3561,8 +3548,8 @@ public:
     static Transform2 from_basis_translation(const Basis2<Real>& basis, const Vector2<Real>& translation)
     {
         Matrix3<Real> matrix;
-        for (int c = 0; c < 2; ++c) {
-            for (int r = 0; r < 2; ++r) {
+        for (uint8_t c = 0; c < 2; ++c) {
+            for (uint8_t r = 0; r < 2; ++r) {
                 matrix.at(c, r) = basis.at(c, r);
             }
         }
@@ -3710,39 +3697,39 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector3<Real>& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
     }
 
-    Vector3<Real>& at(const int column)
+    Vector3<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2 && row <= 2);
         return matrix.at(column, row);
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2 && row >= 0 && row <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2 && row <= 2);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector3<Real>& operator[](const int column) const
+    [[nodiscard]] const Vector3<Real>& operator[](const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
     }
 
-    Vector3<Real>& operator[](const int column)
+    Vector3<Real>& operator[](const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform2", column >= 0 && column <= 2);
+        NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
     }
 
@@ -3946,39 +3933,39 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector3<Real>& at(const int column) const
+    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
     }
 
-    Vector3<Real>& at(const int column)
+    Vector3<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector3<Real>& operator[](const int index) const
+    [[nodiscard]] const Vector3<Real>& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
     }
 
-    Vector3<Real>& operator[](const int index)
+    Vector3<Real>& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Basis3", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
     }
 
@@ -4100,24 +4087,24 @@ public:
     [[nodiscard]] Real determinant() const
     {
         Real det = static_cast<Real>(0);
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             const Real det_minor = minor_at(c, 0);
             det += (c % 2 == 0 ? static_cast<Real>(1) : -static_cast<Real>(1)) * at(c, 0) * det_minor;
         }
         return det;
     }
 
-    [[nodiscard]] Matrix3<Real> minor_matrix_at(const int column, const int row) const
+    [[nodiscard]] Matrix3<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         Matrix3<Real> minor_matrix;
-        int minor_col = 0;
-        for (int c = 0; c < 4; ++c) {
+        uint8_t minor_col = 0;
+        for (uint8_t c = 0; c < 4; ++c) {
             if (c == column) {
                 continue;
             }
-            int minor_row = 0;
-            for (int r = 0; r < 4; ++r) {
+            uint8_t minor_row = 0;
+            for (uint8_t r = 0; r < 4; ++r) {
                 if (r == row) {
                     continue;
                 }
@@ -4129,34 +4116,34 @@ public:
         return minor_matrix;
     }
 
-    [[nodiscard]] Real minor_at(const int column, const int row) const
+    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return minor_matrix_at(column, row).determinant();
     }
 
     [[nodiscard]] Matrix4 minor() const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
-            for (int r = 0; r < 4; ++r) {
+        for (uint8_t c = 0; c < 4; ++c) {
+            for (uint8_t r = 0; r < 4; ++r) {
                 result.at(c, r) = minor_at(c, r);
             }
         }
         return result;
     }
 
-    [[nodiscard]] Real cofactor_at(const int column, const int row) const
+    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
     [[nodiscard]] Matrix4 cofactor() const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
-            for (int r = 0; r < 4; ++r) {
+        for (uint8_t c = 0; c < 4; ++c) {
+            for (uint8_t r = 0; r < 4; ++r) {
                 result.at(c, r) = cofactor_at(c, r);
             }
         }
@@ -4192,7 +4179,7 @@ public:
 
     [[nodiscard]] bool approx_equal(const Matrix4& other) const
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             if (!at(c).approx_equal(other.at(c))) {
                 return false;
             }
@@ -4202,7 +4189,7 @@ public:
 
     [[nodiscard]] bool approx_zero() const
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             if (!at(c).approx_zero()) {
                 return false;
             }
@@ -4210,27 +4197,27 @@ public:
         return true;
     }
 
-    [[nodiscard]] const Vector4<Real>& at(const int column) const
+    [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
     }
 
-    Vector4<Real>& at(const int column)
+    Vector4<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
     }
 
@@ -4254,21 +4241,21 @@ public:
         return columns[3].end();
     }
 
-    const Vector4<Real>& operator[](const int index) const
+    const Vector4<Real>& operator[](const uint8_t index) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
     }
 
-    Vector4<Real>& operator[](const int index)
+    Vector4<Real>& operator[](const uint8_t index)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index >= 0 && index <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
     }
 
     [[nodiscard]] bool operator==(const Matrix4& other) const
     {
-        for (int i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) != other.at(i)) {
                 return false;
             }
@@ -4278,7 +4265,7 @@ public:
 
     bool operator!=(const Matrix4& other) const
     {
-        for (int i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) != other.at(i)) {
                 return true;
             }
@@ -4289,7 +4276,7 @@ public:
     [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             result.at(c) = at(c) + other.at(c);
         }
         return result;
@@ -4297,7 +4284,7 @@ public:
 
     Matrix4& operator+=(const Matrix4& other)
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             at(c) += other.at(c);
         }
         return *this;
@@ -4306,7 +4293,7 @@ public:
     [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             result.at(c) = at(c) - other.at(c);
         }
         return result;
@@ -4314,7 +4301,7 @@ public:
 
     Matrix4& operator-=(const Matrix4& other)
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             at(c) -= other.at(c);
         }
         return *this;
@@ -4323,9 +4310,9 @@ public:
     Matrix4 operator*(const Matrix4& other) const
     {
         auto result = zero();
-        for (int c = 0; c < 4; ++c) {
-            for (int r = 0; r < 4; ++r) {
-                for (int i = 0; i < 4; ++i) {
+        for (uint8_t c = 0; c < 4; ++c) {
+            for (uint8_t r = 0; r < 4; ++r) {
+                for (uint8_t i = 0; i < 4; ++i) {
                     result.at(c, r) += at(i, r) * other.at(c, i);
                 }
             }
@@ -4342,8 +4329,8 @@ public:
     Vector4<Real> operator*(const Vector4<Real>& vector) const
     {
         auto result = Vector4<Real>::zero();
-        for (int r = 0; r < 4; ++r) {
-            for (int c = 0; c < 4; ++c) {
+        for (uint8_t r = 0; r < 4; ++r) {
+            for (uint8_t c = 0; c < 4; ++c) {
                 result.at(r) += at(c, r) * vector.at(c);
             }
         }
@@ -4353,7 +4340,7 @@ public:
     [[nodiscard]] Matrix4 operator*(const Real value) const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             result.at(c) = at(c) * value;
         }
         return result;
@@ -4361,7 +4348,7 @@ public:
 
     Matrix4& operator*=(const Real value)
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             at(c) *= value;
         }
         return *this;
@@ -4370,7 +4357,7 @@ public:
     [[nodiscard]] Matrix4 operator/(const Real value) const
     {
         Matrix4 result;
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             result.at(c) = at(c) / value;
         }
         return result;
@@ -4378,7 +4365,7 @@ public:
 
     Matrix4& operator/=(const Real value)
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             at(c) /= value;
         }
         return *this;
@@ -4386,7 +4373,7 @@ public:
 
     bool operator<(const Matrix4& other) const
     {
-        for (int i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
                 return true;
             }
@@ -4399,7 +4386,7 @@ public:
 
     explicit operator bool() const
     {
-        for (int c = 0; c < 4; ++c) {
+        for (uint8_t c = 0; c < 4; ++c) {
             if (!static_cast<bool>(at(c))) {
                 return false;
             }
@@ -4412,8 +4399,8 @@ template <typename Real>
 Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
+    for (uint8_t c = 0; c < 4; ++c) {
+        for (uint8_t r = 0; r < 4; ++r) {
             result.at(c, r) = value * matrix.at(c, r);
         }
     }
@@ -4424,8 +4411,8 @@ template <typename Real>
 Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
+    for (uint8_t c = 0; c < 4; ++c) {
+        for (uint8_t r = 0; r < 4; ++r) {
             result.at(c, r) = value / matrix.at(c, r);
         }
     }
@@ -4456,8 +4443,8 @@ public:
     static Transform3 from_basis_translation(const Basis3<Real>& basis, const Vector3<Real>& translation)
     {
         auto matrix = Matrix4<Real>::identity();
-        for (int c = 0; c < 3; ++c) {
-            for (int r = 0; r < 3; ++r) {
+        for (uint8_t c = 0; c < 3; ++c) {
+            for (uint8_t r = 0; r < 3; ++r) {
                 matrix.at(c, r) = basis.at(c, r);
             }
         }
@@ -4742,39 +4729,39 @@ public:
         return matrix.approx_equal(other.matrix);
     }
 
-    [[nodiscard]] const Vector4<Real>& at(const int column) const
+    [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
     }
 
-    Vector4<Real>& at(const int column)
+    Vector4<Real>& at(const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
     }
 
-    [[nodiscard]] const Real& at(const int column, const int row) const
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
-    Real& at(const int column, const int row)
+    Real& at(const uint8_t column, const uint8_t row)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3 && row >= 0 && row <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
-    [[nodiscard]] const Vector4<Real>& operator[](const int column) const
+    [[nodiscard]] const Vector4<Real>& operator[](const uint8_t column) const
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
     }
 
-    Vector4<Real>& operator[](const int column)
+    Vector4<Real>& operator[](const uint8_t column)
     {
-        NNM_BOUNDS_CHECK_ASSERT("Transform3", column >= 0 && column <= 3);
+        NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
     }
 
@@ -4795,7 +4782,8 @@ public:
 };
 
 template <typename Real>
-constexpr Vector2<Real>::Vector2(const Vector2i& vector)
+template <typename Int>
+constexpr Vector2<Real>::Vector2(const Vector2i<Int>& vector)
     : x { static_cast<Real>(vector.x) }
     , y { static_cast<Real>(vector.y) }
 {
@@ -4805,8 +4793,8 @@ template <typename Real>
 Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 {
     Matrix2<Real> result;
-    for (int c = 0; c < 2; ++c) {
-        for (int r = 0; r < 2; ++r) {
+    for (uint8_t c = 0; c < 2; ++c) {
+        for (uint8_t r = 0; r < 2; ++r) {
             result.at(c, r) = at(c) * other.at(r);
         }
     }
@@ -4901,7 +4889,8 @@ Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 }
 
 template <typename Real>
-constexpr Vector3<Real>::Vector3(const Vector3i& vector)
+template <typename Int>
+constexpr Vector3<Real>::Vector3(const Vector3i<Int>& vector)
     : x { static_cast<Real>(vector.x) }
     , y { static_cast<Real>(vector.y) }
     , z { static_cast<Real>(vector.z) }
@@ -4912,8 +4901,8 @@ template <typename Real>
 Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 {
     Matrix3<Real> result;
-    for (int c = 0; c < 3; ++c) {
-        for (int r = 0; r < 3; ++r) {
+    for (uint8_t c = 0; c < 3; ++c) {
+        for (uint8_t r = 0; r < 3; ++r) {
             result.at(c, r) = at(c) * other.at(r);
         }
     }
@@ -5038,8 +5027,8 @@ template <typename Real>
 Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
 {
     auto result = zero();
-    for (int c = 0; c < 3; ++c) {
-        for (int r = 0; r < 3; ++r) {
+    for (uint8_t c = 0; c < 3; ++c) {
+        for (uint8_t r = 0; r < 3; ++r) {
             result.at(c) += at(r) * matrix.at(c, r);
         }
     }
@@ -5056,8 +5045,8 @@ template <typename Real>
 Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
 {
     Matrix4<Real> result;
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
+    for (uint8_t c = 0; c < 4; ++c) {
+        for (uint8_t r = 0; r < 4; ++r) {
             result.at(c, r) = at(c) * other.at(r);
         }
     }
@@ -5080,8 +5069,8 @@ template <typename Real>
 Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
 {
     auto result = zero();
-    for (int c = 0; c < 4; ++c) {
-        for (int r = 0; r < 4; ++r) {
+    for (uint8_t c = 0; c < 4; ++c) {
+        for (uint8_t r = 0; r < 4; ++r) {
             result.at(c) += at(r) * matrix.at(c, r);
         }
     }
@@ -5089,23 +5078,23 @@ Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
 }
 }
 
-template <>
-struct std::hash<nnm::Vector2i> {
-    size_t operator()(const nnm::Vector2i& vector) const noexcept
+template <typename Int>
+struct std::hash<nnm::Vector2i<Int>> {
+    size_t operator()(const nnm::Vector2i<Int>& vector) const noexcept
     {
-        const size_t hash1 = std::hash<int>()(vector.x);
-        const size_t hash2 = std::hash<int>()(vector.y);
+        const size_t hash1 = std::hash<Int>()(vector.x);
+        const size_t hash2 = std::hash<Int>()(vector.y);
         return hash1 ^ hash2 << 1;
     }
 };
 
-template <>
-struct std::hash<nnm::Vector3i> {
-    size_t operator()(const nnm::Vector3i& vector) const noexcept
+template <typename Int>
+struct std::hash<nnm::Vector3i<Int>> {
+    size_t operator()(const nnm::Vector3i<Int>& vector) const noexcept
     {
-        const size_t hash1 = std::hash<int>()(vector.x);
-        const size_t hash2 = std::hash<int>()(vector.y);
-        const size_t hash3 = std::hash<int>()(vector.z);
+        const size_t hash1 = std::hash<Int>()(vector.x);
+        const size_t hash2 = std::hash<Int>()(vector.y);
+        const size_t hash3 = std::hash<Int>()(vector.z);
         return hash1 ^ hash2 << 1 ^ hash3 << 2;
     }
 };
