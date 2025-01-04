@@ -158,7 +158,7 @@ constexpr int sqrd(const int value)
     return value * value;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real mod(const Real a, const Real b)
 {
     const Real result = std::fmod(a, b);
@@ -178,7 +178,7 @@ constexpr int mod(const int a, const int b)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real rem(const Real a, const Real b)
 {
     return std::fmod(a, b);
@@ -189,13 +189,13 @@ constexpr int rem(const int a, const int b)
     return a % b;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real normalize_angle(const Real angle)
 {
     return mod(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
 }
 
-template <typename Real = float>
+template <typename Real>
 bool angle_in_range(const Real angle, const Real from, const Real to)
 {
     const Real two_pi = static_cast<Real>(2) * pi<Real>();
@@ -205,7 +205,7 @@ bool angle_in_range(const Real angle, const Real from, const Real to)
     return mod(angle - from, two_pi) >= mod(to - from, two_pi);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real floor(const Real value)
 {
     return std::floor(value);
