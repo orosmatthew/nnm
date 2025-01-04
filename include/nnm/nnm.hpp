@@ -83,8 +83,8 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
-template <typename Num>
-Num ceil(const Num value)
+template <typename Real>
+Real ceil(const Real value)
 {
     return std::ceil(value);
 }

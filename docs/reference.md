@@ -2,8 +2,10 @@
 
 Reference for NNM math library.
 
-Many functions and classes are templated with `template<typename Real>` where Real represents a floating point type such
-as float or double.
+Functions and classes are templated with either `Num`, `Real`, or `Int`. 
+ - `Num` means that any numeric type can be used such as `float` or `int`. 
+ - `Real` means that any floating point type can be used such as `float` or `double`.
+ - `Int` means that any integral type can be used such as `int` or `uint64_t`.
 
 ## Contents
 
@@ -39,25 +41,20 @@ NNM_BOUNDS_CHECK_ASSERT(msg, expression)
 ```c++
 Real pi();
 Real epsilon();
-Real sign(Real value);
-int sign(int value);
-Real abs(Real value);
-int abs(int value);
-Real max(Real a, Real b);
-int max(int a, int b);
+Num sign(Num value);
+Num abs(Num value);
+Num max(Num a, Num b);
 bool approx_zero(Real value);
 bool approx_equal(Real a, Real b);
 Real ceil(Real value);
-Real clamp(Real value, Real min, Real max);
-int clamp(int value, int min, int max);
+Num clamp(Num value, Num min, Num max);
 Real sqrt(Real value);
 Real pow(Real base, Real power);
-Real sqrd(Real value);
-int sqrd(int value);
-Real mod(Real a, Real b);
-int mod(int a, int b);
-Real rem(Real a, Real b);
-int rem(int a, int b);
+Num sqrd(Num value);
+Real modf(Real a, Real b);
+Int mod(Int a, Int b);
+Real remf(Real a, Real b);
+Int rem(Int a, Int b);
 Real normalize_angle(Real angle);
 bool angle_in_range(Real angle, Real from, Real to);
 Real floor(Real value);
@@ -73,8 +70,7 @@ Real radians(Real degrees);
 Real degrees(Real radians);
 Real asin(Real value);
 Real acos(Real value);
-Real min(Real a, Real b);
-int min(int a, int b);
+Num min(Num a, Num b);
 Real log2(Real value);
 ```
 
@@ -159,23 +155,23 @@ Vector2 transform(const Transform2& by, Real z = 1.0) const;
 Vector2 transform_at(const Vector2& origin, const Transform2& by, Real z = 1.0) const;
 Real max() const;
 Real min() const;
-int max_index() const;
-int min_index() const;
+uint8_t max_index() const;
+uint8_t min_index() const;
 bool approx_equal(const Vector2& other) const;
 bool approx_zero() const;
 const Real* begin() const;
 const Real* end() const;
 Real* begin();
 Real* end();
-Real at(const int index) const;
-Real& at(const int index);
+Real at(const uint8_t index) const;
+Real& at(const uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-Real operator[](int index) const;
-Real& operator[](int index);
+Real operator[](uint8_t index) const;
+Real& operator[](uint8_t index);
 bool operator==(const Vector2& other) const;
 bool operator!=(const Vector2& other) const;
 Vector2 operator+(const Vector2& other) const;
@@ -201,11 +197,26 @@ operator bool() const;
 
 ## Vector2i
 
+### Aliases
+
+```cpp
+using Vector2ii = Vector2i<int>;
+using Vector2i8 = Vector2i<int8_t>;
+using Vector2i16 = Vector2i<int16_t>;
+using Vector2i32 = Vector2i<int32_t>;
+using Vector2i64 = Vector2i<int64_t>;
+using Vector2iu = Vector2i<unsigned int>;
+using Vector2u8 = Vector2i<uint8_t>;
+using Vector2u16 = Vector2i<uint16_t>;
+using Vector2u32 = Vector2i<uint32_t>;
+using Vector2u64 = Vector2i<uint64_t>;
+```
+
 ### Members
 
 ```c++
-int x;
-int y;
+Int x;
+Int y;
 ```
 
 ### Constructors
@@ -213,13 +224,13 @@ int y;
 ```c++
 Vector2i();
 explicit Vector2i(const Vector2& vector);
-Vector2i(int x, int y);
+Vector2i(Int x, Int y);
 ```
 
 ### Static Methods
 
 ```c++
-static Vector2i all(int value);
+static Vector2i all(Int value);
 static Vector2i zero();
 static Vector2i one();
 static Vector2i axis_x();
@@ -231,30 +242,30 @@ static Vector2i axis_y();
 ```c++
 Vector2i abs() const;
 Vector2i clamp(const Vector2i& min, const Vector2i& max) const;
-int manhattan_distance(const Vector2i& to) const;
-int length_sqrd() const;
-int dot(const Vector2i& other) const;
-int cross(const Vector2i& other) const;
+Int manhattan_distance(const Vector2i& to) const;
+Int length_sqrd() const;
+Int dot(const Vector2i& other) const;
+Int cross(const Vector2i& other) const;
 bool parallel(const Vector2i& other) const;
 bool perpendicular(const Vector2i& other) const;
 Vector2i arbitrary_perpendicular() const;
-int max() const;
-int min() const;
-int max_index() const;
-int min_index() const;
-const int* begin() const;
-const int* end() const;
-int* begin();
-int* end();
-int at(const int index) const;
-int& at(const int index);
+Int max() const;
+Int min() const;
+uint8_t max_index() const;
+uint8_t min_index() const;
+const Int* begin() const;
+const Int* end() const;
+Int* begin();
+Int* end();
+Int at(const uint8_t index) const;
+Int& at(const uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-int operator[](int index) const;
-int& operator[](int index);
+Int operator[](uint8_t index) const;
+Int& operator[](uint8_t index);
 bool operator==(const Vector2i& other) const;
 bool operator!=(const Vector2i& other) const;
 Vector2i operator+(const Vector2i& other) const;
@@ -263,19 +274,19 @@ Vector2i operator-(const Vector2i& other) const;
 Vector2i& operator-=(const Vector2i& other);
 Vector2i operator*(const Vector2i& other) const;
 Vector2i& operator*=(const Vector2i& other);
-Vector2i operator*(int value) const;
-Vector2i operator*(int value, const Vector2i& vector);
-Vector2i& operator*=(int value);
+Vector2i operator*(Int value) const;
+Vector2i operator*(Int value, const Vector2i& vector);
+Vector2i& operator*=(Int value);
 Vector2i operator/(const Vector2i& other) const;
 Vector2i& operator/=(const Vector2i& other);
-Vector2i operator/(int value) const;
-Vector2i operator/(int value, const Vector2i& vector);
-Vector2i& operator/=(int value);
+Vector2i operator/(Int value) const;
+Vector2i operator/(Int value, const Vector2i& vector);
+Vector2i& operator/=(Int value);
 Vector2i operator%(const Vector2i& other) const;
 Vector2i& operator%=(const Vector2i& other);
-Vector2i operator%(int value) const;
-Vector2i operator&(int value, const Vector2i& vector);
-Vector2i& operator%=(int value);
+Vector2i operator%(Int value) const;
+Vector2i operator&(Int value, const Vector2i& vector);
+Vector2i& operator%=(Int value);
 Vector2i operator+() const;
 Vector2i operator-() const;
 bool operator<(const Vector2i& other) const;
@@ -379,8 +390,8 @@ Vector3 transform(const Transform3& by, Real w = 1.0) const;
 Vector3 transform_at(const Vector3& origin, const Transform3& by, Real w = 1.0) const;
 Real max() const;
 Real min() const;
-int max_index() const;
-int min_index() const;
+uint8_t max_index() const;
+uint8_t min_index() const;
 bool approx_equal(const Vector3& other) const;
 bool approx_zero() const;
 Vector2 xy() const;
@@ -388,15 +399,15 @@ const Real* begin() const;
 const Real* end() const;
 Real* begin();
 Real* end();
-Real at(int index) const;
-Real& at(int index);
+Real at(uint8_t index) const;
+Real& at(uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-Real operator[](int index) const;
-Real& operator[](int index);
+Real operator[](uint8_t index) const;
+Real& operator[](uint8_t index);
 bool operator==(const Vector3& other) const;
 bool operator!=(const Vector3& other) const;
 Vector3 operator+(const Vector3& other) const;
@@ -422,12 +433,25 @@ operator bool() const;
 
 ## Vector3i
 
+```cpp
+using Vector3ii = Vector3i<int>;
+using Vector3i8 = Vector3i<int8_t>;
+using Vector3i16 = Vector3i<int16_t>;
+using Vector3i32 = Vector3i<int32_t>;
+using Vector3i64 = Vector3i<int64_t>;
+using Vector3iu = Vector3i<unsigned int>;
+using Vector3u8 = Vector3i<uint8_t>;
+using Vector3u16 = Vector3i<uint16_t>;
+using Vector3u32 = Vector3i<uint32_t>;
+using Vector3u64 = Vector3i<uint64_t>;
+```
+
 ### Members
 
 ```c++
-int x;
-int y;
-int z;
+Int x;
+Int y;
+Int z;
 ```
 
 ### Constructors
@@ -435,14 +459,14 @@ int z;
 ```c++
 Vector3i();
 explicit Vector3i(const Vector3& vector);
-Vector3i(const Vector2i& vector, int z);
-Vector3i(int x, int y, int z);
+Vector3i(const Vector2i& vector, Int z);
+Vector3i(Int x, Int y, Int z);
 ```
 
 ### Static Methods
 
 ```c++
-static Vector3i all(int value);
+static Vector3i all(Int value);
 static Vector3i zero();
 static Vector3i one();
 static Vector3i axis_x();
@@ -455,31 +479,31 @@ static Vector3i axis_z();
 ```c++
 Vector3i abs() const;
 Vector3i clamp(const Vector3i& min, const Vector3i& max) const;
-int manhattan_distance(const Vector3i& to) const;
-int length_sqrd() const;
-int dot(const Vector3i& other) const;
+Int manhattan_distance(const Vector3i& to) const;
+Int length_sqrd() const;
+Int dot(const Vector3i& other) const;
 Vector3i cross(const Vector3i& other) const;
 bool parallel(const Vector3i& other) const;
 bool perpendicular(const Vector3i& other) const;
 Vector3i arbitrary_perpendicular() const;
-int max() const;
-int min() const;
-int max_index() const;
-int min_index() const;
+Int max() const;
+Int min() const;
+uint8_t max_index() const;
+uint8_t min_index() const;
 Vector2i xy() const;
-const int* begin() const;
-const int* end() const;
-int* begin();
-int* end();
-int at(int index) const;
-int& at(int index);
+const Int* begin() const;
+const Int* end() const;
+Int* begin();
+Int* end();
+Int at(uint8_t index) const;
+Int& at(uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-int operator[](int index) const;
-int& operator[](int index);
+Int operator[](uint8_t index) const;
+Int& operator[](uint8_t index);
 bool operator==(const Vector3i& other) const;
 bool operator!=(const Vector3i& other) const;
 Vector3i operator+(const Vector3i& other) const;
@@ -488,18 +512,18 @@ Vector3i operator-(const Vector3i& other) const;
 Vector3i& operator-=(const Vector3i& other);
 Vector3i operator*(const Vector3i& other) const;
 Vector3i& operator*=(const Vector3i& other);
-Vector3i operator*(int value) const;
-Vector3i operator*(int value, const Vector3i& vector);
-Vector3i& operator*=(int value);
+Vector3i operator*(Int value) const;
+Vector3i operator*(Int value, const Vector3i& vector);
+Vector3i& operator*=(Int value);
 Vector3i operator/(const Vector3i& other) const;
 Vector3i& operator/=(const Vector3i& other);
-Vector3i operator/(int value) const;
-Vector3i operator/(int value, const Vector3i& vector);
-Vector3i& operator/=(int value);
+Vector3i operator/(Int value) const;
+Vector3i operator/(Int value, const Vector3i& vector);
+Vector3i& operator/=(Int value);
 Vector3i operator%(const Vector3i& other) const;
 Vector3i& operator%=(const Vector3i& other);
-Vector3i operator%(int val) const;
-Vector3i& operator%=(int val);
+Vector3i operator%(Int val) const;
+Vector3i& operator%=(Int val);
 Vector3i operator+() const;
 Vector3i operator-() const;
 bool operator<(const Vector3i& other) const;
@@ -575,10 +599,10 @@ Matrix4 outer(const Vector4& other) const;
 Vector4 inverse() const;
 Vector4 transform(const Transform3& by) const;
 Vector4 transform_at(const Vector3& origin, const Transform3& by) const;
-int max() const;
-int min() const;
-int max_index() const;
-int min_index() const;
+Int max() const;
+Int min() const;
+uint8_t max_index() const;
+uint8_t min_index() const;
 bool approx_equal(const Vector4& other) const;
 bool approx_zero() const;
 Vector2 xy() const;
@@ -587,15 +611,15 @@ const Real* begin() const;
 const Real* end() const;
 Real* begin();
 Real* end();
-Real at(int index) const;
-Real& at(int index);
+Real at(uint8_t index) const;
+Real& at(uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-Real operator[](int index) const;
-Real& operator[](int index);
+Real operator[](uint8_t index) const;
+Real& operator[](uint8_t index);
 bool operator==(const Vector4& other) const;
 bool operator!=(const Vector4& other) const;
 Vector4 operator+(const Vector4& other) const;
@@ -668,15 +692,15 @@ Quaternion slerp(const Quaternion& to, Real weight) const;
 Quaternion rotate_axis_angle(const Vector3& axis, Real angle) const;
 Quaternion rotate_quaternion(const Quaternion& by) const;
 bool approx_equal(const Quaternion& other) const;
-Real at(int index) const;
-Real& at(int index);
+Real at(uint8_t index) const;
+Real& at(uint8_t index);
 ```
 
 ### Operators
 
 ```c++
-Real operator[](int index) const;
-Real& operator[](int index);
+Real operator[](uint8_t index) const;
+Real& operator[](uint8_t index);
 bool operator==(const Quaternion& other) const;
 bool operator!=(const Quaternion& other) const;
 Quaternion operator*(const Quaternion& other) const;
@@ -723,9 +747,9 @@ static Matrix2 identity();
 ```c++
 Real trace() const;
 Real determinant() const;
-Real minor_at(int column, int row) const;
+Real minor_at(uint8_t column, uint8_t row) const;
 Matrix2 minor() const;
-Real cofactor_at(int column, int row) const;
+Real cofactor_at(uint8_t column, uint8_t row) const;
 Matrix2 cofactor() const;
 Matrix2 transpose() const;
 Matrix2 adjugate() const;
@@ -733,10 +757,10 @@ Matrix2 unchecked_inverse() const;
 std::optional<Matrix2> inverse() const;
 bool approx_equal(const Matrix2& other) const;
 bool approx_zero() const;
-Vector2 at(int column) const;
-Vector2& at(int column);
-Real at(int column, int row) const;
-Real& at(int column, int row);
+Vector2 at(uint8_t column) const;
+Vector2& at(uint8_t column);
+Real at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 const Real* begin() const;
 const Real* end() const;
 Real* begin();
@@ -746,8 +770,8 @@ Real* end();
 ### Operators
 
 ```c++
-Vector2 operator[](int column) const;
-Vector2& operator[](int column);
+Vector2 operator[](uint8_t column) const;
+Vector2& operator[](uint8_t column);
 bool operator==(const Matrix2& other) const;
 bool operator!=(const Matrix2& other) const;
 Matrix2 operator+(const Matrix2& other) const;
@@ -818,17 +842,17 @@ Basis2 shear_y_local(Real angle_x) const;
 Basis2 transform(const Basis2& by) const;
 Basis2 transform_local(const Basis2& by) const;
 bool approx_equal(const Basis2& other) const;
-const Vector2& at(const int column) const;
-Vector2& at(const int column);
-const Real& at(int column, int row) const;
-Real& at(int column, int row);
+const Vector2& at(const uint8_t column) const;
+Vector2& at(const uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 ```
 
 ### Operators
 
 ```c++
-const Vector2& operator[](int index) const;
-Vector2& operator[](int index);
+const Vector2& operator[](uint8_t index) const;
+Vector2& operator[](uint8_t index);
 bool operator==(const Basis2& other) const;
 bool operator!=(const Basis2& other) const;
 bool operator<(const Basis2& other) const;
@@ -881,10 +905,10 @@ static Matrix3 identity();
 ```c++
 Real trace() const;
 Real determinant() const;
-Matrix2 minor_matrix_at(int column, int row) const;
-Real minor_at(int column, int row) const;
+Matrix2 minor_matrix_at(uint8_t column, uint8_t row) const;
+Real minor_at(uint8_t column, uint8_t row) const;
 Matrix3 minor() const;
-Real cofactor_at(int column, int row) const;
+Real cofactor_at(uint8_t column, uint8_t row) const;
 Matrix3 cofactor() const;
 Matrix3 transpose() const;
 Matrix3 adjugate() const;
@@ -892,10 +916,10 @@ Matrix3 unchecked_inverse() const;
 std::optional<Matrix3> inverse() const;
 bool approx_equal(const Matrix3& other) const;
 bool approx_zero() const;
-const Vector3& at(int column) const;
-Column& at(int column);
-const Real& at(int column, int row) const;
-Real& at(int column, int row);
+const Vector3& at(uint8_t column) const;
+Column& at(uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 const Real* begin() const;
 const Real* end() const;
 Real* begin();
@@ -905,8 +929,8 @@ Real* end();
 ### Operators
 
 ```c++
-const Vector3& operator[](int column) const;
-Vector3& operator[](int column);
+const Vector3& operator[](uint8_t column) const;
+Vector3& operator[](uint8_t column);
 bool operator==(const Matrix3& other) const;
 bool operator!=(const Matrix3& other) const;
 Matrix3 operator+(const Matrix3& other) const;
@@ -980,17 +1004,17 @@ Transform2 shear_y_local(Real angle_x) const;
 Transform2 transform(const Transform2& by) const;
 Transform2 transform_local(const Transform2& by) const;
 bool approx_equal(const Transform2& other) const;
-const Vector3& at(int column) const;
-Vector3& at(int column);
-const Real& at(int column, int row) const;
-Real& at(int column, int row);
+const Vector3& at(uint8_t column) const;
+Vector3& at(uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 ```
 
 ### Operators
 
 ```cpp
-const Vector3& operator[](int column) const;
-Vector3& operator[](int column);
+const Vector3& operator[](uint8_t column) const;
+Vector3& operator[](uint8_t column);
 bool operator==(const Transform2& other) const;
 bool operator!=(const Transform2& other) const;
 bool operator<(const Transform2& other) const;
@@ -1053,17 +1077,17 @@ Basis3 shear_z_local(Real angle_x, Real angle_y) const;
 Basis3 transform(const Basis3& by) const;
 Basis3 transform_local(const Basis3& by) const;
 bool approx_equal(const Basis3& other) const;
-const Vector3& at(int column) const;
-Vector3& at(const int column);
-const Real& at(int column, int row) const;
-Real& at(const int column, const int row);
+const Vector3& at(uint8_t column) const;
+Vector3& at(const uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(const uint8_t column, const uint8_t row);
 ```
 
 ### Operators
 
 ```cpp
-const Vector3& operator[](int index) const;
-Vector3& operator[](int index);
+const Vector3& operator[](uint8_t index) const;
+Vector3& operator[](uint8_t index);
 bool operator==(const Basis3& other) const;
 bool operator!=(const Basis3& other) const;
 bool operator<(const Basis3& other) const;
@@ -1123,10 +1147,10 @@ static Matrix4 identity();
 ```cpp
 Real trace() const;
 Real determinant() const;
-Matrix3 minor_matrix_at(int column, int row) const;
-Real minor_at(int column, int row) const;
+Matrix3 minor_matrix_at(uint8_t column, uint8_t row) const;
+Real minor_at(uint8_t column, uint8_t row) const;
 Matrix4 minor() const
-Real cofactor_at(int column, int row) const;
+Real cofactor_at(uint8_t column, uint8_t row) const;
 Matrix4 cofactor() const;
 Matrix4 transpose() const;
 Matrix4 adjugate() const;
@@ -1134,10 +1158,10 @@ Matrix4 unchecked_inverse() const;
 std::optional<Matrix4> inverse() const;
 bool approx_equal(const Matrix4& other) const;
 bool approx_zero() const;
-const Vector4& at(int column) const;
-Vector4& at(int column);
-const Real& at(int column, int row) const;
-Real& at(int column, int row);
+const Vector4& at(uint8_t column) const;
+Vector4& at(uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 const Real* begin() const;
 const Real* end() const;
 Real* begin();
@@ -1147,8 +1171,8 @@ Real* end();
 ### Operators
 
 ```cpp
-const Vector4& operator[](int index) const;
-Vector4& operator[](int index);
+const Vector4& operator[](uint8_t index) const;
+Vector4& operator[](uint8_t index);
 bool operator==(const Matrix4& other) const;
 bool operator!=(const Matrix4& other) const;
 Matrix4 operator+(const Matrix4& other) const;
@@ -1241,17 +1265,17 @@ Transform3 shear_z_local(Real angle_x, Real angle_y) const;
 Transform3 transform(const Transform3& by) const;
 Transform3 transform_local(const Transform3& by) const;
 bool approx_equal(const Transform3& other) const;
-const Vector4& at(int column) const;
-Vector4& at(int column);
-const Real& at(int column, int row) const;
-Real& at(int column, int row);
+const Vector4& at(uint8_t column) const;
+Vector4& at(uint8_t column);
+const Real& at(uint8_t column, uint8_t row) const;
+Real& at(uint8_t column, uint8_t row);
 ```
 
 ### Operators
 
 ```c++
-const Vector4& operator[](int column) const;
-Vector4& operator[](int column);
+const Vector4& operator[](uint8_t column) const;
+Vector4& operator[](uint8_t column);
 bool operator==(const Transform3& other) const;
 bool operator!=(const Transform3& other) const;
 bool operator<(const Transform3& other) const;
