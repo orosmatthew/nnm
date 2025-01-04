@@ -2,10 +2,11 @@
 
 Reference for NNM math library.
 
-Functions and classes are templated with either `Num`, `Real`, or `Int`. 
- - `Num` means that any numeric type can be used such as `float` or `int`. 
- - `Real` means that any floating point type can be used such as `float` or `double`.
- - `Int` means that any integral type can be used such as `int` or `uint64_t`.
+Functions and classes are templated with either `Num`, `Real`, or `Int`.
+
+- `Num` means that any numeric type can be used such as `float` or `int`.
+- `Real` means that any floating point type can be used such as `float` or `double`.
+- `Int` means that any integral type can be used such as `int` or `uint64_t`.
 
 ## Contents
 
