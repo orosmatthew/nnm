@@ -5,12 +5,12 @@
 ### Breaking Changes
 
 * Default template parameter for `Real` type is no longer specified as `float`.
-* Integer templates for various functions and classes such as `Vector2i` and `Vector3i` are not templated to allow for
+* Integer templates for various functions and classes such as `Vector2i` and `Vector3i` are now templated to allow for
   various integral types.
 * Removal of unions in classes to properly follow C++ standards which does not allow for multiple active union types at
   once.
 * Renamed `Real Vector2::angle(const Vector2& to)` to `Real Vector2::angle_between(const Vector2& other) const`.
-* Index types for vector and matrix classes are not `uint8_t` instead of `int`.
+* Index types for vector and matrix classes are now `uint8_t` instead of `int`.
 
 ### New Features
 
