@@ -173,15 +173,18 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
     }
 
+    test_case("modf");
+    {
+        ASSERT(nnm::approx_equal(nnm::modf(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::modf(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::modf(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::modf(-5.0f, 3.0f), 1.0f));
+        ASSERT(nnm::approx_equal(nnm::modf(5.0f, -3.0f), -1.0f));
+        ASSERT(nnm::approx_equal(nnm::modf(-5.0f, -3.0f), -2.0f));
+    }
+
     test_case("mod");
     {
-        ASSERT(nnm::approx_equal(nnm::mod(0.0f, 1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::mod(0.0f, -1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::mod(5.0f, 3.0f), 2.0f));
-        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, 3.0f), 1.0f));
-        ASSERT(nnm::approx_equal(nnm::mod(5.0f, -3.0f), -1.0f));
-        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, -3.0f), -2.0f));
-
         constexpr auto result = nnm::mod(0, 1);
         ASSERT(nnm::approx_equal(result, 0));
         ASSERT(nnm::approx_equal(nnm::mod(0, -1), 0));
@@ -191,15 +194,18 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::mod(-5, -3), -2));
     }
 
+    test_case("remf");
+    {
+        ASSERT(nnm::approx_equal(nnm::remf(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::remf(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::remf(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::remf(-5.0f, 3.0f), -2.0f));
+        ASSERT(nnm::approx_equal(nnm::remf(5.0f, -3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::remf(-5.0f, -3.0f), -2.0f));
+    }
+
     test_case("rem");
     {
-        ASSERT(nnm::approx_equal(nnm::rem(0.0f, 1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::rem(0.0f, -1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::rem(5.0f, 3.0f), 2.0f));
-        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, 3.0f), -2.0f));
-        ASSERT(nnm::approx_equal(nnm::rem(5.0f, -3.0f), 2.0f));
-        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, -3.0f), -2.0f));
-
         constexpr auto result = nnm::rem(0, 1);
         ASSERT(nnm::approx_equal(result, 0));
         ASSERT(nnm::approx_equal(nnm::rem(0, -1), 0));
@@ -1239,14 +1245,14 @@ inline void nnm_tests()
     {
         test_section("Vector2i()");
         {
-            constexpr nnm::Vector2i v1;
+            constexpr nnm::Vector2ii v1;
             ASSERT(v1.x == 0);
             ASSERT(v1.y == 0);
         }
 
         test_section("Vector2i(const Vector2&)");
         {
-            constexpr nnm::Vector2i v1(nnm::Vector2(1.1f, -10.7f));
+            constexpr nnm::Vector2ii v1(nnm::Vector2(1.1f, -10.7f));
             ASSERT(v1.x == 1);
             ASSERT(v1.y == -10);
         }
@@ -1260,35 +1266,35 @@ inline void nnm_tests()
 
         test_section("all");
         {
-            constexpr auto all_threes = nnm::Vector2i::all(3);
+            constexpr auto all_threes = nnm::Vector2ii::all(3);
             ASSERT(all_threes.x == 3);
             ASSERT(all_threes.y == 3);
         }
 
         test_section("zero");
         {
-            constexpr auto zero = nnm::Vector2i::zero();
+            constexpr auto zero = nnm::Vector2ii::zero();
             ASSERT(zero.x == 0);
             ASSERT(zero.y == 0);
         }
 
         test_section("one");
         {
-            constexpr auto one = nnm::Vector2i::one();
+            constexpr auto one = nnm::Vector2ii::one();
             ASSERT(one.x == 1);
             ASSERT(one.y == 1);
         }
 
         test_section("axis_x");
         {
-            constexpr auto x = nnm::Vector2i::axis_x();
+            constexpr auto x = nnm::Vector2ii::axis_x();
             ASSERT(x.x == 1);
             ASSERT(x.y == 0);
         }
 
         test_section("axis_y");
         {
-            constexpr auto y = nnm::Vector2i::axis_y();
+            constexpr auto y = nnm::Vector2ii::axis_y();
             ASSERT(y.x == 0);
             ASSERT(y.y == 1);
         }
@@ -2421,7 +2427,7 @@ inline void nnm_tests()
     {
         test_section("Vector3i()");
         {
-            constexpr nnm::Vector3i v_default;
+            constexpr nnm::Vector3ii v_default;
             ASSERT(v_default.x == 0);
             ASSERT(v_default.y == 0);
             ASSERT(v_default.z == 0);
@@ -2429,7 +2435,7 @@ inline void nnm_tests()
 
         test_section("Vector3i(const Vector3&)");
         {
-            constexpr nnm::Vector3i v(nnm::Vector3(1.1f, 0.2f, -1.6f));
+            constexpr nnm::Vector3ii v(nnm::Vector3(1.1f, 0.2f, -1.6f));
             ASSERT(v.x == 1);
             ASSERT(v.y == 0);
             ASSERT(v.z == -1);
@@ -2453,7 +2459,7 @@ inline void nnm_tests()
 
         test_section("all");
         {
-            constexpr auto v_all_threes = nnm::Vector3i::all(3);
+            constexpr auto v_all_threes = nnm::Vector3ii::all(3);
             ASSERT(v_all_threes.x == 3);
             ASSERT(v_all_threes.y == 3);
             ASSERT(v_all_threes.z == 3);
@@ -2461,7 +2467,7 @@ inline void nnm_tests()
 
         test_section("zero");
         {
-            constexpr auto v_zero = nnm::Vector3i::zero();
+            constexpr auto v_zero = nnm::Vector3ii::zero();
             ASSERT(v_zero.x == 0);
             ASSERT(v_zero.y == 0);
             ASSERT(v_zero.z == 0);
@@ -2469,7 +2475,7 @@ inline void nnm_tests()
 
         test_section("one");
         {
-            constexpr auto v_one = nnm::Vector3i::one();
+            constexpr auto v_one = nnm::Vector3ii::one();
             ASSERT(v_one.x == 1);
             ASSERT(v_one.y == 1);
             ASSERT(v_one.z == 1);
@@ -2477,7 +2483,7 @@ inline void nnm_tests()
 
         test_section("axis_x");
         {
-            constexpr auto x = nnm::Vector3i::axis_x();
+            constexpr auto x = nnm::Vector3ii::axis_x();
             ASSERT(x.x == 1);
             ASSERT(x.y == 0);
             ASSERT(x.z == 0);
@@ -2485,7 +2491,7 @@ inline void nnm_tests()
 
         test_section("axis_y");
         {
-            constexpr auto y = nnm::Vector3i::axis_y();
+            constexpr auto y = nnm::Vector3ii::axis_y();
             ASSERT(y.x == 0);
             ASSERT(y.y == 1);
             ASSERT(y.z == 0);
@@ -2493,7 +2499,7 @@ inline void nnm_tests()
 
         test_section("axis_z");
         {
-            constexpr auto z = nnm::Vector3i::axis_z();
+            constexpr auto z = nnm::Vector3ii::axis_z();
             ASSERT(z.x == 0);
             ASSERT(z.y == 0);
             ASSERT(z.z == 1);
@@ -2559,7 +2565,7 @@ inline void nnm_tests()
             constexpr nnm::Vector3i v1(1, -2, 3);
             constexpr nnm::Vector3i v2(-2, 4, -6);
             constexpr auto result = v1.cross(v2);
-            ASSERT(result == nnm::Vector3i::zero());
+            ASSERT(result == nnm::Vector3ii::zero());
             constexpr nnm::Vector3i v3(1, 2, 3);
             constexpr nnm::Vector3i v4(-2, 4, 6);
             ASSERT(v3.cross(v4) == nnm::Vector3i(0, -12, 8));

@@ -1398,7 +1398,7 @@ public:
         const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Real t) -> bool {
             const Vector2<Real> intersection = ray.origin + ray.direction * t;
-            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
         };
         const bool in_arc1 = t1 >= static_cast<Real>(0) ? in_arc(t1) : false;
@@ -1424,7 +1424,7 @@ public:
         const Real to_angle_ = angle_to();
         const auto intersection = [&](const Real t) -> std::optional<Vector2<Real>> {
             const Vector2<Real> point = ray.origin + ray.direction * t;
-            if (const Real intersection_angle = mod(pivot.angle_to(point) + two_pi, two_pi);
+            if (const Real intersection_angle = modf(pivot.angle_to(point) + two_pi, two_pi);
                 angle_in_range(intersection_angle, from_angle_, to_angle_)) {
                 return point;
             }
@@ -1465,7 +1465,7 @@ public:
         const Real from_angle_ = angle_from();
         const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
-            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
         };
         const auto in_segment
@@ -1496,7 +1496,7 @@ public:
         const Real from_angle_ = angle_from();
         const Real to_angle_ = angle_to();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
-            const Real intersection_angle = mod(pivot.angle_to(intersection) + two_pi, two_pi);
+            const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
         };
         const auto in_segment
