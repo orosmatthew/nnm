@@ -319,8 +319,8 @@ public:
     Real y;
 
     constexpr Vector2()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
     {
     }
 
@@ -328,14 +328,14 @@ public:
 
     template <typename Other>
     explicit constexpr Vector2(const Vector2<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
     {
     }
 
     constexpr Vector2(const Real x, const Real y)
-        : x(x)
-        , y(y)
+        : x { x }
+        , y { y }
     {
     }
 
@@ -763,21 +763,21 @@ public:
     int y;
 
     constexpr Vector2i()
-        : x(0)
-        , y(0)
+        : x { 0 }
+        , y { 0 }
     {
     }
 
     template <typename Real>
     explicit constexpr Vector2i(const Vector2<Real>& vector)
-        : x(static_cast<int>(vector.x))
-        , y(static_cast<int>(vector.y))
+        : x { static_cast<int>(vector.x) }
+        , y { static_cast<int>(vector.y) }
     {
     }
 
     constexpr Vector2i(const int x, const int y)
-        : x(x)
-        , y(y)
+        : x { x }
+        , y { y }
     {
     }
 
@@ -1083,9 +1083,9 @@ public:
     Real z;
 
     constexpr Vector3()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
     {
     }
 
@@ -1093,23 +1093,23 @@ public:
 
     template <typename Other>
     explicit constexpr Vector3(const Vector3<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
-        , z(static_cast<Real>(vector.z))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+        , z { static_cast<Real>(vector.z) }
     {
     }
 
     constexpr Vector3(const Vector2<Real>& vector, const Real z)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
     {
     }
 
     constexpr Vector3(const Real x, const Real y, const Real z)
-        : x(x)
-        , y(y)
-        , z(z)
+        : x { x }
+        , y { y }
+        , z { z }
     {
     }
 
@@ -1569,31 +1569,31 @@ public:
     int z;
 
     constexpr Vector3i()
-        : x(0)
-        , y(0)
-        , z(0)
+        : x { 0 }
+        , y { 0 }
+        , z { 0 }
     {
     }
 
     template <typename Real>
     explicit constexpr Vector3i(const Vector3<Real>& vector)
-        : x(static_cast<int>(vector.x))
-        , y(static_cast<int>(vector.y))
-        , z(static_cast<int>(vector.z))
+        : x { static_cast<int>(vector.x) }
+        , y { static_cast<int>(vector.y) }
+        , z { static_cast<int>(vector.z) }
     {
     }
 
     constexpr Vector3i(const Vector2i& vector, const int z)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
     {
     }
 
     constexpr Vector3i(const int x, const int y, const int z)
-        : x(x)
-        , y(y)
-        , z(z)
+        : x { x }
+        , y { y }
+        , z { z }
     {
     }
 
@@ -1923,43 +1923,43 @@ public:
     Real w;
 
     constexpr Vector4()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
-        , w(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
+        , w { static_cast<Real>(0) }
     {
     }
 
     template <typename Other>
     explicit constexpr Vector4(const Vector4<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
-        , z(static_cast<Real>(vector.z))
-        , w(static_cast<Real>(vector.w))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+        , z { static_cast<Real>(vector.z) }
+        , w { static_cast<Real>(vector.w) }
     {
     }
 
     constexpr Vector4(const Vector2<Real>& vector, const Real z, const Real w)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
-        , w(w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
+        , w { w }
     {
     }
 
     constexpr Vector4(const Vector3<Real>& vector, const Real w)
-        : x(vector.x)
-        , y(vector.y)
-        , z(vector.z)
-        , w(w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { vector.z }
+        , w { w }
     {
     }
 
     constexpr Vector4(const Real x, const Real y, const Real z, const Real w)
-        : x(x)
-        , y(y)
-        , z(z)
-        , w(w)
+        : x { x }
+        , y { y }
+        , z { z }
+        , w { w }
     {
     }
 
@@ -2348,35 +2348,35 @@ public:
     Real w;
 
     constexpr Quaternion()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
-        , w(static_cast<Real>(1))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
+        , w { static_cast<Real>(1) }
     {
     }
 
     template <typename Other>
     explicit constexpr Quaternion(const Quaternion<Other>& quaternion)
-        : x(static_cast<Real>(quaternion.x))
-        , y(static_cast<Real>(quaternion.y))
-        , z(static_cast<Real>(quaternion.z))
-        , w(static_cast<Real>(quaternion.w))
+        : x { static_cast<Real>(quaternion.x) }
+        , y { static_cast<Real>(quaternion.y) }
+        , z { static_cast<Real>(quaternion.z) }
+        , w { static_cast<Real>(quaternion.w) }
     {
     }
 
     explicit constexpr Quaternion(const Vector4<Real>& vector)
-        : x(vector.x)
-        , y(vector.y)
-        , z(vector.z)
-        , w(vector.w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { vector.z }
+        , w { vector.w }
     {
     }
 
     constexpr Quaternion(const Real x, const Real y, const Real z, const Real w)
-        : x(x)
-        , y(y)
-        , z(z)
-        , w(w)
+        : x { x }
+        , y { y }
+        , z { z }
+        , w { w }
     {
     }
 
@@ -4733,8 +4733,8 @@ public:
 
 template <typename Real>
 constexpr Vector2<Real>::Vector2(const Vector2i& vector)
-    : x(static_cast<Real>(vector.x))
-    , y(static_cast<Real>(vector.y))
+    : x { static_cast<Real>(vector.x) }
+    , y { static_cast<Real>(vector.y) }
 {
 }
 
@@ -4839,9 +4839,9 @@ Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 
 template <typename Real>
 constexpr Vector3<Real>::Vector3(const Vector3i& vector)
-    : x(static_cast<Real>(vector.x))
-    , y(static_cast<Real>(vector.y))
-    , z(static_cast<Real>(vector.z))
+    : x { static_cast<Real>(vector.x) }
+    , y { static_cast<Real>(vector.y) }
+    , z { static_cast<Real>(vector.z) }
 {
 }
 
