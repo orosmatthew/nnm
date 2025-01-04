@@ -277,63 +277,64 @@ inline void geom3_tests()
 
         test_section("rotate_axis_angle_at");
         {
-            const auto r1 = l1.rotate_axis_angle_at({ 5.0f, 6.0f, -7.0f }, { 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1
+                = l1.rotate_axis_angle_at({ 5.0f, 6.0f, -7.0f }, { 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             ASSERT(r1.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_axis_angle");
         {
-            const auto r1 = l1.rotate_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1 = l1.rotate_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             ASSERT(r1.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_quaternion_at");
         {
-            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             const auto r1 = l1.rotate_quaternion_at({ 5.0f, 6.0f, -7.0f }, q1);
             ASSERT(r1.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_quaternion");
         {
-            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             const auto r1 = l1.rotate_quaternion(q1);
             ASSERT(r1.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("shear_x_at");
         {
-            const auto s1 = l1.shear_x_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_x_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { -10.5858f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
         }
 
         test_section("shear_x");
         {
-            const auto s1 = l1.shear_x(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_x(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { -2.18514f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
         }
 
         test_section("shear_y_at");
         {
-            const auto s1 = l1.shear_y_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_y_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -10.6796f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
         }
 
         test_section("shear_y");
         {
-            const auto s1 = l1.shear_y(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_y(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -3.00551f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
         }
 
         test_section("shear_z_at");
         {
-            const auto s1 = l1.shear_z_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_z_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.7126f }, { 0.369916f, -0.369916f, 0.852246f } }));
         }
 
         test_section("shear_z");
         {
-            const auto s1 = l1.shear_z(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = l1.shear_z(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.88124275f }, { 0.369916f, -0.369916f, 0.852246f } }));
         }
 
@@ -585,63 +586,64 @@ inline void geom3_tests()
 
         test_section("rotate_axis_angle_at");
         {
-            const auto r1r = r2.rotate_axis_angle_at({ 5.0f, 6.0f, -7.0f }, { 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1r
+                = r2.rotate_axis_angle_at({ 5.0f, 6.0f, -7.0f }, { 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             ASSERT(r1r.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_axis_angle");
         {
-            const auto r1r = r2.rotate_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto r1r = r2.rotate_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             ASSERT(r1r.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_quaternion_at");
         {
-            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             const auto r = r2.rotate_quaternion_at({ 5.0f, 6.0f, -7.0f }, q1);
             ASSERT(r.approx_equal({ { 1.0f, -6.72792244f, -5.58578634f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("rotate_quaternion");
         {
-            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi() / 4.0f);
+            const auto q1 = nnm::QuaternionF::from_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
             const auto r = r2.rotate_quaternion(q1);
             ASSERT(r.approx_equal({ { 1.0f, -3.5355f, 0.7071f }, { 0.577350318f, -0.816496611f, 0.0f } }));
         }
 
         test_section("shear_x_at");
         {
-            const auto s1 = r2.shear_x_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_x_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { -10.5858f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
         }
 
         test_section("shear_x");
         {
-            const auto s1 = r2.shear_x(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_x(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { -2.18514f, -2.0f, 3.0f }, { -0.210089f, -0.691326f, 0.69132f } }));
         }
 
         test_section("shear_y_at");
         {
-            const auto s1 = r2.shear_y_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_y_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -10.6796f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
         }
 
         test_section("shear_y");
         {
-            const auto s1 = r2.shear_y(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_y(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -3.00551f, 3.0f }, { 0.605908f, -0.515511f, 0.605908f } }));
         }
 
         test_section("shear_z_at");
         {
-            const auto s1 = r2.shear_z_at({ 5.0f, 6.0f, -7.0f }, nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_z_at({ 5.0f, 6.0f, -7.0f }, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.7126f }, { 0.369916f, -0.369916f, 0.852246f } }));
         }
 
         test_section("shear_z");
         {
-            const auto s1 = r2.shear_z(nnm::pi() / 5.0f, -nnm::pi() / 6.0f);
+            const auto s1 = r2.shear_z(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f);
             ASSERT(s1.approx_equal({ { 1.0f, -2.0f, 4.88124275f }, { 0.369916f, -0.369916f, 0.852246f } }));
         }
 

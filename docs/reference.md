@@ -2,7 +2,8 @@
 
 Reference for NNM math library.
 
-Many functions and classes are templated with `template<typename Real = float>` and thus any function/class that references the `Real` type is templated with a default template value of float.
+Many functions and classes are templated with `template<typename Real>` where Real represents a floating point type such
+as float or double.
 
 ## Contents
 
@@ -89,13 +90,8 @@ using Vector2d = Vector2<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-    };
-    Real data[2] {};
-};
+Real x;
+Real y;
 ```
 
 ### Constructors
@@ -149,11 +145,17 @@ bool approx_perpendicular(const Vector2& other) const;
 Vector2 arbitrary_perpendicular() const;
 Vector2 translate(const Vector2& by) const;
 Vector2 rotate(Real angle) const;
+Vector2 rotate_at(const Vector2& origin, Real angle) const;
 Vector2 scale(const Vector2& factor) const;
+Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
 Vector2 shear_x(Real angle_y) const;
+Vector2 shear_x_at(const Vector2& origin, Real angle_y) const;
 Vector2 shear_y(Real angle_x) const;
+Vector2 shear_y_at(const Vector2& origin, Real angle_x) const;
 Vector2 transform(const Basis2& by) const;
+Vector2 transform_at(const Vector2& origin, const Basis2& by) const;
 Vector2 transform(const Transform2& by, Real z = 1.0) const;
+Vector2 transform_at(const Vector2& origin, const Transform2& by, Real z = 1.0) const;
 Real max() const;
 Real min() const;
 int max_index() const;
@@ -201,13 +203,8 @@ operator bool() const;
 ### Members
 
 ```c++
-union {
-    struct {
-        int x;
-        int y;
-    };
-    int data[2] {};
-};
+int x;
+int y;
 ```
 
 ### Constructors
@@ -305,14 +302,9 @@ using Vector3d = Vector3<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-    };
-    Real data[3] {};
-};
+Real x;
+Real y;
+Real z;
 ```
 
 ### Constructors
@@ -367,14 +359,23 @@ bool approx_perpendicular(const Vector3& other) const;
 Vector3 arbitrary_perpendicular() const;
 Vector3 translate(const Vector3& by) const;
 Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
+Vector3 rotate_axis_angle_at(const Vector3& origin, const Vector3& axis, Real angle) const;
 Vector3 rotate_quaternion(const Quaternion& quaternion) const;
+Vector3 rotate_quaternion_at(const Vector3& origin, const Quaternion& quaternion) const;
 Vector3 scale(const Vector3& factor) const;
+Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
 Vector3 shear_x(Real angle_y, Real angle_z) const;
+Vector3 shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const;
 Vector3 shear_y(Real angle_x, Real angle_z) const;
+Vector3 shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const;
 Vector3 shear_z(Real angle_x, Real angle_y) const;
+Vector3 shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const;
 Vector3 transform(const Basis3& by) const;
+Vector3 transform_at(const Vector3& origin, const Basis3& by) const;
 Vector3 transform(const Transform2& by) const;
+Vector3 transform_at(const Vector2& origin, const Transform2& by) const;
 Vector3 transform(const Transform3& by, Real w = 1.0) const;
+Vector3 transform_at(const Vector3& origin, const Transform3& by, Real w = 1.0) const;
 Real max() const;
 Real min() const;
 int max_index() const;
@@ -423,14 +424,9 @@ operator bool() const;
 ### Members
 
 ```c++
-union {
-    struct {
-        int x;
-        int y;
-        int z;
-    };
-    int data[3] {};
-};
+int x;
+int y;
+int z;
 ```
 
 ### Constructors
@@ -441,6 +437,7 @@ explicit Vector3i(const Vector3& vector);
 Vector3i(const Vector2i& vector, int z);
 Vector3i(int x, int y, int z);
 ```
+
 ### Static Methods
 
 ```c++
@@ -529,15 +526,10 @@ using Vector4d = Vector4<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-        Real w;
-    };
-    Real data[4] {};
-};
+Real x;
+Real y;
+Real z;
+Real w;
 ```
 
 ### Constructors
@@ -553,6 +545,7 @@ Vector4(Real x, Real y, Real z, Real w);
 ### Static Methods
 
 ```c++
+static Vector4 from_quaternion(const Quaternion& quaternion);
 static Vector4 all(Real value);
 static Vector4 zero();
 static Vector4 one();
@@ -579,14 +572,8 @@ Vector4 lerp_clamped(const Vector4& to, Real weight) const;
 Real dot(const Vector4& other) const;
 Matrix4 outer(const Vector4& other) const;
 Vector4 inverse() const;
-Vector4 translate(const Vector3& by) const;
-Vector4 rotate_axis_angle(const Vector3& axis, Real angle) const;
-Vector4 rotate_quaternion(const Quaternion& quaternion) const;
-Vector4 scale(const Vector3& factor) const;
-Vector4 shear_x(Real angle_y, Real angle_z) const;
-Vector4 shear_y(Real angle_x, Real angle_z) const;
-Vector4 shear_z(Real angle_x, Real angle_y) const;
-Vector4 transform(const Transform& by) const;
+Vector4 transform(const Transform3& by) const;
+Vector4 transform_at(const Vector3& origin, const Transform3& by) const;
 int max() const;
 int min() const;
 int max_index() const;
@@ -642,16 +629,10 @@ using QuaternionD = Quaternion<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real x;
-        Real y;
-        Real z;
-        Real w;
-    };
-    Vector4 vector;
-    Real data[4] {};
-}
+Real x;
+Real y;
+Real z;
+Real w;
 ```
 
 ### Constructors
@@ -715,16 +696,7 @@ using Matrix2d = Matrix2<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col1_row0;
-        Real col1_row1;
-    };
-    Vector2 columns[2];
-    Real data[4] {};
-};
+Vector2 columns[2];
 ```
 
 ### Constructors
@@ -873,21 +845,7 @@ using Matrix3d = Matrix3<double>;
 ### Members
 
 ```c++
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col0_row2;
-        Real col1_row0;
-        Real col1_row1;
-        Real col1_row2;
-        Real col2_row0;
-        Real col2_row1;
-        Real col2_row2;
-    };
-    Vector3 columns[3];
-    Real data[9] {};
-};
+Vector3 columns[3];
 ```
 
 ### Constructors
@@ -977,11 +935,13 @@ using Transform2d = Transform2<double>;
 ```
 
 ### Members
+
 ```c++
 Matrix3 matrix;
 ```
 
 ### Constructors
+
 ```c++
 Transform2();
 explicit Transform2(const Transform2<Other>& transform);
@@ -996,6 +956,7 @@ static Transform2 from_shear_y(Real angle_x);
 ```
 
 ### Methods
+
 ```c++
 Real trace() const;
 Real determinant() const;
@@ -1119,28 +1080,7 @@ using Matrix4d = Matrix4<double>;
 ### Members
 
 ```cpp
-union {
-    struct {
-        Real col0_row0;
-        Real col0_row1;
-        Real col0_row2;
-        Real col0_row3;
-        Real col1_row0;
-        Real col1_row1;
-        Real col1_row2;
-        Real col1_row3;
-        Real col2_row0;
-        Real col2_row1;
-        Real col2_row2;
-        Real col2_row3;
-        Real col3_row0;
-        Real col3_row1;
-        Real col3_row2;
-        Real col3_row3;
-    };
-    Vector4 columns[4];
-    Real data[16] {};
-};
+Vector4 columns[4];
 ```
 
 ### Constructors

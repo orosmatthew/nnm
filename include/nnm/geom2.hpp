@@ -2771,7 +2771,7 @@ public:
 
     [[nodiscard]] bool approx_right() const
     {
-        constexpr Real right_angle = pi() / static_cast<Real>(2);
+        constexpr Real right_angle = pi<float>() / static_cast<Real>(2);
         return nnm::approx_equal(angle(0), right_angle) || nnm::approx_equal(angle(1), right_angle)
             || nnm::approx_equal(angle(2), right_angle);
     }
@@ -3503,13 +3503,13 @@ public:
 
     static AlignedRectangle2 from_bounding_arc(const Arc2<Real>& arc)
     {
-        const Real half_pi = pi() / static_cast<Real>(2);
+        const Real half_pi = pi<float>() / static_cast<Real>(2);
         std::array<std::optional<Vector2<Real>>, 6> points {
             arc.from,
             arc.to(),
             arc.point_at(static_cast<Real>(0)),
             arc.point_at(half_pi),
-            arc.point_at(pi()),
+            arc.point_at(pi<float>()),
             arc.point_at(-half_pi)
         };
         Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };

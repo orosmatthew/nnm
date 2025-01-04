@@ -23,19 +23,20 @@
 #endif
 
 namespace nnm {
-template <typename Real = float>
+
+template <typename Real>
 constexpr Real pi()
 {
     return static_cast<Real>(3.141592653589793238462643383279502);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real epsilon()
 {
     return static_cast<Real>(0.00001);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real sign(const Real value)
 {
     if (value < static_cast<Real>(0)) {
@@ -52,7 +53,7 @@ constexpr int sign(const int value)
     return 1;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real abs(const Real value)
 {
     if (value < static_cast<Real>(0)) {
@@ -69,7 +70,7 @@ constexpr int abs(const int value)
     return value;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real max(const Real a, const Real b)
 {
     if (a > b) {
@@ -86,7 +87,7 @@ constexpr int max(const int a, const int b)
     return b;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr bool approx_zero(const Real value)
 {
     Real tolerance = epsilon<Real>() * abs(value);
@@ -94,7 +95,7 @@ constexpr bool approx_zero(const Real value)
     return abs(value) <= tolerance;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr bool approx_equal(const Real a, const Real b)
 {
     if (a == b) {
@@ -105,13 +106,13 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real ceil(const Real value)
 {
     return std::ceil(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real clamp(const Real value, const Real min, const Real max)
 {
     if (value < min) {
@@ -134,19 +135,19 @@ constexpr int clamp(const int value, const int min, const int max)
     return value;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real sqrt(const Real value)
 {
     return std::sqrt(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real pow(const Real base, const Real power)
 {
     return std::pow(base, power);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real sqrd(const Real value)
 {
     return value * value;
@@ -210,13 +211,13 @@ Real floor(const Real value)
     return std::floor(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real lerp(const Real from, const Real to, const Real weight)
 {
     return from + weight * (to - from);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
     if (weight >= static_cast<Real>(1)) {
@@ -228,67 +229,67 @@ constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
     return lerp(from, to, weight);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real sin(const Real value)
 {
     return std::sin(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real cos(const Real value)
 {
     return std::cos(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real tan(const Real value)
 {
     return std::tan(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real round(const Real value)
 {
     return std::round(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real atan(const Real value)
 {
     return std::atan(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real atan2(const Real a, const Real b)
 {
     return std::atan2(a, b);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real radians(const Real degrees)
 {
     return pi<Real>() / static_cast<Real>(180) * degrees;
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real degrees(const Real radians)
 {
     return static_cast<Real>(180) / pi<Real>() * radians;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real asin(const Real value)
 {
     return std::asin(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 Real acos(const Real value)
 {
     return std::acos(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Real min(const Real a, const Real b)
 {
     if (a < b) {
@@ -305,74 +306,68 @@ constexpr int min(const int a, const int b)
     return b;
 }
 
-template <typename Real = float>
+template <typename Real>
 Real log2(const Real value)
 {
     return std::log2(value);
 }
 
-template <typename Real = float>
+template <typename Real>
 class Vector2;
-using Vector2f = Vector2<>;
+using Vector2f = Vector2<float>;
 using Vector2d = Vector2<double>;
 class Vector2i;
-template <typename Real = float>
+template <typename Real>
 class Vector3;
-using Vector3f = Vector3<>;
+using Vector3f = Vector3<float>;
 using Vector3d = Vector3<double>;
 class Vector3i;
-template <typename Real = float>
+template <typename Real>
 class Vector4;
-using Vector4f = Vector4<>;
+using Vector4f = Vector4<float>;
 using Vector4d = Vector4<double>;
-template <typename Real = float>
+template <typename Real>
 class Quaternion;
-using QuaternionF = Quaternion<>;
+using QuaternionF = Quaternion<float>;
 using QuaternionD = Quaternion<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix2;
-using Matrix2f = Matrix2<>;
+using Matrix2f = Matrix2<float>;
 using Matrix2d = Matrix2<double>;
-template <typename Real = float>
+template <typename Real>
 class Basis2;
-using Basis2f = Basis2<>;
+using Basis2f = Basis2<float>;
 using Basis2d = Basis2<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix3;
-using Matrix3f = Matrix3<>;
+using Matrix3f = Matrix3<float>;
 using Matrix3d = Matrix3<double>;
-template <typename Real = float>
+template <typename Real>
 class Transform2;
-using Transform2f = Transform2<>;
+using Transform2f = Transform2<float>;
 using Transform2d = Transform2<double>;
-template <typename Real = float>
+template <typename Real>
 class Basis3;
-using Basis3f = Basis3<>;
+using Basis3f = Basis3<float>;
 using Basis3d = Basis3<double>;
-template <typename Real = float>
+template <typename Real>
 class Matrix4;
-using Matrix4f = Matrix4<>;
+using Matrix4f = Matrix4<float>;
 using Matrix4d = Matrix4<double>;
-template <typename Real = float>
+template <typename Real>
 class Transform3;
-using Transform3f = Transform3<>;
+using Transform3f = Transform3<float>;
 using Transform3d = Transform3<double>;
 
 template <typename Real>
 class Vector2 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-        };
-
-        Real data[2] {};
-    };
+    Real x;
+    Real y;
 
     constexpr Vector2()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
     {
     }
 
@@ -380,14 +375,14 @@ public:
 
     template <typename Other>
     explicit constexpr Vector2(const Vector2<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
     {
     }
 
     constexpr Vector2(const Real x, const Real y)
-        : x(x)
-        , y(y)
+        : x { x }
+        , y { y }
     {
     }
 
@@ -655,46 +650,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 2;
+        return &y + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 2;
+        return &y + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector2& other) const
@@ -808,13 +803,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Vector2<Real> constexpr operator*(const Real value, const Vector2<Real>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
-template <typename Real = float>
+template <typename Real>
 Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 {
     return { value / vector.x, value / vector.y };
@@ -822,31 +817,25 @@ Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 
 class Vector2i {
 public:
-    union {
-        struct {
-            int x;
-            int y;
-        };
-
-        int data[2] {};
-    };
+    int x;
+    int y;
 
     constexpr Vector2i()
-        : x(0)
-        , y(0)
+        : x { 0 }
+        , y { 0 }
     {
     }
 
-    template <typename Real = float>
+    template <typename Real>
     explicit constexpr Vector2i(const Vector2<Real>& vector)
-        : x(static_cast<int>(vector.x))
-        , y(static_cast<int>(vector.y))
+        : x { static_cast<int>(vector.x) }
+        , y { static_cast<int>(vector.y) }
     {
     }
 
     constexpr Vector2i(const int x, const int y)
-        : x(x)
-        , y(y)
+        : x { x }
+        , y { y }
     {
     }
 
@@ -954,46 +943,46 @@ public:
 
     [[nodiscard]] const int* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data + 2;
+        return &y + 1;
     }
 
     int* begin()
     {
-        return data;
+        return &x;
     }
 
     int* end()
     {
-        return data + 2;
+        return &y + 1;
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index >= 0 && index <= 1);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector2i& other) const
@@ -1147,20 +1136,14 @@ constexpr Vector2i operator%(const int value, const Vector2i& vector)
 template <typename Real>
 class Vector3 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-        };
-
-        Real data[3] {};
-    };
+    Real x;
+    Real y;
+    Real z;
 
     constexpr Vector3()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
     {
     }
 
@@ -1168,23 +1151,23 @@ public:
 
     template <typename Other>
     explicit constexpr Vector3(const Vector3<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
-        , z(static_cast<Real>(vector.z))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+        , z { static_cast<Real>(vector.z) }
     {
     }
 
     constexpr Vector3(const Vector2<Real>& vector, const Real z)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
     {
     }
 
     constexpr Vector3(const Real x, const Real y, const Real z)
-        : x(x)
-        , y(y)
-        , z(z)
+        : x { x }
+        , y { y }
+        , z { z }
     {
     }
 
@@ -1469,46 +1452,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 3;
+        return &z + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 3;
+        return &z + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector3& other) const
@@ -1614,10 +1597,10 @@ public:
     [[nodiscard]] bool operator<(const Vector3& other) const
     {
         for (int i = 0; i < 3; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -1630,13 +1613,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 constexpr Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
-template <typename Real = float>
+template <typename Real>
 constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
@@ -1644,42 +1627,36 @@ constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 
 class Vector3i {
 public:
-    union {
-        struct {
-            int x;
-            int y;
-            int z;
-        };
-
-        int data[3] {};
-    };
+    int x;
+    int y;
+    int z;
 
     constexpr Vector3i()
-        : x(0)
-        , y(0)
-        , z(0)
+        : x { 0 }
+        , y { 0 }
+        , z { 0 }
     {
     }
 
-    template <typename Real = float>
+    template <typename Real>
     explicit constexpr Vector3i(const Vector3<Real>& vector)
-        : x(static_cast<int>(vector.x))
-        , y(static_cast<int>(vector.y))
-        , z(static_cast<int>(vector.z))
+        : x { static_cast<int>(vector.x) }
+        , y { static_cast<int>(vector.y) }
+        , z { static_cast<int>(vector.z) }
     {
     }
 
     constexpr Vector3i(const Vector2i& vector, const int z)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
     {
     }
 
     constexpr Vector3i(const int x, const int y, const int z)
-        : x(x)
-        , y(y)
-        , z(z)
+        : x { x }
+        , y { y }
+        , z { z }
     {
     }
 
@@ -1772,10 +1749,10 @@ public:
     [[nodiscard]] int max_index() const
     {
         int max_axis = 0;
-        if (y > data[max_axis]) {
+        if (y > at(max_axis)) {
             max_axis = 1;
         }
-        if (z > data[max_axis]) {
+        if (z > at(max_axis)) {
             max_axis = 2;
         }
         return max_axis;
@@ -1784,10 +1761,10 @@ public:
     [[nodiscard]] int min_index() const
     {
         int min_axis = 0;
-        if (y < data[min_axis]) {
+        if (y < at(min_axis)) {
             min_axis = 1;
         }
-        if (z < data[min_axis]) {
+        if (z < at(min_axis)) {
             min_axis = 2;
         }
         return min_axis;
@@ -1800,46 +1777,46 @@ public:
 
     [[nodiscard]] const int* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const int* end() const
     {
-        return data + 3;
+        return &z + 1;
     }
 
     int* begin()
     {
-        return data;
+        return &x;
     }
 
     int* end()
     {
-        return data + 3;
+        return &z + 1;
     }
 
     [[nodiscard]] int at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] int operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     int& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index >= 0 && index <= 2);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector3i& other) const
@@ -1969,10 +1946,10 @@ public:
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
         for (int i = 0; i < 3; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -2003,57 +1980,53 @@ constexpr Vector3i operator%(const int value, const Vector3i& vector)
 template <typename Real>
 class Vector4 {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-            Real w;
-        };
-
-        Real data[4] {};
-    };
+    Real x;
+    Real y;
+    Real z;
+    Real w;
 
     constexpr Vector4()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
-        , w(static_cast<Real>(0))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
+        , w { static_cast<Real>(0) }
     {
     }
 
     template <typename Other>
     explicit constexpr Vector4(const Vector4<Other>& vector)
-        : x(static_cast<Real>(vector.x))
-        , y(static_cast<Real>(vector.y))
-        , z(static_cast<Real>(vector.z))
-        , w(static_cast<Real>(vector.w))
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+        , z { static_cast<Real>(vector.z) }
+        , w { static_cast<Real>(vector.w) }
     {
     }
 
     constexpr Vector4(const Vector2<Real>& vector, const Real z, const Real w)
-        : x(vector.x)
-        , y(vector.y)
-        , z(z)
-        , w(w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { z }
+        , w { w }
     {
     }
 
     constexpr Vector4(const Vector3<Real>& vector, const Real w)
-        : x(vector.x)
-        , y(vector.y)
-        , z(vector.z)
-        , w(w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { vector.z }
+        , w { w }
     {
     }
 
     constexpr Vector4(const Real x, const Real y, const Real z, const Real w)
-        : x(x)
-        , y(y)
-        , z(z)
-        , w(w)
+        : x { x }
+        , y { y }
+        , z { z }
+        , w { w }
     {
     }
+
+    static constexpr Vector4 from_quaternion(const Quaternion<Real>& quaternion);
 
     static constexpr Vector4 all(const Real value)
     {
@@ -2199,13 +2172,13 @@ public:
     [[nodiscard]] int max_index() const
     {
         int max_axis = 0;
-        if (y > data[max_axis]) {
+        if (y > at(max_axis)) {
             max_axis = 1;
         }
-        if (z > data[max_axis]) {
+        if (z > at(max_axis)) {
             max_axis = 2;
         }
-        if (w > data[max_axis]) {
+        if (w > at(max_axis)) {
             max_axis = 3;
         }
         return max_axis;
@@ -2214,13 +2187,13 @@ public:
     [[nodiscard]] int min_index() const
     {
         int min_axis = 0;
-        if (y < data[min_axis]) {
+        if (y < at(min_axis)) {
             min_axis = 1;
         }
-        if (z < data[min_axis]) {
+        if (z < at(min_axis)) {
             min_axis = 2;
         }
-        if (w < data[min_axis]) {
+        if (w < at(min_axis)) {
             min_axis = 3;
         }
         return min_axis;
@@ -2249,46 +2222,46 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return &x;
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 4;
+        return &w + 1;
     }
 
     Real* begin()
     {
-        return data;
+        return &x;
     }
 
     Real* end()
     {
-        return data + 4;
+        return &w + 1;
     }
 
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index >= 0 && index <= 3);
-        return data[index];
+        return *(begin() + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Vector4& other) const
@@ -2390,10 +2363,10 @@ public:
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
         for (int i = 0; i < 4; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) > other.at(i)) {
                 return false;
             }
         }
@@ -2417,13 +2390,13 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
 
-template <typename Real = float>
+template <typename Real>
 Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
@@ -2432,48 +2405,41 @@ Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 template <typename Real>
 class Quaternion {
 public:
-    union {
-        struct {
-            Real x;
-            Real y;
-            Real z;
-            Real w;
-        };
-
-        Vector4<Real> vector;
-        Real data[4] {};
-    };
+    Real x;
+    Real y;
+    Real z;
+    Real w;
 
     constexpr Quaternion()
-        : x(static_cast<Real>(0))
-        , y(static_cast<Real>(0))
-        , z(static_cast<Real>(0))
-        , w(static_cast<Real>(1))
+        : x { static_cast<Real>(0) }
+        , y { static_cast<Real>(0) }
+        , z { static_cast<Real>(0) }
+        , w { static_cast<Real>(1) }
     {
     }
 
     template <typename Other>
     explicit constexpr Quaternion(const Quaternion<Other>& quaternion)
-        : x(static_cast<Real>(quaternion.x))
-        , y(static_cast<Real>(quaternion.y))
-        , z(static_cast<Real>(quaternion.z))
-        , w(static_cast<Real>(quaternion.w))
+        : x { static_cast<Real>(quaternion.x) }
+        , y { static_cast<Real>(quaternion.y) }
+        , z { static_cast<Real>(quaternion.z) }
+        , w { static_cast<Real>(quaternion.w) }
     {
     }
 
     explicit constexpr Quaternion(const Vector4<Real>& vector)
-        : x(vector.x)
-        , y(vector.y)
-        , z(vector.z)
-        , w(vector.w)
+        : x { vector.x }
+        , y { vector.y }
+        , z { vector.z }
+        , w { vector.w }
     {
     }
 
     constexpr Quaternion(const Real x, const Real y, const Real z, const Real w)
-        : x(x)
-        , y(y)
-        , z(z)
-        , w(w)
+        : x { x }
+        , y { y }
+        , z { z }
+        , w { w }
     {
     }
 
@@ -2506,27 +2472,28 @@ public:
 
     [[nodiscard]] Quaternion normalize() const
     {
-        return Quaternion(vector.normalize());
+        return Quaternion(Vector4<Real>::from_quaternion(*this).normalize());
     }
 
     [[nodiscard]] Vector3<Real> axis(const Quaternion& to) const
     {
-        const Vector3<Real> cross = vector.xyz().cross(to.vector.xyz());
+        const Vector3<Real> cross
+            = Vector4<Real>::from_quaternion(*this).xyz().cross(Vector4<Real>::from_quaternion(to).xyz());
         return cross.normalize();
     }
 
     [[nodiscard]] Real angle(const Quaternion& to) const
     {
-        return 2 * acos(vector.dot(to.vector));
+        return 2 * acos(Vector4<Real>::from_quaternion(*this).dot(Vector4<Real>::from_quaternion(to)));
     }
 
     [[nodiscard]] Vector3<Real> axis() const
     {
         const Real sin_half_angle = sqrt(1 - sqrd(w));
         if (sin_half_angle == static_cast<Real>(0)) {
-            return vector.xyz();
+            return Vector4<Real>::from_quaternion(*this).xyz();
         }
-        return vector.xyz() / sin_half_angle;
+        return Vector4<Real>::from_quaternion(*this).xyz() / sin_half_angle;
     }
 
     [[nodiscard]] Real angle() const
@@ -2551,14 +2518,16 @@ public:
 
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const Real weight) const
     {
-        const Real dot = clamp(vector.dot(to.vector), static_cast<Real>(-1), static_cast<Real>(1));
+        const Vector4 vector = Vector4<Real>::from_quaternion(*this);
+        const Vector4 vector_to = Vector4<Real>::from_quaternion(to);
+        const Real dot = clamp(vector.dot(vector_to), static_cast<Real>(-1), static_cast<Real>(1));
         const Real angle = acos(dot);
         const Real sin_angle = sin(angle);
         if (sin_angle == static_cast<Real>(0)) {
-            return Quaternion(vector.lerp(to.vector, weight));
+            return Quaternion(vector.lerp(vector_to, weight));
         }
         return Quaternion(
-            (vector * sin((static_cast<Real>(1) - weight) * angle) + to.vector * sin(weight * angle)) / sin_angle);
+            (vector * sin((static_cast<Real>(1) - weight) * angle) + vector_to * sin(weight * angle)) / sin_angle);
     }
 
     [[nodiscard]] Quaternion rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
@@ -2580,25 +2549,25 @@ public:
     [[nodiscard]] Real at(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector.at(index);
+        return *(&x + index);
     }
 
     Real& at(const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector.at(index);
+        return *(&x + index);
     }
 
     [[nodiscard]] const Real& operator[](const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector[index];
+        return *(&x + index);
     }
 
     [[nodiscard]] Real& operator[](const int index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index >= 0 && index <= 3);
-        return vector[index];
+        return *(&x + index);
     }
 
     [[nodiscard]] constexpr bool operator==(const Quaternion& other) const
@@ -2629,7 +2598,7 @@ public:
 
     [[nodiscard]] bool operator<(const Quaternion& other) const
     {
-        return vector < other.vector;
+        return Vector4<Real>::from_quaternion(*this) < Vector4<Real>::from_quaternion(other);
     }
 
     [[nodiscard]] explicit constexpr operator bool() const
@@ -2642,48 +2611,27 @@ public:
 template <typename Real>
 class Matrix2 {
 public:
-    union {
-        struct {
-            Real col0_row0;
-            Real col0_row1;
-            Real col1_row0;
-            Real col1_row1;
-        };
-
-        Vector2<Real> columns[2];
-        Real data[4] {};
-    };
+    Vector2<Real> columns[2];
 
     constexpr Matrix2()
-        : col0_row0(static_cast<Real>(1))
-        , col0_row1(static_cast<Real>(0))
-        , col1_row0(static_cast<Real>(0))
-        , col1_row1(static_cast<Real>(1))
+        : columns { { static_cast<Real>(1), static_cast<Real>(0) }, { static_cast<Real>(0), static_cast<Real>(1) } }
     {
     }
 
     template <typename Other>
     explicit constexpr Matrix2(const Matrix2<Other>& matrix)
-        : col0_row0(static_cast<Real>(matrix.col0_row0))
-        , col0_row1(static_cast<Real>(matrix.col0_row1))
-        , col1_row0(static_cast<Real>(matrix.col1_row0))
-        , col1_row1(static_cast<Real>(matrix.col1_row1))
+        : columns { { static_cast<Real>(matrix.columns[0].x), static_cast<Real>(matrix.columns[0].y) },
+                    { static_cast<Real>(matrix.columns[1].x), static_cast<Real>(matrix.columns[1].y) } }
     {
     }
 
     constexpr Matrix2(const Vector2<Real>& column0, const Vector2<Real>& column1)
-        : col0_row0(column0.x)
-        , col0_row1(column0.y)
-        , col1_row0(column1.x)
-        , col1_row1(column1.y)
+        : columns { column0, column1 }
     {
     }
 
     constexpr Matrix2(const Real col0_row0, const Real col0_row1, const Real col1_row0, const Real col1_row1)
-        : col0_row0(col0_row0)
-        , col0_row1(col0_row1)
-        , col1_row0(col1_row0)
-        , col1_row1(col1_row1)
+        : columns { { col0_row0, col0_row1 }, { col1_row0, col1_row1 } }
     {
     }
 
@@ -2821,22 +2769,22 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return columns[0].begin();
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 4;
+        return columns[1].end();
     }
 
     Real* begin()
     {
-        return data;
+        return columns[0].begin();
     }
 
     Real* end()
     {
-        return data + 4;
+        return columns[1].end();
     }
 
     const Vector2<Real>& operator[](const int column) const
@@ -2853,8 +2801,8 @@ public:
 
     bool operator==(const Matrix2& other) const
     {
-        for (int i = 0; i < 4; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 2; ++i) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -2863,8 +2811,8 @@ public:
 
     bool operator!=(const Matrix2& other) const
     {
-        for (int i = 0; i < 4; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 2; ++i) {
+            if (at(i) != other.at(i)) {
                 return true;
             }
         }
@@ -2960,10 +2908,10 @@ public:
     bool operator<(const Matrix2& other) const
     {
         for (int i = 0; i < 4; ++i) {
-            if (data[i] < other.data[i]) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -2983,7 +2931,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
@@ -2995,7 +2943,7 @@ Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
@@ -3191,60 +3139,31 @@ public:
 template <typename Real>
 class Matrix3 {
 public:
-    union {
-        struct {
-            Real col0_row0;
-            Real col0_row1;
-            Real col0_row2;
-            Real col1_row0;
-            Real col1_row1;
-            Real col1_row2;
-            Real col2_row0;
-            Real col2_row1;
-            Real col2_row2;
-        };
-
-        Vector3<Real> columns[3];
-        Real data[9] {};
-    };
+    Vector3<Real> columns[3];
 
     constexpr Matrix3()
-        : col0_row0(static_cast<Real>(1))
-        , col0_row1(static_cast<Real>(0))
-        , col0_row2(static_cast<Real>(0))
-        , col1_row0(static_cast<Real>(0))
-        , col1_row1(static_cast<Real>(1))
-        , col1_row2(static_cast<Real>(0))
-        , col2_row0(static_cast<Real>(0))
-        , col2_row1(static_cast<Real>(0))
-        , col2_row2(static_cast<Real>(1))
+        : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+                    { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+                    { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } }
     {
     }
 
     template <typename Other>
     explicit constexpr Matrix3(const Matrix3<Other>& matrix)
-        : col0_row0(static_cast<Real>(matrix.col0_row0))
-        , col0_row1(static_cast<Real>(matrix.col0_row1))
-        , col0_row2(static_cast<Real>(matrix.col0_row2))
-        , col1_row0(static_cast<Real>(matrix.col1_row0))
-        , col1_row1(static_cast<Real>(matrix.col1_row1))
-        , col1_row2(static_cast<Real>(matrix.col1_row2))
-        , col2_row0(static_cast<Real>(matrix.col2_row0))
-        , col2_row1(static_cast<Real>(matrix.col2_row1))
-        , col2_row2(static_cast<Real>(matrix.col2_row2))
+        : columns { { static_cast<Real>(matrix.columns[0].x),
+                      static_cast<Real>(matrix.columns[0].y),
+                      static_cast<Real>(matrix.columns[0].z) },
+                    { static_cast<Real>(matrix.columns[1].x),
+                      static_cast<Real>(matrix.columns[1].y),
+                      static_cast<Real>(matrix.columns[1].z) },
+                    { static_cast<Real>(matrix.columns[2].x),
+                      static_cast<Real>(matrix.columns[2].y),
+                      static_cast<Real>(matrix.columns[2].z) } }
     {
     }
 
     constexpr Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
-        : col0_row0(column0.x)
-        , col0_row1(column0.y)
-        , col0_row2(column0.z)
-        , col1_row0(column1.x)
-        , col1_row1(column1.y)
-        , col1_row2(column1.z)
-        , col2_row0(column2.x)
-        , col2_row1(column2.y)
-        , col2_row2(column2.z)
+        : columns { column0, column1, column2 }
     {
     }
 
@@ -3258,15 +3177,9 @@ public:
         const Real col2_row0,
         const Real col2_row1,
         const Real col2_row2)
-        : col0_row0(col0_row0)
-        , col0_row1(col0_row1)
-        , col0_row2(col0_row2)
-        , col1_row0(col1_row0)
-        , col1_row1(col1_row1)
-        , col1_row2(col1_row2)
-        , col2_row0(col2_row0)
-        , col2_row1(col2_row1)
-        , col2_row2(col2_row2)
+        : columns { { col0_row0, col0_row1, col0_row2 },
+                    { col1_row0, col1_row1, col1_row2 },
+                    { col2_row0, col2_row1, col2_row2 } }
     {
     }
 
@@ -3436,22 +3349,22 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return columns[0].begin();
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 9;
+        return columns[2].end();
     }
 
     Real* begin()
     {
-        return data;
+        return columns[0].begin();
     }
 
     Real* end()
     {
-        return data + 9;
+        return columns[2].end();
     }
 
     const Vector3<Real>& operator[](const int column) const
@@ -3468,8 +3381,8 @@ public:
 
     [[nodiscard]] bool operator==(const Matrix3& other) const
     {
-        for (int i = 0; i < 9; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 3; ++i) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -3478,8 +3391,8 @@ public:
 
     bool operator!=(const Matrix3& other) const
     {
-        for (int i = 0; i < 9; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 3; ++i) {
+            if (at(i) != other.at(i)) {
                 return true;
             }
         }
@@ -3578,11 +3491,11 @@ public:
 
     [[nodiscard]] bool operator<(const Matrix3& other) const
     {
-        for (int i = 0; i < 9; ++i) {
-            if (data[i] < other.data[i]) {
+        for (int i = 0; i < 3; ++i) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -3600,7 +3513,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
@@ -3612,7 +3525,7 @@ Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
@@ -4088,68 +4001,35 @@ public:
 template <typename Real>
 class Matrix4 {
 public:
-    union {
-        struct {
-            Real col0_row0;
-            Real col0_row1;
-            Real col0_row2;
-            Real col0_row3;
-            Real col1_row0;
-            Real col1_row1;
-            Real col1_row2;
-            Real col1_row3;
-            Real col2_row0;
-            Real col2_row1;
-            Real col2_row2;
-            Real col2_row3;
-            Real col3_row0;
-            Real col3_row1;
-            Real col3_row2;
-            Real col3_row3;
-        };
-
-        Vector4<Real> columns[4];
-        Real data[16] {};
-    };
+    Vector4<Real> columns[4];
 
     constexpr Matrix4()
-        : col0_row0(static_cast<Real>(1))
-        , col0_row1(static_cast<Real>(0))
-        , col0_row2(static_cast<Real>(0))
-        , col0_row3(static_cast<Real>(0))
-        , col1_row0(static_cast<Real>(0))
-        , col1_row1(static_cast<Real>(1))
-        , col1_row2(static_cast<Real>(0))
-        , col1_row3(static_cast<Real>(0))
-        , col2_row0(static_cast<Real>(0))
-        , col2_row1(static_cast<Real>(0))
-        , col2_row2(static_cast<Real>(1))
-        , col2_row3(static_cast<Real>(0))
-        , col3_row0(static_cast<Real>(0))
-        , col3_row1(static_cast<Real>(0))
-        , col3_row2(static_cast<Real>(0))
-        , col3_row3(static_cast<Real>(1))
+        : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0) },
+                    { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+                    { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+                    { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } }
+
     {
     }
 
     template <typename Other>
     explicit constexpr Matrix4(const Matrix4<Other>& matrix)
-        : col0_row0(static_cast<Real>(matrix.col0_row0))
-        , col0_row1(static_cast<Real>(matrix.col0_row1))
-        , col0_row2(static_cast<Real>(matrix.col0_row2))
-        , col0_row3(static_cast<Real>(matrix.col0_row3))
-        , col1_row0(static_cast<Real>(matrix.col1_row0))
-        , col1_row1(static_cast<Real>(matrix.col1_row1))
-        , col1_row2(static_cast<Real>(matrix.col1_row2))
-        , col1_row3(static_cast<Real>(matrix.col1_row3))
-        , col2_row0(static_cast<Real>(matrix.col2_row0))
-        , col2_row1(static_cast<Real>(matrix.col2_row1))
-        , col2_row2(static_cast<Real>(matrix.col2_row2))
-        , col2_row3(static_cast<Real>(matrix.col2_row3))
-        , col3_row0(static_cast<Real>(matrix.col3_row0))
-        , col3_row1(static_cast<Real>(matrix.col3_row1))
-        , col3_row2(static_cast<Real>(matrix.col3_row2))
-        , col3_row3(static_cast<Real>(matrix.col3_row3))
+        : columns { { static_cast<Real>(matrix.columns[0].x),
+                      static_cast<Real>(matrix.columns[0].y),
+                      static_cast<Real>(matrix.columns[0].z),
+                      static_cast<Real>(matrix.columns[0].w) },
+                    { static_cast<Real>(matrix.columns[1].x),
+                      static_cast<Real>(matrix.columns[1].y),
+                      static_cast<Real>(matrix.columns[1].z),
+                      static_cast<Real>(matrix.columns[1].w) },
+                    { static_cast<Real>(matrix.columns[2].x),
+                      static_cast<Real>(matrix.columns[2].y),
+                      static_cast<Real>(matrix.columns[2].z),
+                      static_cast<Real>(matrix.columns[2].w) },
+                    { static_cast<Real>(matrix.columns[3].x),
+                      static_cast<Real>(matrix.columns[3].y),
+                      static_cast<Real>(matrix.columns[3].z),
+                      static_cast<Real>(matrix.columns[3].w) } }
     {
     }
 
@@ -4158,22 +4038,7 @@ public:
         const Vector4<Real>& column1,
         const Vector4<Real>& column2,
         const Vector4<Real>& column3)
-        : col0_row0(column0.x)
-        , col0_row1(column0.y)
-        , col0_row2(column0.z)
-        , col0_row3(column0.w)
-        , col1_row0(column1.x)
-        , col1_row1(column1.y)
-        , col1_row2(column1.z)
-        , col1_row3(column1.w)
-        , col2_row0(column2.x)
-        , col2_row1(column2.y)
-        , col2_row2(column2.z)
-        , col2_row3(column2.w)
-        , col3_row0(column3.x)
-        , col3_row1(column3.y)
-        , col3_row2(column3.z)
-        , col3_row3(column3.w)
+        : columns { column0, column1, column2, column3 }
     {
     }
 
@@ -4194,22 +4059,10 @@ public:
         const Real col3_row1,
         const Real col3_row2,
         const Real col3_row3)
-        : col0_row0(col0_row0)
-        , col0_row1(col0_row1)
-        , col0_row2(col0_row2)
-        , col0_row3(col0_row3)
-        , col1_row0(col1_row0)
-        , col1_row1(col1_row1)
-        , col1_row2(col1_row2)
-        , col1_row3(col1_row3)
-        , col2_row0(col2_row0)
-        , col2_row1(col2_row1)
-        , col2_row2(col2_row2)
-        , col2_row3(col2_row3)
-        , col3_row0(col3_row0)
-        , col3_row1(col3_row1)
-        , col3_row2(col3_row2)
-        , col3_row3(col3_row3)
+        : columns { { col0_row0, col0_row1, col0_row2, col0_row3 },
+                    { col1_row0, col1_row1, col1_row2, col1_row3 },
+                    { col2_row0, col2_row1, col2_row2, col2_row3 },
+                    { col3_row0, col3_row1, col3_row2, col3_row3 } }
     {
     }
 
@@ -4383,22 +4236,22 @@ public:
 
     [[nodiscard]] const Real* begin() const
     {
-        return data;
+        return columns[0].begin();
     }
 
     [[nodiscard]] const Real* end() const
     {
-        return data + 16;
+        return columns[3].end();
     }
 
     Real* begin()
     {
-        return data;
+        return columns[0].begin();
     }
 
     Real* end()
     {
-        return data + 16;
+        return columns[3].end();
     }
 
     const Vector4<Real>& operator[](const int index) const
@@ -4415,8 +4268,8 @@ public:
 
     [[nodiscard]] bool operator==(const Matrix4& other) const
     {
-        for (int i = 0; i < 16; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 4; ++i) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -4425,8 +4278,8 @@ public:
 
     bool operator!=(const Matrix4& other) const
     {
-        for (int i = 0; i < 16; ++i) {
-            if (data[i] != other.data[i]) {
+        for (int i = 0; i < 4; ++i) {
+            if (at(i) != other.at(i)) {
                 return true;
             }
         }
@@ -4533,11 +4386,11 @@ public:
 
     bool operator<(const Matrix4& other) const
     {
-        for (int i = 0; i < 16; ++i) {
-            if (data[i] < other.data[i]) {
+        for (int i = 0; i < 4; ++i) {
+            if (at(i) < other.at(i)) {
                 return true;
             }
-            if (data[i] > other.data[i]) {
+            if (at(i) != other.at(i)) {
                 return false;
             }
         }
@@ -4555,7 +4408,7 @@ public:
     }
 };
 
-template <typename Real = float>
+template <typename Real>
 Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
@@ -4567,7 +4420,7 @@ Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
     return result;
 }
 
-template <typename Real = float>
+template <typename Real>
 Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
@@ -4943,8 +4796,8 @@ public:
 
 template <typename Real>
 constexpr Vector2<Real>::Vector2(const Vector2i& vector)
-    : x(static_cast<Real>(vector.x))
-    , y(static_cast<Real>(vector.y))
+    : x { static_cast<Real>(vector.x) }
+    , y { static_cast<Real>(vector.y) }
 {
 }
 
@@ -5049,9 +4902,9 @@ Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 
 template <typename Real>
 constexpr Vector3<Real>::Vector3(const Vector3i& vector)
-    : x(static_cast<Real>(vector.x))
-    , y(static_cast<Real>(vector.y))
-    , z(static_cast<Real>(vector.z))
+    : x { static_cast<Real>(vector.x) }
+    , y { static_cast<Real>(vector.y) }
+    , z { static_cast<Real>(vector.z) }
 {
 }
 
@@ -5191,6 +5044,12 @@ Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
         }
     }
     return result;
+}
+
+template <typename Real>
+constexpr Vector4<Real> Vector4<Real>::from_quaternion(const Quaternion<Real>& quaternion)
+{
+    return { quaternion.x, quaternion.y, quaternion.z, quaternion.w };
 }
 
 template <typename Real>
