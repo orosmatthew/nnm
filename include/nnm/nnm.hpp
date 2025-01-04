@@ -158,7 +158,54 @@ constexpr int sqrd(const int value)
     return value * value;
 }
 
-template <typename Real>
+template <typename Real = float>
+Real mod(const Real a, const Real b)
+{
+    const Real result = std::fmod(a, b);
+    const Real zero = static_cast<Real>(0);
+    if ((result < zero && b > zero) || (result > zero && b < zero)) {
+        return result + b;
+    }
+    return result;
+}
+
+constexpr int mod(const int a, const int b)
+{
+    const int result = a % b;
+    if ((result < 0 && b > 0) || (result > 0 && b < 0)) {
+        return result + b;
+    }
+    return result;
+}
+
+template <typename Real = float>
+Real rem(const Real a, const Real b)
+{
+    return std::fmod(a, b);
+}
+
+constexpr int rem(const int a, const int b)
+{
+    return a % b;
+}
+
+template <typename Real = float>
+Real normalize_angle(const Real angle)
+{
+    return mod(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
+}
+
+template <typename Real = float>
+bool angle_in_range(const Real angle, const Real from, const Real to)
+{
+    const Real two_pi = static_cast<Real>(2) * pi<Real>();
+    if (from <= to) {
+        return mod(angle - from, two_pi) <= mod(to - from, two_pi);
+    }
+    return mod(angle - from, two_pi) >= mod(to - from, two_pi);
+}
+
+template <typename Real = float>
 Real floor(const Real value)
 {
     return std::floor(value);
@@ -399,6 +446,11 @@ public:
         return (to - *this).normalize();
     }
 
+    [[nodiscard]] Vector2 direction_unnormalized(const Vector2& to) const
+    {
+        return to - *this;
+    }
+
     [[nodiscard]] constexpr Real distance_sqrd(const Vector2& to) const
     {
         const Real diff_x = to.x - x;
@@ -496,14 +548,20 @@ public:
         return { static_cast<Real>(1) / x, static_cast<Real>(1) / y };
     }
 
-    [[nodiscard]] Real angle(const Vector2& to) const
+    [[nodiscard]] Real angle_between(const Vector2& other) const
     {
-        const Real lengths = length() * to.length();
+        const Real lengths = length() * other.length();
         if (lengths == 0) {
             return static_cast<Real>(0);
         }
-        const Real cos_angle = nnm::clamp(dot(to) / lengths, static_cast<Real>(-1), static_cast<Real>(1));
-        return acos(cos_angle);
+        const Real cos_angle = nnm::clamp(dot(other) / lengths, static_cast<Real>(-1), static_cast<Real>(1));
+        const Real angle = acos(cos_angle);
+        return cross(other) < static_cast<Real>(0) ? -angle : angle;
+    }
+
+    [[nodiscard]] Real angle_to(const Vector2& to) const
+    {
+        return atan2(to.y - y, to.x - x);
     }
 
     [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
@@ -1171,6 +1229,11 @@ public:
     [[nodiscard]] Vector3 direction(const Vector3& to) const
     {
         return (to - *this).normalize();
+    }
+
+    [[nodiscard]] Vector3 direction_unnormalized(const Vector3& to) const
+    {
+        return to - *this;
     }
 
     [[nodiscard]] constexpr Real distance_sqrd(const Vector3& to) const

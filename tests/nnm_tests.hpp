@@ -2,7 +2,7 @@
 
 #include "test.hpp"
 
-// Resharper disable CppDFATimeOver
+// ReSharper disable CppDFATimeOver
 
 inline void nnm_tests()
 {
@@ -171,6 +171,95 @@ inline void nnm_tests()
 
         ASSERT(nnm::approx_equal(nnm::sqrd(1.0e10f), 1.0e20f));
         ASSERT(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
+    }
+
+    test_case("mod");
+    {
+        ASSERT(nnm::approx_equal(nnm::mod(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, 3.0f), 1.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(5.0f, -3.0f), -1.0f));
+        ASSERT(nnm::approx_equal(nnm::mod(-5.0f, -3.0f), -2.0f));
+
+        constexpr auto result = nnm::mod(0, 1);
+        ASSERT(nnm::approx_equal(result, 0));
+        ASSERT(nnm::approx_equal(nnm::mod(0, -1), 0));
+        ASSERT(nnm::approx_equal(nnm::mod(5, 3), 2));
+        ASSERT(nnm::approx_equal(nnm::mod(-5, 3), 1));
+        ASSERT(nnm::approx_equal(nnm::mod(5, -3), -1));
+        ASSERT(nnm::approx_equal(nnm::mod(-5, -3), -2));
+    }
+
+    test_case("rem");
+    {
+        ASSERT(nnm::approx_equal(nnm::rem(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, 3.0f), -2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(5.0f, -3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::rem(-5.0f, -3.0f), -2.0f));
+
+        constexpr auto result = nnm::rem(0, 1);
+        ASSERT(nnm::approx_equal(result, 0));
+        ASSERT(nnm::approx_equal(nnm::rem(0, -1), 0));
+        ASSERT(nnm::approx_equal(nnm::rem(5, 3), 2));
+        ASSERT(nnm::approx_equal(nnm::rem(-5, 3), -2));
+        ASSERT(nnm::approx_equal(nnm::rem(5, -3), 2));
+        ASSERT(nnm::approx_equal(nnm::rem(-5, -3), -2));
+    }
+
+    test_case("normalize_angle");
+    {
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(0.0f)));
+
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(nnm::pi<float>() / 4.0f), nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(2.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
+        ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(5.0f * nnm::pi<float>() / 4.0f), -3.0f * nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(7.0f * nnm::pi<float>() / 4.0f), -nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(2.0f * nnm::pi<float>())));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(8.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
+
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-nnm::pi<float>() / 4.0f), -nnm::pi<float>() / 4.0f));
+        ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(-2.0f * nnm::pi<float>() / 3.0f), -2.0f * nnm::pi<float>() / 3.0f));
+        ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(-5.0f * nnm::pi<float>() / 4.0f), 3.0f * nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::approx_equal(nnm::normalize_angle(-7.0f * nnm::pi<float>() / 4.0f), nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::approx_zero(nnm::normalize_angle(-2.0f * nnm::pi<float>())));
+        ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(-8.0f * nnm::pi<float>() / 3.0f), -2.0f * nnm::pi<float>() / 3.0f));
+    }
+
+    test_case("angle_in_range");
+    {
+        ASSERT(nnm::angle_in_range(0.0f, 0.0f, 0.0f));
+
+        ASSERT_FALSE(nnm::angle_in_range(nnm::pi<float>() / 4.0f, 0.0f, nnm::pi<float>() / 5.0f));
+        ASSERT_FALSE(nnm::angle_in_range(nnm::pi<float>() / 4.0f, nnm::pi<float>() / 5.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(nnm::pi<float>() / 4.0f, 0.0f, nnm::pi<float>() / 3.0f));
+        ASSERT(nnm::angle_in_range(nnm::pi<float>() / 4.0f, nnm::pi<float>() / 3.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(4.0f * nnm::pi<float>() / 3.0f, nnm::pi<float>(), 2.0f * nnm::pi<float>()));
+        ASSERT(nnm::angle_in_range(4.0f * nnm::pi<float>() / 3.0f, 2.0f * nnm::pi<float>(), nnm::pi<float>()));
+        ASSERT(nnm::angle_in_range(0.0f, nnm::pi<float>(), 7.0f * nnm::pi<float>() / 3.0f));
+
+        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, 0.0f, -nnm::pi<float>() / 5.0f));
+        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 5.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, 0.0f, -nnm::pi<float>() / 3.0f));
+        ASSERT(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 3.0f, 0.0f));
+        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi<float>() / 3.0f, -nnm::pi<float>(), -2.0f * nnm::pi<float>()));
+        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi<float>() / 3.0f, -2.0f * nnm::pi<float>(), -nnm::pi<float>()));
+        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi<float>(), -7.0f * nnm::pi<float>() / 3.0f));
+
+        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi<float>() / 4.0f, nnm::pi<float>() / 4.0f));
+        ASSERT(nnm::angle_in_range(0.0f, nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 4.0f));
+        ASSERT(
+            nnm::angle_in_range(
+                2.0f * nnm::pi<float>() / 3.0f, -3.0f * nnm::pi<float>() / 2.0f, nnm::pi<float>() / 7.0f));
+        ASSERT(
+            nnm::angle_in_range(
+                2.0f * nnm::pi<float>() / 3.0f, nnm::pi<float>() / 7.0f, -3.0f * nnm::pi<float>() / 2.0f));
     }
 
     test_case("floor");
@@ -550,6 +639,39 @@ inline void nnm_tests()
             ASSERT(nnm::approx_equal(direction5.y, 0.0f));
         }
 
+        test_section("direction_unnormalized");
+        {
+            constexpr nnm::Vector2 from1(1.0f, 1.0f);
+            constexpr nnm::Vector2 to1(2.0f, 2.0f);
+            auto direction1 = from1.direction_unnormalized(to1);
+            ASSERT(nnm::approx_equal(direction1.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction1.y, 1.0f));
+
+            constexpr nnm::Vector2 from2(-1.0f, -1.0f);
+            constexpr nnm::Vector2 to2(1.0f, 1.0f);
+            auto direction2 = from2.direction_unnormalized(to2);
+            ASSERT(nnm::approx_equal(direction2.x, 2.0f));
+            ASSERT(nnm::approx_equal(direction2.y, 2.0f));
+
+            constexpr nnm::Vector2 from3(0.0f, 0.0f);
+            constexpr nnm::Vector2 to3(1.0f, 0.0f);
+            auto direction3 = from3.direction_unnormalized(to3);
+            ASSERT(nnm::approx_equal(direction3.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction3.y, 0.0f));
+
+            constexpr nnm::Vector2 from4(0.0f, 0.0f);
+            constexpr nnm::Vector2 to4(0.0f, 1.0f);
+            auto direction4 = from4.direction_unnormalized(to4);
+            ASSERT(nnm::approx_equal(direction4.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction4.y, 1.0f));
+
+            constexpr nnm::Vector2 from5(1.0f, 2.0f);
+            constexpr nnm::Vector2 to5(1.0f, 2.0f);
+            auto direction5 = from5.direction_unnormalized(to5);
+            ASSERT(nnm::approx_equal(direction5.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction5.y, 0.0f));
+        }
+
         test_section("distance_sqrd");
         {
             constexpr nnm::Vector2 from1(1.0f, 1.0f);
@@ -744,11 +866,19 @@ inline void nnm_tests()
             ASSERT(result.approx_equal(nnm::Vector2(1.0f / 2.0f, 1.0f / 3.0f)));
         }
 
-        test_section("angle");
+        test_section("angle_between");
         {
             nnm::Vector2 v1(2.0f, -3.0f);
             nnm::Vector2 v2(-4.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v1.angle(v2), 3.05485f))
+            ASSERT(nnm::approx_equal(v1.angle_between(v2), -3.05485f))
+            ASSERT(nnm::approx_equal(v2.angle_between(v1), 3.05485f));
+        }
+
+        test_section("angle_to");
+        {
+            nnm::Vector2 v1(2.0f, -3.0f);
+            nnm::Vector2 v2(-4.0f, 5.0f);
+            ASSERT(nnm::approx_equal(v1.angle_to(v2), 2.21429744f));
         }
 
         test_section("approx_parallel");
@@ -1645,6 +1775,47 @@ inline void nnm_tests()
             from = nnm::Vector3(1.0f, 2.0f, 3.0f);
             to = nnm::Vector3(1.0f, 2.0f, 3.0f);
             direction = from.direction(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+        }
+
+        test_section("direction_unnormalized");
+        {
+            nnm::Vector3 from(1.0f, 1.0f, 1.0f);
+            nnm::Vector3 to(2.0f, 2.0f, 2.0f);
+            auto direction = from.direction_unnormalized(to);
+            ASSERT(direction.approx_equal(nnm::Vector3f::all(1.0f)));
+
+            from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
+            to = nnm::Vector3(1.0f, 1.0f, 1.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(direction.approx_equal(nnm::Vector3f::all(2.0f)));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(1.0f, 0.0f, 0.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 1.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(0.0f, 1.0f, 0.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 1.0f));
+            ASSERT(nnm::approx_equal(direction.z, 0.0f));
+
+            from = nnm::Vector3(0.0f, 0.0f, 0.0f);
+            to = nnm::Vector3(0.0f, 0.0f, 1.0f);
+            direction = from.direction_unnormalized(to);
+            ASSERT(nnm::approx_equal(direction.x, 0.0f));
+            ASSERT(nnm::approx_equal(direction.y, 0.0f));
+            ASSERT(nnm::approx_equal(direction.z, 1.0f));
+
+            from = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            to = nnm::Vector3(1.0f, 2.0f, 3.0f);
+            direction = from.direction_unnormalized(to);
             ASSERT(nnm::approx_equal(direction.x, 0.0f));
             ASSERT(nnm::approx_equal(direction.y, 0.0f));
             ASSERT(nnm::approx_equal(direction.z, 0.0f));
