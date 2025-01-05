@@ -25,18 +25,34 @@
 
 namespace nnm {
 
+/**
+ * Mathematical pi.
+ * @tparam Real Floating-point type.
+ * @return Mathematical pi.
+ */
 template <typename Real>
 constexpr Real pi()
 {
     return static_cast<Real>(3.141592653589793238462643383279502);
 }
 
+/**
+ * Epsilon value is the upper bound on approximation errors.
+ * @tparam Real Floating-point type.
+ * @return Epsilon value.
+ */
 template <typename Real>
 constexpr Real epsilon()
 {
     return static_cast<Real>(0.00001);
 }
 
+/**
+ * One mulitplied by the sign of a value.
+ * @tparam Num Numeric type.
+ * @param value Value to get the sign of.
+ * @return -1 for negatives and 1 for 0 or positive.
+ */
 template <typename Num>
 constexpr Num sign(const Num value)
 {
@@ -46,6 +62,12 @@ constexpr Num sign(const Num value)
     return static_cast<Num>(1);
 }
 
+/**
+ * Absolute value which is the number's distance from zero.
+ * @tparam Num Numeric type
+ * @param value Value to take the absolute value of.
+ * @return Result.
+ */
 template <typename Num>
 constexpr Num abs(const Num value)
 {
@@ -55,6 +77,13 @@ constexpr Num abs(const Num value)
     return value;
 }
 
+/**
+ * The maximum between two values.
+ * @tparam Num Numeric type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
 template <typename Num>
 constexpr Num max(const Num a, const Num b)
 {
@@ -64,6 +93,12 @@ constexpr Num max(const Num a, const Num b)
     return b;
 }
 
+/**
+ * Determines if a value is approximately zero based on the epsilon value.
+ * @tparam Real Floating-point type.
+ * @param value Value to test.
+ * @return True if approximately zero or false otherwise.
+ */
 template <typename Real>
 constexpr bool approx_zero(const Real value)
 {
@@ -72,6 +107,13 @@ constexpr bool approx_zero(const Real value)
     return abs(value) <= tolerance;
 }
 
+/**
+ * Determines if two values are approximately equal based on the epsilon value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return True if approximately equal or false otherwise.
+ */
 template <typename Real>
 constexpr bool approx_equal(const Real a, const Real b)
 {
@@ -83,12 +125,26 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
+/**
+ * The least integer value greater than a value.
+ * @tparam Real Floating-point type.
+ * @param value Value to take the ceiling of.
+ * @return Result.
+ */
 template <typename Real>
 Real ceil(const Real value)
 {
     return std::ceil(value);
 }
 
+/**
+ * Restricts a value between a minimum and maximum range.
+ * @tparam Num Numeric type.
+ * @param value Value to clamp.
+ * @param min Minimum allowed value.
+ * @param max Maximum allowed value.
+ * @return Result.
+ */
 template <typename Num>
 constexpr Num clamp(const Num value, const Num min, const Num max)
 {
@@ -101,63 +157,124 @@ constexpr Num clamp(const Num value, const Num min, const Num max)
     return value;
 }
 
+/**
+ * Square-root of a value.
+ * @tparam Real Floating-point type.
+ * @param value Value to square-root.
+ * @return Result.
+ */
 template <typename Real>
 Real sqrt(const Real value)
 {
     return std::sqrt(value);
 }
 
+/**
+ * Exponential operation between two values.
+ * @tparam Real Floating-point type.
+ * @param base Base value.
+ * @param power Power value.
+ * @return Result.
+ */
 template <typename Real>
 Real pow(const Real base, const Real power)
 {
     return std::pow(base, power);
 }
 
+/**
+ * Square of a value.
+ * @tparam Num Numeric type.
+ * @param value Value to square.
+ * @return Result.
+ */
 template <typename Num>
 constexpr Num sqrd(const Num value)
 {
     return value * value;
 }
 
+/**
+ * Floating-point mathematical modulus where the result is always positive.
+ * @tparam Real Floating-point type.
+ * @param dividend Dividend.
+ * @param divisor Divisor.
+ * @return Result.
+ */
 template <typename Real>
-Real modf(const Real a, const Real b)
+Real modf(const Real dividend, const Real divisor)
 {
-    const Real result = std::fmod(a, b);
+    const Real result = std::fmod(dividend, divisor);
     const Real zero = static_cast<Real>(0);
-    if ((result < zero && b > zero) || (result > zero && b < zero)) {
-        return result + b;
+    if ((result < zero && divisor > zero) || (result > zero && divisor < zero)) {
+        return result + divisor;
     }
     return result;
 }
 
+/**
+ * Integer mathematical modulus where the result is always positive.
+ * @tparam Int Integer type.
+ * @param dividend Dividend.
+ * @param divisor Divisor.
+ * @return Result.
+ */
 template <typename Int>
-constexpr Int mod(const Int a, const Int b)
+constexpr Int mod(const Int dividend, const Int divisor)
 {
-    const Int result = a % b;
-    if ((result < 0 && b > 0) || (result > 0 && b < 0)) {
-        return result + b;
+    const Int result = dividend % divisor;
+    if ((result < 0 && divisor > 0) || (result > 0 && divisor < 0)) {
+        return result + divisor;
     }
     return result;
 }
 
+/**
+ * Remainder of the division between two floating-point values.
+ * @tparam Real Floating-point type
+ * @param dividend Dividend.
+ * @param divisor Divisor.
+ * @return Result.
+ */
 template <typename Real>
-Real remf(const Real a, const Real b)
+Real remf(const Real dividend, const Real divisor)
 {
-    return std::fmod(a, b);
+    return std::fmod(dividend, divisor);
 }
 
+/**
+ * Remainder of the division between two integer values.
+ * @tparam Int Integer type.
+ * @param dividend Dividend.
+ * @param divisor Divisor.
+ * @return Result.
+ */
 template <typename Int>
-constexpr Int rem(const Int a, const Int b)
+constexpr Int rem(const Int dividend, const Int divisor)
 {
-    return a % b;
+    return dividend % divisor;
 }
 
+/**
+ * Normalizes an angle in radians between -pi and pi.
+ * @tparam Real Floating-point type.
+ * @param angle Angle to normalize in radians.
+ * @return Result.
+ */
 template <typename Real>
 Real normalize_angle(const Real angle)
 {
     return modf(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
 }
 
+/**
+ * Determines if an angle in radians is within a range taking into account wrap-around.
+ * @tparam Real Floating-point type.
+ * @param angle Angle to test in radians.
+ * @param from First angle in radians.
+ * @param to Second angle in radians
+ * @return True if within range, false otherwise.
+ */
 template <typename Real>
 bool angle_in_range(const Real angle, const Real from, const Real to)
 {
@@ -168,18 +285,40 @@ bool angle_in_range(const Real angle, const Real from, const Real to)
     return modf(angle - from, two_pi) >= modf(to - from, two_pi);
 }
 
+/**
+ * The greatest integer value less or equal to a value.
+ * @tparam Real Floating-point type.
+ * @param value Value to take the floor of.
+ * @return Result.
+ */
 template <typename Real>
 Real floor(const Real value)
 {
     return std::floor(value);
 }
 
+/**
+ * Linear interpolation between two values based on a weight value.
+ * @tparam Real Floating-point value.
+ * @param from Value to interpolate from.
+ * @param to Value to interpolate to.
+ * @param weight Value that indicates interpolation between the two values normally between 0 and 1.
+ * @return Result.
+ */
 template <typename Real>
 constexpr Real lerp(const Real from, const Real to, const Real weight)
 {
     return from + weight * (to - from);
 }
 
+/**
+ * Linear interpolation between two values based on a weight value that is clamped between 0 and 1.
+ * @tparam Real Floating-point value.
+ * @param from Value to interpolate from.
+ * @param to Value to interpolate to.
+ * @param weight Value that indicates interpolation between the two values that is clamped between 0 and 1.
+ * @return Result.
+ */
 template <typename Real>
 constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
 {
@@ -192,66 +331,134 @@ constexpr Real lerp_clamped(const Real from, const Real to, const Real weight)
     return lerp(from, to, weight);
 }
 
+/**
+ * Mathematical sine of a value
+ * @tparam Real Floating-point type.
+ * @param value Value to take the sine of in radians.
+ * @return Result.
+ */
 template <typename Real>
 Real sin(const Real value)
 {
     return std::sin(value);
 }
 
+/**
+ * Mathematical cosine.
+ * @tparam Real Floating-point value.
+ * @param value Value to take the cosine of in radians.
+ * @return Result.
+ */
 template <typename Real>
 Real cos(const Real value)
 {
     return std::cos(value);
 }
 
+/**
+ * Mathematical tangent.
+ * @tparam Real Floating-point value.
+ * @param value Value to take the tangent of in radians.
+ * @return Result.
+ */
 template <typename Real>
 Real tan(const Real value)
 {
     return std::tan(value);
 }
 
+/**
+ * Rounds a value to the nearest integer value.
+ * @tparam Real Floating-point value.
+ * @param value Value to round.
+ * @return Result.
+ */
 template <typename Real>
 Real round(const Real value)
 {
     return std::round(value);
 }
 
+/**
+ * Mathematical inverse tangent.
+ * @tparam Real Floating-point value.
+ * @param value Value to take inverse tangent of.
+ * @return Result in radians.
+ */
 template <typename Real>
 Real atan(const Real value)
 {
     return std::atan(value);
 }
 
+/**
+ * Mathematical inverse tangent that takes into account all four-quadrants.
+ * @tparam Real Floating-point value.
+ * @param y Y value.
+ * @param x X value.
+ * @return Result in radians.
+ */
 template <typename Real>
-Real atan2(const Real a, const Real b)
+Real atan2(const Real y, const Real x)
 {
-    return std::atan2(a, b);
+    return std::atan2(y, x);
 }
 
+/**
+ * Converts angle in degrees to radians.
+ * @tparam Real Floating-point value.
+ * @param degrees Angle in degrees.
+ * @return Resulting angle in radians.
+ */
 template <typename Real>
 constexpr Real radians(const Real degrees)
 {
     return pi<Real>() / static_cast<Real>(180) * degrees;
 }
 
+/**
+ * Converts angle in radians to degrees.
+ * @tparam Real Floating-point value.
+ * @param radians Angle in radians.
+ * @return Resulting angle in degrees.
+ */
 template <typename Real>
 constexpr Real degrees(const Real radians)
 {
     return static_cast<Real>(180) / pi<Real>() * radians;
 }
 
+/**
+ * Mathematical inverse sine.
+ * @tparam Real Floating-point value.
+ * @param value Value to take inverse sine of.
+ * @return Resulting angle in radians.
+ */
 template <typename Real>
 Real asin(const Real value)
 {
     return std::asin(value);
 }
 
+/**
+ * Mathematical inverse cosine.
+ * @tparam Real Floating-point value.
+ * @param value Value to take the inverse cosine of.
+ * @return Resulting angle in radians.
+ */
 template <typename Real>
 Real acos(const Real value)
 {
     return std::acos(value);
 }
 
+/**
+ * The minimum value between two values.
+ * @tparam Num Numeric type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
 template <typename Num>
 constexpr Num min(const Num a, const Num b)
 {
@@ -261,6 +468,12 @@ constexpr Num min(const Num a, const Num b)
     return b;
 }
 
+/**
+ * Binary logarithm of a value which is the power to which the number 2 must be raised to obtain the value.
+ * @tparam Real Floating-point value.
+ * @param value Value to take logarithm of.
+ * @return Result.
+ */
 template <typename Real>
 Real log2(const Real value)
 {
