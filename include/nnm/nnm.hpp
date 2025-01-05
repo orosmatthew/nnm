@@ -48,7 +48,7 @@ constexpr Real epsilon()
 }
 
 /**
- * One mulitplied by the sign of a value.
+ * One multiplied by the sign of a value.
  * @tparam Num Numeric type.
  * @param value Value to get the sign of.
  * @return -1 for negatives and 1 for 0 or positive.
@@ -549,21 +549,38 @@ class Transform3;
 using Transform3f = Transform3<float>;
 using Transform3d = Transform3<double>;
 
+/**
+ * 2-dimensional vector.
+ * @tparam Real Floating-point value.
+ */
 template <typename Real>
 class Vector2 {
 public:
     Real x;
     Real y;
 
+    /**
+     * Default initializes to all zeros.
+     */
     constexpr Vector2()
         : x { static_cast<Real>(0) }
         , y { static_cast<Real>(0) }
     {
     }
 
+    /**
+     * Initializes by casting the integer 2D vector variant value.
+     * @tparam Int Integer type.
+     * @param vector Vector to cast from.
+     */
     template <typename Int>
     explicit constexpr Vector2(const Vector2i<Int>& vector);
 
+    /**
+     * Initializes by casting a different floating-point type vector.
+     * @tparam Other Other floating-point type.
+     * @param vector Vector to cast from.
+     */
     template <typename Other>
     explicit constexpr Vector2(const Vector2<Other>& vector)
         : x { static_cast<Real>(vector.x) }
@@ -571,77 +588,144 @@ public:
     {
     }
 
+    /**
+     * Initializes from two provided values.
+     * @param x X value.
+     * @param y Y value.
+     */
     constexpr Vector2(const Real x, const Real y)
         : x { x }
         , y { y }
     {
     }
 
+    /**
+     * Vector with all components set to a value.
+     * @param value Value.
+     * @return Resulting vector.
+     */
     static constexpr Vector2 all(const Real value)
     {
         return { value, value };
     }
 
+    /**
+     * Vector with all components set to zero.
+     * @return Resulting vector.
+     */
     static constexpr Vector2 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    /**
+     * Vector with all components set to one.
+     * @return Resulting vector.
+     */
     static constexpr Vector2 one()
     {
         return all(static_cast<Real>(1));
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive x-axis.
+     * @return Resulting vector.
+     */
     static constexpr Vector2 axis_x()
     {
         return { static_cast<Real>(1), static_cast<Real>(0) };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive y-axis.
+     * @return Resulting vector.
+     */
     static constexpr Vector2 axis_y()
     {
         return { static_cast<Real>(0), static_cast<Real>(1) };
     }
 
+    /**
+     * Absolute value of all components.
+     * @return Resulting vector.
+     */
     [[nodiscard]] constexpr Vector2 abs() const
     {
         return { nnm::abs(x), nnm::abs(y) };
     }
 
+    /**
+     * Ceiling of all components.
+     * @return Resulting vector.
+     */
     [[nodiscard]] Vector2 ceil() const
     {
         return { nnm::ceil(x), nnm::ceil(y) };
     }
 
+    /**
+     * Floor of all components.
+     * @return Resulting vector.
+     */
     [[nodiscard]] Vector2 floor() const
     {
         return { nnm::floor(x), nnm::floor(y) };
     }
 
+    /**
+     * Round all components.
+     * @return Resulting vector.
+     */
     [[nodiscard]] Vector2 round() const
     {
         return { nnm::round(x), nnm::round(y) };
     }
 
+    /**
+     * The ratio between the x and y components.
+     * @return Resulting ratio.
+     */
     [[nodiscard]] constexpr Real aspect_ratio() const
     {
         return x / y;
     }
 
+    /**
+     * Component-wise clamp.
+     * @param min Minimum.
+     * @param max Maximum.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 clamp(const Vector2& min, const Vector2& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
+    /**
+     * Normalized vector that points in the direction from the position of this vector to another vector.
+     * @param to Position to.
+     * @return Resulting normalized direction vector.
+     */
     [[nodiscard]] Vector2 direction(const Vector2& to) const
     {
         return (to - *this).normalize();
     }
 
+    /**
+     * Non-normalized Vector that points in the direction fromt he position of this vector to another vector.
+     * @param to Position to.
+     * @return Resulting non-normalized direction vector.
+     */
     [[nodiscard]] Vector2 direction_unnormalized(const Vector2& to) const
     {
         return to - *this;
     }
 
+    /**
+     * Squared distance from the position of this vector to another vector.
+     * @param to Position to.
+     * @return Resulting squared distance.
+     */
     [[nodiscard]] constexpr Real distance_sqrd(const Vector2& to) const
     {
         const Real diff_x = to.x - x;
@@ -649,26 +733,51 @@ public:
         return sqrd(diff_x) + sqrd(diff_y);
     }
 
+    /**
+     * Distance from the position of this vector to another vector.
+     * @param to Position to.
+     * @return Resulting distance.
+     */
     [[nodiscard]] Real distance(const Vector2& to) const
     {
         return sqrt(this->distance_sqrd(to));
     }
 
+    /**
+     * Distance between the position of this vector to another vector along the grid defined by the x and y axes.
+     * @param to Position to.
+     * @return Resulting distance.
+     */
     [[nodiscard]] constexpr Real manhattan_distance(const Vector2& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
+    /**
+     * Squared length of the vector.
+     * @return Resulting squared length.
+     */
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
+    /**
+     * Length of the vector.
+     * @return Resulting length.
+     */
     [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
+    /**
+     * A vector that has the same direction of this vector but whose length is clamped between minimum and maximum
+     * values.
+     * @param min Minimum length.
+     * @param max Maximum length.
+     * @return Resulting length-clamped vector.
+     */
     [[nodiscard]] Vector2 clamp_length(const Real min, const Real max) const
     {
         const Real length = this->length();
@@ -685,6 +794,10 @@ public:
         return *this;
     }
 
+    /**
+     * Normalize the vector which keeps the direction but with a length of one.
+     * @return Resulting normalized vector.
+     */
     [[nodiscard]] Vector2 normalize() const
     {
         if (const Real length = this->length(); length > static_cast<Real>(0)) {
@@ -693,28 +806,60 @@ public:
         return zero();
     }
 
+    /**
+     * Linear interpolate between two this vector and another vector.
+     * @param to Vector to interpolate to.
+     * @param weight Weight between the two interpolated vectors.
+     * @return Resulting interpolated vector.
+     */
     [[nodiscard]] constexpr Vector2 lerp(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
+    /**
+     * Linear interpolate between this vector and another vector where the weight is clamped between zero and one.
+     * @param to Vector to interpolate to.
+     * @param weight Weight between the two interpolate vectors that is clamped between zero and one.
+     * @return Resulting interpolated vector.
+     */
     [[nodiscard]] constexpr Vector2 lerp_clamped(const Vector2& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
+    /**
+     * Dot product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real dot(const Vector2& other) const
     {
         return x * other.x + y * other.y;
     }
 
+    /**
+     * Cross product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real cross(const Vector2& other) const
     {
         return x * other.y - y * other.x;
     }
 
+    /**
+     * Outer product.
+     * @param other Other vector.
+     * @return Resulting 2x2 matrix.
+     */
     [[nodiscard]] Matrix2<Real> outer(const Vector2& other) const;
 
+    /**
+     * Reflect this vector along a normal vector.
+     * @param normal Normal to reflect along.
+     * @return Resulting reflected vector.
+     */
     [[nodiscard]] constexpr Vector2 reflect(const Vector2& normal) const
     {
         const Real dot = this->dot(normal);
@@ -724,6 +869,11 @@ public:
         return result;
     }
 
+    /**
+     * Project this vector onto another vector.
+     * @param onto Vector to project onto.
+     * @return Resulting projected vector.
+     */
     [[nodiscard]] constexpr Vector2 project(const Vector2& onto) const
     {
         const Real onto_length_sqrd = onto.length_sqrd();
@@ -734,11 +884,20 @@ public:
         return onto * scale;
     }
 
+    /**
+     * Inverse of the vector.
+     * @return Resulting inverse vector.
+     */
     [[nodiscard]] constexpr Vector2 inverse() const
     {
         return { static_cast<Real>(1) / x, static_cast<Real>(1) / y };
     }
 
+    /**
+     * Angle in radians between this vector and another vector.
+     * @param other Other vector.
+     * @return Resulting angle in radians.
+     */
     [[nodiscard]] Real angle_between(const Vector2& other) const
     {
         const Real lengths = length() * other.length();
@@ -750,63 +909,168 @@ public:
         return cross(other) < static_cast<Real>(0) ? -angle : angle;
     }
 
+    /**
+     * Angle in radians from this position vector to another position vector.
+     * @param to Position to.
+     * @return Resulting angle in radians.
+     */
     [[nodiscard]] Real angle_to(const Vector2& to) const
     {
         return atan2(to.y - y, to.x - x);
     }
 
+    /**
+     * Determines if this vector is approximately parallel to another vector.
+     * @param other Other vector.
+     * @return True if approximately parallel, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
     {
         return nnm::approx_zero(cross(other));
     }
 
+    /**
+     * Determines if this vector is approximately perpendicular to another vector.
+     * @param other Other vector.
+     * @return True if approximately perpendicular, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_perpendicular(const Vector2& other) const
     {
         return nnm::approx_zero(dot(other));
     }
 
+    /**
+     * Returns a vector that is perpendicular to this vector. There are multiple possible perpendicular vectors so an
+     * arbitrary perpendicular vector is returned and no assumptions should be made on which solution is returned.
+     * @return Resulting perpendicular vector.
+     */
     [[nodiscard]] constexpr Vector2 arbitrary_perpendicular() const
     {
         return { -y, x };
     }
 
+    /**
+     * Translate vector as a position.
+     * @param by Offset.
+     * @return Resulting translated vector.
+     */
     [[nodiscard]] Vector2 translate(const Vector2& by) const;
 
+    /**
+     * Rotate about the origin.
+     * @param angle Angle in radians.
+     * @return Resulting rotated vector.
+     */
     [[nodiscard]] Vector2 rotate(Real angle) const;
 
+    /**
+     * Rotate about an origin.
+     * @param origin Origin to rotate about.
+     * @param angle Angle in radians.
+     * @return Resulting rotate vector.
+     */
     [[nodiscard]] Vector2 rotate_at(const Vector2& origin, Real angle) const;
 
+    /**
+     * Component-wise scale about the origin.
+     * @param factor Scale factor.
+     * @return Resulting scaled vector.
+     */
     [[nodiscard]] Vector2 scale(const Vector2& factor) const;
 
+    /**
+     * Component-wise scale about an origin.
+     * @param origin Origin to scale about.
+     * @param factor Scale factor.
+     * @return Resulting scaled vector.
+     */
     [[nodiscard]] Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
 
+    /**
+     * Shear along the x-axis about the origin.
+     * @param angle_y Angle in radians.
+     * @return Resulting sheared vector.
+     */
     [[nodiscard]] Vector2 shear_x(Real angle_y) const;
 
+    /**
+     * Shear along the x-axis about an origin.
+     * @param origin Origin to shear about.
+     * @param angle_y Angle in radians.
+     * @return Resulting sheared vector.
+     */
     [[nodiscard]] Vector2 shear_x_at(const Vector2& origin, Real angle_y) const;
 
+    /**
+     * Shear along the y-axis about the origin.
+     * @param angle_x Angle in radians.
+     * @return Resulting sheared vector.
+     */
     [[nodiscard]] Vector2 shear_y(Real angle_x) const;
 
+    /**
+     * Shear along the y-axis about an origin.
+     * @param origin Origin to shear about.
+     * @param angle_x Angle in radians.
+     * @return Resulting sheared vector.
+     */
     [[nodiscard]] Vector2 shear_y_at(const Vector2& origin, Real angle_x) const;
 
+    /**
+     * Transform by a 2D basis about the origin.
+     * @param by 2D basis to transform by.
+     * @return Resulting transformed vector.
+     */
     [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
 
+    /**
+     * Transform by a 2D basis about an origin.
+     * @param origin Origin to transform about.
+     * @param by 2D basis to transform by.
+     * @return Resulting transformed vector.
+     */
     [[nodiscard]] Vector2 transform_at(const Vector2& origin, const Basis2<Real>& by) const;
 
+    /**
+     * Transform by a 2D transformation matrix about the origin.
+     * @param by 2D transformation matrix to transform by.
+     * @param z The homogenous coordinate which defaults to one.
+     * @return Resulting transformed vector.
+     */
     [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
+    /**
+     * Transform by a 2D transformation matrix about an origin.
+     * @param origin Origin to transform about.
+     * @param by 2D transformation matrix to transform by.
+     * @param z The homogenous coordinate which defaults to one.
+     * @return Resulting transformed vector.
+     */
     [[nodiscard]] Vector2 transform_at(
         const Vector2& origin, const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
+    /**
+     * The maximum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real max() const
     {
         return nnm::max(x, y);
     }
 
+    /**
+     * The minimum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real min() const
     {
         return nnm::min(x, y);
     }
 
+    /**
+     * Index of the maximum component.
+     * @return Resulting index.
+     */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
         if (x > y) {
@@ -818,6 +1082,10 @@ public:
         return 0;
     }
 
+    /**
+     * Index of the minimum component.
+     * @return Resulting index.
+     */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
         if (x < y) {
@@ -829,75 +1097,140 @@ public:
         return 0;
     }
 
+    /**
+     * Determines if this vector is approximately equal to another vector.
+     * @param other Other vector.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Vector2& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
     }
 
+    /**
+     * Determines if all components are approximately zero.
+     * @return True if approximately zero, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
+    /**
+     * Start of the constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return &x;
     }
 
+    /**
+     * End of the constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return &y + 1;
     }
 
+    /**
+     * Start of the iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return &x;
     }
 
+    /**
+     * End of the iterator.
+     * @return Iterator.
+     */
     Real* end()
     {
         return &y + 1;
     }
 
-    [[nodiscard]] Real at(const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
+    [[nodiscard]] const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
     [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Determines if this vector equals another.
+     * @param other Other vector.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator==(const Vector2& other) const
     {
         return x == other.x && y == other.y;
     }
 
+    /**
+     * Determines if this vector does not equal another.
+     * @param other Other vector.
+     * @return True if not equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator!=(const Vector2& other) const
     {
         return x != other.x || y != other.y;
     }
 
+    /**
+     * Vector addition.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator+(const Vector2& other) const
     {
         return { x + other.x, y + other.y };
     }
 
+    /**
+     * Adds another vector to this vector.
+     * @param other Other vector.
+     * @return Reference to this vector.
+     */
     Vector2& operator+=(const Vector2& other)
     {
         x += other.x;
@@ -905,11 +1238,21 @@ public:
         return *this;
     }
 
+    /**
+     * Vector subtraction.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator-(const Vector2& other) const
     {
         return { x - other.x, y - other.y };
     }
 
+    /**
+     * Subtracts another vector from this vector.
+     * @param other Other vector.
+     * @return Reference to this vector.
+     */
     Vector2& operator-=(const Vector2& other)
     {
         x -= other.x;
@@ -917,11 +1260,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator*(const Vector2& other) const
     {
         return { x * other.x, y * other.y };
     }
 
+    /**
+     * Multiplied each component of this vector by another vector.
+     * @param other Other vector.
+     * @return Reference to this vector.
+     */
     Vector2& operator*=(const Vector2& other)
     {
         x *= other.x;
@@ -929,13 +1282,28 @@ public:
         return *this;
     }
 
+    /**
+     * Vector-matrix multiplication.
+     * @param matrix Matrix.
+     * @return Result.
+     */
     [[nodiscard]] Vector2 operator*(const Matrix2<Real>& matrix) const;
 
+    /**
+     * Vector-scalar multiplication.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator*(const Real value) const
     {
         return { x * value, y * value };
     }
 
+    /**
+     * Multiplies each component by a value.
+     * @param value Value.
+     * @return Reference to this vector.
+     */
     Vector2& operator*=(const Real value)
     {
         x *= value;
@@ -943,11 +1311,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Result/
+     */
     [[nodiscard]] constexpr Vector2 operator/(const Vector2& other) const
     {
         return { x / other.x, y / other.y };
     }
 
+    /**
+     * Divide each component by another vector.
+     * @param other Other vector.
+     * @return Reference to this vector.
+     */
     Vector2& operator/=(const Vector2& other)
     {
         x /= other.x;
@@ -955,11 +1333,21 @@ public:
         return *this;
     }
 
+    /**
+     * Vector-scalar division.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator/(const Real value) const
     {
         return { x / value, y / value };
     }
 
+    /**
+     * Divides each component by a value.
+     * @param value Value.
+     * @return Result.
+     */
     Vector2& operator/=(const Real value)
     {
         x /= value;
@@ -967,16 +1355,29 @@ public:
         return *this;
     }
 
+    /**
+     * Unary plus. Does nothing but specified for symmetry with unary minus.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator+() const
     {
         return { x, y };
     }
 
+    /**
+     * Component-wise negation.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2 operator-() const
     {
         return { -x, -y };
     }
 
+    /**
+     * Lexicographical comparison between components.
+     * @param other Other vector.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator<(const Vector2& other) const
     {
         if (x < other.x) {
@@ -988,18 +1389,35 @@ public:
         return y < other.y;
     }
 
+    /**
+     * Evaluates to false if all components are zero, true otherwise.
+     */
     [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != 0 || y != 0;
     }
 };
 
+/**
+ * Scalar-vector multiplication.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Real>
 Vector2<Real> constexpr operator*(const Real value, const Vector2<Real>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
+/**
+ * Scalar-vector division.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Real>
 Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 {
