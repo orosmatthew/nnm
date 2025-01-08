@@ -712,7 +712,7 @@ public:
     }
 
     /**
-     * Non-normalized Vector that points in the direction fromt he position of this vector to another vector.
+     * Non-normalized Vector that points in the direction from the position of this vector to another vector.
      * @param to Position to.
      * @return Resulting non-normalized direction vector.
      */
@@ -1424,18 +1424,30 @@ Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
     return { value / vector.x, value / vector.y };
 }
 
+/**
+ * 2-dimensional vector with integer components.
+ * @tparam Int Integer value.
+ */
 template <typename Int>
 class Vector2i {
 public:
     Int x;
     Int y;
 
+    /**
+     * Initializes all components to zero.
+     */
     constexpr Vector2i()
         : x { 0 }
         , y { 0 }
     {
     }
 
+    /**
+     * Casts one integer vector into another
+     * @tparam Real Integer type.
+     * @param vector Vector to cast from.
+     */
     template <typename Real>
     explicit constexpr Vector2i(const Vector2<Real>& vector)
         : x { static_cast<Int>(vector.x) }
@@ -1443,92 +1455,174 @@ public:
     {
     }
 
+    /**
+     * Initialize with specific components.
+     * @param x X value.
+     * @param y Y value.
+     */
     constexpr Vector2i(const Int x, const Int y)
         : x { x }
         , y { y }
     {
     }
 
+    /**
+     * Vector with all components to a value.
+     * @param value Value to initialize all components with.
+     * @return Resulting vector.
+     */
     static constexpr Vector2i all(Int value)
     {
         return { value, value };
     }
 
+    /**
+     * Vector with all components to zero.
+     * @return Resulting vector.
+     */
     static constexpr Vector2i zero()
     {
         return { 0, 0 };
     }
 
+    /**
+     * Vector with all components to one.
+     * @return Resulting vector.
+     */
     static constexpr Vector2i one()
     {
         return { 1, 1 };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive x-axis.
+     * @return Resulting vector.
+     */
     static constexpr Vector2i axis_x()
     {
         return { 1, 0 };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive y-axis.
+     * @return Resulting vector.
+     */
     static constexpr Vector2i axis_y()
     {
         return { 0, 1 };
     }
 
+    /**
+     * Component-wise absolute value.
+     * @return Resulting vector.
+     */
     [[nodiscard]] constexpr Vector2i abs() const
     {
         return { nnm::abs(x), nnm::abs(y) };
     }
 
+    /**
+     * Component-wise clamp.
+     * @param min Minimum.
+     * @param max Maximum.
+     * @return Resulting vector.
+     */
     [[nodiscard]] constexpr Vector2i clamp(const Vector2i& min, const Vector2i& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
+    /**
+     * Distance between the position of this vector to another vector along the grid defined by the x and y axes.
+     * @param to Position to.
+     * @return Resulting distance.
+     */
     [[nodiscard]] constexpr Int manhattan_distance(const Vector2i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
+    /**
+     * Squared length of the vector.
+     * @return Resulting length.
+     */
     [[nodiscard]] constexpr Int length_sqrd() const
     {
         return sqrd(x) + sqrd(y);
     }
 
+    /**
+     * Vector dot product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int dot(const Vector2i& other) const
     {
         return x * other.x + y * other.y;
     }
 
+    /**
+     * Vector cross product
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int cross(const Vector2i& other) const
     {
         return x * other.y - y * other.x;
     }
 
+    /**
+     * Determines if parallel to another vector.
+     * @param other Other vector.
+     * @return True if parallel, false otherwise.
+     */
     [[nodiscard]] constexpr bool parallel(const Vector2i& other) const
     {
         return cross(other) == 0;
     }
 
+    /**
+     * Determines if perpendicular to another vector.
+     * @param other Other vector.
+     * @return True if parallel, false otherwise.
+     */
     [[nodiscard]] constexpr bool perpendicular(const Vector2i& other) const
     {
         return dot(other) == 0;
     }
 
+    /**
+     * Returns a vector that is perpendicular to this vector. There are multiple possible perpendicular vectors so an
+     * arbitrary perpendicular vector is returned and no assumptions should be made on which solution is returned.
+     * @return Resulting perpendicular vector.
+     */
     [[nodiscard]] constexpr Vector2i arbitrary_perpendicular() const
     {
         return { -y, x };
     }
 
+    /**
+     * Maximum component
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int max() const
     {
         return nnm::max(x, y);
     }
 
+    /**
+     * Minimum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int min() const
     {
         return nnm::min(x, y);
     }
 
+    /**
+     * Index of the maximum component.
+     * @return Resulting index.
+     */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
         if (x > y) {
@@ -1540,6 +1634,10 @@ public:
         return 0;
     }
 
+    /**
+     * Index of the minimum component.
+     * @return Resulting index.
+     */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
         if (x < y) {
@@ -1551,65 +1649,121 @@ public:
         return 0;
     }
 
+    /**
+     * Start constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Int* begin() const
     {
         return &x;
     }
 
+    /**
+     * End constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Int* end() const
     {
         return &y + 1;
     }
 
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
     Int* begin()
     {
         return &x;
     }
 
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
     Int* end()
     {
         return &y + 1;
     }
 
-    [[nodiscard]] Int at(const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Resulting constant reference.
+     */
+    [[nodiscard]] const Int& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Resulting reference.
+     */
     Int& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
-    [[nodiscard]] Int operator[](const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Resulting constant reference.
+     */
+    [[nodiscard]] const Int& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Resulting reference.
+     */
     Int& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
         return *(begin() + index);
     }
 
+    /**
+     * Component-wise equality.
+     * @param other Other vector.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator==(const Vector2i& other) const
     {
         return x == other.x && y == other.y;
     }
 
+    /**
+     * Component-wise inequality.
+     * @param other Other vector.
+     * @return True if not equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator!=(const Vector2i& other) const
     {
         return x != other.x || y != other.y;
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator+(const Vector2i& other) const
     {
         return { x + other.x, y + other.y };
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator+=(const Vector2i& other)
     {
         x += other.x;
@@ -1617,11 +1771,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator-(const Vector2i& other) const
     {
         return { x - other.x, y - other.y };
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator-=(const Vector2i& other)
     {
         x -= other.x;
@@ -1629,11 +1793,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator*(const Vector2i& other) const
     {
         return { x * other.x, y * other.y };
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator*=(const Vector2i& other)
     {
         x *= other.x;
@@ -1641,11 +1815,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator*(const Int value) const
     {
         return { x * value, y * value };
     }
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator*=(const Int value)
     {
         x *= value;
@@ -1653,11 +1837,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator/(const Vector2i& other) const
     {
         return { x / other.x, y / other.y };
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator/=(const Vector2i& other)
     {
         x /= other.x;
@@ -1665,11 +1859,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator/(const Int value) const
     {
         return { x / value, y / value };
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator/=(const Int value)
     {
         x /= value;
@@ -1677,11 +1881,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise remainder.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator%(const Vector2i& other) const
     {
         return { x % other.x, y % other.y };
     }
 
+    /**
+     * Component-wise remainder.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator%=(const Vector2i& other)
     {
         x %= other.x;
@@ -1689,11 +1903,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise remainder with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator%(const Int value) const
     {
         return { x % value, y % value };
     }
 
+    /**
+     * Component-wise remainder with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector2i& operator%=(const Int value)
     {
         x %= value;
@@ -1701,16 +1925,29 @@ public:
         return *this;
     }
 
+    /**
+     * Unary plus. Does nothing but specified for symmetry with unary minus.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator+() const
     {
         return { x, y };
     }
 
+    /**
+     * Component-wise negation.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i operator-() const
     {
         return { -x, -y };
     }
 
+    /**
+     * Lexicographical comparison between components.
+     * @param other Other vector.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator<(const Vector2i& other) const
     {
         if (x < other.x) {
@@ -1722,24 +1959,48 @@ public:
         return y < other.y;
     }
 
+    /**
+     * Evaluates to false if all components are zero, true otherwise.
+     */
     [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != 0 || y != 0;
     }
 };
 
+/**
+ * Component-wise multiplication with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector2i<Int> operator*(const Int value, const Vector2i<Int>& vector)
 {
     return { value * vector.x, value * vector.y };
 }
 
+/**
+ * Component-wise division with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector2i<Int> operator/(const Int value, const Vector2i<Int>& vector)
 {
     return { value / vector.x, value / vector.y };
 }
 
+/**
+ * Component-wise remainder with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector2i<Int> operator%(const Int value, const Vector2i<Int>& vector)
 {
