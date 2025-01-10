@@ -4684,16 +4684,28 @@ public:
     }
 };
 
+/**
+ * 2x2 matrix.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Matrix2 {
 public:
     Vector2<Real> columns[2];
 
+    /**
+     * Initialize with identity matrix.
+     */
     constexpr Matrix2()
         : columns { { static_cast<Real>(1), static_cast<Real>(0) }, { static_cast<Real>(0), static_cast<Real>(1) } }
     {
     }
 
+    /**
+     * Cast from another matrix type.
+     * @tparam Other Other matrix type.
+     * @param matrix Matrix to cast from.
+     */
     template <typename Other>
     explicit constexpr Matrix2(const Matrix2<Other>& matrix)
         : columns { { static_cast<Real>(matrix.columns[0].x), static_cast<Real>(matrix.columns[0].y) },
@@ -4701,46 +4713,89 @@ public:
     {
     }
 
+    /**
+     * Initialize with columns
+     * @param column0 First column
+     * @param column1 Second column
+     */
     constexpr Matrix2(const Vector2<Real>& column0, const Vector2<Real>& column1)
         : columns { column0, column1 }
     {
     }
 
+    /**
+     * Initialize with elements
+     * @param col0_row0 First column, first row
+     * @param col0_row1 First column, second row
+     * @param col1_row0 Second column, first row
+     * @param col1_row1 Second column, second row
+     */
     constexpr Matrix2(const Real col0_row0, const Real col0_row1, const Real col1_row0, const Real col1_row1)
         : columns { { col0_row0, col0_row1 }, { col1_row0, col1_row1 } }
     {
     }
 
+    /**
+     * Matrix with all elements equal to value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix2 all(const Real value)
     {
         return { { value, value }, { value, value } };
     }
 
+    /**
+     * Matrix with all elements equal to zero.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix2 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    /**
+     * Matrix with all elements equal to one.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix2 one()
     {
         return all(static_cast<Real>(1));
     }
 
+    /**
+     * Identity matrix.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix2 identity()
     {
         return { { static_cast<Real>(1), static_cast<Real>(0) }, { static_cast<Real>(0), static_cast<Real>(1) } };
     }
 
+    /**
+     * Sum of the matrix diagonal.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1);
     }
 
+    /**
+     * Determinant of matrix.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
     }
 
+    /**
+     * Minor matrix at column and row. This is the element with that particular row and column excluded.
+     * @param column Column
+     * @param row Row
+     * @return Result.
+     */
     [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
@@ -4749,6 +4804,10 @@ public:
         return at(other_column, other_row);
     }
 
+    /**
+     * Minor matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 minor() const
     {
         Matrix2 result;
@@ -4760,32 +4819,58 @@ public:
         return result;
     }
 
+    /**
+     * Cofactor at column and row.
+     * @param column Column
+     * @param row Row
+     * @return Result.
+     */
     [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return pow(static_cast<Real>(-1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
+    /**
+     * Cofactor matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 cofactor() const
     {
         return { { cofactor_at(0, 0), cofactor_at(0, 1) }, { cofactor_at(1, 0), cofactor_at(1, 1) } };
     }
 
+    /**
+     * Transpose matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 transpose() const
     {
         return { { at(0, 0), at(1, 0) }, { at(0, 1), at(1, 1) } };
     }
 
+    /**
+     * Adjugate matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 adjugate() const
     {
         return cofactor().transpose();
     }
 
+    /**
+     * Inverse without checking if the matrix is singular first.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
 
+    /**
+     * Inverse that returns null if the matrix does not have an inverse.
+     * @return The inverse if there is one, null if not.
+     */
     [[nodiscard]] std::optional<Matrix2> inverse() const
     {
         const Real det = determinant();
@@ -4795,6 +4880,11 @@ public:
         return adjugate() / det;
     }
 
+    /**
+     * Element-wise approximate equality.
+     * @param other Other matrix.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Matrix2& other) const
     {
         for (uint8_t c = 0; c < 2; ++c) {
@@ -4807,6 +4897,10 @@ public:
         return true;
     }
 
+    /**
+     * If all elements are approximately zero.
+     * @return True if approximately zero, false otherwise.
+     */
     [[nodiscard]] bool approx_zero() const
     {
         for (uint8_t c = 0; c < 2; ++c) {
@@ -4819,62 +4913,115 @@ public:
         return true;
     }
 
-    [[nodiscard]] Vector2<Real> at(const uint8_t column) const
+    /**
+     * Constant reference to column at index.
+     * @param column Column.
+     * @return Constant Reference.
+     */
+    [[nodiscard]] const Vector2<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Column.
+     * @return Reference.
+     */
     Vector2<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
-    [[nodiscard]] Real at(const uint8_t column, const uint8_t row) const
+    /**
+     * Constant reference to element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Constant reference.
+     */
+    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
     }
 
+    /**
+     * Reference to element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Reference.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
     }
 
+    /**
+     * Start constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return columns[0].begin();
     }
 
+    /**
+     * End constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return columns[1].end();
     }
 
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return columns[0].begin();
     }
 
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
     Real* end()
     {
         return columns[1].end();
     }
 
+    /**
+     * Constant Reference to column at index.
+     * @param column Column.
+     * @return Constant reference.
+     */
     const Vector2<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Column.
+     * @return Reference.
+     */
     Vector2<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
     }
 
+    /**
+     * Element-wise equality.
+     * @param other Other matrix.
+     * @return True if equal, false otherwise.
+     */
     bool operator==(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
@@ -4885,6 +5032,11 @@ public:
         return true;
     }
 
+    /**
+     * Element-wise inequality.
+     * @param other Other matrix.
+     * @return True if unequal, false otherwise.
+     */
     bool operator!=(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
@@ -4895,6 +5047,11 @@ public:
         return false;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 operator+(const Matrix2& other) const
     {
         Matrix2 result;
@@ -4904,6 +5061,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix2& operator+=(const Matrix2& other)
     {
         for (uint8_t c = 0; c < 2; ++c) {
@@ -4912,6 +5074,11 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 operator-(const Matrix2& other) const
     {
         Matrix2 result;
@@ -4921,6 +5088,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix2& operator-=(const Matrix2& other)
     {
         for (uint8_t c = 0; c < 2; ++c) {
@@ -4929,6 +5101,11 @@ public:
         return *this;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
     {
         auto result = zero();
@@ -4942,12 +5119,22 @@ public:
         return result;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix2& operator*=(const Matrix2& other)
     {
         *this = *this * other;
         return *this;
     }
 
+    /**
+     * Matrix-vector multiplication.
+     * @param vector Vector.
+     * @return Resulting two-dimensional matrix.
+     */
     [[nodiscard]] Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
         Vector2<Real> result;
@@ -4957,11 +5144,21 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise multiplication with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value };
     }
 
+    /**
+     * Element-wise multiplication with value.
+     * @param value Value.
+     * @return Reference to this modified matrix.
+     */
     Matrix2& operator*=(const Real value)
     {
         at(0) *= value;
@@ -4969,11 +5166,21 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise division with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix2 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value };
     }
 
+    /**
+     * Element-wise division with value.
+     * @param value Value.
+     * @return Reference to this modified matrix.
+     */
     Matrix2& operator/=(const Real value)
     {
         at(0) /= value;
@@ -4981,6 +5188,11 @@ public:
         return *this;
     }
 
+    /**
+     * Lexicographical comparison between elements.
+     * @param other Other matrix.
+     * @return True if less than, false otherwise.
+     */
     bool operator<(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -4994,6 +5206,9 @@ public:
         return false;
     }
 
+    /**
+     * Evaluates to false if all elements are zero, true otherwise.
+     */
     explicit operator bool() const
     {
         for (uint8_t c = 0; c < 2; ++c) {
