@@ -5222,6 +5222,13 @@ public:
     }
 };
 
+/**
+ * Element-wise multiplication with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
@@ -5234,6 +5241,13 @@ Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
     return result;
 }
 
+/**
+ * Element-wise division with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
