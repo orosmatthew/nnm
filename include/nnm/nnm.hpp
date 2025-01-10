@@ -6662,27 +6662,49 @@ public:
     }
 };
 
+/**
+ * Three-dimensional basis matrix. Can represent three-dimensional scale, shear, and rotation.
+ * @tparam Real
+ */
 template <typename Real>
 class Basis3 {
 public:
     Matrix3<Real> matrix;
 
+    /**
+     * Initializes with identity.
+     */
     constexpr Basis3()
         : matrix(Matrix3<Real>::identity())
     {
     }
 
+    /**
+     * Casts from another basis type.
+     * @tparam Other Other basis type.
+     * @param basis Basis to cast from.
+     */
     template <typename Other>
     explicit constexpr Basis3(const Basis3<Other>& basis)
         : matrix(Matrix3<Real>(basis.matrix))
     {
     }
 
+    /**
+     * Initialize from 3x3 matrix. No validation is done.
+     * @param matrix 3x3 matrix.
+     */
     explicit constexpr Basis3(const Matrix3<Real>& matrix)
         : matrix(matrix)
     {
     }
 
+    /**
+     * Basis rotated from normalized axis and angle.
+     * @param axis Normalized axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     static Basis3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
         const Vector3<Real> norm = axis.normalize();
@@ -6690,27 +6712,39 @@ public:
         const Matrix3<Real> k_matrix { { static_cast<Real>(0), norm.z, -norm.y },
                                        { -norm.z, static_cast<Real>(0), norm.x },
                                        { norm.y, -norm.x, static_cast<Real>(0) } };
-        const Matrix3<Real> r_matrix
-            = Matrix3<Real>::identity() + sin(angle) * k_matrix + (1 - cos(angle)) * k_matrix * k_matrix;
+        const Matrix3<Real> r_matrix = Matrix3<Real>::identity() + sin(angle) * k_matrix
+            + (static_cast<Real>(1) - cos(angle)) * k_matrix * k_matrix;
         return Basis3(r_matrix);
     }
 
+    /**
+     * Basis rotated from quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     static Basis3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
         const Quaternion<Real>& q = quaternion;
         Matrix3<Real> matrix;
-        matrix.at(0, 0) = 1 - 2 * (sqrd(q.y) + sqrd(q.z));
-        matrix.at(0, 1) = 2 * (q.x * q.y + q.z * q.w);
-        matrix.at(0, 2) = 2 * (q.x * q.z - q.y * q.w);
-        matrix.at(1, 0) = 2 * (q.x * q.y - q.z * q.w);
-        matrix.at(1, 1) = 1 - 2 * (sqrd(q.x) + sqrd(q.z));
-        matrix.at(1, 2) = 2 * (q.y * q.z + q.x * q.w);
-        matrix.at(2, 0) = 2 * (q.x * q.z + q.y * q.w);
-        matrix.at(2, 1) = 2 * (q.y * q.z - q.x * q.w);
-        matrix.at(2, 2) = 1 - 2 * (sqrd(q.x) + sqrd(q.y));
+        const Real one = static_cast<Real>(1);
+        const Real two = static_cast<Real>(2);
+        matrix.at(0, 0) = one - two * (sqrd(q.y) + sqrd(q.z));
+        matrix.at(0, 1) = two * (q.x * q.y + q.z * q.w);
+        matrix.at(0, 2) = two * (q.x * q.z - q.y * q.w);
+        matrix.at(1, 0) = two * (q.x * q.y - q.z * q.w);
+        matrix.at(1, 2) = two * (q.y * q.z + q.x * q.w);
+        matrix.at(2, 0) = two * (q.x * q.z + q.y * q.w);
+        matrix.at(1, 1) = one - two * (sqrd(q.x) + sqrd(q.z));
+        matrix.at(2, 1) = two * (q.y * q.z - q.x * q.w);
+        matrix.at(2, 2) = one - two * (sqrd(q.x) + sqrd(q.y));
         return Basis3(matrix);
     }
 
+    /**
+     * Basis scaled by factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
     static constexpr Basis3 from_scale(const Vector3<Real>& factor)
     {
         return Basis3(
@@ -6719,6 +6753,12 @@ public:
               { static_cast<Real>(0), static_cast<Real>(0), factor.z } });
     }
 
+    /**
+     * Basis sheared along the x-axis.
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
     {
         return Basis3(
