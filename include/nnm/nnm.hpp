@@ -5260,62 +5260,114 @@ Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
     return result;
 }
 
+/**
+ * Two-dimensional basis matrix.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Basis2 {
 public:
     Matrix2<Real> matrix;
 
+    /**
+     * Initialize with identity basis.
+     */
     constexpr Basis2()
         : matrix(Matrix2<Real>::identity())
     {
     }
 
+    /**
+     * Cast from other basis type.
+     * @tparam Other Other type.
+     * @param basis Basis to cast from.
+     */
     template <typename Other>
     explicit constexpr Basis2(const Basis2<Other>& basis)
         : matrix(Matrix2<Real>(basis.matrix))
     {
     }
 
+    /**
+     * Initialize from 2x2 matrix. No validation is done.
+     * @param matrix 2x2 matrix to cast from.
+     */
     explicit constexpr Basis2(const Matrix2<Real>& matrix)
         : matrix(matrix)
     {
     }
 
+    /**
+     * Basis rotate by angle in radians.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     static Basis2 from_rotation(const Real angle)
     {
         return Basis2({ { cos(angle), sin(angle) }, { -sin(angle), cos(angle) } });
     }
 
+    /**
+     * Basis scaled by factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
     static constexpr Basis2 from_scale(const Vector2<Real>& factor)
     {
         return Basis2({ { factor.x, static_cast<Real>(0) }, { static_cast<Real>(0), factor.y } });
     }
 
+    /**
+     * Basis sheared along the x-axis.
+     * @param angle_y Y-Axis angle.
+     * @return Result.
+     */
     static Basis2 from_shear_x(const Real angle_y)
     {
         return Basis2({ { static_cast<Real>(1), static_cast<Real>(0) }, { tan(angle_y), static_cast<Real>(1) } });
     }
 
+    /**
+     * Basis sheared along the y-axis.
+     * @param angle_x X-Axis angle.
+     * @return Result.
+     */
     static Basis2 from_shear_y(const Real angle_x)
     {
         return Basis2({ { static_cast<Real>(1), tan(angle_x) }, { static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
+    /**
+     * Trace which is the sum of the diagonal of the matrix.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
+    /**
+     * Determinant.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
 
+    /**
+     * Inverse without checking if the basis is valid first.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 unchecked_inverse() const
     {
         return Basis2(matrix.unchecked_inverse());
     }
 
+    /**
+     * Inverse which returns null if the basis is invalid.
+     * @return Inverse if there is one, null if not.
+     */
     [[nodiscard]] std::optional<Basis2> inverse() const
     {
         if (valid()) {
@@ -5324,61 +5376,120 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * If the elements of the matrix form a valid basis.
+     * @return True if valid, false otherwise.
+     */
     [[nodiscard]] bool valid() const
     {
         return matrix.determinant() != static_cast<Real>(0);
     }
 
+    /**
+     * Rotate by angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 rotate(const Real angle) const
     {
         return transform(from_rotation(angle));
     }
 
+    /**
+     * Local rotation by angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 rotate_local(const Real angle) const
     {
         return transform_local(from_rotation(angle));
     }
 
+    /**
+     * Scale by factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 scale(const Vector2<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
+    /**
+     * Local scale by factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 scale_local(const Vector2<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
+    /**
+     * Shear along x-axis.
+     * @param angle_y Y-Axis angle.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 shear_x(const Real angle_y) const
     {
         return transform(from_shear_x(angle_y));
     }
 
+    /**
+     * Local shear along x-axis.
+     * @param angle_y Y-Axis angle.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 shear_x_local(const Real angle_y) const
     {
         return transform_local(from_shear_x(angle_y));
     }
 
+    /**
+     * Shear along y-axis.
+     * @param angle_x X-Axis angle.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 shear_y(const Real angle_x) const
     {
         return transform(from_shear_y(angle_x));
     }
 
+    /**
+     * Local shear along y-axis.
+     * @param angle_x X-Axis angle.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 shear_y_local(const Real angle_x) const
     {
         return transform_local(from_shear_y(angle_x));
     }
 
+    /**
+     * Transform by another basis.
+     * @param by Basis to transform by.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 transform(const Basis2& by) const
     {
         return Basis2(by.matrix * matrix);
     }
 
+    /**
+     * Local transform by another basis.
+     * @param by Basis to transform by.
+     * @return Result.
+     */
     [[nodiscard]] Basis2 transform_local(const Basis2& by) const
     {
         return Basis2(matrix * by.matrix);
     }
 
+    /**
+     * If approximately equal to another basis.
+     * @param other Other basis.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Basis2& other) const
     {
         for (uint8_t c = 0; c < 2; ++c) {
@@ -5389,52 +5500,99 @@ public:
         return true;
     }
 
+    /**
+     * Constant reference to the matrix column at index.
+     * @param column Column
+     * @return Constant reference.
+     */
     [[nodiscard]] const Vector2<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
     }
 
+    /**
+     * Reference to the matrix column at index.
+     * @param column Column.
+     * @return Reference.
+     */
     Vector2<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
     }
 
+    /**
+     * Constant reference to the matrix element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Constant reference.
+     */
     [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
     }
 
+    /**
+     * Reference to the matrix element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Reference.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
     }
 
+    /**
+     * Constant reference to the matrix column at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
     const Vector2<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
     }
 
+    /**
+     * Reference to the matrix column at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Vector2<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
     }
 
+    /**
+     * Element-wise equality.
+     * @param other Other basis.
+     * @return True if equal, false otherwise.
+     */
     bool operator==(const Basis2& other) const
     {
         return matrix == other.matrix;
     }
 
+    /**
+     * Element-wise inequality.
+     * @param other Other basis.
+     * @return True if not equal, false otherwise.
+     */
     bool operator!=(const Basis2& other) const
     {
         return matrix != other.matrix;
     }
 
+    /**
+     * Lexicographical comparison between the matrix elements.
+     * @param other Other basis.
+     * @return True if less than, false otherwise.
+     */
     bool operator<(const Basis2& other) const
     {
         return matrix < other.matrix;
