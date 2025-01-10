@@ -3594,6 +3594,10 @@ constexpr Vector3i<Int> operator%(const Int value, const Vector3i<Int>& vector)
     return { value % vector.x, value % vector.y, value % vector.z };
 }
 
+/**
+ * Four-dimensional vector.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Vector4 {
 public:
@@ -3602,6 +3606,9 @@ public:
     Real z;
     Real w;
 
+    /**
+     * Initialize all components with zero.
+     */
     constexpr Vector4()
         : x { static_cast<Real>(0) }
         , y { static_cast<Real>(0) }
@@ -3610,6 +3617,11 @@ public:
     {
     }
 
+    /**
+     * Cast from another vector type.
+     * @tparam Other Other type.
+     * @param vector Vector to cast from.
+     */
     template <typename Other>
     explicit constexpr Vector4(const Vector4<Other>& vector)
         : x { static_cast<Real>(vector.x) }
@@ -3619,6 +3631,12 @@ public:
     {
     }
 
+    /**
+     * Initialize x and y from two-dimensional vector and z and w values.
+     * @param vector Two-dimensional vector.
+     * @param z Z value.
+     * @param w W value.
+     */
     constexpr Vector4(const Vector2<Real>& vector, const Real z, const Real w)
         : x { vector.x }
         , y { vector.y }
@@ -3627,6 +3645,11 @@ public:
     {
     }
 
+    /**
+     * Initialize x, y, and z with three-dimensional vector and w value.
+     * @param vector Three-dimensional vector.
+     * @param w W value.
+     */
     constexpr Vector4(const Vector3<Real>& vector, const Real w)
         : x { vector.x }
         , y { vector.y }
@@ -3635,6 +3658,13 @@ public:
     {
     }
 
+    /**
+     * Initialize with components.
+     * @param x X value.
+     * @param y Y value.
+     * @param z Z value.
+     * @param w W value.
+     */
     constexpr Vector4(const Real x, const Real y, const Real z, const Real w)
         : x { x }
         , y { y }
@@ -3643,63 +3673,119 @@ public:
     {
     }
 
+    /**
+     * Vector from quaternion. X, y, and z values are copied directly.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     static constexpr Vector4 from_quaternion(const Quaternion<Real>& quaternion);
 
+    /**
+     * Vector with all components with value.
+     * @param value Value.
+     * @return Result.
+     */
     static constexpr Vector4 all(const Real value)
     {
         return { value, value, value, value };
     }
 
+    /**
+     * Vector with all components zero.
+     * @return Result.
+     */
     static constexpr Vector4 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    /**
+     * Vector with all components one.
+     * @return Result.
+     */
     static constexpr Vector4 one()
     {
         return all(static_cast<Real>(1));
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive x-axis.
+     * @return Result.
+     */
     static constexpr Vector4 axis_x()
     {
         return { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0) };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive y-axis.
+     * @return Result.
+     */
     static constexpr Vector4 axis_y()
     {
         return { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive z-axis.
+     * @return Result.
+     */
     static constexpr Vector4 axis_z()
     {
         return { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive w-axis.
+     * @return Result.
+     */
     static constexpr Vector4 axis_w()
     {
         return { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) };
     }
 
+    /**
+     * Component-wise absolute value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z), nnm::abs(w) };
     }
 
+    /**
+     * Component-wise ceiling.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 ceil() const
     {
         return { nnm::ceil(x), nnm::ceil(y), nnm::ceil(z), nnm::ceil(w) };
     }
 
+    /**
+     * Component-wise floor.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 floor() const
     {
         return { nnm::floor(x), nnm::floor(y), nnm::floor(z), nnm::floor(w) };
     }
 
+    /**
+     * Component-wise round.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 round() const
     {
         return { nnm::round(x), nnm::round(y), nnm::round(z), nnm::round(w) };
     }
 
+    /**
+     * Component-wise clamp.
+     * @param min Minimum.
+     * @param max Maximum.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 clamp(const Vector4& min, const Vector4& max) const
     {
         return { nnm::clamp(x, min.x, max.x),
@@ -3708,16 +3794,30 @@ public:
                  nnm::clamp(w, min.w, max.w) };
     }
 
+    /**
+     * Squared vector length.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z) + sqrd(w);
     }
 
+    /**
+     * Vector length.
+     * @return Result.
+     */
     [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
     }
 
+    /**
+     * Vector with same direction but length is clamped between minimum and maximum values.
+     * @param min Minimum length.
+     * @param max Maximum length.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 clamp_length(const Real min, const Real max) const
     {
         const Real length = this->length();
@@ -3734,6 +3834,10 @@ public:
         return *this;
     }
 
+    /**
+     * Normalize vector length to one.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 normalize() const
     {
         if (const Real length = this->length(); length > static_cast<Real>(0)) {
@@ -3742,6 +3846,12 @@ public:
         return zero();
     }
 
+    /**
+     * Component-wise linear interpolation.
+     * @param to Vector to interpolate to.
+     * @param weight Interpolation weight typically from zero to one.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 lerp(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight),
@@ -3750,6 +3860,12 @@ public:
                  nnm::lerp(w, to.w, weight) };
     }
 
+    /**
+     * Component-wise linear interpolation with weight clamped between zero and one.
+     * @param to Vector to interpolate to.
+     * @param weight Interpolation weight that is clamped between zero to one.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 lerp_clamped(const Vector4& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight),
@@ -3758,13 +3874,27 @@ public:
                  nnm::lerp_clamped(w, to.w, weight) };
     }
 
+    /**
+     * Vector dot product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real dot(const Vector4& other) const
     {
         return x * other.x + y * other.y + z * other.z + w * other.w;
     }
 
+    /**
+     * Vector outer product.
+     * @param other Other vector.
+     * @return Resulting 4x4 matrix.
+     */
     [[nodiscard]] Matrix4<Real> outer(const Vector4& other) const;
 
+    /**
+     * Inverse vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 inverse() const
     {
         return {
@@ -3772,20 +3902,43 @@ public:
         };
     }
 
+    /**
+     * Transform by a three-dimensional transformation matrix about the origin.
+     * @param by Transformation matrix to transform by.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
 
+    /**
+     * Transform by a three-dimensional transformation matrix about an origin.
+     * @param origin Origin to transform about.
+     * @param by Transformation matrix to transform by.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const;
 
+    /**
+     * Maximum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real max() const
     {
         return nnm::max(x, nnm::max(y, nnm::max(z, w)));
     }
 
+    /**
+     * Minimum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real min() const
     {
         return nnm::min(x, nnm::min(y, nnm::min(z, w)));
     }
 
+    /**
+     * Index of maximum component.
+     * @return Index.
+     */
     [[nodiscard]] uint8_t max_index() const
     {
         uint8_t max_axis = 0;
@@ -3801,6 +3954,10 @@ public:
         return max_axis;
     }
 
+    /**
+     * Index of minimum component.
+     * @return Index.
+     */
     [[nodiscard]] uint8_t min_index() const
     {
         uint8_t min_axis = 0;
@@ -3816,86 +3973,159 @@ public:
         return min_axis;
     }
 
+    /**
+     * If approximately equal to another vector.
+     * @param other Other vector.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Vector4& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y) && nnm::approx_equal(z, other.z)
             && nnm::approx_equal(w, other.w);
     }
 
+    /**
+     * If all components are approximately zero.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y) && nnm::approx_zero(z) && nnm::approx_zero(w);
     }
 
+    /**
+     * Two-dimensional vector from the first two components (x and y) of this vector.
+     * @return Resulting two-dimensional vector.
+     */
     [[nodiscard]] constexpr Vector2<Real> xy() const
     {
         return { x, y };
     }
 
+    /**
+     * Three-dimensional vector from the first three components (x, y, and z) of this vector.
+     * @return Resulting three-dimensional vector.
+     */
     [[nodiscard]] constexpr Vector3<Real> xyz() const
     {
         return { x, y, z };
     }
 
+    /**
+     * Start constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return &x;
     }
 
+    /**
+     * End constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return &w + 1;
     }
 
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return &x;
     }
 
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
     Real* end()
     {
         return &w + 1;
     }
 
-    [[nodiscard]] Real at(const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
+    [[nodiscard]] const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
     [[nodiscard]] const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
         return *(begin() + index);
     }
 
+    /**
+     * Component-wise equality.
+     * @param other Other vector.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator==(const Vector4& other) const
     {
         return x == other.x && y == other.y && z == other.z && w == other.w;
     }
 
+    /**
+     * Component-wise inequality.
+     * @param other Other vector.
+     * @return True if unequal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator!=(const Vector4& other) const
     {
         return x != other.x || y != other.y || z != other.z || w != other.w;
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator+(const Vector4& other) const
     {
         return { x + other.x, y + other.y, z + other.z, w + other.w };
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator+=(const Vector4& other)
     {
         x += other.x;
@@ -3905,11 +4135,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator-(const Vector4& other) const
     {
         return { x - other.x, y - other.y, z - other.z, w - other.w };
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator-=(const Vector4& other)
     {
         x -= other.x;
@@ -3919,11 +4159,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator*(const Vector4& other) const
     {
         return { x * other.x, y * other.y, z * other.z, w * other.w };
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator*=(const Vector4& other)
     {
         x *= other.x;
@@ -3933,13 +4183,28 @@ public:
         return *this;
     }
 
+    /**
+     * Vector-matrix multiplication.
+     * @param matrix 4x4 matrix.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 operator*(const Matrix4<Real>& matrix) const;
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator*(const Real value) const
     {
         return { x * value, y * value, z * value, w * value };
     }
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator*=(const Real value)
     {
         x *= value;
@@ -3949,11 +4214,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] Vector4 constexpr operator/(const Vector4& other) const
     {
         return { x / other.x, y / other.y, z / other.z, w / other.w };
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator/=(const Vector4& other)
     {
         x /= other.x;
@@ -3963,11 +4238,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator/(const Real value) const
     {
         return { x / value, y / value, z / value, w / value };
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector4& operator/=(const Real value)
     {
         x /= value;
@@ -3977,6 +4262,11 @@ public:
         return *this;
     }
 
+    /**
+     * Lexicographical comparison between components.
+     * @param other Other vector.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] bool operator<(const Vector4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -3990,16 +4280,27 @@ public:
         return false;
     }
 
+    /**
+     * Unary plus. Does nothing but provide symmetry with unary minus.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator+() const
     {
         return { x, y, z, w };
     }
 
+    /**
+     * Component-wise negation.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector4 operator-() const
     {
         return { -x, -y, -z, -w };
     }
 
+    /**
+     * Evaluates to false if all components are zero, true otherwise.
+     */
     [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != static_cast<Real>(0) || y != static_cast<Real>(0) || z != static_cast<Real>(0)
@@ -4007,12 +4308,26 @@ public:
     }
 };
 
+/**
+ * Component-wise multiplication with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Real>
 Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
 
+/**
+ * Component-wise division with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Real>
 Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
 {
