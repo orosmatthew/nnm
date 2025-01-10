@@ -2963,6 +2963,10 @@ constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
     return { value / vector.x, value / vector.y, value / vector.z };
 }
 
+/**
+ * Three-dimensional vector with integer components.
+ * @tparam Int Integer type.
+ */
 template <typename Int>
 class Vector3i {
 public:
@@ -2970,6 +2974,9 @@ public:
     Int y;
     Int z;
 
+    /**
+     * Initialize with all zeros.
+     */
     constexpr Vector3i()
         : x { 0 }
         , y { 0 }
@@ -2977,6 +2984,11 @@ public:
     {
     }
 
+    /**
+     * Cast from component with floating-point components.
+     * @tparam Real Floating-point type.
+     * @param vector Vector to cast from.
+     */
     template <typename Real>
     explicit constexpr Vector3i(const Vector3<Real>& vector)
         : x { static_cast<Int>(vector.x) }
@@ -2985,6 +2997,11 @@ public:
     {
     }
 
+    /**
+     * Initialize first two components from two-dimensional vector and z value.
+     * @param vector Vector.
+     * @param z Z value.
+     */
     constexpr Vector3i(const Vector2i<Int>& vector, const Int z)
         : x { vector.x }
         , y { vector.y }
@@ -2992,6 +3009,12 @@ public:
     {
     }
 
+    /**
+     * Initialize with components.
+     * @param x X value.
+     * @param y Y value.
+     * @param z Z value.
+     */
     constexpr Vector3i(const Int x, const Int y, const Int z)
         : x { x }
         , y { y }
@@ -2999,92 +3022,173 @@ public:
     {
     }
 
+    /**
+     * Initialize all components with value.
+     * @param value Value.
+     * @return Result.
+     */
     static constexpr Vector3i all(const Int value)
     {
         return { value, value, value };
     }
 
+    /**
+     * Initialize all components with zero.
+     * @return Result.
+     */
     static constexpr Vector3i zero()
     {
         return { 0, 0, 0 };
     }
 
+    /**
+     * Initialize all components with one.
+     * @return Result.
+     */
     static constexpr Vector3i one()
     {
         return { 1, 1, 1 };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive x-axis.
+     * @return Result.
+     */
     static constexpr Vector3i axis_x()
     {
         return { 1, 0, 0 };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive y-axis.
+     * @return Result.
+     */
     static constexpr Vector3i axis_y()
     {
         return { 0, 1, 0 };
     }
 
+    /**
+     * Normalized vector that points in the direction of the positive z-axis.
+     * @return Result.
+     */
     static constexpr Vector3i axis_z()
     {
         return { 0, 0, 1 };
     }
 
+    /**
+     * Component-wise absolute value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i abs() const
     {
         return { nnm::abs(x), nnm::abs(y), nnm::abs(z) };
     }
 
+    /**
+     * Component-wise clamp.
+     * @param min Minimum.
+     * @param max Maximum.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i clamp(const Vector3i& min, const Vector3i& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y), nnm::clamp(z, min.z, max.z) };
     }
 
+    /**
+     * Distance between the position of this vector to another vector along the grid defined by the x, y, and z axes.
+     * @param to Position to.
+     * @return Resulting distance.
+     */
     [[nodiscard]] constexpr Int manhattan_distance(const Vector3i& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
     }
 
+    /**
+     * Squared vector length.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int length_sqrd() const
     {
         return sqrd(x) + sqrd(y) + sqrd(z);
     }
 
+    /**
+     * Vector dot product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int dot(const Vector3i& other) const
     {
         return x * other.x + y * other.y + z * other.z;
     }
 
+    /**
+     * Vector cross product.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i cross(const Vector3i& other) const
     {
         return { y * other.z - z * other.y, z * other.x - x * other.z, x * other.y - y * other.x };
     }
 
+    /**
+     * If parallel to another vector.
+     * @param other Other vector.
+     * @return True if parallel, false otherwise.
+     */
     [[nodiscard]] constexpr bool parallel(const Vector3i& other) const
     {
         return cross(other) == zero();
     }
 
+    /**
+     * If perpendicular to another vector.
+     * @param other Other vector.
+     * @return True if perpendicular, false otherwise.
+     */
     [[nodiscard]] constexpr bool perpendicular(const Vector3i& other) const
     {
         return dot(other) == 0;
     }
 
+    /**
+     * Returns a vector that is perpendicular to this vector. There are multiple possible perpendicular vectors so an
+     * arbitrary perpendicular vector is returned and no assumptions should be made on which solution is returned.
+     * @return Resulting perpendicular vector.
+     */
     [[nodiscard]] constexpr Vector3i arbitrary_perpendicular() const
     {
         const Vector3i other = nnm::abs(x) > nnm::abs(y) ? Vector3i { 0, 1, 0 } : Vector3i { 1, 0, 0 };
         return cross(other);
     }
 
+    /**
+     * Maximum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int max() const
     {
         return nnm::max(x, nnm::max(y, z));
     }
 
+    /**
+     * Minimum component.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Int min() const
     {
         return nnm::min(x, nnm::min(y, z));
     }
 
+    /**
+     * Index of maximum component.
+     * @return Result.
+     */
     [[nodiscard]] uint8_t max_index() const
     {
         uint8_t max_axis = 0;
@@ -3097,6 +3201,10 @@ public:
         return max_axis;
     }
 
+    /**
+     * Index of minimum component.
+     * @return Result.
+     */
     [[nodiscard]] uint8_t min_index() const
     {
         uint8_t min_axis = 0;
@@ -3109,70 +3217,130 @@ public:
         return min_axis;
     }
 
+    /**
+     * Two-dimensional vector from the first two components of this vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2i<Int> xy() const
     {
         return { x, y };
     }
 
+    /**
+     * Start constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Int* begin() const
     {
         return &x;
     }
 
+    /**
+     * End constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Int* end() const
     {
         return &z + 1;
     }
 
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
     Int* begin()
     {
         return &x;
     }
 
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
     Int* end()
     {
         return &z + 1;
     }
 
-    [[nodiscard]] Int at(const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
+    [[nodiscard]] const Int& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Int& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
-    [[nodiscard]] Int operator[](const uint8_t index) const
+    /**
+     * Constant reference to component at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
+    [[nodiscard]] const Int& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
+    /**
+     * Reference to component at index.
+     * @param index Index.
+     * @return Reference.
+     */
     Int& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
     }
 
+    /**
+     * Component-wise equality.
+     * @param other Other vector.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator==(const Vector3i& other) const
     {
         return x == other.x && y == other.y && z == other.z;
     }
 
+    /**
+     * Component-wise inequality.
+     * @param other Other vector.
+     * @return True if unequal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator!=(const Vector3i& other) const
     {
         return x != other.x || y != other.y || z != other.z;
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator+(const Vector3i& other) const
     {
         return { x + other.x, y + other.y, z + other.z };
     }
 
+    /**
+     * Component-wise addition.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector3i& operator+=(const Vector3i& other)
     {
         x += other.x;
@@ -3181,11 +3349,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator-(const Vector3i& other) const
     {
         return { x - other.x, y - other.y, z - other.z };
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector3i& operator-=(const Vector3i& other)
     {
         x -= other.x;
@@ -3194,11 +3372,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator*(const Vector3i& other) const
     {
         return { x * other.x, y * other.y, z * other.z };
     }
 
+    /**
+     * Component-wise multiplication.
+     * @param other Other vector.
+     * @return Result.
+     */
     Vector3i& operator*=(const Vector3i& other)
     {
         x *= other.x;
@@ -3207,11 +3395,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator*(const Int value) const
     {
         return { x * value, y * value, z * value };
     }
 
+    /**
+     * Component-wise multiplication with value.
+     * @param value Value.
+     * @return Reference to this modified vector.
+     */
     Vector3i& operator*=(const Int value)
     {
         x *= value;
@@ -3220,11 +3418,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator/(const Vector3i& other) const
     {
         return { x / other.x, y / other.y, z / other.z };
     }
 
+    /**
+     * Component-wise subtraction.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector3i& operator/=(const Vector3i& other)
     {
         x /= other.x;
@@ -3233,11 +3441,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator/(const Int value) const
     {
         return { x / value, y / value, z / value };
     }
 
+    /**
+     * Component-wise division with value.
+     * @param value Value.
+     * @return Result.
+     */
     Vector3i& operator/=(const Int value)
     {
         x /= value;
@@ -3246,11 +3464,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise remainder.
+     * @param other Other vector.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator%(const Vector3i& other) const
     {
         return { x % other.x, y % other.y, z % other.z };
     }
 
+    /**
+     * Component-wise remainder.
+     * @param other Other vector.
+     * @return Reference to this modified vector.
+     */
     Vector3i& operator%=(const Vector3i& other)
     {
         x %= other.x;
@@ -3259,11 +3487,21 @@ public:
         return *this;
     }
 
+    /**
+     * Component-wise remainder with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator%(const Int value) const
     {
         return { x % value, y % value, z % value };
     }
 
+    /**
+     * Component-wise remainder with value.
+     * @param value Value.
+     * @return Result.
+     */
     Vector3i& operator%=(const Int value)
     {
         x %= value;
@@ -3272,16 +3510,29 @@ public:
         return *this;
     }
 
+    /**
+     * Unary plus. Does nothing but provide symmetry with unary minus.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator+() const
     {
         return { x, y, z };
     }
 
+    /**
+     * Component-wise negation.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3i operator-() const
     {
         return { -x, -y, -z };
     }
 
+    /**
+     * Lexicographical comparison between components.
+     * @param other Other vector.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] bool operator<(const Vector3i& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
@@ -3295,24 +3546,48 @@ public:
         return false;
     }
 
+    /**
+     * Evaluates to false if all components are zero, true otherwise.
+     */
     [[nodiscard]] constexpr explicit operator bool() const
     {
         return x != 0 || y != 0 || z != 0;
     }
 };
 
+/**
+ * Component-wise multiplication with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector3i<Int> operator*(const Int value, const Vector3i<Int>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z };
 }
 
+/**
+ * Component-wise division with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector3i<Int> operator/(const Int value, const Vector3i<Int>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
 }
 
+/**
+ * Component-wise remainder with value.
+ * @tparam Int Integer type.
+ * @param value Value.
+ * @param vector Vector.
+ * @return Result.
+ */
 template <typename Int>
 constexpr Vector3i<Int> operator%(const Int value, const Vector3i<Int>& vector)
 {
