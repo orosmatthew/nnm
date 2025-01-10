@@ -5599,11 +5599,18 @@ public:
     }
 };
 
+/**
+ * 3x3 matrix.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Matrix3 {
 public:
     Vector3<Real> columns[3];
 
+    /**
+     * Initialize with identity matrix.
+     */
     constexpr Matrix3()
         : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
                     { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
@@ -5611,6 +5618,11 @@ public:
     {
     }
 
+    /**
+     * Case from other matrix type.
+     * @tparam Other Other matrix type.
+     * @param matrix Matrix to cast from
+     */
     template <typename Other>
     explicit constexpr Matrix3(const Matrix3<Other>& matrix)
         : columns { { static_cast<Real>(matrix.columns[0].x),
@@ -5625,11 +5637,29 @@ public:
     {
     }
 
+    /**
+     * Initialize with columns.
+     * @param column0 First column.
+     * @param column1 Second column.
+     * @param column2 Third column.
+     */
     constexpr Matrix3(const Vector3<Real>& column0, const Vector3<Real>& column1, const Vector3<Real>& column2)
         : columns { column0, column1, column2 }
     {
     }
 
+    /**
+     * Initialize with elements.
+     * @param col0_row0 First column, first row
+     * @param col0_row1 First column, second row
+     * @param col0_row2 First column, third row
+     * @param col1_row0 Second column, first row
+     * @param col1_row1 Second column, second row
+     * @param col1_row2 Second column, third row
+     * @param col2_row0 Third column, first row
+     * @param col2_row1 Third column, second row
+     * @param col2_row2 Third column, third row
+     */
     constexpr Matrix3(
         const Real col0_row0,
         const Real col0_row1,
@@ -5646,21 +5676,38 @@ public:
     {
     }
 
+    /**
+     * Matrix with all elements equal to value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix3 all(const Real value)
     {
         return { { value, value, value }, { value, value, value }, { value, value, value } };
     }
 
+    /**
+     * Matrix with all elements zero.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix3 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    /**
+     * Matrix with all elements one.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix3 one()
     {
         return all(static_cast<Real>(1));
     }
 
+    /**
+     * Identity matrix.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix3 identity()
     {
         return { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
@@ -5668,11 +5715,19 @@ public:
                  { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } };
     }
 
+    /**
+     * Sum of matrix diagonal.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2);
     }
 
+    /**
+     * Matrix determinant.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         Real det = static_cast<Real>(0);
@@ -5683,6 +5738,12 @@ public:
         return det;
     }
 
+    /**
+     * Minor matrix at column and row which is the resulting 2x2 matrix with that column and row excluded.
+     * @param column Column.
+     * @param row Row.
+     * @return Resulting 2x2 matrix.
+     */
     [[nodiscard]] Matrix2<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
         Matrix2<Real> minor_matrix;
@@ -5704,12 +5765,22 @@ public:
         return minor_matrix;
     }
 
+    /**
+     * Minor at column and row which is the determinant of the minor matrix at that column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Result.
+     */
     [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return minor_matrix_at(column, row).determinant();
     }
 
+    /**
+     * Minor matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 minor() const
     {
         Matrix3 result;
@@ -5721,12 +5792,22 @@ public:
         return result;
     }
 
+    /**
+     * Cofactor at column and row.
+     * @param column
+     * @param row
+     * @return Result.
+     */
     [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
+    /**
+     * Cofactor matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 cofactor() const
     {
         Matrix3 result;
@@ -5738,21 +5819,37 @@ public:
         return result;
     }
 
+    /**
+     * Transpose matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 transpose() const
     {
         return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 1), at(1, 1), at(2, 1) }, { at(0, 2), at(1, 2), at(2, 2) } };
     }
 
+    /**
+     * Adjugate matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 adjugate() const
     {
         return cofactor().transpose();
     }
 
+    /**
+     * Inverse without first checking if the matrix is singular.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
 
+    /**
+     * Inverse which returns null if there is no inverse.
+     * @return Inverse if there is one, null if not.
+     */
     [[nodiscard]] std::optional<Matrix3> inverse() const
     {
         const Real det = determinant();
@@ -5762,6 +5859,11 @@ public:
         return adjugate() / det;
     }
 
+    /**
+     * Element-wise approximately equal.
+     * @param other Other matrix.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Matrix3& other) const
     {
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5774,6 +5876,10 @@ public:
         return true;
     }
 
+    /**
+     * If all elements are approximately zero.
+     * @return True if approximately zero, false otherwise.
+     */
     [[nodiscard]] bool approx_zero() const
     {
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5786,62 +5892,115 @@ public:
         return true;
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param column Column.
+     * @return Constant reference.
+     */
     [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Column.
+     * @return Reference.
+     */
     Vector3<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
+    /**
+     * Constant reference to element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Constant reference.
+     */
     [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
     }
 
+    /**
+     * Reference to element at column and row.
+     * @param column Column.
+     * @param row Row.
+     * @return Reference.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
     }
 
+    /**
+     * Start constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return columns[0].begin();
     }
 
+    /**
+     * End constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return columns[2].end();
     }
 
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return columns[0].begin();
     }
 
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
     Real* end()
     {
         return columns[2].end();
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param column Column.
+     * @return Constant reference.
+     */
     const Vector3<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Column.
+     * @return Reference.
+     */
     Vector3<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
     }
 
+    /**
+     * Element-wise equality.
+     * @param other Other matrix.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] bool operator==(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
@@ -5852,6 +6011,11 @@ public:
         return true;
     }
 
+    /**
+     * Element-wise inequality.
+     * @param other Other matrix.
+     * @return True if not equal, false otherwise.
+     */
     bool operator!=(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
@@ -5862,6 +6026,11 @@ public:
         return false;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
     {
         Matrix3 result;
@@ -5871,6 +6040,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix3& operator+=(const Matrix3& other)
     {
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5879,6 +6053,11 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
     {
         Matrix3 result;
@@ -5888,6 +6067,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix3& operator-=(const Matrix3& other)
     {
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5896,6 +6080,11 @@ public:
         return *this;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
     {
         auto result = zero();
@@ -5909,12 +6098,22 @@ public:
         return result;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix3& operator*=(const Matrix3& other)
     {
         *this = *this * other;
         return *this;
     }
 
+    /**
+     * Matrix-vector multiplication.
+     * @param vector Vector.
+     * @return Resulting three-dimensional vector.
+     */
     [[nodiscard]] Vector3<Real> operator*(const Vector3<Real>& vector) const
     {
         auto result = Vector3<Real>::zero();
@@ -5926,11 +6125,21 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise multiplication with value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value, at(2) * value };
     }
 
+    /**
+     * Element-wise multiplication with value.
+     * @param value Value.
+     * @return Reference to this modified matrix.
+     */
     Matrix3& operator*=(const Real value)
     {
         at(0) *= value;
@@ -5939,11 +6148,21 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise division by value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix3 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value, at(2) / value };
     }
 
+    /**
+     * Element-wise division by value.
+     * @param value Value.
+     * @return Reference this modified matrix.
+     */
     Matrix3& operator/=(const Real value)
     {
         at(0) /= value;
@@ -5952,6 +6171,11 @@ public:
         return *this;
     }
 
+    /**
+     * Lexicographical comparison between elements.
+     * @param other Other matrix.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] bool operator<(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
@@ -5965,6 +6189,9 @@ public:
         return false;
     }
 
+    /**
+     * Evaluates to false if all components are zero, true otherwise.
+     */
     explicit operator bool() const
     {
         for (uint8_t c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
@@ -5976,6 +6203,13 @@ public:
     }
 };
 
+/**
+ * Element-wise multiplication with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
@@ -5988,6 +6222,13 @@ Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
     return result;
 }
 
+/**
+ * Element-wise division with value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
