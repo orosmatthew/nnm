@@ -6767,6 +6767,12 @@ public:
               { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
+    /**
+     * Basis sheared along the y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
     {
         return Basis3(
@@ -6775,6 +6781,12 @@ public:
               { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
     }
 
+    /**
+     * Basis sheared along the z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Y-Axis angle in radians.
+     * @return Result.
+     */
     static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
     {
         return Basis3(
@@ -6783,21 +6795,37 @@ public:
               { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
+    /**
+     * Trace which is the sum of the matrix diagonal.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
+    /**
+     * Determinant of the matrix.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
 
+    /**
+     * Inverse without checking if the basis is valid first.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 unchecked_inverse() const
     {
         return Basis3(matrix.unchecked_inverse());
     }
 
+    /**
+     * Inverse of the basis.
+     * @return Inverse basis if the basis is valid or null otherwise.
+     */
     [[nodiscard]] std::optional<Basis3> inverse() const
     {
         if (valid()) {
@@ -6806,132 +6834,266 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determines if the basis is valid.
+     * @return True if valid, false otherwise.
+     */
     [[nodiscard]] bool valid() const
     {
         return matrix.determinant() != static_cast<Real>(0);
     }
 
+    /**
+     * Rotate about an axis by an angle.
+     * @param axis Normalized axis vector.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
 
+    /**
+     * Local rotate about an axis by an angle.
+     * @param axis Normalize axis vector.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 rotate_axis_angle_local(const Vector3<Real>& axis, const Real angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
     }
 
+    /**
+     * Rotate by quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
 
+    /**
+     * Local rotate by quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
 
+    /**
+     * Per-axis scale by factor.
+     * @param factor Vector scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
+    /**
+     * Local per-axis scale by factor.
+     * @param factor Vector scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
+    /**
+     * Shear about x-axis.
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return transform(from_shear_x(angle_y, angle_z));
     }
 
+    /**
+     * Local shear about x-axis
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_x_local(const Real angle_y, const Real angle_z) const
     {
         return transform_local(from_shear_x(angle_y, angle_z));
     }
 
+    /**
+     * Shear about y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_y(const Real angle_x, const Real angle_z) const
     {
         return transform(from_shear_y(angle_x, angle_z));
     }
 
+    /**
+     * Local shear about y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_y_local(const Real angle_x, const Real angle_z) const
     {
         return transform_local(from_shear_y(angle_x, angle_z));
     }
 
+    /**
+     * Shear about z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Y-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return transform(from_shear_z(angle_x, angle_y));
     }
 
+    /**
+     * Local shear about z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Y-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 shear_z_local(const Real angle_x, const Real angle_y) const
     {
         return transform_local(from_shear_z(angle_x, angle_y));
     }
 
+    /**
+     * Transform by another basis.
+     * @param by Basis.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 transform(const Basis3& by) const
     {
         return Basis3(by.matrix * matrix);
     }
 
+    /**
+     * Local transform by another basis.
+     * @param by Basis.
+     * @return Result.
+     */
     [[nodiscard]] Basis3 transform_local(const Basis3& by) const
     {
         return Basis3(matrix * by.matrix);
     }
 
+    /**
+     * Determines if approximately equal to another basis.
+     * @param other Other basis.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Basis3& other) const
     {
         return matrix.approx_equal(other.matrix);
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param column Index of column.
+     * @return Constant reference to column.
+     */
     [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Index of column.
+     * @return Reference to column.
+     */
     Vector3<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
     }
 
+    /**
+     * Constant reference of element at index of column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Constant reference to element.
+     */
     [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
+    /**
+     * Reference of element at index of column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Reference to element.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param index Index of column.
+     * @return Constant reference to column.
+     */
     [[nodiscard]] const Vector3<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
     }
 
+    /**
+     * Reference to column at index.
+     * @param index Index of column.
+     * @return Reference to column.
+     */
     Vector3<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
     }
 
+    /**
+     * Element-wise equality with another basis.
+     * @param other Other basis.
+     * @return True if all elements are equal, false otherwise.
+     */
     [[nodiscard]] bool operator==(const Basis3& other) const
     {
         return matrix == other.matrix;
     }
 
+    /**
+     * Element-wise inequality with another basis.
+     * @param other Other basis.
+     * @return True if any elements are not equal, false otherwise.
+     */
     [[nodiscard]] bool operator!=(const Basis3& other) const
     {
         return matrix != other.matrix;
     }
 
+    /**
+     * Lexicographical comparison between elements.
+     * @param other Other basis.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] bool operator<(const Basis3& other) const
     {
         return matrix < other.matrix;
