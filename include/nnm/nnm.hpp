@@ -1966,6 +1966,18 @@ public:
     {
         return x != 0 || y != 0;
     }
+
+    /**
+     * Hash type for 2D integer vector.
+     */
+    struct Hash {
+        size_t operator()(const Vector2i& vector) const noexcept
+        {
+            const size_t hash1 = std::hash<Int>()(vector.x);
+            const size_t hash2 = std::hash<Int>()(vector.y);
+            return hash1 ^ hash2 << 1;
+        }
+    };
 };
 
 /**
@@ -3553,6 +3565,19 @@ public:
     {
         return x != 0 || y != 0 || z != 0;
     }
+
+    /**
+     * Hash type for 3D integer vector.
+     */
+    struct Hash {
+        size_t operator()(const Vector3i& vector) const noexcept
+        {
+            const size_t hash1 = std::hash<Int>()(vector.x);
+            const size_t hash2 = std::hash<Int>()(vector.y);
+            const size_t hash3 = std::hash<Int>()(vector.z);
+            return hash1 ^ hash2 << 1 ^ hash3 << 2;
+        }
+    };
 };
 
 /**
@@ -3863,7 +3888,7 @@ public:
     /**
      * Component-wise linear interpolation with weight clamped between zero and one.
      * @param to Vector to interpolate to.
-     * @param weight Interpolation weight that is clamped between zero to one.
+     * @param weight Interpolation weight that is clamped between zero and one.
      * @return Result.
      */
     [[nodiscard]] constexpr Vector4 lerp_clamped(const Vector4& to, const Real weight) const
@@ -8757,26 +8782,5 @@ Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
     return result;
 }
 }
-
-template <typename Int>
-struct std::hash<nnm::Vector2i<Int>> {
-    size_t operator()(const nnm::Vector2i<Int>& vector) const noexcept
-    {
-        const size_t hash1 = std::hash<Int>()(vector.x);
-        const size_t hash2 = std::hash<Int>()(vector.y);
-        return hash1 ^ hash2 << 1;
-    }
-};
-
-template <typename Int>
-struct std::hash<nnm::Vector3i<Int>> {
-    size_t operator()(const nnm::Vector3i<Int>& vector) const noexcept
-    {
-        const size_t hash1 = std::hash<Int>()(vector.x);
-        const size_t hash2 = std::hash<Int>()(vector.y);
-        const size_t hash3 = std::hash<Int>()(vector.z);
-        return hash1 ^ hash2 << 1 ^ hash3 << 2;
-    }
-};
 
 #endif
