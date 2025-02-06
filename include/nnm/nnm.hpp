@@ -7100,11 +7100,21 @@ public:
     }
 };
 
+/**
+ * 4x4 matrix.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Matrix4 {
 public:
+    /**
+     * Columns of matrix.
+     */
     Vector4<Real> columns[4];
 
+    /**
+     * Initialize with identity matrix.
+     */
     constexpr Matrix4()
         : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0) },
                     { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
@@ -7114,6 +7124,11 @@ public:
     {
     }
 
+    /**
+     * Casts from another matrix.
+     * @tparam Other Other type to cast from.
+     * @param matrix Other matrix.
+     */
     template <typename Other>
     explicit constexpr Matrix4(const Matrix4<Other>& matrix)
         : columns { { static_cast<Real>(matrix.columns[0].x),
@@ -7135,6 +7150,13 @@ public:
     {
     }
 
+    /**
+     * Initialize with columns.
+     * @param column0 First column.
+     * @param column1 Second column.
+     * @param column2 Third column.
+     * @param column3 Fourth column.
+     */
     constexpr Matrix4(
         const Vector4<Real>& column0,
         const Vector4<Real>& column1,
@@ -7144,6 +7166,25 @@ public:
     {
     }
 
+    /**
+     * Initialize with elements.
+     * @param col0_row0 First column, first row.
+     * @param col0_row1 First column, second row.
+     * @param col0_row2 First column, third row.
+     * @param col0_row3 First column, fourth row.
+     * @param col1_row0 Second column, first row.
+     * @param col1_row1 Second column, second row.
+     * @param col1_row2 Second column, third row.
+     * @param col1_row3 Second column, fourth row.
+     * @param col2_row0 Third column, first row.
+     * @param col2_row1 Third column, second row.
+     * @param col2_row2 Third column, third row.
+     * @param col2_row3 Third column, fourth row.
+     * @param col3_row0 Fourth column, first row.
+     * @param col3_row1 Fourth column, second row.
+     * @param col3_row2 Fourth column, third row.
+     * @param col3_row3 Fourth column, fourth row.
+     */
     constexpr Matrix4(
         const Real col0_row0,
         const Real col0_row1,
@@ -7168,6 +7209,11 @@ public:
     {
     }
 
+    /**
+     * Matrix with all element set to value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix4 all(const Real value)
     {
         return { { value, value, value, value },
@@ -7176,16 +7222,28 @@ public:
                  { value, value, value, value } };
     }
 
+    /**
+     * Matrix with all elements set to zero.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix4 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    /**
+     * Matrix with all elements set to one.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix4 one()
     {
         return all(static_cast<Real>(1));
     }
 
+    /**
+     * Identity matrix.
+     * @return Result.
+     */
     [[nodiscard]] static constexpr Matrix4 identity()
     {
         return { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0) },
@@ -7194,11 +7252,19 @@ public:
                  { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } };
     }
 
+    /**
+     * Trace which is the sum of the matrix diagonal.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
     }
 
+    /**
+     * Determinant of matrix.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         Real det = static_cast<Real>(0);
@@ -7209,6 +7275,12 @@ public:
         return det;
     }
 
+    /**
+     * Minor matrix at column and row which is the matrix where the specified column and row are removed.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Resulting 3x3 matrix.
+     */
     [[nodiscard]] Matrix3<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
@@ -7231,12 +7303,22 @@ public:
         return minor_matrix;
     }
 
+    /**
+     * Minor at column and row which is the determinant of the minor matrix at the column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Result.
+     */
     [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return minor_matrix_at(column, row).determinant();
     }
 
+    /**
+     * Minor matrix which is a matrix where each element is the minor at the element.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 minor() const
     {
         Matrix4 result;
@@ -7248,12 +7330,22 @@ public:
         return result;
     }
 
+    /**
+     * Cofactor at column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Result.
+     */
     [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
     }
 
+    /**
+     * Cofactor matrix which is a matrix where each element is the cofactor at that element.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 cofactor() const
     {
         Matrix4 result;
@@ -7265,6 +7357,10 @@ public:
         return result;
     }
 
+    /**
+     * Transpose matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 transpose() const
     {
         return { { at(0, 0), at(1, 0), at(2, 0), at(3, 0) },
@@ -7273,16 +7369,28 @@ public:
                  { at(0, 3), at(1, 3), at(2, 3), at(3, 3) } };
     }
 
+    /**
+     * Adjugate matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 adjugate() const
     {
         return cofactor().transpose();
     }
 
+    /**
+     * Inverse matrix without first checking if a valid inverse if possible.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
 
+    /**
+     * Inverse matrix.
+     * @return Inverse matrix if one exists, null otherwise.
+     */
     [[nodiscard]] std::optional<Matrix4> inverse() const
     {
         const Real det = determinant();
@@ -7292,6 +7400,11 @@ public:
         return adjugate() / det;
     }
 
+    /**
+     * Determines if approximately equal to another matrix.
+     * @param other Other matrix.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Matrix4& other) const
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7302,6 +7415,10 @@ public:
         return true;
     }
 
+    /**
+     * Determines if all elements are approximately zero.
+     * @return True if approximately all zero, false otherwise.
+     */
     [[nodiscard]] bool approx_zero() const
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7312,62 +7429,115 @@ public:
         return true;
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param column Index of column.
+     * @return Constant reference to column.
+     */
     [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Index of column.
+     * @return Reference to column.
+     */
     Vector4<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
     }
 
+    /**
+     * Constant reference to element at index of column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Constant reference to element.
+     */
     [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
     }
 
+    /**
+     * Reference to element at index of column and row.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Reference to element.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
     }
 
+    /**
+     * Start of constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return columns[0].begin();
     }
 
+    /**
+     * End of constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return columns[3].end();
     }
 
+    /**
+     * Start of iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return columns[0].begin();
     }
 
+    /**
+     * End of iterator
+     * @return Iterator
+     */
     Real* end()
     {
         return columns[3].end();
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param index Index of column.
+     * @return Constant reference to column.
+     */
     const Vector4<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
     }
 
+    /**
+     * Reference to column at index.
+     * @param index
+     * @return
+     */
     Vector4<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
     }
 
+    /**
+     * Element-wise equality.
+     * @param other Other matrix.
+     * @return True if all elements equal, false otherwise.
+     */
     [[nodiscard]] bool operator==(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -7378,6 +7548,11 @@ public:
         return true;
     }
 
+    /**
+     * Element-wise inequality.
+     * @param other Other matrix.
+     * @return True if any elements are not equal, false otherwise.
+     */
     bool operator!=(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -7388,6 +7563,11 @@ public:
         return false;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
     {
         Matrix4 result;
@@ -7397,6 +7577,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise addition.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix4& operator+=(const Matrix4& other)
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7405,6 +7590,11 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
     {
         Matrix4 result;
@@ -7414,6 +7604,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise subtraction.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix4& operator-=(const Matrix4& other)
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7422,6 +7617,11 @@ public:
         return *this;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Result.
+     */
     Matrix4 operator*(const Matrix4& other) const
     {
         auto result = zero();
@@ -7435,12 +7635,22 @@ public:
         return result;
     }
 
+    /**
+     * Matrix multiplication.
+     * @param other Other matrix.
+     * @return Reference to this modified matrix.
+     */
     Matrix4& operator*=(const Matrix4& other)
     {
         *this = *this * other;
         return *this;
     }
 
+    /**
+     * Matrix-vector multiplication.
+     * @param vector 4D vector.
+     * @return Result.
+     */
     Vector4<Real> operator*(const Vector4<Real>& vector) const
     {
         auto result = Vector4<Real>::zero();
@@ -7452,6 +7662,11 @@ public:
         return result;
     }
 
+    /**
+     * Matrix-scalar multiplication.
+     * @param value Scalar value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 operator*(const Real value) const
     {
         Matrix4 result;
@@ -7461,6 +7676,11 @@ public:
         return result;
     }
 
+    /**
+     * Matrix-scalar multiplication.
+     * @param value Scalar value.
+     * @return Reference to this modified matrix.
+     */
     Matrix4& operator*=(const Real value)
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7469,6 +7689,11 @@ public:
         return *this;
     }
 
+    /**
+     * Element-wise division by value.
+     * @param value Value.
+     * @return Result.
+     */
     [[nodiscard]] Matrix4 operator/(const Real value) const
     {
         Matrix4 result;
@@ -7478,6 +7703,11 @@ public:
         return result;
     }
 
+    /**
+     * Element-wise division by value.
+     * @param value Value.
+     * @return Reference to this modified matrix.
+     */
     Matrix4& operator/=(const Real value)
     {
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7486,6 +7716,11 @@ public:
         return *this;
     }
 
+    /**
+     * Lexicographical comparison with another matrix.
+     * @param other Other matrix.
+     * @return True if less than, false otherwise.
+     */
     bool operator<(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -7499,6 +7734,9 @@ public:
         return false;
     }
 
+    /**
+     * True if any elements are non-zero, false otherwise.
+     */
     explicit operator bool() const
     {
         for (uint8_t c = 0; c < 4; ++c) {
