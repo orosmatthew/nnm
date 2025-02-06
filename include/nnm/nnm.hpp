@@ -7748,6 +7748,13 @@ public:
     }
 };
 
+/**
+ * Scalar-matrix multiplication.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
@@ -7760,6 +7767,13 @@ Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
     return result;
 }
 
+/**
+ * Element-wise division by value.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @param matrix Matrix.
+ * @return Result.
+ */
 template <typename Real>
 Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
