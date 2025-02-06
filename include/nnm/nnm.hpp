@@ -7786,27 +7786,52 @@ Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
     return result;
 }
 
+/**
+ * Three-dimensional transformation matrix.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Transform3 {
 public:
+    /**
+     * Matrix of transform
+     */
     Matrix4<Real> matrix;
 
+    /**
+     * Initialize with identity.
+     */
     constexpr Transform3()
         : matrix(Matrix4<Real>::identity())
     {
     }
 
+    /**
+     * Cast from other transform.
+     * @tparam Other Other type.
+     * @param transform Other transform.
+     */
     template <typename Other>
     explicit constexpr Transform3(const Transform3<Other>& transform)
         : matrix(Matrix4<Real>(transform.matrix))
     {
     }
 
+    /**
+     * Initialize from a 4x4 matrix. No validation/checks are done.
+     * @param matrix Matrix.
+     */
     explicit constexpr Transform3(const Matrix4<Real>& matrix)
         : matrix(matrix)
     {
     }
 
+    /**
+     * Transform from a 3D basis and 3D translation.
+     * @param basis 3D basis.
+     * @param translation 3D translation vector.
+     * @return Result.
+     */
     static Transform3 from_basis_translation(const Basis3<Real>& basis, const Vector3<Real>& translation)
     {
         auto matrix = Matrix4<Real>::identity();
@@ -7821,48 +7846,100 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform from a 3D basis and no translation.
+     * @param basis 3D Basis.
+     * @return Result.
+     */
     static Transform3 from_basis(const Basis3<Real>& basis)
     {
         return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
+    /**
+     * Transform with a translation.
+     * @param translation 3D translation vector.
+     * @return Result.
+     */
     static Transform3 from_translation(const Vector3<Real>& translation)
     {
         return from_basis_translation(Basis3<Real>(), translation);
     }
 
+    /**
+     * Transform rotated about a normalized axis and angle.
+     * @param axis Normalized 3D axis vector.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     static Transform3 from_rotation_axis_angle(const Vector3<Real>& axis, const Real angle)
     {
         const auto basis = Basis3<Real>::from_rotation_axis_angle(axis, angle);
         return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
+    /**
+     * Transform rotated by quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     static Transform3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
         const auto basis = Basis3<Real>::from_rotation_quaternion(quaternion);
         return from_basis_translation(basis, Vector3<Real>::zero());
     }
 
+    /**
+     * Transform scaled by per-axis factor.
+     * @param factor Scale factor vector.
+     * @return Result.
+     */
     static Transform3 from_scale(const Vector3<Real>& factor)
     {
         return from_basis(Basis3<Real>::from_scale(factor));
     }
 
+    /**
+     * Transform sheared about the x-axis.
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     static Transform3 from_shear_x(const Real angle_y, const Real angle_z)
     {
         return from_basis(Basis3<Real>::from_shear_x(angle_y, angle_z));
     }
 
+    /**
+     * Transform sheared about the y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     static Transform3 from_shear_y(const Real angle_x, const Real angle_z)
     {
         return from_basis(Basis3<Real>::from_shear_y(angle_x, angle_z));
     }
 
+    /**
+     * Transform sheared about the z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Z-Axis angle in radians.
+     * @return Result.
+     */
     static Transform3 from_shear_z(const Real angle_x, const Real angle_y)
     {
         return from_basis(Basis3<Real>::from_shear_z(angle_x, angle_y));
     }
 
+    /**
+     * Transform with perspective projection with left-handed coordinate system and normalized from -1 to 1.
+     * @param fov Field-of-view in radians.
+     * @param aspect_ratio Aspect ratio.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_perspective_left_hand_neg1to1(
         const Real fov, const Real aspect_ratio, const Real near_clip, const Real far_clip)
     {
@@ -7876,6 +7953,14 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with perspective projection with left-handed coordinate system and normalized from 0 to 1.
+     * @param fov Field-of-view in radians.
+     * @param aspect_ratio Aspect ratio.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_perspective_left_hand_0to1(
         const Real fov, const Real aspect_ratio, const Real near_clip, const Real far_clip)
     {
@@ -7889,6 +7974,14 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with perspective projection with right-handed coordinate system and normalized from -1 to 1.
+     * @param fov Field-of-view in radians.
+     * @param aspect_ratio Aspect ratio.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_perspective_right_hand_neg1to1(
         const Real fov, const Real aspect_ratio, const Real near_clip, const Real far_clip)
     {
@@ -7902,6 +7995,14 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with perspective projection with right-handed coordinate system and normalized from 0 to 1.
+     * @param fov Field-of-view in radians.
+     * @param aspect_ratio Aspect ratio.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_perspective_right_hand_0to1(
         const Real fov, const Real aspect_ratio, const Real near_clip, const Real far_clip)
     {
@@ -7915,6 +8016,16 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with orthographic projection with left-handed coordinate system and normalized from -1 to 1.
+     * @param left Left distance.
+     * @param right Right distance.
+     * @param bottom Bottom distance.
+     * @param top Top distance.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_orthographic_left_hand_neg1to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
@@ -7928,6 +8039,16 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with orthographic projection with left-handed coordinate system and normalized from 0 to 1.
+     * @param left Left distance.
+     * @param right Right distance.
+     * @param bottom Bottom distance.
+     * @param top Top distance.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_orthographic_left_hand_0to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
@@ -7941,6 +8062,16 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with orthographic projection with right-handed coordinate system and normalized from -1 to 1.
+     * @param left Left distance.
+     * @param right Right distance.
+     * @param bottom Bottom distance.
+     * @param top Top distance.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_orthographic_right_hand_neg1to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
@@ -7954,6 +8085,16 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Transform with orthographic projection with right-handed coordinate system and normalized from 0 to 1.
+     * @param left Left distance.
+     * @param right Right distance.
+     * @param bottom Bottom distance.
+     * @param top Top distance.
+     * @param near_clip Near clipping plane distance.
+     * @param far_clip Far clipping plane distance.
+     * @return Result.
+     */
     static Transform3 from_orthographic_right_hand_0to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
@@ -7967,21 +8108,37 @@ public:
         return Transform3(matrix);
     }
 
+    /**
+     * Trace which is the sum of the matrix diagonal.
+     * @return Result.
+     */
     [[nodiscard]] Real trace() const
     {
         return matrix.trace();
     }
 
+    /**
+     * Determinant of the matrix.
+     * @return Result.
+     */
     [[nodiscard]] Real determinant() const
     {
         return matrix.determinant();
     }
 
+    /**
+     * Inverse of the transform without checking if a valid inverse is possible.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 unchecked_inverse() const
     {
         return Transform3(matrix.unchecked_inverse());
     }
 
+    /**
+     * Inverse of the transform.
+     * @return Inverse if one exists, null otherwise.
+     */
     [[nodiscard]] std::optional<Transform3> inverse() const
     {
         if (valid()) {
@@ -7990,158 +8147,314 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determines if transform is valid. Validity is determined based on if the transform's basis is valid.
+     * @return True if valid, false otherwise.
+     */
     [[nodiscard]] bool valid() const
     {
         return basis().valid();
     }
 
+    /**
+     * Determines if transform is affine. Affine means that the transform preserves parallel lines.
+     * @return True if affine, false otherwise.
+     */
     [[nodiscard]] bool affine() const
     {
         return valid() && matrix.at(0, 3) == static_cast<Real>(0) && matrix.at(1, 3) == static_cast<Real>(0)
             && matrix.at(2, 3) == static_cast<Real>(0) && matrix.at(3, 3) == static_cast<Real>(1);
     }
 
+    /**
+     * Basis of the transform.
+     * @return Result.
+     */
     [[nodiscard]] Basis3<Real> basis() const
     {
         return Basis3(matrix.minor_matrix_at(3, 3));
     }
 
+    /**
+     * Translation vector of the transform.
+     * @return Result.
+     */
     [[nodiscard]] Vector3<Real> translation() const
     {
         return { matrix.at(3, 0), matrix.at(3, 1), matrix.at(3, 2) };
     }
 
+    /**
+     * Translation.
+     * @param offset Offset vector.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 translate(const Vector3<Real>& offset) const
     {
         return transform(from_translation(offset));
     }
 
+    /**
+     * Local translation.
+     * @param offset Offset vector.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 translate_local(const Vector3<Real>& offset) const
     {
         return transform_local(from_translation(offset));
     }
 
+    /**
+     * Rotation about an axis by an angle.
+     * @param axis Normalized 3D vector axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return transform(from_rotation_axis_angle(axis, angle));
     }
 
+    /**
+     * Local rotation about an axis by an angle.
+     * @param axis Normalized 3D vector axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 rotate_axis_angle_local(const Vector3<Real>& axis, const Real angle) const
     {
         return transform_local(from_rotation_axis_angle(axis, angle));
     }
 
+    /**
+     * Rotation by quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
 
+    /**
+     * Location rotation by quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
 
+    /**
+     * Per-axis scale by factor.
+     * @param factor 3D scale factor vector.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
 
+    /**
+     * Local per-axis scale by factor.
+     * @param factor 3D scale factor vector.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
 
+    /**
+     * Shear about the x-axis.
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return transform(from_shear_x(angle_y, angle_z));
     }
 
+    /**
+     * Local shear about the x-axis.
+     * @param angle_y Y-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_x_local(const Real angle_y, const Real angle_z) const
     {
         return transform_local(from_shear_x(angle_y, angle_z));
     }
 
+    /**
+     * Shear about the y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_y(const Real angle_x, const Real angle_z) const
     {
         return transform(from_shear_y(angle_x, angle_z));
     }
 
+    /**
+     * Local shear about the y-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_z Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_y_local(const Real angle_x, const Real angle_z) const
     {
         return transform_local(from_shear_y(angle_x, angle_z));
     }
 
+    /**
+     * Shear about the z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return transform(from_shear_z(angle_x, angle_y));
     }
 
+    /**
+     * Local shear about the z-axis.
+     * @param angle_x X-Axis angle in radians.
+     * @param angle_y Z-Axis angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 shear_z_local(const Real angle_x, const Real angle_y) const
     {
         return transform_local(from_shear_z(angle_x, angle_y));
     }
 
+    /**
+     * Transform by another transform.
+     * @param by Other transform.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 transform(const Transform3& by) const
     {
         return Transform3(by.matrix * matrix);
     }
 
+    /**
+     * Local transform by another transform.
+     * @param by Other transform.
+     * @return Result.
+     */
     [[nodiscard]] Transform3 transform_local(const Transform3& by) const
     {
         return Transform3(matrix * by.matrix);
     }
 
+    /**
+     * Determines if approximately equal to another transform.
+     * @param other Other transform.
+     * @return True if all elements are approximately equal, false otherwise.
+     */
     [[nodiscard]] bool approx_equal(const Transform3& other) const
     {
         return matrix.approx_equal(other.matrix);
     }
 
+    /**
+     * Constant reference to column at index.
+     * @param column Index of column.
+     * @return Constant reference to column.
+     */
     [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
     }
 
+    /**
+     * Reference to column at index.
+     * @param column Index of column.
+     * @return Reference to column.
+     */
     Vector4<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
     }
 
+    /**
+     * Constant reference to element at column and row index.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Constant reference to element.
+     */
     [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
+    /**
+     * Reference to element at column and row index.
+     * @param column Index of column.
+     * @param row Index of row.
+     * @return Reference to element.
+     */
     Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
     }
 
+    /**
+     * Constant reference to column at column index.
+     * @param column Index of column.
+     * @return Constant reference to column.
+     */
     [[nodiscard]] const Vector4<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
     }
 
+    /**
+     * Reference to column at column index.
+     * @param column Index of column.
+     * @return Reference to column.
+     */
     Vector4<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
     }
 
+    /**
+     * Element-wise equality.
+     * @param other Other transform.
+     * @return True if all elements are equal, false otherwise.
+     */
     [[nodiscard]] bool operator==(const Transform3& other) const
     {
         return matrix == other.matrix;
     }
 
+    /**
+     * Element-wise inequality
+     * @param other Other transform.
+     * @return True if any element is not equal, false otherwise.
+     */
     [[nodiscard]] bool operator!=(const Transform3& other) const
     {
         return matrix != other.matrix;
     }
 
+    /**
+     * Lexicographical comparison.
+     * @param other Other transform.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] bool operator<(const Transform3& other) const
     {
         return matrix < other.matrix;
