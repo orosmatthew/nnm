@@ -988,33 +988,33 @@ public:
 
     /**
      * Shear along the x-axis about the origin.
-     * @param angle_y Angle in radians.
+     * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_x(Real angle_y) const;
+    [[nodiscard]] Vector2 shear_x(Real factor) const;
 
     /**
      * Shear along the x-axis about an origin.
      * @param origin Origin to shear about.
-     * @param angle_y Angle in radians.
+     * @param factor Angle in radians.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_x_at(const Vector2& origin, Real angle_y) const;
+    [[nodiscard]] Vector2 shear_x_at(const Vector2& origin, Real factor) const;
 
     /**
      * Shear along the y-axis about the origin.
-     * @param angle_x Angle in radians.
+     * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_y(Real angle_x) const;
+    [[nodiscard]] Vector2 shear_y(Real factor) const;
 
     /**
      * Shear along the y-axis about an origin.
      * @param origin Origin to shear about.
-     * @param angle_x Angle in radians.
+     * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_y_at(const Vector2& origin, Real angle_x) const;
+    [[nodiscard]] Vector2 shear_y_at(const Vector2& origin, Real factor) const;
 
     /**
      * Transform by a 2D basis about the origin.
@@ -2480,54 +2480,54 @@ public:
 
     /**
      * Shear along x-axis about the origin.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_x(Real angle_y, Real angle_z) const;
+    [[nodiscard]] Vector3 shear_x(Real factor_y, Real factor_z) const;
 
     /**
      * Shear along x-axis about an origin.
      * @param origin Origin to shear about.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const;
+    [[nodiscard]] Vector3 shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const;
 
     /**
      * Shear along y-axis about the origin.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_y(Real angle_x, Real angle_z) const;
+    [[nodiscard]] Vector3 shear_y(Real factor_x, Real factor_z) const;
 
     /**
      * Shear along y-axis about the origin.
      * @param origin Origin to shear about.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const;
+    [[nodiscard]] Vector3 shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const;
 
     /**
      * Shear along z-axis about the origin.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_z(Real angle_x, Real angle_y) const;
+    [[nodiscard]] Vector3 shear_z(Real factor_x, Real factor_y) const;
 
     /**
      * Shear along z-axis about an origin.
      * @param origin Origin to shear about.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const;
+    [[nodiscard]] Vector3 shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const;
 
     /**
      * Transform by a three-dimensional basis matrix about the origin.
@@ -5344,22 +5344,22 @@ public:
 
     /**
      * Basis sheared along the x-axis.
-     * @param angle_y Y-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    static Basis2 from_shear_x(const Real angle_y)
+    static Basis2 from_shear_x(const Real factor)
     {
-        return Basis2({ { static_cast<Real>(1), static_cast<Real>(0) }, { tan(angle_y), static_cast<Real>(1) } });
+        return Basis2({ { static_cast<Real>(1), static_cast<Real>(0) }, { factor, static_cast<Real>(1) } });
     }
 
     /**
      * Basis sheared along the y-axis.
-     * @param angle_x X-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    static Basis2 from_shear_y(const Real angle_x)
+    static Basis2 from_shear_y(const Real factor)
     {
-        return Basis2({ { static_cast<Real>(1), tan(angle_x) }, { static_cast<Real>(0), static_cast<Real>(1) } });
+        return Basis2({ { static_cast<Real>(1), factor }, { static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     /**
@@ -5452,42 +5452,42 @@ public:
 
     /**
      * Shear along x-axis.
-     * @param angle_y Y-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_x(const Real angle_y) const
+    [[nodiscard]] Basis2 shear_x(const Real factor) const
     {
-        return transform(from_shear_x(angle_y));
+        return transform(from_shear_x(factor));
     }
 
     /**
      * Local shear along x-axis.
-     * @param angle_y Y-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_x_local(const Real angle_y) const
+    [[nodiscard]] Basis2 shear_x_local(const Real factor) const
     {
-        return transform_local(from_shear_x(angle_y));
+        return transform_local(from_shear_x(factor));
     }
 
     /**
      * Shear along y-axis.
-     * @param angle_x X-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_y(const Real angle_x) const
+    [[nodiscard]] Basis2 shear_y(const Real factor) const
     {
-        return transform(from_shear_y(angle_x));
+        return transform(from_shear_y(factor));
     }
 
     /**
      * Local shear along y-axis.
-     * @param angle_x X-Axis angle.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_y_local(const Real angle_x) const
+    [[nodiscard]] Basis2 shear_y_local(const Real factor) const
     {
-        return transform_local(from_shear_y(angle_x));
+        return transform_local(from_shear_y(factor));
     }
 
     /**
@@ -6364,22 +6364,22 @@ public:
 
     /**
      * Transform with shear along x-axis.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor Factor.
      * @return Result.
      */
-    static Transform2 from_shear_x(const Real angle_y)
+    static Transform2 from_shear_x(const Real factor)
     {
-        return from_basis_translation(Basis2<Real>::from_shear_x(angle_y), Vector2<Real>());
+        return from_basis_translation(Basis2<Real>::from_shear_x(factor), Vector2<Real>());
     }
 
     /**
      * Transform with shear along y-axis.
-     * @param angle_x X-Axis angle in radians.
+     * @param factor factor.
      * @return Result.
      */
-    static Transform2 from_shear_y(const Real angle_x)
+    static Transform2 from_shear_y(const Real factor)
     {
-        return from_basis_translation(Basis2<Real>::from_shear_y(angle_x), Vector2<Real>());
+        return from_basis_translation(Basis2<Real>::from_shear_y(factor), Vector2<Real>());
     }
 
     /**
@@ -6520,42 +6520,42 @@ public:
 
     /**
      * Shear along x-axis.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_x(const Real angle_y) const
+    [[nodiscard]] Transform2 shear_x(const Real factor) const
     {
-        return transform(from_shear_x(angle_y));
+        return transform(from_shear_x(factor));
     }
 
     /**
      * Local shear along x-axis.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_x_local(const Real angle_y) const
+    [[nodiscard]] Transform2 shear_x_local(const Real factor) const
     {
-        return transform_local(from_shear_x(angle_y));
+        return transform_local(from_shear_x(factor));
     }
 
     /**
      * Shear along y-axis.
-     * @param angle_x X-Axis angle in radians.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_y(const Real angle_x) const
+    [[nodiscard]] Transform2 shear_y(const Real factor) const
     {
-        return transform(from_shear_y(angle_x));
+        return transform(from_shear_y(factor));
     }
 
     /**
      * Local shear along y-axis.
-     * @param angle_x X-Axis angle in radians.
+     * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_y_local(const Real angle_x) const
+    [[nodiscard]] Transform2 shear_y_local(const Real factor) const
     {
-        return transform_local(from_shear_y(angle_x));
+        return transform_local(from_shear_y(factor));
     }
 
     /**
@@ -6780,44 +6780,44 @@ public:
 
     /**
      * Basis sheared along the x-axis.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_x(const Real angle_y, const Real angle_z)
+    static Basis3 from_shear_x(const Real factor_y, const Real factor_z)
     {
         return Basis3(
-            { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
-              { tan(angle_y), static_cast<Real>(1), static_cast<Real>(0) },
-              { tan(angle_z), static_cast<Real>(0), static_cast<Real>(1) } });
+            { { static_cast<Real>(1), factor_y, factor_z },
+              { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     /**
      * Basis sheared along the y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_y(const Real angle_x, const Real angle_z)
+    static Basis3 from_shear_y(const Real factor_x, const Real factor_z)
     {
         return Basis3(
-            { { static_cast<Real>(1), tan(angle_x), static_cast<Real>(0) },
-              { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
-              { static_cast<Real>(0), tan(angle_z), static_cast<Real>(1) } });
+            { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+              { factor_x, static_cast<Real>(1), factor_z },
+              { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
     }
 
     /**
      * Basis sheared along the z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_z(const Real angle_x, const Real angle_y)
+    static Basis3 from_shear_z(const Real factor_x, const Real factor_y)
     {
         return Basis3(
-            { { static_cast<Real>(1), static_cast<Real>(0), tan(angle_x) },
-              { static_cast<Real>(0), static_cast<Real>(1), tan(angle_y) },
-              { static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(1) } });
+            { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
+              { static_cast<Real>(0), static_cast<Real>(1), static_cast<Real>(0) },
+              { factor_x, factor_y, static_cast<Real>(1) } });
     }
 
     /**
@@ -6932,68 +6932,68 @@ public:
 
     /**
      * Shear about x-axis.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_x(const Real angle_y, const Real angle_z) const
+    [[nodiscard]] Basis3 shear_x(const Real factor_y, const Real factor_z) const
     {
-        return transform(from_shear_x(angle_y, angle_z));
+        return transform(from_shear_x(factor_y, factor_z));
     }
 
     /**
      * Local shear about x-axis
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_x_local(const Real angle_y, const Real angle_z) const
+    [[nodiscard]] Basis3 shear_x_local(const Real factor_y, const Real factor_z) const
     {
-        return transform_local(from_shear_x(angle_y, angle_z));
+        return transform_local(from_shear_x(factor_y, factor_z));
     }
 
     /**
      * Shear about y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_y(const Real angle_x, const Real angle_z) const
+    [[nodiscard]] Basis3 shear_y(const Real factor_x, const Real factor_z) const
     {
-        return transform(from_shear_y(angle_x, angle_z));
+        return transform(from_shear_y(factor_x, factor_z));
     }
 
     /**
      * Local shear about y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_y_local(const Real angle_x, const Real angle_z) const
+    [[nodiscard]] Basis3 shear_y_local(const Real factor_x, const Real factor_z) const
     {
-        return transform_local(from_shear_y(angle_x, angle_z));
+        return transform_local(from_shear_y(factor_x, factor_z));
     }
 
     /**
      * Shear about z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_z(const Real angle_x, const Real angle_y) const
+    [[nodiscard]] Basis3 shear_z(const Real factor_x, const Real factor_y) const
     {
-        return transform(from_shear_z(angle_x, angle_y));
+        return transform(from_shear_z(factor_x, factor_y));
     }
 
     /**
      * Local shear about z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Y-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_z_local(const Real angle_x, const Real angle_y) const
+    [[nodiscard]] Basis3 shear_z_local(const Real factor_x, const Real factor_y) const
     {
-        return transform_local(from_shear_z(angle_x, angle_y));
+        return transform_local(from_shear_z(factor_x, factor_y));
     }
 
     /**
@@ -7926,35 +7926,35 @@ public:
 
     /**
      * Transform sheared about the x-axis.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_x(const Real angle_y, const Real angle_z)
+    static Transform3 from_shear_x(const Real factor_y, const Real factor_z)
     {
-        return from_basis(Basis3<Real>::from_shear_x(angle_y, angle_z));
+        return from_basis(Basis3<Real>::from_shear_x(factor_y, factor_z));
     }
 
     /**
      * Transform sheared about the y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_y(const Real angle_x, const Real angle_z)
+    static Transform3 from_shear_y(const Real factor_x, const Real factor_z)
     {
-        return from_basis(Basis3<Real>::from_shear_y(angle_x, angle_z));
+        return from_basis(Basis3<Real>::from_shear_y(factor_x, factor_z));
     }
 
     /**
      * Transform sheared about the z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_z(const Real angle_x, const Real angle_y)
+    static Transform3 from_shear_z(const Real factor_x, const Real factor_y)
     {
-        return from_basis(Basis3<Real>::from_shear_z(angle_x, angle_y));
+        return from_basis(Basis3<Real>::from_shear_z(factor_x, factor_y));
     }
 
     /**
@@ -8293,68 +8293,68 @@ public:
 
     /**
      * Shear about the x-axis.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_x(const Real angle_y, const Real angle_z) const
+    [[nodiscard]] Transform3 shear_x(const Real factor_y, const Real factor_z) const
     {
-        return transform(from_shear_x(angle_y, angle_z));
+        return transform(from_shear_x(factor_y, factor_z));
     }
 
     /**
      * Local shear about the x-axis.
-     * @param angle_y Y-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_x_local(const Real angle_y, const Real angle_z) const
+    [[nodiscard]] Transform3 shear_x_local(const Real factor_y, const Real factor_z) const
     {
-        return transform_local(from_shear_x(angle_y, angle_z));
+        return transform_local(from_shear_x(factor_y, factor_z));
     }
 
     /**
      * Shear about the y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_y(const Real angle_x, const Real angle_z) const
+    [[nodiscard]] Transform3 shear_y(const Real factor_x, const Real factor_z) const
     {
-        return transform(from_shear_y(angle_x, angle_z));
+        return transform(from_shear_y(factor_x, factor_z));
     }
 
     /**
      * Local shear about the y-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_z Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_y_local(const Real angle_x, const Real angle_z) const
+    [[nodiscard]] Transform3 shear_y_local(const Real factor_x, const Real factor_z) const
     {
-        return transform_local(from_shear_y(angle_x, angle_z));
+        return transform_local(from_shear_y(factor_x, factor_z));
     }
 
     /**
      * Shear about the z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_z(const Real angle_x, const Real angle_y) const
+    [[nodiscard]] Transform3 shear_z(const Real factor_x, const Real factor_y) const
     {
-        return transform(from_shear_z(angle_x, angle_y));
+        return transform(from_shear_z(factor_x, factor_y));
     }
 
     /**
      * Local shear about the z-axis.
-     * @param angle_x X-Axis angle in radians.
-     * @param angle_y Z-Axis angle in radians.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_z_local(const Real angle_x, const Real angle_y) const
+    [[nodiscard]] Transform3 shear_z_local(const Real factor_x, const Real factor_y) const
     {
-        return transform_local(from_shear_z(angle_x, angle_y));
+        return transform_local(from_shear_z(factor_x, factor_y));
     }
 
     /**
@@ -8537,27 +8537,27 @@ Vector2<Real> Vector2<Real>::scale_at(const Vector2& origin, const Vector2& fact
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_x(const Real angle_y) const
+Vector2<Real> Vector2<Real>::shear_x(const Real factor) const
 {
-    return transform(Basis2<Real>::from_shear_x(angle_y));
+    return transform(Basis2<Real>::from_shear_x(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real angle_y) const
+Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real factor) const
 {
-    return transform_at(origin, Basis2<Real>::from_shear_x(angle_y));
+    return transform_at(origin, Basis2<Real>::from_shear_x(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_y(const Real angle_x) const
+Vector2<Real> Vector2<Real>::shear_y(const Real factor) const
 {
-    return transform(Basis2<Real>::from_shear_y(angle_x));
+    return transform(Basis2<Real>::from_shear_y(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real angle_x) const
+Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real factor) const
 {
-    return transform_at(origin, Basis2<Real>::from_shear_y(angle_x));
+    return transform_at(origin, Basis2<Real>::from_shear_y(factor));
 }
 
 template <typename Real>
@@ -8657,39 +8657,39 @@ Vector3<Real> Vector3<Real>::scale_at(const Vector3& origin, const Vector3& fact
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_x(const Real angle_y, const Real angle_z) const
+Vector3<Real> Vector3<Real>::shear_x(const Real factor_y, const Real factor_z) const
 {
-    return transform(Basis3<Real>::from_shear_x(angle_y, angle_z));
+    return transform(Basis3<Real>::from_shear_x(factor_y, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const
+Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const
 {
-    return transform_at(origin, Basis3<Real>::from_shear_x(angle_y, angle_z));
+    return transform_at(origin, Basis3<Real>::from_shear_x(factor_y, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_y(const Real angle_x, const Real angle_z) const
+Vector3<Real> Vector3<Real>::shear_y(const Real factor_x, const Real factor_z) const
 {
-    return transform(Basis3<Real>::from_shear_y(angle_x, angle_z));
+    return transform(Basis3<Real>::from_shear_y(factor_x, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const
+Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const
 {
-    return transform_at(origin, Basis3<Real>::from_shear_y(angle_x, angle_z));
+    return transform_at(origin, Basis3<Real>::from_shear_y(factor_x, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_z(const Real angle_x, const Real angle_y) const
+Vector3<Real> Vector3<Real>::shear_z(const Real factor_x, const Real factor_y) const
 {
-    return transform(Basis3<Real>::from_shear_z(angle_x, angle_y));
+    return transform(Basis3<Real>::from_shear_z(factor_x, factor_y));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const
+Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const
 {
-    return transform_at(origin, Basis3<Real>::from_shear_z(angle_x, angle_y));
+    return transform_at(origin, Basis3<Real>::from_shear_z(factor_x, factor_y));
 }
 
 template <typename Real>

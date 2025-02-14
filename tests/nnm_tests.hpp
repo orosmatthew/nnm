@@ -953,25 +953,25 @@ inline void nnm_tests()
         test_section("shear_x");
         {
             nnm::Vector2 v1(2.0f, -3.0f);
-            ASSERT(v1.shear_x(nnm::pi<float>() / 9.0f).approx_equal({ 0.9080892971f, -3.0f }));
+            ASSERT(v1.shear_x(0.5f).approx_equal({ 0.5f, -3.0f }));
         }
 
         test_section("shear_x_at");
         {
             constexpr nnm::Vector2 v1 { 2.0f, -3.0f };
-            ASSERT(v1.shear_x_at(origin, nnm::pi<float>() / 9.0f).approx_equal({ 0.54412f, -3.0f }));
+            ASSERT(v1.shear_x_at(origin, 0.5f).approx_equal({ 0.0f, -3.0f }));
         }
 
         test_section("shear_y");
         {
             nnm::Vector2 v1(2.0f, -3.0f);
-            ASSERT(v1.shear_y(-nnm::pi<float>() / 9.0f).approx_equal({ 2.0f, -3.7279404686f }));
+            ASSERT(v1.shear_y(-0.5f).approx_equal({ 2.0f, -4.0f }));
         }
 
         test_section("shear_y_at");
         {
             constexpr nnm::Vector2 v1 { 2.0f, -3.0f };
-            ASSERT(v1.shear_y_at(origin, -nnm::pi<float>() / 9.0f).approx_equal({ 2.0f, -4.81985f }));
+            ASSERT(v1.shear_y_at(origin, -0.5f).approx_equal({ 2.0f, -5.5f }));
         }
 
         test_section("transform(const Basis2&)");
@@ -2094,43 +2094,37 @@ inline void nnm_tests()
         test_section("shear_x");
         {
             nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-            ASSERT(v1.shear_x(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f)
-                       .approx_equal({ 4.18513584f, 2.0f, -3.0f }))
+            ASSERT(v1.shear_x(0.5f, -0.5f).approx_equal({ 1.0f, 2.5f, -3.5f }));
         }
 
         test_section("shear_x_at");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT(v1.shear_x_at(origin, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f)
-                       .approx_equal({ 8.8688f, 2.0f, -3.0f }));
+            ASSERT(v1.shear_x_at(origin, 0.5f, -0.5f).approx_equal({ 1.0f, 4.0f, -5.0f }));
         }
 
         test_section("shear_y");
         {
             nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-            ASSERT(v1.shear_y(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f)
-                       .approx_equal({ 1.0f, 4.45859337f, -3.0f }));
+            ASSERT(v1.shear_y(0.5f, -0.5f).approx_equal({ 2.0f, 2.0f, -4.0f }));
         }
 
         test_section("shear_y_at");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT(v1.shear_y_at(origin, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f)
-                       .approx_equal({ 1.0f, 12.4117f, -3.0f }));
+            ASSERT(v1.shear_y_at(origin, 0.5f, -0.5f).approx_equal({ 1.25f, 2.0f, -3.25f }));
         }
 
         test_section("shear_z");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT(
-                v1.shear_z(nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f).approx_equal({ 1.0f, 2.0f, -3.42816f }));
+            ASSERT(v1.shear_z(0.5f, -0.5f).approx_equal({ -0.5f, 3.5f, -3.0f }));
         }
 
         test_section("shear_z_at");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT(v1.shear_z_at(origin, nnm::pi<float>() / 5.0f, -nnm::pi<float>() / 6.0f)
-                       .approx_equal({ 1.0f, 2.0f, -0.3825f }));
+            ASSERT(v1.shear_z_at(origin, 0.5f, -0.5f).approx_equal({ -5.5f, 8.5f, -3.0f }));
         }
 
         test_section("transform(const Basis3&)");
@@ -3748,7 +3742,7 @@ inline void nnm_tests()
 
     test_case("Basis2");
     {
-        test_case("Basis()");
+        test_section("Basis()");
         {
             constexpr nnm::Basis2f b;
             ASSERT(b.matrix == nnm::Matrix2f::identity());
@@ -3790,14 +3784,14 @@ inline void nnm_tests()
 
         test_section("from_shear_x");
         {
-            const auto b = nnm::Basis2f::from_shear_x(nnm::pi<float>() / 4.5f);
-            ASSERT(b.matrix.approx_equal({ { 1.0f, 0.0f }, { 0.8390996312f, 1.0f } }));
+            const auto b = nnm::Basis2f::from_shear_x(0.5f);
+            ASSERT(b.matrix.approx_equal({ { 1.0f, 0.0f }, { 0.5f, 1.0f } }));
         }
 
         test_section("from_shear_y");
         {
-            const auto b = nnm::Basis2f::from_shear_y(-nnm::pi<float>() / 3.1f);
-            ASSERT(b.matrix.approx_equal({ { 1.0f, -1.6043516022f }, { 0.0f, 1.0f } }))
+            const auto b = nnm::Basis2f::from_shear_y(-0.5f);
+            ASSERT(b.matrix.approx_equal({ { 1.0f, -0.5f }, { 0.0f, 1.0f } }))
         }
 
         test_section("trace");
@@ -3875,29 +3869,29 @@ inline void nnm_tests()
         test_section("shear_x");
         {
             constexpr nnm::Basis2f b1({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            constexpr nnm::Basis2f expected({ { -0.285322f, -2.0f }, { -0.429356f, 4.0f } });
-            ASSERT(b1.shear_x(nnm::pi<float>() / 5.5f).approx_equal(expected));
+            constexpr nnm::Basis2f expected({ { 0.0f, -2.0f }, { -1.0f, 4.0f } });
+            ASSERT(b1.shear_x(0.5f).approx_equal(expected));
         }
 
         test_section("shear_x_local");
         {
             constexpr nnm::Basis2f b1({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            constexpr nnm::Basis2f expected({ { 1.0f, -2.0f }, { -2.35734f, 2.71468f } });
-            ASSERT(b1.shear_x_local(nnm::pi<float>() / 5.5f).approx_equal(expected));
+            constexpr nnm::Basis2f expected({ { 1.0f, -2.0f }, { -2.5f, 3.0f } });
+            ASSERT(b1.shear_x_local(0.5f).approx_equal(expected));
         }
 
         test_section("shear_y");
         {
             constexpr nnm::Basis2f b1({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            constexpr nnm::Basis2f expected({ { 1.0f, -2.8391f }, { -3.0f, 6.5173f } });
-            ASSERT(b1.shear_y(-nnm::pi<float>() / 4.5f).approx_equal(expected));
+            constexpr nnm::Basis2f expected({ { 1.0f, -2.5f }, { -3.0f, 5.5f } });
+            ASSERT(b1.shear_y(-0.5f).approx_equal(expected));
         }
 
         test_section("shear_y_local");
         {
             constexpr nnm::Basis2f b1({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            constexpr nnm::Basis2f expected({ { 3.5173f, -5.3564f }, { -3.0f, 4.0f } });
-            ASSERT(b1.shear_y_local(-nnm::pi<float>() / 4.5f).approx_equal(expected));
+            constexpr nnm::Basis2f expected({ { 2.5f, -4.0f }, { -3.0f, 4.0f } });
+            ASSERT(b1.shear_y_local(-0.5f).approx_equal(expected));
         }
 
         test_section("transform");
@@ -4339,17 +4333,15 @@ inline void nnm_tests()
 
         test_section("from_shear_x");
         {
-            const auto t = nnm::Transform2f::from_shear_x(nnm::pi<float>() / 9.0f);
-            constexpr nnm::Transform2f expected(
-                { { 1.0f, 0.0f, 0.0f }, { 0.3639702343f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+            const auto t = nnm::Transform2f::from_shear_x(0.5f);
+            constexpr nnm::Transform2f expected({ { 1.0f, 0.0f, 0.0f }, { 0.5f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
             ASSERT(t.approx_equal(expected));
         }
 
         test_section("from_shear_y");
         {
-            const auto t = nnm::Transform2f::from_shear_y(-nnm::pi<float>() / 8.0f);
-            constexpr nnm::Transform2f expected(
-                { { 1.0f, -0.4142135624f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+            const auto t = nnm::Transform2f::from_shear_y(-0.5f);
+            constexpr nnm::Transform2f expected({ { 1.0f, -0.5f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
             ASSERT(t.approx_equal(expected));
         }
 
@@ -4469,32 +4461,32 @@ inline void nnm_tests()
         {
             constexpr nnm::Transform2f t4({ { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
             constexpr nnm::Transform2f expected(
-                { { 0.27206f, -2.0f, 3.0f }, { -1.54412f, 4.0f, -2.0f }, { -0.27206f, 2.0f, 1.0f } });
-            ASSERT(t4.shear_x(nnm::pi<float>() / 9.0f).approx_equal(expected));
+                { { 0.0f, -2.0f, 3.0f }, { -1.0f, 4.0f, -2.0f }, { 0.0f, 2.0f, 1.0f } });
+            ASSERT(t4.shear_x(0.5f).approx_equal(expected));
         }
 
         test_section("shear_x_local");
         {
             constexpr nnm::Transform2f t4({ { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
             constexpr nnm::Transform2f expected(
-                { { 1.0f, -2.0f, 3.0f }, { -2.63603f, 3.27206f, -0.908089f }, { -1.0f, 2.0f, 1.0f } });
-            ASSERT(t4.shear_x_local(nnm::pi<float>() / 9.0f).approx_equal(expected));
+                { { 1.0f, -2.0f, 3.0f }, { -2.5f, 3.0f, -0.5f }, { -1.0f, 2.0f, 1.0f } });
+            ASSERT(t4.shear_x_local(0.5f).approx_equal(expected));
         }
 
         test_section("shear_y");
         {
             constexpr nnm::Transform2f t4({ { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
             constexpr nnm::Transform2f expected(
-                { { 1.0f, -2.3874f, 3.0f }, { -3.0f, 5.16221f, -2.0f }, { -1.0f, 2.3874f, 1.0f } });
-            ASSERT(t4.shear_y(-nnm::pi<float>() / 8.5f).approx_equal(expected));
+                { { 1.0f, -2.5f, 3.0f }, { -3.0f, 5.5f, -2.0f }, { -1.0f, 2.5f, 1.0f } });
+            ASSERT(t4.shear_y(-0.5f).approx_equal(expected));
         }
 
         test_section("shear_y_local");
         {
             constexpr nnm::Transform2f t4({ { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
             constexpr nnm::Transform2f expected(
-                { { 2.16221f, -3.54961f, 3.7748f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
-            ASSERT(t4.shear_y_local(-nnm::pi<float>() / 8.5f).approx_equal(expected));
+                { { 2.5f, -4.0f, 4.0f }, { -3.0f, 4.0f, -2.0f }, { -1.0f, 2.0f, 1.0f } });
+            ASSERT(t4.shear_y_local(-0.5f).approx_equal(expected));
         }
 
         test_section("transform");
@@ -4620,22 +4612,21 @@ inline void nnm_tests()
         test_section("from_shear_x");
         {
             auto b1 = nnm::Basis3f::from_shear_x(0.5f, -0.1f);
-            ASSERT(b1.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 0.5463024898f, 1.0f, 0.0f }, { -0.1003346721f, 0.0f, 1.0f } }));
+            ASSERT(b1.matrix.approx_equal({ { 1.0f, 0.5f, -0.1f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } }));
         }
 
         test_section("from_shear_y");
         {
             auto b1 = nnm::Basis3f::from_shear_y(0.5f, -0.1f);
-            ASSERT(b1.approx_equal(
-                nnm::Basis3f({ { 1.0f, 0.5463024898f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, -0.1003346721f, 1.0f } })));
+            ASSERT(
+                b1.approx_equal(nnm::Basis3f({ { 1.0f, 0.0f, 0.0f }, { 0.5f, 1.0f, -0.1f }, { 0.0f, 0.0f, 1.0f } })));
         }
 
         test_section("from_shear_z");
         {
             auto b1 = nnm::Basis3f::from_shear_z(0.5f, -0.1f);
-            ASSERT(b1.approx_equal(
-                nnm::Basis3f({ { 1.0f, 0.0f, 0.5463024898f }, { 0.0f, 1.0f, -0.1003346721f }, { 0.0f, 0.0f, 1.0f } })));
+            ASSERT(
+                b1.approx_equal(nnm::Basis3f({ { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.5f, -0.1f, 1.0f } })));
         }
 
         test_section("trace");
@@ -4739,50 +4730,50 @@ inline void nnm_tests()
 
         test_section("shear_x");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } } };
             auto b1_sheared = b1.shear_x(1.5f, -0.1f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { -14.1014204f, -1.0f, 0.0f }, { 0.10034f, 0.0f, -1.0f } }))
+                { { 1.0f, -0.5f, 0.4f }, { -0.75f, 8.875f, 20.075f }, { 1.5f, 2.05f, 0.85f } }));
         }
 
         test_section("shear_x_local");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 0.5f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } } };
             auto b1_sheared = b1.shear_x_local(1.5f, -0.1f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 0.0f }, { 14.1014f, -1.0f, 0.0f }, { -0.10033f, 0.0f, -1.0f } }))
+                { { -0.275f, 13.02f, 30.4f }, { -0.75f, 10.0f, 20.0f }, { 1.5f, -0.2f, 1.0f } }));
         }
 
         test_section("shear_y");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 0.0f, 1.0f, -3.0f } } };
             auto b1_sheared = b1.shear_y(-1.5f, -0.1f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, -14.1014204f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.10033f, -1.0f } }))
+                { { 4.0f, -2.0f, 3.2f }, { -11.5f, 5.0f, -6.5f }, { -1.5f, 1.0f, -3.1f } }));
         }
 
         test_section("shear_y_local");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 0.0f, 1.0f, -3.0f } } };
             auto b1_sheared = b1.shear_y_local(1.3f, 0.3f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, -3.6021f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, -0.30934f, -1.0f } }))
+                { { 1.0f, -2.0f, 3.0f }, { -2.7f, 2.7f, -3.0f }, { 0.0f, 1.0f, -3.0f } }))
         }
 
         test_section("shear_z");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 0.0f, 1.0f, -3.0f } } };
             auto b1_sheared = b1.shear_z(1.2f, -0.8f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 2.572152f }, { 0.0f, -1.0f, 1.029639f }, { 0.0f, 0.0f, -1.0f } }))
+                { { 4.6f, -4.4f, 3.0f }, { -11.2f, 9.8f, -6.0f }, { -3.6f, 3.4f, -3.0f } }))
         }
 
         test_section("shear_z_local");
         {
-            auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 1.0f, 0.0f, 0.0f }, nnm::pi<float>());
+            constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 0.0f, 1.0f, -3.0f } } };
             auto b1_sheared = b1.shear_z_local(-1.2f, 0.8f);
             ASSERT(b1_sheared.matrix.approx_equal(
-                { { 1.0f, 0.0f, 2.5721516f }, { 0.0f, -1.0f, -1.029639f }, { 0.0f, 0.0f, -1.0f } }));
+                { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -4.4f, 7.4f, -11.4f } }));
         }
 
         test_section("transform");
@@ -5328,9 +5319,9 @@ inline void nnm_tests()
         test_section("from_shear_x");
         {
             auto t1 = nnm::Transform3f::from_shear_x(1.2f, -0.2f);
-            nnm::Matrix4f expected1 { { 1.0f, 0.0f, 0.0f, 0.0f },
-                                      { 2.5721516221f, 1.0f, 0.0f, 0.0f },
-                                      { -0.2027100355f, 0.0f, 1.0f, 0.0f },
+            nnm::Matrix4f expected1 { { 1.0f, 1.2f, -0.2f, 0.0f },
+                                      { 0.0f, 1.0f, 0.0f, 0.0f },
+                                      { 0.0f, 0.0f, 1.0f, 0.0f },
                                       { 0.0f, 0.0f, 0.0f, 1.0f } };
             ASSERT(t1.matrix.approx_equal(expected1));
         }
@@ -5338,9 +5329,9 @@ inline void nnm_tests()
         test_section("from_shear_y");
         {
             auto t1 = nnm::Transform3f::from_shear_y(-0.2f, 1.2f);
-            nnm::Matrix4f expected1 { { 1.0f, -0.2027100355f, 0.0f, 0.0f },
-                                      { 0.0f, 1.0f, 0.0f, 0.0f },
-                                      { 0.0f, 2.5721516221f, 1.0f, 0.0f },
+            nnm::Matrix4f expected1 { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                      { -0.2f, 1.0f, 1.2f, 0.0f },
+                                      { 0.0f, 0.0f, 1.0f, 0.0f },
                                       { 0.0f, 0.0f, 0.0f, 1.0f } };
             ASSERT(t1.matrix.approx_equal(expected1));
         }
@@ -5348,9 +5339,9 @@ inline void nnm_tests()
         test_section("from_shear_z");
         {
             auto t1 = nnm::Transform3f::from_shear_z(1.5f, -0.3f);
-            nnm::Matrix4f expected1 { { 1.0f, 0.0f, 14.1014199472f, 0.0f },
-                                      { 0.0f, 1.0f, -0.3093362496f, 0.0f },
-                                      { 0.0f, 0.0f, 1.0f, 0.0f },
+            nnm::Matrix4f expected1 { { 1.0f, 0.0f, 0.0f, 0.0f },
+                                      { 0.0f, 1.0f, 0.0f, 0.0f },
+                                      { 1.5f, -0.3f, 1.0f, 0.0f },
                                       { 0.0f, 0.0f, 0.0f, 1.0f } };
             ASSERT(t1.matrix.approx_equal(expected1));
         }
@@ -5604,19 +5595,19 @@ inline void nnm_tests()
         test_section("shear_x");
         {
             auto t3 = t1.shear_x(0.2f, -1.3f);
-            nnm::Matrix4f expected { { -9.40089f, 2.0f, 3.0f, 0.0f },
-                                     { -10.9009f, 2.0f, 3.0f, 0.0f },
-                                     { -7.2042f, 0.0f, 2.0f, 0.0f },
-                                     { -10.2117f, -2.0f, 3.0f, 1.0f } };
+            nnm::Matrix4f expected { { 1.0f, 2.2f, 1.7f, 0.0f },
+                                     { -0.5f, 1.9f, 3.65f, 0.0f },
+                                     { 0.0f, 0.0f, 2.0f, 0.0f },
+                                     { 1.0f, -1.8f, 1.7f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
 
         test_section("shear_x_local");
         {
             auto t3 = t1.shear_x_local(0.2f, -1.3f);
-            nnm::Matrix4f expected { { 1.0f, 2.0f, 3.0f, 0.0f },
-                                     { -0.29729f, 2.40542f, 3.60813f, 0.0f },
-                                     { -3.6021f, -7.2042f, -8.8063f, 0.0f },
+            nnm::Matrix4f expected { { 0.9f, 2.4f, 1.0f, 0.0f },
+                                     { -0.5f, 2.0f, 3.0f, 0.0f },
+                                     { 0.0f, 0.0f, 2.0f, 0.0f },
                                      { 1.0f, -2.0f, 3.0f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
@@ -5624,19 +5615,19 @@ inline void nnm_tests()
         test_section("shear_y");
         {
             auto t3 = t1.shear_y(1.1f, -0.4f);
-            nnm::Matrix4f expected { { 1.0f, 2.69638f, 3.0f, 0.0f },
-                                     { -0.5f, -0.25076f, 3.0f, 0.0f },
-                                     { 0.0f, -0.845586f, 2.0f, 0.0f },
-                                     { 1.0f, -1.30362f, 3.0f, 1.0f } };
+            nnm::Matrix4f expected { { 3.2f, 2.0f, 2.2f, 0.0f },
+                                     { 1.7f, 2.0f, 2.2f, 0.0f },
+                                     { 0.0f, 0.0f, 2.0f, 0.0f },
+                                     { -1.2f, -2.0f, 3.8f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
 
         test_section("shear_y_local");
         {
             auto t3 = t1.shear_y_local(1.1f, -0.4f);
-            nnm::Matrix4f expected { { 0.0176201f, 5.92952f, 8.89428f, 0.0f },
-                                     { -0.5f, 2.0f, 3.0f, 0.0f },
-                                     { 0.211397f, -0.845586f, 0.73162f, 0.0f },
+            nnm::Matrix4f expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                     { 0.6f, 4.2f, 5.5f, 0.0f },
+                                     { 0.0f, 0.0f, 2.0f, 0.0f },
                                      { 1.0f, -2.0f, 3.0f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
@@ -5644,19 +5635,19 @@ inline void nnm_tests()
         test_section("shear_z");
         {
             auto t3 = t1.shear_z(-1.25f, 0.45f);
-            nnm::Matrix4f expected { { 1.0f, 2.0f, 0.95654f, 0.0f },
-                                     { -0.5f, 2.0f, 5.47089f, 0.0f },
-                                     { 0.0f, 0.0f, 2.0f, 0.0f },
-                                     { 1.0f, -2.0f, -0.97568f, 1.0f } };
+            nnm::Matrix4f expected { { -2.75f, 3.35f, 3.0f, 0.0f },
+                                     { -4.25f, 3.35f, 3.0f, 0.0f },
+                                     { -2.5f, 0.9f, 2.0f, 0.0f },
+                                     { -2.75f, -0.65f, 3.0f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
 
         test_section("shear_z_local");
         {
             auto t3 = t1.shear_z_local(-1.25f, 0.45f);
-            nnm::Matrix4f expected { { 1.0f, 2.0f, -3.01914f, 0.0f },
-                                     { -0.5f, 2.0f, 3.96611f, 0.0f },
-                                     { 0.0f, 0.0f, 2.0f, 0.0f },
+            nnm::Matrix4f expected { { 1.0f, 2.0f, 3.0f, 0.0f },
+                                     { -0.5f, 2.0f, 3.0f, 0.0f },
+                                     { -1.475f, -1.6f, -0.4f, 0.0f },
                                      { 1.0f, -2.0f, 3.0f, 1.0f } };
             ASSERT(t3.matrix.approx_equal(expected));
         }
