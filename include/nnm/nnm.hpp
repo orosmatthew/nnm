@@ -716,7 +716,7 @@ public:
      * @param to Position to.
      * @return Resulting non-normalized direction vector.
      */
-    [[nodiscard]] Vector2 direction_unnormalized(const Vector2& to) const
+    [[nodiscard]] constexpr Vector2 direction_unnormalized(const Vector2& to) const
     {
         return to - *this;
     }
@@ -853,7 +853,7 @@ public:
      * @param other Other vector.
      * @return Resulting 2x2 matrix.
      */
-    [[nodiscard]] Matrix2<Real> outer(const Vector2& other) const;
+    [[nodiscard]] constexpr Matrix2<Real> outer(const Vector2& other) const;
 
     /**
      * Reflect this vector along a normal vector.
@@ -954,7 +954,7 @@ public:
      * @param by Offset.
      * @return Resulting translated vector.
      */
-    [[nodiscard]] Vector2 translate(const Vector2& by) const;
+    [[nodiscard]] constexpr Vector2 translate(const Vector2& by) const;
 
     /**
      * Rotate about the origin.
@@ -976,7 +976,7 @@ public:
      * @param factor Scale factor.
      * @return Resulting scaled vector.
      */
-    [[nodiscard]] Vector2 scale(const Vector2& factor) const;
+    [[nodiscard]] constexpr Vector2 scale(const Vector2& factor) const;
 
     /**
      * Component-wise scale about an origin.
@@ -984,14 +984,14 @@ public:
      * @param factor Scale factor.
      * @return Resulting scaled vector.
      */
-    [[nodiscard]] Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
+    [[nodiscard]] constexpr Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
 
     /**
      * Shear along the x-axis about the origin.
      * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_x(Real factor) const;
+    [[nodiscard]] constexpr Vector2 shear_x(Real factor) const;
 
     /**
      * Shear along the x-axis about an origin.
@@ -999,14 +999,14 @@ public:
      * @param factor Angle in radians.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_x_at(const Vector2& origin, Real factor) const;
+    [[nodiscard]] constexpr Vector2 shear_x_at(const Vector2& origin, Real factor) const;
 
     /**
      * Shear along the y-axis about the origin.
      * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_y(Real factor) const;
+    [[nodiscard]] constexpr Vector2 shear_y(Real factor) const;
 
     /**
      * Shear along the y-axis about an origin.
@@ -1014,14 +1014,14 @@ public:
      * @param factor Factor.
      * @return Resulting sheared vector.
      */
-    [[nodiscard]] Vector2 shear_y_at(const Vector2& origin, Real factor) const;
+    [[nodiscard]] constexpr Vector2 shear_y_at(const Vector2& origin, Real factor) const;
 
     /**
      * Transform by a 2D basis about the origin.
      * @param by 2D basis to transform by.
      * @return Resulting transformed vector.
      */
-    [[nodiscard]] Vector2 transform(const Basis2<Real>& by) const;
+    [[nodiscard]] constexpr Vector2 transform(const Basis2<Real>& by) const;
 
     /**
      * Transform by a 2D basis about an origin.
@@ -1029,7 +1029,7 @@ public:
      * @param by 2D basis to transform by.
      * @return Resulting transformed vector.
      */
-    [[nodiscard]] Vector2 transform_at(const Vector2& origin, const Basis2<Real>& by) const;
+    [[nodiscard]] constexpr Vector2 transform_at(const Vector2& origin, const Basis2<Real>& by) const;
 
     /**
      * Transform by a 2D transformation matrix about the origin.
@@ -1037,7 +1037,7 @@ public:
      * @param z The homogenous coordinate which defaults to one.
      * @return Resulting transformed vector.
      */
-    [[nodiscard]] Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
+    [[nodiscard]] constexpr Vector2 transform(const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
     /**
      * Transform by a 2D transformation matrix about an origin.
@@ -1046,7 +1046,7 @@ public:
      * @param z The homogenous coordinate which defaults to one.
      * @return Resulting transformed vector.
      */
-    [[nodiscard]] Vector2 transform_at(
+    [[nodiscard]] constexpr Vector2 transform_at(
         const Vector2& origin, const Transform2<Real>& by, Real z = static_cast<Real>(1)) const;
 
     /**
@@ -1157,10 +1157,17 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1168,10 +1175,17 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& at(const uint8_t index)
+    constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1179,10 +1193,17 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1190,10 +1211,17 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& operator[](const uint8_t index)
+    constexpr Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1231,7 +1259,7 @@ public:
      * @param other Other vector.
      * @return Reference to this vector.
      */
-    Vector2& operator+=(const Vector2& other)
+    constexpr Vector2& operator+=(const Vector2& other)
     {
         x += other.x;
         y += other.y;
@@ -1253,7 +1281,7 @@ public:
      * @param other Other vector.
      * @return Reference to this vector.
      */
-    Vector2& operator-=(const Vector2& other)
+    constexpr Vector2& operator-=(const Vector2& other)
     {
         x -= other.x;
         y -= other.y;
@@ -1275,7 +1303,7 @@ public:
      * @param other Other vector.
      * @return Reference to this vector.
      */
-    Vector2& operator*=(const Vector2& other)
+    constexpr Vector2& operator*=(const Vector2& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1287,7 +1315,7 @@ public:
      * @param matrix Matrix.
      * @return Result.
      */
-    [[nodiscard]] Vector2 operator*(const Matrix2<Real>& matrix) const;
+    [[nodiscard]] constexpr Vector2 operator*(const Matrix2<Real>& matrix) const;
 
     /**
      * Vector-scalar multiplication.
@@ -1304,7 +1332,7 @@ public:
      * @param value Value.
      * @return Reference to this vector.
      */
-    Vector2& operator*=(const Real value)
+    constexpr Vector2& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -1326,7 +1354,7 @@ public:
      * @param other Other vector.
      * @return Reference to this vector.
      */
-    Vector2& operator/=(const Vector2& other)
+    constexpr Vector2& operator/=(const Vector2& other)
     {
         x /= other.x;
         y /= other.y;
@@ -1348,7 +1376,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    Vector2& operator/=(const Real value)
+    constexpr Vector2& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -1690,10 +1718,17 @@ public:
      * @param index Index.
      * @return Resulting constant reference.
      */
-    [[nodiscard]] const Int& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Int& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1701,10 +1736,17 @@ public:
      * @param index Index.
      * @return Resulting reference.
      */
-    Int& at(const uint8_t index)
+    constexpr Int& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1712,10 +1754,17 @@ public:
      * @param index Index.
      * @return Resulting constant reference.
      */
-    [[nodiscard]] const Int& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Int& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1723,10 +1772,17 @@ public:
      * @param index Index.
      * @return Resulting reference.
      */
-    Int& operator[](const uint8_t index)
+    constexpr Int& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector2i", index <= 1);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -1764,7 +1820,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator+=(const Vector2i& other)
+    constexpr Vector2i& operator+=(const Vector2i& other)
     {
         x += other.x;
         y += other.y;
@@ -1786,7 +1842,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator-=(const Vector2i& other)
+    constexpr Vector2i& operator-=(const Vector2i& other)
     {
         x -= other.x;
         y -= other.y;
@@ -1808,7 +1864,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator*=(const Vector2i& other)
+    constexpr Vector2i& operator*=(const Vector2i& other)
     {
         x *= other.x;
         y *= other.y;
@@ -1830,7 +1886,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator*=(const Int value)
+    constexpr Vector2i& operator*=(const Int value)
     {
         x *= value;
         y *= value;
@@ -1852,7 +1908,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator/=(const Vector2i& other)
+    constexpr Vector2i& operator/=(const Vector2i& other)
     {
         x /= other.x;
         y /= other.y;
@@ -1874,7 +1930,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator/=(const Int value)
+    constexpr Vector2i& operator/=(const Int value)
     {
         x /= value;
         y /= value;
@@ -1896,7 +1952,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator%=(const Vector2i& other)
+    constexpr Vector2i& operator%=(const Vector2i& other)
     {
         x %= other.x;
         y %= other.y;
@@ -1918,7 +1974,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector2i& operator%=(const Int value)
+    constexpr Vector2i& operator%=(const Int value)
     {
         x %= value;
         y %= value;
@@ -1971,7 +2027,7 @@ public:
      * Hash type for 2D integer vector.
      */
     struct Hash {
-        size_t operator()(const Vector2i& vector) const noexcept
+        constexpr size_t operator()(const Vector2i& vector) const noexcept
         {
             const size_t hash1 = std::hash<Int>()(vector.x);
             const size_t hash2 = std::hash<Int>()(vector.y);
@@ -2203,7 +2259,7 @@ public:
      * @param to Position to.
      * @return Resulting non-normalized direction vector.
      */
-    [[nodiscard]] Vector3 direction_unnormalized(const Vector3& to) const
+    [[nodiscard]] constexpr Vector3 direction_unnormalized(const Vector3& to) const
     {
         return to - *this;
     }
@@ -2342,7 +2398,7 @@ public:
      * @param other Other vector.
      * @return Resulting 3x3 matrix.
      */
-    [[nodiscard]] Matrix3<Real> outer(const Vector3& other) const;
+    [[nodiscard]] constexpr Matrix3<Real> outer(const Vector3& other) const;
 
     /**
      * Reflect this vector based on a normal vector.
@@ -2429,7 +2485,7 @@ public:
      * @param by Offset to translate by.
      * @return Result.
      */
-    [[nodiscard]] Vector3 translate(const Vector3& by) const;
+    [[nodiscard]] constexpr Vector3 translate(const Vector3& by) const;
 
     /**
      * Rotate via normalized axis and angle in radians about the origin.
@@ -2453,7 +2509,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Vector3 rotate_quaternion(const Quaternion<Real>& quaternion) const;
+    [[nodiscard]] constexpr Vector3 rotate_quaternion(const Quaternion<Real>& quaternion) const;
 
     /**
      * Rotate via quaternion about an origin.
@@ -2461,14 +2517,15 @@ public:
      * @param quaternion Quaternion
      * @return Result.
      */
-    [[nodiscard]] Vector3 rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const;
+    [[nodiscard]] constexpr Vector3 rotate_quaternion_at(
+        const Vector3& origin, const Quaternion<Real>& quaternion) const;
 
     /**
      * Component-wise scale about the origin.
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 scale(const Vector3& factor) const;
+    [[nodiscard]] constexpr Vector3 scale(const Vector3& factor) const;
 
     /**
      * Component-wise scale about an origin.
@@ -2476,7 +2533,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
+    [[nodiscard]] constexpr Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
 
     /**
      * Shear along x-axis about the origin.
@@ -2484,7 +2541,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_x(Real factor_y, Real factor_z) const;
+    [[nodiscard]] constexpr Vector3 shear_x(Real factor_y, Real factor_z) const;
 
     /**
      * Shear along x-axis about an origin.
@@ -2493,7 +2550,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const;
+    [[nodiscard]] constexpr Vector3 shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const;
 
     /**
      * Shear along y-axis about the origin.
@@ -2501,7 +2558,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_y(Real factor_x, Real factor_z) const;
+    [[nodiscard]] constexpr Vector3 shear_y(Real factor_x, Real factor_z) const;
 
     /**
      * Shear along y-axis about the origin.
@@ -2510,7 +2567,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const;
+    [[nodiscard]] constexpr Vector3 shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const;
 
     /**
      * Shear along z-axis about the origin.
@@ -2518,7 +2575,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_z(Real factor_x, Real factor_y) const;
+    [[nodiscard]] constexpr Vector3 shear_z(Real factor_x, Real factor_y) const;
 
     /**
      * Shear along z-axis about an origin.
@@ -2527,14 +2584,14 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Vector3 shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const;
+    [[nodiscard]] constexpr Vector3 shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const;
 
     /**
      * Transform by a three-dimensional basis matrix about the origin.
      * @param by Basis to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform(const Basis3<Real>& by) const;
+    [[nodiscard]] constexpr Vector3 transform(const Basis3<Real>& by) const;
 
     /**
      * Transform by a three-dimensional basis matrix about an origin.
@@ -2542,14 +2599,14 @@ public:
      * @param by Basis to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform_at(const Vector3& origin, const Basis3<Real>& by) const;
+    [[nodiscard]] constexpr Vector3 transform_at(const Vector3& origin, const Basis3<Real>& by) const;
 
     /**
      * Transform by a two-dimensional transformation matrix about the origin.
      * @param by Transformation matrix to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform(const Transform2<Real>& by) const;
+    [[nodiscard]] constexpr Vector3 transform(const Transform2<Real>& by) const;
 
     /**
      * Transform by a two-dimensional transformation matrix about an origin.
@@ -2557,7 +2614,7 @@ public:
      * @param by Transformation matrix to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const;
+    [[nodiscard]] constexpr Vector3 transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const;
 
     /**
      * Transform by a three-dimensional transformation matrix about the origin.
@@ -2565,7 +2622,7 @@ public:
      * @param w The homogenous coordinate that defaults to one.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
+    [[nodiscard]] constexpr Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
 
     /**
      * Transform by a three-dimensional transformation matrix about an origin.
@@ -2574,7 +2631,7 @@ public:
      * @param w The homogenous coordinate that defaults to one.
      * @return Result.
      */
-    [[nodiscard]] Vector3 transform_at(
+    [[nodiscard]] constexpr Vector3 transform_at(
         const Vector3& origin, const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
 
     /**
@@ -2700,10 +2757,19 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -2711,10 +2777,19 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& at(const uint8_t index)
+    constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -2722,10 +2797,19 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -2733,10 +2817,19 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& operator[](const uint8_t index)
+    constexpr Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -2774,7 +2867,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3& operator+=(const Vector3& other)
+    constexpr Vector3& operator+=(const Vector3& other)
     {
         x += other.x;
         y += other.y;
@@ -2797,7 +2890,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3& operator-=(const Vector3& other)
+    constexpr Vector3& operator-=(const Vector3& other)
     {
         x -= other.x;
         y -= other.y;
@@ -2820,7 +2913,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3& operator*=(const Vector3& other)
+    constexpr Vector3& operator*=(const Vector3& other)
     {
         x *= other.x;
         y *= other.y;
@@ -2833,7 +2926,7 @@ public:
      * @param matrix 3x3 Matrix.
      * @return Result.
      */
-    [[nodiscard]] Vector3 operator*(const Matrix3<Real>& matrix) const;
+    [[nodiscard]] constexpr Vector3 operator*(const Matrix3<Real>& matrix) const;
 
     /**
      * Component-wise multiplication with value.
@@ -2850,7 +2943,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector3& operator*=(const Real value)
+    constexpr Vector3& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -2873,7 +2966,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3& operator/=(const Vector3& other)
+    constexpr Vector3& operator/=(const Vector3& other)
     {
         x /= other.x;
         y /= other.y;
@@ -2896,7 +2989,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector3& operator/=(const Real value)
+    constexpr Vector3& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -2927,7 +3020,7 @@ public:
      * @param other Other vector.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Vector3& other) const
+    [[nodiscard]] constexpr bool operator<(const Vector3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
@@ -3201,7 +3294,7 @@ public:
      * Index of maximum component.
      * @return Result.
      */
-    [[nodiscard]] uint8_t max_index() const
+    [[nodiscard]] constexpr uint8_t max_index() const
     {
         uint8_t max_axis = 0;
         if (y > at(max_axis)) {
@@ -3217,7 +3310,7 @@ public:
      * Index of minimum component.
      * @return Result.
      */
-    [[nodiscard]] uint8_t min_index() const
+    [[nodiscard]] constexpr uint8_t min_index() const
     {
         uint8_t min_axis = 0;
         if (y < at(min_axis)) {
@@ -3279,7 +3372,7 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Int& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Int& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
@@ -3290,7 +3383,7 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Int& at(const uint8_t index)
+    constexpr Int& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
@@ -3301,7 +3394,7 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Int& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Int& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
@@ -3312,7 +3405,7 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Int& operator[](const uint8_t index)
+    constexpr Int& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
         return *(begin() + index);
@@ -3376,7 +3469,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3i& operator-=(const Vector3i& other)
+    constexpr Vector3i& operator-=(const Vector3i& other)
     {
         x -= other.x;
         y -= other.y;
@@ -3399,7 +3492,7 @@ public:
      * @param other Other vector.
      * @return Result.
      */
-    Vector3i& operator*=(const Vector3i& other)
+    constexpr Vector3i& operator*=(const Vector3i& other)
     {
         x *= other.x;
         y *= other.y;
@@ -3422,7 +3515,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector3i& operator*=(const Int value)
+    constexpr Vector3i& operator*=(const Int value)
     {
         x *= value;
         y *= value;
@@ -3445,7 +3538,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3i& operator/=(const Vector3i& other)
+    constexpr Vector3i& operator/=(const Vector3i& other)
     {
         x /= other.x;
         y /= other.y;
@@ -3468,7 +3561,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    Vector3i& operator/=(const Int value)
+    constexpr Vector3i& operator/=(const Int value)
     {
         x /= value;
         y /= value;
@@ -3491,7 +3584,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3i& operator%=(const Vector3i& other)
+    constexpr Vector3i& operator%=(const Vector3i& other)
     {
         x %= other.x;
         y %= other.y;
@@ -3514,7 +3607,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    Vector3i& operator%=(const Int value)
+    constexpr Vector3i& operator%=(const Int value)
     {
         x %= value;
         y %= value;
@@ -3545,7 +3638,7 @@ public:
      * @param other Other vector.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Vector3i& other) const
+    [[nodiscard]] constexpr bool operator<(const Vector3i& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
@@ -3570,7 +3663,7 @@ public:
      * Hash type for 3D integer vector.
      */
     struct Hash {
-        size_t operator()(const Vector3i& vector) const noexcept
+        constexpr size_t operator()(const Vector3i& vector) const noexcept
         {
             const size_t hash1 = std::hash<Int>()(vector.x);
             const size_t hash2 = std::hash<Int>()(vector.y);
@@ -3932,7 +4025,7 @@ public:
      * @param by Transformation matrix to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector4 transform(const Transform3<Real>& by) const;
+    [[nodiscard]] constexpr Vector4 transform(const Transform3<Real>& by) const;
 
     /**
      * Transform by a three-dimensional transformation matrix about an origin.
@@ -4077,10 +4170,21 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4088,10 +4192,21 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& at(const uint8_t index)
+    constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4099,10 +4214,21 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4110,10 +4236,21 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& operator[](const uint8_t index)
+    constexpr Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector4", index <= 3);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4292,7 +4429,7 @@ public:
      * @param other Other vector.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Vector4& other) const
+    [[nodiscard]] constexpr bool operator<(const Vector4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
@@ -4801,7 +4938,7 @@ public:
      * Sum of the matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return at(0, 0) + at(1, 1);
     }
@@ -4810,7 +4947,7 @@ public:
      * Determinant of matrix.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         return at(0, 0) * at(1, 1) - at(1, 0) * at(0, 1);
     }
@@ -4821,7 +4958,7 @@ public:
      * @param row Row
      * @return Result.
      */
-    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         const uint8_t other_column = (column + 1) % 2;
@@ -4833,7 +4970,7 @@ public:
      * Minor matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 minor() const
+    [[nodiscard]] constexpr Matrix2 minor() const
     {
         Matrix2 result;
         for (uint8_t c = 0; c < 2; ++c) {
@@ -4869,7 +5006,7 @@ public:
      * Transpose matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 transpose() const
+    [[nodiscard]] constexpr Matrix2 transpose() const
     {
         return { { at(0, 0), at(1, 0) }, { at(0, 1), at(1, 1) } };
     }
@@ -4910,7 +5047,7 @@ public:
      * @param other Other matrix.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Matrix2& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Matrix2& other) const
     {
         for (uint8_t c = 0; c < 2; ++c) {
             for (uint8_t r = 0; r < 2; ++r) {
@@ -4926,7 +5063,7 @@ public:
      * If all elements are approximately zero.
      * @return True if approximately zero, false otherwise.
      */
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         for (uint8_t c = 0; c < 2; ++c) {
             for (uint8_t r = 0; r < 2; ++r) {
@@ -4943,7 +5080,7 @@ public:
      * @param column Column.
      * @return Constant Reference.
      */
-    [[nodiscard]] const Vector2<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector2<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
@@ -4954,7 +5091,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector2<Real>& at(const uint8_t column)
+    constexpr Vector2<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
@@ -4966,7 +5103,7 @@ public:
      * @param row Row.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
@@ -4978,7 +5115,7 @@ public:
      * @param row Row.
      * @return Reference.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
         return columns[column][row];
@@ -5025,7 +5162,7 @@ public:
      * @param column Column.
      * @return Constant reference.
      */
-    const Vector2<Real>& operator[](const uint8_t column) const
+    constexpr const Vector2<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
@@ -5036,7 +5173,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector2<Real>& operator[](const uint8_t column)
+    constexpr Vector2<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1);
         return columns[column];
@@ -5047,7 +5184,7 @@ public:
      * @param other Other matrix.
      * @return True if equal, false otherwise.
      */
-    bool operator==(const Matrix2& other) const
+    constexpr bool operator==(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
@@ -5062,7 +5199,7 @@ public:
      * @param other Other matrix.
      * @return True if unequal, false otherwise.
      */
-    bool operator!=(const Matrix2& other) const
+    constexpr bool operator!=(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
@@ -5077,7 +5214,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 operator+(const Matrix2& other) const
+    [[nodiscard]] constexpr Matrix2 operator+(const Matrix2& other) const
     {
         Matrix2 result;
         for (uint8_t c = 0; c < 2; ++c) {
@@ -5091,7 +5228,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix2& operator+=(const Matrix2& other)
+    constexpr Matrix2& operator+=(const Matrix2& other)
     {
         for (uint8_t c = 0; c < 2; ++c) {
             at(c) += other.at(c);
@@ -5104,7 +5241,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 operator-(const Matrix2& other) const
+    [[nodiscard]] constexpr Matrix2 operator-(const Matrix2& other) const
     {
         Matrix2 result;
         for (uint8_t c = 0; c < 2; ++c) {
@@ -5118,7 +5255,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix2& operator-=(const Matrix2& other)
+    constexpr Matrix2& operator-=(const Matrix2& other)
     {
         for (uint8_t c = 0; c < 2; ++c) {
             at(c) -= other.at(c);
@@ -5131,7 +5268,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 operator*(const Matrix2& other) const
+    [[nodiscard]] constexpr Matrix2 operator*(const Matrix2& other) const
     {
         auto result = zero();
         for (uint8_t c = 0; c < 2; ++c) {
@@ -5149,7 +5286,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix2& operator*=(const Matrix2& other)
+    constexpr Matrix2& operator*=(const Matrix2& other)
     {
         *this = *this * other;
         return *this;
@@ -5160,7 +5297,7 @@ public:
      * @param vector Vector.
      * @return Resulting two-dimensional matrix.
      */
-    [[nodiscard]] Vector2<Real> operator*(const Vector2<Real>& vector) const
+    [[nodiscard]] constexpr Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
         Vector2<Real> result;
         for (uint8_t r = 0; r < 2; ++r) {
@@ -5174,7 +5311,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 operator*(const Real value) const
+    [[nodiscard]] constexpr Matrix2 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value };
     }
@@ -5184,7 +5321,7 @@ public:
      * @param value Value.
      * @return Reference to this modified matrix.
      */
-    Matrix2& operator*=(const Real value)
+    constexpr Matrix2& operator*=(const Real value)
     {
         at(0) *= value;
         at(1) *= value;
@@ -5196,7 +5333,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 operator/(const Real value) const
+    [[nodiscard]] constexpr Matrix2 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value };
     }
@@ -5206,7 +5343,7 @@ public:
      * @param value Value.
      * @return Reference to this modified matrix.
      */
-    Matrix2& operator/=(const Real value)
+    constexpr Matrix2& operator/=(const Real value)
     {
         at(0) /= value;
         at(1) /= value;
@@ -5218,7 +5355,7 @@ public:
      * @param other Other matrix.
      * @return True if less than, false otherwise.
      */
-    bool operator<(const Matrix2& other) const
+    constexpr bool operator<(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
@@ -5234,7 +5371,7 @@ public:
     /**
      * Evaluates to false if all elements are zero, true otherwise.
      */
-    explicit operator bool() const
+    constexpr explicit operator bool() const
     {
         for (uint8_t c = 0; c < 2; ++c) {
             for (uint8_t r = 0; r < 2; ++r) {
@@ -5255,7 +5392,7 @@ public:
  * @return Result.
  */
 template <typename Real>
-Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
+constexpr Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
     for (uint8_t c = 0; c < 2; ++c) {
@@ -5274,7 +5411,7 @@ Matrix2<Real> operator*(const Real value, const Matrix2<Real>& matrix)
  * @return Result.
  */
 template <typename Real>
-Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
+constexpr Matrix2<Real> operator/(const Real value, const Matrix2<Real>& matrix)
 {
     Matrix2<Real> result;
     for (uint8_t c = 0; c < 2; ++c) {
@@ -5347,7 +5484,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    static Basis2 from_shear_x(const Real factor)
+    static constexpr Basis2 from_shear_x(const Real factor)
     {
         return Basis2({ { static_cast<Real>(1), static_cast<Real>(0) }, { factor, static_cast<Real>(1) } });
     }
@@ -5357,7 +5494,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    static Basis2 from_shear_y(const Real factor)
+    static constexpr Basis2 from_shear_y(const Real factor)
     {
         return Basis2({ { static_cast<Real>(1), factor }, { static_cast<Real>(0), static_cast<Real>(1) } });
     }
@@ -5366,7 +5503,7 @@ public:
      * Trace which is the sum of the diagonal of the matrix.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return matrix.trace();
     }
@@ -5375,7 +5512,7 @@ public:
      * Determinant.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         return matrix.determinant();
     }
@@ -5405,7 +5542,7 @@ public:
      * If the elements of the matrix form a valid basis.
      * @return True if valid, false otherwise.
      */
-    [[nodiscard]] bool valid() const
+    [[nodiscard]] constexpr bool valid() const
     {
         return matrix.determinant() != static_cast<Real>(0);
     }
@@ -5435,7 +5572,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 scale(const Vector2<Real>& factor) const
+    [[nodiscard]] constexpr Basis2 scale(const Vector2<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
@@ -5445,7 +5582,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 scale_local(const Vector2<Real>& factor) const
+    [[nodiscard]] constexpr Basis2 scale_local(const Vector2<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
@@ -5455,7 +5592,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_x(const Real factor) const
+    [[nodiscard]] constexpr Basis2 shear_x(const Real factor) const
     {
         return transform(from_shear_x(factor));
     }
@@ -5465,7 +5602,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_x_local(const Real factor) const
+    [[nodiscard]] constexpr Basis2 shear_x_local(const Real factor) const
     {
         return transform_local(from_shear_x(factor));
     }
@@ -5475,7 +5612,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_y(const Real factor) const
+    [[nodiscard]] constexpr Basis2 shear_y(const Real factor) const
     {
         return transform(from_shear_y(factor));
     }
@@ -5485,7 +5622,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Basis2 shear_y_local(const Real factor) const
+    [[nodiscard]] constexpr Basis2 shear_y_local(const Real factor) const
     {
         return transform_local(from_shear_y(factor));
     }
@@ -5495,7 +5632,7 @@ public:
      * @param by Basis to transform by.
      * @return Result.
      */
-    [[nodiscard]] Basis2 transform(const Basis2& by) const
+    [[nodiscard]] constexpr Basis2 transform(const Basis2& by) const
     {
         return Basis2(by.matrix * matrix);
     }
@@ -5505,7 +5642,7 @@ public:
      * @param by Basis to transform by.
      * @return Result.
      */
-    [[nodiscard]] Basis2 transform_local(const Basis2& by) const
+    [[nodiscard]] constexpr Basis2 transform_local(const Basis2& by) const
     {
         return Basis2(matrix * by.matrix);
     }
@@ -5515,7 +5652,7 @@ public:
      * @param other Other basis.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Basis2& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Basis2& other) const
     {
         for (uint8_t c = 0; c < 2; ++c) {
             if (!at(c).approx_equal(other.at(c))) {
@@ -5530,7 +5667,7 @@ public:
      * @param column Column
      * @return Constant reference.
      */
-    [[nodiscard]] const Vector2<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector2<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
@@ -5541,7 +5678,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector2<Real>& at(const uint8_t column)
+    constexpr Vector2<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1);
         return matrix[column];
@@ -5553,7 +5690,7 @@ public:
      * @param row Row.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
@@ -5565,7 +5702,7 @@ public:
      * @param row Row.
      * @return Reference.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", column <= 1 && row <= 1);
         return matrix[column][row];
@@ -5576,7 +5713,7 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    const Vector2<Real>& operator[](const uint8_t index) const
+    constexpr const Vector2<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
@@ -5587,7 +5724,7 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Vector2<Real>& operator[](const uint8_t index)
+    constexpr Vector2<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis2", index <= 1);
         return matrix[index];
@@ -5598,7 +5735,7 @@ public:
      * @param other Other basis.
      * @return True if equal, false otherwise.
      */
-    bool operator==(const Basis2& other) const
+    constexpr bool operator==(const Basis2& other) const
     {
         return matrix == other.matrix;
     }
@@ -5608,7 +5745,7 @@ public:
      * @param other Other basis.
      * @return True if not equal, false otherwise.
      */
-    bool operator!=(const Basis2& other) const
+    constexpr bool operator!=(const Basis2& other) const
     {
         return matrix != other.matrix;
     }
@@ -5618,7 +5755,7 @@ public:
      * @param other Other basis.
      * @return True if less than, false otherwise.
      */
-    bool operator<(const Basis2& other) const
+    constexpr bool operator<(const Basis2& other) const
     {
         return matrix < other.matrix;
     }
@@ -5744,7 +5881,7 @@ public:
      * Sum of matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2);
     }
@@ -5753,7 +5890,7 @@ public:
      * Matrix determinant.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         Real det = static_cast<Real>(0);
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5769,7 +5906,7 @@ public:
      * @param row Row.
      * @return Resulting 2x2 matrix.
      */
-    [[nodiscard]] Matrix2<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Matrix2<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
         Matrix2<Real> minor_matrix;
         uint8_t minor_col = 0;
@@ -5796,7 +5933,7 @@ public:
      * @param row Row.
      * @return Result.
      */
-    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return minor_matrix_at(column, row).determinant();
@@ -5806,7 +5943,7 @@ public:
      * Minor matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 minor() const
+    [[nodiscard]] constexpr Matrix3 minor() const
     {
         Matrix3 result;
         for (uint8_t c = 0; c < 3; ++c) {
@@ -5848,7 +5985,7 @@ public:
      * Transpose matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 transpose() const
+    [[nodiscard]] constexpr Matrix3 transpose() const
     {
         return { { at(0, 0), at(1, 0), at(2, 0) }, { at(0, 1), at(1, 1), at(2, 1) }, { at(0, 2), at(1, 2), at(2, 2) } };
     }
@@ -5889,7 +6026,7 @@ public:
      * @param other Other matrix.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Matrix3& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Matrix3& other) const
     {
         for (uint8_t c = 0; c < 3; ++c) {
             for (uint8_t r = 0; r < 3; ++r) {
@@ -5905,7 +6042,7 @@ public:
      * If all elements are approximately zero.
      * @return True if approximately zero, false otherwise.
      */
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         for (uint8_t c = 0; c < 3; ++c) {
             for (uint8_t r = 0; r < 3; ++r) {
@@ -5922,7 +6059,7 @@ public:
      * @param column Column.
      * @return Constant reference.
      */
-    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector3<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
@@ -5933,7 +6070,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector3<Real>& at(const uint8_t column)
+    constexpr Vector3<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
@@ -5945,7 +6082,7 @@ public:
      * @param row Row.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
@@ -5957,7 +6094,7 @@ public:
      * @param row Row.
      * @return Reference.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
         return columns[column][row];
@@ -6004,7 +6141,7 @@ public:
      * @param column Column.
      * @return Constant reference.
      */
-    const Vector3<Real>& operator[](const uint8_t column) const
+    constexpr const Vector3<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
@@ -6015,7 +6152,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector3<Real>& operator[](const uint8_t column)
+    constexpr Vector3<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
         return columns[column];
@@ -6026,7 +6163,7 @@ public:
      * @param other Other matrix.
      * @return True if equal, false otherwise.
      */
-    [[nodiscard]] bool operator==(const Matrix3& other) const
+    [[nodiscard]] constexpr bool operator==(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) != other.at(i)) {
@@ -6041,7 +6178,7 @@ public:
      * @param other Other matrix.
      * @return True if not equal, false otherwise.
      */
-    bool operator!=(const Matrix3& other) const
+    constexpr bool operator!=(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) != other.at(i)) {
@@ -6056,7 +6193,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 operator+(const Matrix3& other) const
+    [[nodiscard]] constexpr Matrix3 operator+(const Matrix3& other) const
     {
         Matrix3 result;
         for (uint8_t c = 0; c < 3; ++c) {
@@ -6070,7 +6207,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix3& operator+=(const Matrix3& other)
+    constexpr Matrix3& operator+=(const Matrix3& other)
     {
         for (uint8_t c = 0; c < 3; ++c) {
             at(c) += other.at(c);
@@ -6083,7 +6220,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 operator-(const Matrix3& other) const
+    [[nodiscard]] constexpr Matrix3 operator-(const Matrix3& other) const
     {
         Matrix3 result;
         for (uint8_t c = 0; c < 3; ++c) {
@@ -6097,7 +6234,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix3& operator-=(const Matrix3& other)
+    constexpr Matrix3& operator-=(const Matrix3& other)
     {
         for (uint8_t c = 0; c < 3; ++c) {
             at(c) -= other.at(c);
@@ -6110,7 +6247,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 operator*(const Matrix3& other) const
+    [[nodiscard]] constexpr Matrix3 operator*(const Matrix3& other) const
     {
         auto result = zero();
         for (uint8_t c = 0; c < 3; ++c) {
@@ -6128,7 +6265,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix3& operator*=(const Matrix3& other)
+    constexpr Matrix3& operator*=(const Matrix3& other)
     {
         *this = *this * other;
         return *this;
@@ -6139,7 +6276,7 @@ public:
      * @param vector Vector.
      * @return Resulting three-dimensional vector.
      */
-    [[nodiscard]] Vector3<Real> operator*(const Vector3<Real>& vector) const
+    [[nodiscard]] constexpr Vector3<Real> operator*(const Vector3<Real>& vector) const
     {
         auto result = Vector3<Real>::zero();
         for (uint8_t r = 0; r < 3; ++r) {
@@ -6155,7 +6292,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 operator*(const Real value) const
+    [[nodiscard]] constexpr Matrix3 operator*(const Real value) const
     {
         return { at(0) * value, at(1) * value, at(2) * value };
     }
@@ -6165,7 +6302,7 @@ public:
      * @param value Value.
      * @return Reference to this modified matrix.
      */
-    Matrix3& operator*=(const Real value)
+    constexpr Matrix3& operator*=(const Real value)
     {
         at(0) *= value;
         at(1) *= value;
@@ -6178,7 +6315,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 operator/(const Real value) const
+    [[nodiscard]] constexpr Matrix3 operator/(const Real value) const
     {
         return { at(0) / value, at(1) / value, at(2) / value };
     }
@@ -6188,7 +6325,7 @@ public:
      * @param value Value.
      * @return Reference this modified matrix.
      */
-    Matrix3& operator/=(const Real value)
+    constexpr Matrix3& operator/=(const Real value)
     {
         at(0) /= value;
         at(1) /= value;
@@ -6201,7 +6338,7 @@ public:
      * @param other Other matrix.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Matrix3& other) const
+    [[nodiscard]] constexpr bool operator<(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) < other.at(i)) {
@@ -6217,7 +6354,7 @@ public:
     /**
      * Evaluates to false if all components are zero, true otherwise.
      */
-    explicit operator bool() const
+    constexpr explicit operator bool() const
     {
         for (uint8_t c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
             if (!static_cast<bool>(at(c))) {
@@ -6236,7 +6373,7 @@ public:
  * @return Result.
  */
 template <typename Real>
-Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
+constexpr Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
     for (uint8_t c = 0; c < 3; ++c) {
@@ -6255,7 +6392,7 @@ Matrix3<Real> operator*(const Real value, const Matrix3<Real>& matrix)
  * @return Result.
  */
 template <typename Real>
-Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
+constexpr Matrix3<Real> operator/(const Real value, const Matrix3<Real>& matrix)
 {
     Matrix3<Real> result;
     for (uint8_t c = 0; c < 3; ++c) {
@@ -6309,7 +6446,7 @@ public:
      * @param translation Translation.
      * @return Result.
      */
-    static Transform2 from_basis_translation(const Basis2<Real>& basis, const Vector2<Real>& translation)
+    static constexpr Transform2 from_basis_translation(const Basis2<Real>& basis, const Vector2<Real>& translation)
     {
         Matrix3<Real> matrix;
         for (uint8_t c = 0; c < 2; ++c) {
@@ -6327,7 +6464,7 @@ public:
      * @param basis Basis.
      * @return Result.
      */
-    static Transform2 from_basis(const Basis2<Real>& basis)
+    static constexpr Transform2 from_basis(const Basis2<Real>& basis)
     {
         return from_basis_translation(basis, Vector2<Real>::zero());
     }
@@ -6337,7 +6474,7 @@ public:
      * @param translation Translation
      * @return Result.
      */
-    static Transform2 from_translation(const Vector2<Real>& translation)
+    static constexpr Transform2 from_translation(const Vector2<Real>& translation)
     {
         return from_basis_translation(Basis2<Real>(), translation);
     }
@@ -6357,7 +6494,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    static Transform2 from_scale(const Vector2<Real>& factor)
+    static constexpr Transform2 from_scale(const Vector2<Real>& factor)
     {
         return from_basis_translation(Basis2<Real>::from_scale(factor), Vector2<Real>());
     }
@@ -6367,7 +6504,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    static Transform2 from_shear_x(const Real factor)
+    static constexpr Transform2 from_shear_x(const Real factor)
     {
         return from_basis_translation(Basis2<Real>::from_shear_x(factor), Vector2<Real>());
     }
@@ -6377,7 +6514,7 @@ public:
      * @param factor factor.
      * @return Result.
      */
-    static Transform2 from_shear_y(const Real factor)
+    static constexpr Transform2 from_shear_y(const Real factor)
     {
         return from_basis_translation(Basis2<Real>::from_shear_y(factor), Vector2<Real>());
     }
@@ -6386,7 +6523,7 @@ public:
      * Trace which is the sum of the matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return matrix.trace();
     }
@@ -6395,7 +6532,7 @@ public:
      * Determinant.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         return matrix.determinant();
     }
@@ -6425,7 +6562,7 @@ public:
      * If the transform is valid.
      * @return True if valid, false otherwise.
      */
-    [[nodiscard]] bool valid() const
+    [[nodiscard]] constexpr bool valid() const
     {
         return basis().valid();
     }
@@ -6434,7 +6571,7 @@ public:
      * If the transform is affine. A transform is affine if all lines remain straight and parallel lines are preserved.
      * @return True if affine, false otherwise.
      */
-    [[nodiscard]] bool affine() const
+    [[nodiscard]] constexpr bool affine() const
     {
         return valid() && matrix.at(0, 2) == static_cast<Real>(0) && matrix.at(1, 2) == static_cast<Real>(0)
             && matrix.at(2, 2) == static_cast<Real>(1);
@@ -6444,7 +6581,7 @@ public:
      * Two-dimensional basis sub-matrix.
      * @return Basis.
      */
-    [[nodiscard]] Basis2<Real> basis() const
+    [[nodiscard]] constexpr Basis2<Real> basis() const
     {
         return Basis2(matrix.minor_matrix_at(2, 2));
     }
@@ -6453,7 +6590,7 @@ public:
      * Translation of the transform.
      * @return Resulting two-dimensional translation vector.
      */
-    [[nodiscard]] Vector2<Real> translation() const
+    [[nodiscard]] constexpr Vector2<Real> translation() const
     {
         return { matrix.at(2, 0), matrix.at(2, 1) };
     }
@@ -6463,7 +6600,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Transform2 translate(const Vector2<Real>& offset) const
+    [[nodiscard]] constexpr Transform2 translate(const Vector2<Real>& offset) const
     {
         return transform(from_translation(offset));
     }
@@ -6473,7 +6610,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Transform2 translate_local(const Vector2<Real>& offset) const
+    [[nodiscard]] constexpr Transform2 translate_local(const Vector2<Real>& offset) const
     {
         return transform_local(from_translation(offset));
     }
@@ -6503,7 +6640,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 scale(const Vector2<Real>& factor) const
+    [[nodiscard]] constexpr Transform2 scale(const Vector2<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
@@ -6513,7 +6650,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 scale_local(const Vector2<Real>& factor) const
+    [[nodiscard]] constexpr Transform2 scale_local(const Vector2<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
@@ -6523,7 +6660,7 @@ public:
      * @param factor factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_x(const Real factor) const
+    [[nodiscard]] constexpr Transform2 shear_x(const Real factor) const
     {
         return transform(from_shear_x(factor));
     }
@@ -6533,7 +6670,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_x_local(const Real factor) const
+    [[nodiscard]] constexpr Transform2 shear_x_local(const Real factor) const
     {
         return transform_local(from_shear_x(factor));
     }
@@ -6543,7 +6680,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_y(const Real factor) const
+    [[nodiscard]] constexpr Transform2 shear_y(const Real factor) const
     {
         return transform(from_shear_y(factor));
     }
@@ -6553,7 +6690,7 @@ public:
      * @param factor Factor.
      * @return Result.
      */
-    [[nodiscard]] Transform2 shear_y_local(const Real factor) const
+    [[nodiscard]] constexpr Transform2 shear_y_local(const Real factor) const
     {
         return transform_local(from_shear_y(factor));
     }
@@ -6563,7 +6700,7 @@ public:
      * @param by Transform to transform by.
      * @return Result.
      */
-    [[nodiscard]] Transform2 transform(const Transform2& by) const
+    [[nodiscard]] constexpr Transform2 transform(const Transform2& by) const
     {
         return Transform2(by.matrix * matrix);
     }
@@ -6573,7 +6710,7 @@ public:
      * @param by Transform to transform by.
      * @return Result.
      */
-    [[nodiscard]] Transform2 transform_local(const Transform2& by) const
+    [[nodiscard]] constexpr Transform2 transform_local(const Transform2& by) const
     {
         return Transform2(matrix * by.matrix);
     }
@@ -6583,7 +6720,7 @@ public:
      * @param other Other transform.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Transform2& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Transform2& other) const
     {
         return matrix.approx_equal(other.matrix);
     }
@@ -6593,7 +6730,7 @@ public:
      * @param column Column.
      * @return Constant reference.
      */
-    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector3<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
@@ -6604,7 +6741,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector3<Real>& at(const uint8_t column)
+    constexpr Vector3<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
@@ -6616,7 +6753,7 @@ public:
      * @param row Row.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2 && row <= 2);
         return matrix.at(column, row);
@@ -6628,7 +6765,7 @@ public:
      * @param row Row.
      * @return Reference.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2 && row <= 2);
         return matrix.at(column, row);
@@ -6639,7 +6776,7 @@ public:
      * @param column Column.
      * @return Constant reference.
      */
-    [[nodiscard]] const Vector3<Real>& operator[](const uint8_t column) const
+    [[nodiscard]] constexpr const Vector3<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
@@ -6650,7 +6787,7 @@ public:
      * @param column Column.
      * @return Reference.
      */
-    Vector3<Real>& operator[](const uint8_t column)
+    constexpr Vector3<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform2", column <= 2);
         return matrix[column];
@@ -6661,7 +6798,7 @@ public:
      * @param other Other transform.
      * @return True if equal, false otherwise.
      */
-    [[nodiscard]] bool operator==(const Transform2& other) const
+    [[nodiscard]] constexpr bool operator==(const Transform2& other) const
     {
         return matrix == other.matrix;
     }
@@ -6671,7 +6808,7 @@ public:
      * @param other Other transform.
      * @return True if not equal, false otherwise.
      */
-    [[nodiscard]] bool operator!=(const Transform2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Transform2& other) const
     {
         return matrix != other.matrix;
     }
@@ -6681,7 +6818,7 @@ public:
      * @param other Other transform.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Transform2& other) const
+    [[nodiscard]] constexpr bool operator<(const Transform2& other) const
     {
         return matrix < other.matrix;
     }
@@ -6747,7 +6884,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    static Basis3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
+    static constexpr Basis3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
         const Quaternion<Real>& q = quaternion;
         Matrix3<Real> matrix;
@@ -6784,7 +6921,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_x(const Real factor_y, const Real factor_z)
+    static constexpr Basis3 from_shear_x(const Real factor_y, const Real factor_z)
     {
         return Basis3(
             { { static_cast<Real>(1), factor_y, factor_z },
@@ -6798,7 +6935,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_y(const Real factor_x, const Real factor_z)
+    static constexpr Basis3 from_shear_y(const Real factor_x, const Real factor_z)
     {
         return Basis3(
             { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
@@ -6812,7 +6949,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    static Basis3 from_shear_z(const Real factor_x, const Real factor_y)
+    static constexpr Basis3 from_shear_z(const Real factor_x, const Real factor_y)
     {
         return Basis3(
             { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
@@ -6824,7 +6961,7 @@ public:
      * Trace which is the sum of the matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return matrix.trace();
     }
@@ -6833,7 +6970,7 @@ public:
      * Determinant of the matrix.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         return matrix.determinant();
     }
@@ -6863,7 +7000,7 @@ public:
      * Determines if the basis is valid.
      * @return True if valid, false otherwise.
      */
-    [[nodiscard]] bool valid() const
+    [[nodiscard]] constexpr bool valid() const
     {
         return matrix.determinant() != static_cast<Real>(0);
     }
@@ -6895,7 +7032,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Basis3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Basis3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
@@ -6905,7 +7042,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Basis3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Basis3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
@@ -6915,7 +7052,7 @@ public:
      * @param factor Vector scale factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 scale(const Vector3<Real>& factor) const
+    [[nodiscard]] constexpr Basis3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
@@ -6925,7 +7062,7 @@ public:
      * @param factor Vector scale factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 scale_local(const Vector3<Real>& factor) const
+    [[nodiscard]] constexpr Basis3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
@@ -6936,7 +7073,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_x(const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Basis3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return transform(from_shear_x(factor_y, factor_z));
     }
@@ -6947,7 +7084,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_x_local(const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Basis3 shear_x_local(const Real factor_y, const Real factor_z) const
     {
         return transform_local(from_shear_x(factor_y, factor_z));
     }
@@ -6958,7 +7095,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_y(const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Basis3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return transform(from_shear_y(factor_x, factor_z));
     }
@@ -6969,7 +7106,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_y_local(const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Basis3 shear_y_local(const Real factor_x, const Real factor_z) const
     {
         return transform_local(from_shear_y(factor_x, factor_z));
     }
@@ -6980,7 +7117,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_z(const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Basis3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return transform(from_shear_z(factor_x, factor_y));
     }
@@ -6991,7 +7128,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Basis3 shear_z_local(const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Basis3 shear_z_local(const Real factor_x, const Real factor_y) const
     {
         return transform_local(from_shear_z(factor_x, factor_y));
     }
@@ -7001,7 +7138,7 @@ public:
      * @param by Basis.
      * @return Result.
      */
-    [[nodiscard]] Basis3 transform(const Basis3& by) const
+    [[nodiscard]] constexpr Basis3 transform(const Basis3& by) const
     {
         return Basis3(by.matrix * matrix);
     }
@@ -7011,7 +7148,7 @@ public:
      * @param by Basis.
      * @return Result.
      */
-    [[nodiscard]] Basis3 transform_local(const Basis3& by) const
+    [[nodiscard]] constexpr Basis3 transform_local(const Basis3& by) const
     {
         return Basis3(matrix * by.matrix);
     }
@@ -7021,7 +7158,7 @@ public:
      * @param other Other basis.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Basis3& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Basis3& other) const
     {
         return matrix.approx_equal(other.matrix);
     }
@@ -7031,7 +7168,7 @@ public:
      * @param column Index of column.
      * @return Constant reference to column.
      */
-    [[nodiscard]] const Vector3<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector3<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
@@ -7042,7 +7179,7 @@ public:
      * @param column Index of column.
      * @return Reference to column.
      */
-    Vector3<Real>& at(const uint8_t column)
+    constexpr Vector3<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3);
         return matrix.at(column);
@@ -7054,7 +7191,7 @@ public:
      * @param row Index of row.
      * @return Constant reference to element.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
@@ -7066,7 +7203,7 @@ public:
      * @param row Index of row.
      * @return Reference to element.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", column <= 3 && row <= 3);
         return matrix.at(column, row);
@@ -7077,7 +7214,7 @@ public:
      * @param index Index of column.
      * @return Constant reference to column.
      */
-    [[nodiscard]] const Vector3<Real>& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Vector3<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
@@ -7088,7 +7225,7 @@ public:
      * @param index Index of column.
      * @return Reference to column.
      */
-    Vector3<Real>& operator[](const uint8_t index)
+    constexpr Vector3<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Basis3", index <= 3);
         return matrix[index];
@@ -7099,7 +7236,7 @@ public:
      * @param other Other basis.
      * @return True if all elements are equal, false otherwise.
      */
-    [[nodiscard]] bool operator==(const Basis3& other) const
+    [[nodiscard]] constexpr bool operator==(const Basis3& other) const
     {
         return matrix == other.matrix;
     }
@@ -7109,7 +7246,7 @@ public:
      * @param other Other basis.
      * @return True if any elements are not equal, false otherwise.
      */
-    [[nodiscard]] bool operator!=(const Basis3& other) const
+    [[nodiscard]] constexpr bool operator!=(const Basis3& other) const
     {
         return matrix != other.matrix;
     }
@@ -7119,7 +7256,7 @@ public:
      * @param other Other basis.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Basis3& other) const
+    [[nodiscard]] constexpr bool operator<(const Basis3& other) const
     {
         return matrix < other.matrix;
     }
@@ -7281,7 +7418,7 @@ public:
      * Trace which is the sum of the matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return at(0, 0) + at(1, 1) + at(2, 2) + at(3, 3);
     }
@@ -7290,7 +7427,7 @@ public:
      * Determinant of matrix.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         Real det = static_cast<Real>(0);
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7306,7 +7443,7 @@ public:
      * @param row Index of row.
      * @return Resulting 3x3 matrix.
      */
-    [[nodiscard]] Matrix3<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Matrix3<Real> minor_matrix_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         Matrix3<Real> minor_matrix;
@@ -7334,7 +7471,7 @@ public:
      * @param row Index of row.
      * @return Result.
      */
-    [[nodiscard]] Real minor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real minor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return minor_matrix_at(column, row).determinant();
@@ -7344,7 +7481,7 @@ public:
      * Minor matrix which is a matrix where each element is the minor at the element.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 minor() const
+    [[nodiscard]] constexpr Matrix4 minor() const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7386,7 +7523,7 @@ public:
      * Transpose matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 transpose() const
+    [[nodiscard]] constexpr Matrix4 transpose() const
     {
         return { { at(0, 0), at(1, 0), at(2, 0), at(3, 0) },
                  { at(0, 1), at(1, 1), at(2, 1), at(3, 1) },
@@ -7430,7 +7567,7 @@ public:
      * @param other Other matrix.
      * @return True if approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Matrix4& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Matrix4& other) const
     {
         for (uint8_t c = 0; c < 4; ++c) {
             if (!at(c).approx_equal(other.at(c))) {
@@ -7444,7 +7581,7 @@ public:
      * Determines if all elements are approximately zero.
      * @return True if approximately all zero, false otherwise.
      */
-    [[nodiscard]] bool approx_zero() const
+    [[nodiscard]] constexpr bool approx_zero() const
     {
         for (uint8_t c = 0; c < 4; ++c) {
             if (!at(c).approx_zero()) {
@@ -7459,7 +7596,7 @@ public:
      * @param column Index of column.
      * @return Constant reference to column.
      */
-    [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector4<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
@@ -7470,7 +7607,7 @@ public:
      * @param column Index of column.
      * @return Reference to column.
      */
-    Vector4<Real>& at(const uint8_t column)
+    constexpr Vector4<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3);
         return columns[column];
@@ -7482,7 +7619,7 @@ public:
      * @param row Index of row.
      * @return Constant reference to element.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
@@ -7494,7 +7631,7 @@ public:
      * @param row Index of row.
      * @return Reference to element.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
         return columns[column][row];
@@ -7541,7 +7678,7 @@ public:
      * @param index Index of column.
      * @return Constant reference to column.
      */
-    const Vector4<Real>& operator[](const uint8_t index) const
+    constexpr const Vector4<Real>& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
@@ -7552,7 +7689,7 @@ public:
      * @param index
      * @return
      */
-    Vector4<Real>& operator[](const uint8_t index)
+    constexpr Vector4<Real>& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
         return columns[index];
@@ -7563,7 +7700,7 @@ public:
      * @param other Other matrix.
      * @return True if all elements equal, false otherwise.
      */
-    [[nodiscard]] bool operator==(const Matrix4& other) const
+    [[nodiscard]] constexpr bool operator==(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) != other.at(i)) {
@@ -7578,7 +7715,7 @@ public:
      * @param other Other matrix.
      * @return True if any elements are not equal, false otherwise.
      */
-    bool operator!=(const Matrix4& other) const
+    constexpr bool operator!=(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) != other.at(i)) {
@@ -7593,7 +7730,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 operator+(const Matrix4& other) const
+    [[nodiscard]] constexpr Matrix4 operator+(const Matrix4& other) const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7607,7 +7744,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix4& operator+=(const Matrix4& other)
+    constexpr Matrix4& operator+=(const Matrix4& other)
     {
         for (uint8_t c = 0; c < 4; ++c) {
             at(c) += other.at(c);
@@ -7620,7 +7757,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 operator-(const Matrix4& other) const
+    [[nodiscard]] constexpr Matrix4 operator-(const Matrix4& other) const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7634,7 +7771,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix4& operator-=(const Matrix4& other)
+    constexpr Matrix4& operator-=(const Matrix4& other)
     {
         for (uint8_t c = 0; c < 4; ++c) {
             at(c) -= other.at(c);
@@ -7647,7 +7784,7 @@ public:
      * @param other Other matrix.
      * @return Result.
      */
-    Matrix4 operator*(const Matrix4& other) const
+    constexpr Matrix4 operator*(const Matrix4& other) const
     {
         auto result = zero();
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7665,7 +7802,7 @@ public:
      * @param other Other matrix.
      * @return Reference to this modified matrix.
      */
-    Matrix4& operator*=(const Matrix4& other)
+    constexpr Matrix4& operator*=(const Matrix4& other)
     {
         *this = *this * other;
         return *this;
@@ -7676,7 +7813,7 @@ public:
      * @param vector 4D vector.
      * @return Result.
      */
-    Vector4<Real> operator*(const Vector4<Real>& vector) const
+    constexpr Vector4<Real> operator*(const Vector4<Real>& vector) const
     {
         auto result = Vector4<Real>::zero();
         for (uint8_t r = 0; r < 4; ++r) {
@@ -7692,7 +7829,7 @@ public:
      * @param value Scalar value.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 operator*(const Real value) const
+    [[nodiscard]] constexpr Matrix4 operator*(const Real value) const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7706,7 +7843,7 @@ public:
      * @param value Scalar value.
      * @return Reference to this modified matrix.
      */
-    Matrix4& operator*=(const Real value)
+    constexpr Matrix4& operator*=(const Real value)
     {
         for (uint8_t c = 0; c < 4; ++c) {
             at(c) *= value;
@@ -7719,7 +7856,7 @@ public:
      * @param value Value.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 operator/(const Real value) const
+    [[nodiscard]] constexpr Matrix4 operator/(const Real value) const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7733,7 +7870,7 @@ public:
      * @param value Value.
      * @return Reference to this modified matrix.
      */
-    Matrix4& operator/=(const Real value)
+    constexpr Matrix4& operator/=(const Real value)
     {
         for (uint8_t c = 0; c < 4; ++c) {
             at(c) /= value;
@@ -7746,7 +7883,7 @@ public:
      * @param other Other matrix.
      * @return True if less than, false otherwise.
      */
-    bool operator<(const Matrix4& other) const
+    constexpr bool operator<(const Matrix4& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
@@ -7762,7 +7899,7 @@ public:
     /**
      * True if any elements are non-zero, false otherwise.
      */
-    explicit operator bool() const
+    constexpr explicit operator bool() const
     {
         for (uint8_t c = 0; c < 4; ++c) {
             if (!static_cast<bool>(at(c))) {
@@ -7781,7 +7918,7 @@ public:
  * @return Result.
  */
 template <typename Real>
-Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
+constexpr Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
     for (uint8_t c = 0; c < 4; ++c) {
@@ -7800,7 +7937,7 @@ Matrix4<Real> operator*(const Real value, const Matrix4<Real>& matrix)
  * @return Result.
  */
 template <typename Real>
-Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
+constexpr Matrix4<Real> operator/(const Real value, const Matrix4<Real>& matrix)
 {
     Matrix4<Real> result;
     for (uint8_t c = 0; c < 4; ++c) {
@@ -7857,7 +7994,7 @@ public:
      * @param translation 3D translation vector.
      * @return Result.
      */
-    static Transform3 from_basis_translation(const Basis3<Real>& basis, const Vector3<Real>& translation)
+    static constexpr Transform3 from_basis_translation(const Basis3<Real>& basis, const Vector3<Real>& translation)
     {
         auto matrix = Matrix4<Real>::identity();
         for (uint8_t c = 0; c < 3; ++c) {
@@ -7876,7 +8013,7 @@ public:
      * @param basis 3D Basis.
      * @return Result.
      */
-    static Transform3 from_basis(const Basis3<Real>& basis)
+    static constexpr Transform3 from_basis(const Basis3<Real>& basis)
     {
         return from_basis_translation(basis, Vector3<Real>::zero());
     }
@@ -7886,7 +8023,7 @@ public:
      * @param translation 3D translation vector.
      * @return Result.
      */
-    static Transform3 from_translation(const Vector3<Real>& translation)
+    static constexpr Transform3 from_translation(const Vector3<Real>& translation)
     {
         return from_basis_translation(Basis3<Real>(), translation);
     }
@@ -7908,7 +8045,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    static Transform3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
+    static constexpr Transform3 from_rotation_quaternion(const Quaternion<Real>& quaternion)
     {
         const auto basis = Basis3<Real>::from_rotation_quaternion(quaternion);
         return from_basis_translation(basis, Vector3<Real>::zero());
@@ -7919,7 +8056,7 @@ public:
      * @param factor Scale factor vector.
      * @return Result.
      */
-    static Transform3 from_scale(const Vector3<Real>& factor)
+    static constexpr Transform3 from_scale(const Vector3<Real>& factor)
     {
         return from_basis(Basis3<Real>::from_scale(factor));
     }
@@ -7930,7 +8067,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_x(const Real factor_y, const Real factor_z)
+    static constexpr Transform3 from_shear_x(const Real factor_y, const Real factor_z)
     {
         return from_basis(Basis3<Real>::from_shear_x(factor_y, factor_z));
     }
@@ -7941,7 +8078,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_y(const Real factor_x, const Real factor_z)
+    static constexpr Transform3 from_shear_y(const Real factor_x, const Real factor_z)
     {
         return from_basis(Basis3<Real>::from_shear_y(factor_x, factor_z));
     }
@@ -7952,7 +8089,7 @@ public:
      * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    static Transform3 from_shear_z(const Real factor_x, const Real factor_y)
+    static constexpr Transform3 from_shear_z(const Real factor_x, const Real factor_y)
     {
         return from_basis(Basis3<Real>::from_shear_z(factor_x, factor_y));
     }
@@ -8051,7 +8188,7 @@ public:
      * @param far_clip Far clipping plane distance.
      * @return Result.
      */
-    static Transform3 from_orthographic_left_hand_neg1to1(
+    static constexpr Transform3 from_orthographic_left_hand_neg1to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
         auto matrix = Matrix4<Real>::identity();
@@ -8074,7 +8211,7 @@ public:
      * @param far_clip Far clipping plane distance.
      * @return Result.
      */
-    static Transform3 from_orthographic_left_hand_0to1(
+    static constexpr Transform3 from_orthographic_left_hand_0to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
         auto matrix = Matrix4<Real>::identity();
@@ -8097,7 +8234,7 @@ public:
      * @param far_clip Far clipping plane distance.
      * @return Result.
      */
-    static Transform3 from_orthographic_right_hand_neg1to1(
+    static constexpr Transform3 from_orthographic_right_hand_neg1to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
         auto matrix = Matrix4<Real>::identity();
@@ -8120,7 +8257,7 @@ public:
      * @param far_clip Far clipping plane distance.
      * @return Result.
      */
-    static Transform3 from_orthographic_right_hand_0to1(
+    static constexpr Transform3 from_orthographic_right_hand_0to1(
         const Real left, const Real right, const Real bottom, const Real top, const Real near_clip, const Real far_clip)
     {
         auto matrix = Matrix4<Real>::identity();
@@ -8137,7 +8274,7 @@ public:
      * Trace which is the sum of the matrix diagonal.
      * @return Result.
      */
-    [[nodiscard]] Real trace() const
+    [[nodiscard]] constexpr Real trace() const
     {
         return matrix.trace();
     }
@@ -8146,7 +8283,7 @@ public:
      * Determinant of the matrix.
      * @return Result.
      */
-    [[nodiscard]] Real determinant() const
+    [[nodiscard]] constexpr Real determinant() const
     {
         return matrix.determinant();
     }
@@ -8176,7 +8313,7 @@ public:
      * Determines if transform is valid. Validity is determined based on if the transform's basis is valid.
      * @return True if valid, false otherwise.
      */
-    [[nodiscard]] bool valid() const
+    [[nodiscard]] constexpr bool valid() const
     {
         return basis().valid();
     }
@@ -8185,7 +8322,7 @@ public:
      * Determines if transform is affine. Affine means that the transform preserves parallel lines.
      * @return True if affine, false otherwise.
      */
-    [[nodiscard]] bool affine() const
+    [[nodiscard]] constexpr bool affine() const
     {
         return valid() && matrix.at(0, 3) == static_cast<Real>(0) && matrix.at(1, 3) == static_cast<Real>(0)
             && matrix.at(2, 3) == static_cast<Real>(0) && matrix.at(3, 3) == static_cast<Real>(1);
@@ -8195,7 +8332,7 @@ public:
      * Basis of the transform.
      * @return Result.
      */
-    [[nodiscard]] Basis3<Real> basis() const
+    [[nodiscard]] constexpr Basis3<Real> basis() const
     {
         return Basis3(matrix.minor_matrix_at(3, 3));
     }
@@ -8204,7 +8341,7 @@ public:
      * Translation vector of the transform.
      * @return Result.
      */
-    [[nodiscard]] Vector3<Real> translation() const
+    [[nodiscard]] constexpr Vector3<Real> translation() const
     {
         return { matrix.at(3, 0), matrix.at(3, 1), matrix.at(3, 2) };
     }
@@ -8214,7 +8351,7 @@ public:
      * @param offset Offset vector.
      * @return Result.
      */
-    [[nodiscard]] Transform3 translate(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Transform3 translate(const Vector3<Real>& offset) const
     {
         return transform(from_translation(offset));
     }
@@ -8224,7 +8361,7 @@ public:
      * @param offset Offset vector.
      * @return Result.
      */
-    [[nodiscard]] Transform3 translate_local(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Transform3 translate_local(const Vector3<Real>& offset) const
     {
         return transform_local(from_translation(offset));
     }
@@ -8256,7 +8393,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Transform3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Transform3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return transform(from_rotation_quaternion(quaternion));
     }
@@ -8266,7 +8403,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Transform3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Transform3 rotate_quaternion_local(const Quaternion<Real>& quaternion) const
     {
         return transform_local(from_rotation_quaternion(quaternion));
     }
@@ -8276,7 +8413,7 @@ public:
      * @param factor 3D scale factor vector.
      * @return Result.
      */
-    [[nodiscard]] Transform3 scale(const Vector3<Real>& factor) const
+    [[nodiscard]] constexpr Transform3 scale(const Vector3<Real>& factor) const
     {
         return transform(from_scale(factor));
     }
@@ -8286,7 +8423,7 @@ public:
      * @param factor 3D scale factor vector.
      * @return Result.
      */
-    [[nodiscard]] Transform3 scale_local(const Vector3<Real>& factor) const
+    [[nodiscard]] constexpr Transform3 scale_local(const Vector3<Real>& factor) const
     {
         return transform_local(from_scale(factor));
     }
@@ -8297,7 +8434,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_x(const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Transform3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return transform(from_shear_x(factor_y, factor_z));
     }
@@ -8308,7 +8445,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_x_local(const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Transform3 shear_x_local(const Real factor_y, const Real factor_z) const
     {
         return transform_local(from_shear_x(factor_y, factor_z));
     }
@@ -8319,7 +8456,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_y(const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Transform3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return transform(from_shear_y(factor_x, factor_z));
     }
@@ -8330,7 +8467,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_y_local(const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Transform3 shear_y_local(const Real factor_x, const Real factor_z) const
     {
         return transform_local(from_shear_y(factor_x, factor_z));
     }
@@ -8341,7 +8478,7 @@ public:
      * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_z(const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Transform3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return transform(from_shear_z(factor_x, factor_y));
     }
@@ -8352,7 +8489,7 @@ public:
      * @param factor_y Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Transform3 shear_z_local(const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Transform3 shear_z_local(const Real factor_x, const Real factor_y) const
     {
         return transform_local(from_shear_z(factor_x, factor_y));
     }
@@ -8362,7 +8499,7 @@ public:
      * @param by Other transform.
      * @return Result.
      */
-    [[nodiscard]] Transform3 transform(const Transform3& by) const
+    [[nodiscard]] constexpr Transform3 transform(const Transform3& by) const
     {
         return Transform3(by.matrix * matrix);
     }
@@ -8372,7 +8509,7 @@ public:
      * @param by Other transform.
      * @return Result.
      */
-    [[nodiscard]] Transform3 transform_local(const Transform3& by) const
+    [[nodiscard]] constexpr Transform3 transform_local(const Transform3& by) const
     {
         return Transform3(matrix * by.matrix);
     }
@@ -8382,7 +8519,7 @@ public:
      * @param other Other transform.
      * @return True if all elements are approximately equal, false otherwise.
      */
-    [[nodiscard]] bool approx_equal(const Transform3& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Transform3& other) const
     {
         return matrix.approx_equal(other.matrix);
     }
@@ -8392,7 +8529,7 @@ public:
      * @param column Index of column.
      * @return Constant reference to column.
      */
-    [[nodiscard]] const Vector4<Real>& at(const uint8_t column) const
+    [[nodiscard]] constexpr const Vector4<Real>& at(const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
@@ -8403,7 +8540,7 @@ public:
      * @param column Index of column.
      * @return Reference to column.
      */
-    Vector4<Real>& at(const uint8_t column)
+    constexpr Vector4<Real>& at(const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix.at(column);
@@ -8415,7 +8552,7 @@ public:
      * @param row Index of row.
      * @return Constant reference to element.
      */
-    [[nodiscard]] const Real& at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
@@ -8427,7 +8564,7 @@ public:
      * @param row Index of row.
      * @return Reference to element.
      */
-    Real& at(const uint8_t column, const uint8_t row)
+    constexpr Real& at(const uint8_t column, const uint8_t row)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3 && row <= 3);
         return matrix.at(column, row);
@@ -8438,7 +8575,7 @@ public:
      * @param column Index of column.
      * @return Constant reference to column.
      */
-    [[nodiscard]] const Vector4<Real>& operator[](const uint8_t column) const
+    [[nodiscard]] constexpr const Vector4<Real>& operator[](const uint8_t column) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
@@ -8449,7 +8586,7 @@ public:
      * @param column Index of column.
      * @return Reference to column.
      */
-    Vector4<Real>& operator[](const uint8_t column)
+    constexpr Vector4<Real>& operator[](const uint8_t column)
     {
         NNM_BOUNDS_CHECK_ASSERT("Transform3", column <= 3);
         return matrix[column];
@@ -8460,7 +8597,7 @@ public:
      * @param other Other transform.
      * @return True if all elements are equal, false otherwise.
      */
-    [[nodiscard]] bool operator==(const Transform3& other) const
+    [[nodiscard]] constexpr bool operator==(const Transform3& other) const
     {
         return matrix == other.matrix;
     }
@@ -8470,7 +8607,7 @@ public:
      * @param other Other transform.
      * @return True if any element is not equal, false otherwise.
      */
-    [[nodiscard]] bool operator!=(const Transform3& other) const
+    [[nodiscard]] constexpr bool operator!=(const Transform3& other) const
     {
         return matrix != other.matrix;
     }
@@ -8480,7 +8617,7 @@ public:
      * @param other Other transform.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Transform3& other) const
+    [[nodiscard]] constexpr bool operator<(const Transform3& other) const
     {
         return matrix < other.matrix;
     }
@@ -8495,7 +8632,7 @@ constexpr Vector2<Real>::Vector2(const Vector2i<Int>& vector)
 }
 
 template <typename Real>
-Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
+constexpr Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 {
     Matrix2<Real> result;
     for (uint8_t c = 0; c < 2; ++c) {
@@ -8507,7 +8644,7 @@ Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::translate(const Vector2& by) const
+constexpr Vector2<Real> Vector2<Real>::translate(const Vector2& by) const
 {
     return transform(Transform2<Real>::from_translation(by));
 }
@@ -8525,67 +8662,67 @@ Vector2<Real> Vector2<Real>::rotate_at(const Vector2& origin, Real angle) const
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::scale(const Vector2& factor) const
+constexpr Vector2<Real> Vector2<Real>::scale(const Vector2& factor) const
 {
     return transform(Basis2<Real>::from_scale(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::scale_at(const Vector2& origin, const Vector2& factor) const
+constexpr Vector2<Real> Vector2<Real>::scale_at(const Vector2& origin, const Vector2& factor) const
 {
     return transform_at(origin, Basis2<Real>::from_scale(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_x(const Real factor) const
+constexpr Vector2<Real> Vector2<Real>::shear_x(const Real factor) const
 {
     return transform(Basis2<Real>::from_shear_x(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real factor) const
+constexpr Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real factor) const
 {
     return transform_at(origin, Basis2<Real>::from_shear_x(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_y(const Real factor) const
+constexpr Vector2<Real> Vector2<Real>::shear_y(const Real factor) const
 {
     return transform(Basis2<Real>::from_shear_y(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real factor) const
+constexpr Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real factor) const
 {
     return transform_at(origin, Basis2<Real>::from_shear_y(factor));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
+constexpr Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Basis2<Real>& by) const
+constexpr Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Basis2<Real>& by) const
 {
     return (*this - origin).transform(by) + origin;
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
+constexpr Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
 {
     return Vector3<Real>(*this, z).transform(by).xy();
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Transform2<Real>& by, Real z) const
+constexpr Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Transform2<Real>& by, Real z) const
 {
     return (*this - origin).transform(by, z) + origin;
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
+constexpr Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) const
 {
     Vector2 result;
     result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1);
@@ -8603,7 +8740,7 @@ constexpr Vector3<Real>::Vector3(const Vector3i<Int>& vector)
 }
 
 template <typename Real>
-Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
+constexpr Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 {
     Matrix3<Real> result;
     for (uint8_t c = 0; c < 3; ++c) {
@@ -8615,7 +8752,7 @@ Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::translate(const Vector3& by) const
+constexpr Vector3<Real> Vector3<Real>::translate(const Vector3& by) const
 {
     return transform(Transform3<Real>::from_translation(by));
 }
@@ -8633,103 +8770,103 @@ Vector3<Real> Vector3<Real>::rotate_axis_angle_at(const Vector3& origin, const V
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::rotate_quaternion(const Quaternion<Real>& quaternion) const
+constexpr Vector3<Real> Vector3<Real>::rotate_quaternion(const Quaternion<Real>& quaternion) const
 {
     return transform(Basis3<Real>::from_rotation_quaternion(quaternion));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const
+constexpr Vector3<Real> Vector3<Real>::rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const
 {
     return transform_at(origin, Basis3<Real>::from_rotation_quaternion(quaternion));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::scale(const Vector3& factor) const
+constexpr Vector3<Real> Vector3<Real>::scale(const Vector3& factor) const
 {
     return transform(Basis3<Real>::from_scale(factor));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::scale_at(const Vector3& origin, const Vector3& factor) const
+constexpr Vector3<Real> Vector3<Real>::scale_at(const Vector3& origin, const Vector3& factor) const
 {
     return transform_at(origin, Basis3<Real>::from_scale(factor));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_x(const Real factor_y, const Real factor_z) const
+constexpr Vector3<Real> Vector3<Real>::shear_x(const Real factor_y, const Real factor_z) const
 {
     return transform(Basis3<Real>::from_shear_x(factor_y, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const
+constexpr Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const
 {
     return transform_at(origin, Basis3<Real>::from_shear_x(factor_y, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_y(const Real factor_x, const Real factor_z) const
+constexpr Vector3<Real> Vector3<Real>::shear_y(const Real factor_x, const Real factor_z) const
 {
     return transform(Basis3<Real>::from_shear_y(factor_x, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const
+constexpr Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const
 {
     return transform_at(origin, Basis3<Real>::from_shear_y(factor_x, factor_z));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_z(const Real factor_x, const Real factor_y) const
+constexpr Vector3<Real> Vector3<Real>::shear_z(const Real factor_x, const Real factor_y) const
 {
     return transform(Basis3<Real>::from_shear_z(factor_x, factor_y));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const
+constexpr Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const
 {
     return transform_at(origin, Basis3<Real>::from_shear_z(factor_x, factor_y));
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform(const Basis3<Real>& by) const
+constexpr Vector3<Real> Vector3<Real>::transform(const Basis3<Real>& by) const
 {
     return by.matrix * *this;
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Basis3<Real>& by) const
+constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Basis3<Real>& by) const
 {
     return (*this - origin).transform(by) + origin;
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform(const Transform2<Real>& by) const
+constexpr Vector3<Real> Vector3<Real>::transform(const Transform2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const
+constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const
 {
     return (*this - Vector3 { origin, static_cast<Real>(0) }).transform(by) + Vector3 { origin, static_cast<Real>(0) };
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform(const Transform3<Real>& by, const Real w) const
+constexpr Vector3<Real> Vector3<Real>::transform(const Transform3<Real>& by, const Real w) const
 {
     return Vector4<Real>(*this, w).transform(by).xyz();
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Transform3<Real>& by, Real w) const
+constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Transform3<Real>& by, Real w) const
 {
     return (*this - origin).transform(by, w) + origin;
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
+constexpr Vector3<Real> Vector3<Real>::operator*(const Matrix3<Real>& matrix) const
 {
     auto result = zero();
     for (uint8_t c = 0; c < 3; ++c) {
@@ -8759,7 +8896,7 @@ Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
 }
 
 template <typename Real>
-Vector4<Real> Vector4<Real>::transform(const Transform3<Real>& by) const
+constexpr Vector4<Real> Vector4<Real>::transform(const Transform3<Real>& by) const
 {
     return by.matrix * *this;
 }
