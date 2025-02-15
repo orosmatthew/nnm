@@ -3198,7 +3198,8 @@ inline void nnm_tests()
                                      { 8.0f, 10.0f, -4.0f, 3.0f },
                                      { -12.0f, -15.0f, 6.0f, -4.5f },
                                      { 16.0f, 20.0f, -8.0f, 6.0f } };
-            ASSERT(v1.outer(v2).approx_equal(expected));
+            constexpr auto result = v1.outer(v2);
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
@@ -3225,7 +3226,8 @@ inline void nnm_tests()
                                                      { -10.0f, 0.5f, 20.6f, 0.0f },
                                                      { 1.0f, 3.0f, 3.3f, -1.0f },
                                                      { 9.9f, -7.54f, 20.0f, 0.1f } } };
-            ASSERT(v1.transform_at({ -3.0f, 1.5f, 10.0f }, transform).approx_equal({ 20.6f, -63.41f, 51.4f, 21.4f }));
+            constexpr auto result = v1.transform_at({ -3.0f, 1.5f, 10.0f }, transform);
+            ASSERT(result.approx_equal({ 20.6f, -63.41f, 51.4f, 21.4f }));
         }
 
         test_section("max");
@@ -3248,13 +3250,15 @@ inline void nnm_tests()
 
         test_section("max_index");
         {
-            ASSERT(v1.max_index() == 3);
+            constexpr auto result = v1.max_index();
+            ASSERT(result == 3);
             ASSERT(v2.max_index() == 1);
         }
 
         test_section("min_index");
         {
-            ASSERT(v1.min_index() == 2);
+            constexpr auto result = v1.min_index();
+            ASSERT(result == 2);
             ASSERT(v2.min_index() == 2);
         }
 
@@ -3383,7 +3387,8 @@ inline void nnm_tests()
                                              { -1.0f, -2.0f, -3.0f, -4.0f },
                                              { 1.0f, 3.0f, 2.0f, 4.0f },
                                              { -4.0f, -2.0f, -3.0f, -1.0f } };
-            ASSERT((v1 * matrix).approx_equal({ 10.0f, -10.0f, 15.0f, 5.0f }))
+            constexpr auto result = v1 * matrix;
+            ASSERT(result.approx_equal({ 10.0f, -10.0f, 15.0f, 5.0f }))
         }
 
         test_section("operator*(float)");
@@ -3416,8 +3421,12 @@ inline void nnm_tests()
 
         test_section("operator/=(const Vector4&)");
         {
-            auto v2_copy = v2;
-            ASSERT((v2_copy /= v1).approx_equal({ -4.0f, 2.5f, 0.66666666f, 0.375f }));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= v1;
+                return v2_copy;
+            }();
+            ASSERT(result.approx_equal({ -4.0f, 2.5f, 0.66666666f, 0.375f }));
         }
 
         test_section("operator/(float)");
@@ -3584,8 +3593,8 @@ inline void nnm_tests()
 
         test_section("rotate_quaternion");
         {
-            const auto q3 = nnm::QuaternionF::from_axis_angle({ -1.0f, 2.0f, -0.5f }, -nnm::pi<float>() / 3.0f);
-            const nnm::Quaternion q4 = q1.rotate_quaternion(q3);
+            constexpr nnm::QuaternionF q3 { 0.21821788f, -0.436435759f, 0.10910894f, 0.866025388f };
+            constexpr nnm::Quaternion q4 = q1.rotate_quaternion(q3);
             ASSERT(q4.approx_equal({ 0.3378994f, -0.4871692f, 0.1898815f, 0.7825823f }));
         }
 
@@ -3601,7 +3610,8 @@ inline void nnm_tests()
         test_section("at");
         {
             constexpr nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
-            ASSERT(q3.at(0) == 1.0f);
+            constexpr auto result = q3.at(0);
+            ASSERT(result == 1.0f);
             ASSERT(q3.at(1) == -2.0f);
             ASSERT(q3.at(2) == 3.0f);
             ASSERT(q3.at(3) == -4.0f);
@@ -3610,7 +3620,8 @@ inline void nnm_tests()
         test_section("operator[]");
         {
             constexpr nnm::Quaternion q3(1.0f, -2.0f, 3.0f, -4.0f);
-            ASSERT(q3[0] == 1.0f);
+            constexpr auto result = q3[0];
+            ASSERT(result == 1.0f);
             ASSERT(q3[1] == -2.0f);
             ASSERT(q3[2] == 3.0f);
             ASSERT(q3[3] == -4.0f);
@@ -3640,13 +3651,18 @@ inline void nnm_tests()
 
         test_section("operator*=");
         {
-            auto q1_copy = q1;
-            ASSERT((q1_copy *= q2).approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
+            constexpr auto result = [=] {
+                auto q1_copy = q1;
+                q1_copy *= q2;
+                return q1_copy;
+            }();
+            ASSERT(result.approx_equal({ -0.0126768f, -0.6611317f, 0.3656413f, 0.6550194f }));
         }
 
         test_section("operator<");
         {
-            ASSERT(q2 < q1);
+            constexpr auto result = q2 < q1;
+            ASSERT(result);
             ASSERT_FALSE(q1 < q2);
         }
 
@@ -3751,7 +3767,8 @@ inline void nnm_tests()
         test_section("cofactor_at");
         {
             constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.cofactor_at(0, 0) == 4.0f);
+            constexpr auto result = mat.cofactor_at(0, 0);
+            ASSERT(result == 4.0f);
             ASSERT(mat.cofactor_at(0, 1) == 3.0f);
             ASSERT(mat.cofactor_at(1, 0) == 2.0f);
             ASSERT(mat.cofactor_at(1, 1) == 1.0f);
@@ -3760,7 +3777,8 @@ inline void nnm_tests()
         test_section("cofactor");
         {
             constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.cofactor() == nnm::Matrix2f({ 4.0f, 3.0f }, { 2.0f, 1.0f }));
+            constexpr auto result = mat.cofactor();
+            ASSERT(result == nnm::Matrix2f({ 4.0f, 3.0f }, { 2.0f, 1.0f }));
         }
 
         test_section("transpose");
@@ -3773,19 +3791,21 @@ inline void nnm_tests()
         test_section("adjugate");
         {
             constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.adjugate() == nnm::Matrix2f({ 4.0f, 2.0f }, { 3.0f, 1.0f }));
+            constexpr auto result = mat.adjugate();
+            ASSERT(result == nnm::Matrix2f({ 4.0f, 2.0f }, { 3.0f, 1.0f }));
         }
 
         test_section("unchecked_inverse");
         {
             constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            ASSERT(mat.unchecked_inverse().approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
+            constexpr auto result = mat.unchecked_inverse();
+            ASSERT(result.approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
         }
 
         test_section("inverse");
         {
             constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-            const std::optional<nnm::Matrix2f> mat_inv = mat.inverse();
+            constexpr std::optional<nnm::Matrix2f> mat_inv = mat.inverse();
             ASSERT(mat_inv.has_value());
             ASSERT(mat.inverse()->approx_equal({ { -2.0f, -1.0f }, { -1.5f, -0.5f } }));
             ASSERT_FALSE(nnm::Matrix2f::zero().inverse().has_value());
@@ -4043,13 +4063,14 @@ inline void nnm_tests()
         test_section("unchecked_inverse");
         {
             constexpr nnm::Basis2f b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            ASSERT(b.unchecked_inverse().matrix == b.matrix.unchecked_inverse());
+            constexpr auto result = b.unchecked_inverse();
+            ASSERT(result.matrix == b.matrix.unchecked_inverse());
         }
 
         test_section("inverse");
         {
             constexpr nnm::Basis2f b({ { 1.0f, -2.0f }, { -3.0f, 4.0f } });
-            const auto inv = b.inverse();
+            constexpr auto inv = b.inverse();
             ASSERT(inv.has_value() && inv.value().matrix == b.matrix.inverse().value());
             ASSERT_FALSE(nnm::Basis2(nnm::Matrix2f::zero()).inverse().has_value());
         }
@@ -4323,15 +4344,17 @@ inline void nnm_tests()
 
         test_section("cofactor_at");
         {
-            constexpr nnm::Matrix3f result({ -16.0f, 16.0f, 16.0f }, { -24.0f, 0.0f, 8.0f }, { 4.0f, -8.0f, 4.0f });
-            ASSERT(nnm::approx_equal(m1.cofactor_at(0, 0), result.at(0, 0)));
-            ASSERT(nnm::approx_equal(m1.cofactor_at(1, 2), result.at(1, 2)));
+            constexpr nnm::Matrix3f expected({ -16.0f, 16.0f, 16.0f }, { -24.0f, 0.0f, 8.0f }, { 4.0f, -8.0f, 4.0f });
+            constexpr auto result = m1.cofactor_at(0, 0);
+            ASSERT(nnm::approx_equal(result, expected.at(0, 0)));
+            ASSERT(nnm::approx_equal(m1.cofactor_at(1, 2), expected.at(1, 2)));
         }
 
         test_section("cofactor");
         {
             constexpr nnm::Matrix3f expected({ -16.0f, 16.0f, 16.0f }, { -24.0f, 0.0f, 8.0f }, { 4.0f, -8.0f, 4.0f });
-            ASSERT(m1.cofactor().approx_equal(expected));
+            constexpr auto result = m1.cofactor();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("transpose");
@@ -4343,23 +4366,26 @@ inline void nnm_tests()
 
         test_section("adjugate");
         {
-            constexpr nnm::Matrix3f result({ -16.0f, -24.0f, 4.0f }, { 16.0f, 0.0f, -8.0f }, { 16.0f, 8.0f, 4.0f });
-            ASSERT(m1.adjugate().approx_equal(result));
+            constexpr nnm::Matrix3f expected({ -16.0f, -24.0f, 4.0f }, { 16.0f, 0.0f, -8.0f }, { 16.0f, 8.0f, 4.0f });
+            constexpr auto result = m1.adjugate();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("unchecked_inverse");
         {
-            constexpr nnm::Matrix3f result(
+            constexpr nnm::Matrix3f expected(
                 { -0.25f, -0.375f, 0.0625f }, { 0.25f, 0.0f, -0.125f }, { 0.25f, 0.125f, 0.0625f });
-            ASSERT(m1.unchecked_inverse().approx_equal(result));
+            constexpr auto result = m1.unchecked_inverse();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
         {
-            constexpr nnm::Matrix3f result(
+            constexpr nnm::Matrix3f expected(
                 { -0.25f, -0.375f, 0.0625f }, { 0.25f, 0.0f, -0.125f }, { 0.25f, 0.125f, 0.0625f });
-            ASSERT(m1.inverse().has_value());
-            ASSERT(m1.inverse().value().approx_equal(result));
+            constexpr auto result = m1.inverse();
+            ASSERT(result.has_value());
+            ASSERT(result.value().approx_equal(expected));
             ASSERT_FALSE(nnm::Matrix3f::zero().inverse().has_value());
         }
 
@@ -4658,7 +4684,8 @@ inline void nnm_tests()
                 { { -0.254893f, -0.0345926f, 0.819299f },
                   { -0.559854f, -0.00455166f, 0.37096f },
                   { 0.270369f, 0.0509786f, -0.154756f } });
-            ASSERT(t.unchecked_inverse().approx_equal(expected));
+            constexpr auto result = t.unchecked_inverse();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
@@ -4668,7 +4695,8 @@ inline void nnm_tests()
                 { { -0.254893f, -0.0345926f, 0.819299f },
                   { -0.559854f, -0.00455166f, 0.37096f },
                   { 0.270369f, 0.0509786f, -0.154756f } });
-            ASSERT(t.inverse().has_value() && t.inverse().value().approx_equal(expected));
+            constexpr auto result = t.inverse();
+            ASSERT(result.has_value() && result.value().approx_equal(expected));
             ASSERT_FALSE(nnm::Transform2(nnm::Matrix3f::zero()).inverse().has_value());
         }
 
@@ -4956,7 +4984,8 @@ inline void nnm_tests()
                 { { -0.254893f, -0.0345926f, 0.819299f },
                   { -0.559854f, -0.00455166f, 0.37096f },
                   { 0.270369f, 0.0509786f, -0.154756f } });
-            ASSERT(b.unchecked_inverse().approx_equal(expected));
+            constexpr auto result = b.unchecked_inverse();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
@@ -4966,7 +4995,8 @@ inline void nnm_tests()
                 { { -0.254893f, -0.0345926f, 0.819299f },
                   { -0.559854f, -0.00455166f, 0.37096f },
                   { 0.270369f, 0.0509786f, -0.154756f } });
-            ASSERT(b.inverse().has_value() && b.inverse().value().approx_equal(expected));
+            constexpr auto result = b.inverse();
+            ASSERT(result.has_value() && result.value().approx_equal(expected));
             ASSERT_FALSE(nnm::Basis3(nnm::Matrix3f::zero()).inverse().has_value());
         }
 
@@ -5291,7 +5321,8 @@ inline void nnm_tests()
 
         test_section("cofactor_at");
         {
-            ASSERT(nnm::approx_equal(m1.cofactor_at(0, 0), 64.0f));
+            constexpr auto result = m1.cofactor_at(0, 0);
+            ASSERT(nnm::approx_equal(result, 64.0f));
             ASSERT(nnm::approx_equal(m1.cofactor_at(2, 1), -16.0f));
         }
 
@@ -5301,7 +5332,8 @@ inline void nnm_tests()
                                                { 56.0f, -16.0f, -80.0f, 54.0f },
                                                { 8.0f, -16.0f, -16.0f, 18.0f },
                                                { 24.0f, -16.0f, -16.0f, 14.0f } };
-            ASSERT(m1.cofactor().approx_equal(expected))
+            constexpr auto result = m1.cofactor();
+            ASSERT(result.approx_equal(expected))
         }
 
         test_section("transpose");
@@ -5320,7 +5352,8 @@ inline void nnm_tests()
                                                { -32.0f, -16.0f, -16.0f, -16.0f },
                                                { -96.0f, -80.0f, -16.0f, -16.0f },
                                                { 56.0f, 54.0f, 18.0f, 14.0f } };
-            ASSERT(m1.adjugate().approx_equal(expected));
+            constexpr auto result = m1.adjugate();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("unchecked_inverse");
@@ -5329,7 +5362,8 @@ inline void nnm_tests()
                                                { 0.5f, 0.25f, 0.25f, 0.25f },
                                                { 1.5f, 1.25f, 0.25f, 0.25f },
                                                { -0.875f, -0.84375f, -0.28125f, -0.21875f } };
-            ASSERT(m1.unchecked_inverse().approx_equal(expected));
+            constexpr auto result = m1.unchecked_inverse();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
@@ -5338,7 +5372,8 @@ inline void nnm_tests()
                                                { 0.5f, 0.25f, 0.25f, 0.25f },
                                                { 1.5f, 1.25f, 0.25f, 0.25f },
                                                { -0.875f, -0.84375f, -0.28125f, -0.21875f } };
-            ASSERT(m1.inverse().has_value() && m1.inverse().value().approx_equal(expected));
+            constexpr auto result = m1.inverse();
+            ASSERT(result.has_value() && result.value().approx_equal(expected));
             ASSERT_FALSE(nnm::Matrix4f::zero().inverse().has_value());
         }
 
@@ -5838,7 +5873,8 @@ inline void nnm_tests()
                   { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
                   { 0.0f, 0.0f, 0.5f, 0.0f },
                   { -0.33333333f, 1.33333333f, -3.0f, 1.0f } });
-            ASSERT(t1.unchecked_inverse().approx_equal(expected));
+            constexpr auto result = t1.unchecked_inverse();
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("inverse");
@@ -5848,7 +5884,8 @@ inline void nnm_tests()
                   { 0.16666666f, 0.3333333f, -0.75f, 0.0f },
                   { 0.0f, 0.0f, 0.5f, 0.0f },
                   { -0.33333333f, 1.33333333f, -3.0f, 1.0f } });
-            ASSERT(t1.inverse().has_value() && t1.inverse().value().approx_equal(expected));
+            constexpr auto result = t1.inverse();
+            ASSERT(result.has_value() && result.value().approx_equal(expected));
             ASSERT_FALSE(nnm::Transform3(nnm::Matrix4f::zero()).inverse().has_value());
         }
 

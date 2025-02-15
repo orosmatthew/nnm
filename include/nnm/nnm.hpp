@@ -4043,7 +4043,7 @@ public:
      * @param other Other vector.
      * @return Resulting 4x4 matrix.
      */
-    [[nodiscard]] Matrix4<Real> outer(const Vector4& other) const;
+    [[nodiscard]] constexpr Matrix4<Real> outer(const Vector4& other) const;
 
     /**
      * Inverse vector.
@@ -4069,7 +4069,7 @@ public:
      * @param by Transformation matrix to transform by.
      * @return Result.
      */
-    [[nodiscard]] Vector4 transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const;
+    [[nodiscard]] constexpr Vector4 transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const;
 
     /**
      * Maximum component.
@@ -4093,7 +4093,7 @@ public:
      * Index of maximum component.
      * @return Index.
      */
-    [[nodiscard]] uint8_t max_index() const
+    [[nodiscard]] constexpr uint8_t max_index() const
     {
         uint8_t max_axis = 0;
         if (y > at(max_axis)) {
@@ -4112,7 +4112,7 @@ public:
      * Index of minimum component.
      * @return Index.
      */
-    [[nodiscard]] uint8_t min_index() const
+    [[nodiscard]] constexpr uint8_t min_index() const
     {
         uint8_t min_axis = 0;
         if (y < at(min_axis)) {
@@ -4386,7 +4386,7 @@ public:
      * @param matrix 4x4 matrix.
      * @return Result.
      */
-    [[nodiscard]] Vector4 operator*(const Matrix4<Real>& matrix) const;
+    [[nodiscard]] constexpr Vector4 operator*(const Matrix4<Real>& matrix) const;
 
     /**
      * Component-wise multiplication with value.
@@ -4417,7 +4417,7 @@ public:
      * @param other Other vector.
      * @return Result.
      */
-    [[nodiscard]] Vector4 constexpr operator/(const Vector4& other) const
+    [[nodiscard]] constexpr Vector4 operator/(const Vector4& other) const
     {
         return { x / other.x, y / other.y, z / other.z, w / other.w };
     }
@@ -4427,7 +4427,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector4& operator/=(const Vector4& other)
+    constexpr Vector4& operator/=(const Vector4& other)
     {
         x /= other.x;
         y /= other.y;
@@ -4514,7 +4514,7 @@ public:
  * @return Result.
  */
 template <typename Real>
-Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
+constexpr Vector4<Real> operator*(const Real value, const Vector4<Real>& vector)
 {
     return { value * vector.x, value * vector.y, value * vector.z, value * vector.w };
 }
@@ -4527,7 +4527,7 @@ Vector4<Real> constexpr operator*(const Real value, const Vector4<Real>& vector)
  * @return Result.
  */
 template <typename Real>
-Vector4<Real> constexpr operator/(const Real value, const Vector4<Real>& vector)
+constexpr Vector4<Real> operator/(const Real value, const Vector4<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z, value / vector.w };
 }
@@ -4615,7 +4615,7 @@ public:
     {
         const Vector3<Real> norm = axis.normalize();
         const Real half_sin = sin(angle / static_cast<Real>(2));
-        Quaternion<Real> result;
+        Quaternion result;
         result.x = norm.x * half_sin;
         result.y = norm.y * half_sin;
         result.z = norm.z * half_sin;
@@ -4653,7 +4653,8 @@ public:
      * @param to Quaternion to.
      * @return Resulting normalized, three-dimensional axis.
      */
-    [[nodiscard]] Vector3<Real> axis(const Quaternion& to) const
+    // TODO: test
+    [[nodiscard]] constexpr Vector3<Real> axis(const Quaternion& to) const
     {
         const Vector3<Real> cross
             = Vector4<Real>::from_quaternion(*this).xyz().cross(Vector4<Real>::from_quaternion(to).xyz());
@@ -4756,7 +4757,7 @@ public:
      * @param by Quaternion to rotate by.
      * @return Result.
      */
-    [[nodiscard]] Quaternion rotate_quaternion(const Quaternion& by) const
+    [[nodiscard]] constexpr Quaternion rotate_quaternion(const Quaternion& by) const
     {
         return by * *this;
     }
@@ -4777,10 +4778,21 @@ public:
      * @param index Index.
      * @return Constant reference.
      */
-    [[nodiscard]] const Real& at(const uint8_t index) const
+    [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
-        return *(&x + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4788,10 +4800,21 @@ public:
      * @param index Index.
      * @return Reference.
      */
-    Real& at(const uint8_t index)
+    constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
-        return *(&x + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4799,10 +4822,21 @@ public:
      * @param index Index.
      * @return Result.
      */
-    [[nodiscard]] const Real& operator[](const uint8_t index) const
+    [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
-        return *(&x + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4810,10 +4844,21 @@ public:
      * @param index Index.
      * @return Result.
      */
-    [[nodiscard]] Real& operator[](const uint8_t index)
+    [[nodiscard]] constexpr Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Quaternion", index <= 3);
-        return *(&x + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        case 3:
+            return w;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -4856,7 +4901,7 @@ public:
      * @param other Other quaternion.
      * @return Reference to this modified quaternion.
      */
-    Quaternion& operator*=(const Quaternion& other)
+    constexpr Quaternion& operator*=(const Quaternion& other)
     {
         *this = *this * other;
         return *this;
@@ -4867,7 +4912,7 @@ public:
      * @param other Other quaternion.
      * @return True if less than, false otherwise.
      */
-    [[nodiscard]] bool operator<(const Quaternion& other) const
+    [[nodiscard]] constexpr bool operator<(const Quaternion& other) const
     {
         return Vector4<Real>::from_quaternion(*this) < Vector4<Real>::from_quaternion(other);
     }
@@ -5023,17 +5068,17 @@ public:
      * @param row Row
      * @return Result.
      */
-    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix2", column <= 1 && row <= 1);
-        return pow(static_cast<Real>(-1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return ((column + row) % 2 == 0 ? static_cast<Real>(1) : static_cast<Real>(-1)) * minor_at(column, row);
     }
 
     /**
      * Cofactor matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 cofactor() const
+    [[nodiscard]] constexpr Matrix2 cofactor() const
     {
         return { { cofactor_at(0, 0), cofactor_at(0, 1) }, { cofactor_at(1, 0), cofactor_at(1, 1) } };
     }
@@ -5051,7 +5096,7 @@ public:
      * Adjugate matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 adjugate() const
+    [[nodiscard]] constexpr Matrix2 adjugate() const
     {
         return cofactor().transpose();
     }
@@ -5060,7 +5105,7 @@ public:
      * Inverse without checking if the matrix is singular first.
      * @return Result.
      */
-    [[nodiscard]] Matrix2 unchecked_inverse() const
+    [[nodiscard]] constexpr Matrix2 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
@@ -5069,7 +5114,7 @@ public:
      * Inverse that returns null if the matrix does not have an inverse.
      * @return The inverse if there is one, null if not.
      */
-    [[nodiscard]] std::optional<Matrix2> inverse() const
+    [[nodiscard]] constexpr std::optional<Matrix2> inverse() const
     {
         const Real det = determinant();
         if (det == static_cast<Real>(0)) {
@@ -5557,7 +5602,7 @@ public:
      * Inverse without checking if the basis is valid first.
      * @return Result.
      */
-    [[nodiscard]] Basis2 unchecked_inverse() const
+    [[nodiscard]] constexpr Basis2 unchecked_inverse() const
     {
         return Basis2(matrix.unchecked_inverse());
     }
@@ -5566,7 +5611,7 @@ public:
      * Inverse which returns null if the basis is invalid.
      * @return Inverse if there is one, null if not.
      */
-    [[nodiscard]] std::optional<Basis2> inverse() const
+    [[nodiscard]] constexpr std::optional<Basis2> inverse() const
     {
         if (valid()) {
             return Basis2(matrix.unchecked_inverse());
@@ -5996,17 +6041,17 @@ public:
      * @param row
      * @return Result.
      */
-    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2 && row <= 2);
-        return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return ((column + row) % 2 == 0 ? static_cast<Real>(1) : static_cast<Real>(-1)) * minor_at(column, row);
     }
 
     /**
      * Cofactor matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 cofactor() const
+    [[nodiscard]] constexpr Matrix3 cofactor() const
     {
         Matrix3 result;
         for (uint8_t c = 0; c < 3; ++c) {
@@ -6030,7 +6075,7 @@ public:
      * Adjugate matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 adjugate() const
+    [[nodiscard]] constexpr Matrix3 adjugate() const
     {
         return cofactor().transpose();
     }
@@ -6039,7 +6084,7 @@ public:
      * Inverse without first checking if the matrix is singular.
      * @return Result.
      */
-    [[nodiscard]] Matrix3 unchecked_inverse() const
+    [[nodiscard]] constexpr Matrix3 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
@@ -6048,7 +6093,7 @@ public:
      * Inverse which returns null if there is no inverse.
      * @return Inverse if there is one, null if not.
      */
-    [[nodiscard]] std::optional<Matrix3> inverse() const
+    [[nodiscard]] constexpr std::optional<Matrix3> inverse() const
     {
         const Real det = determinant();
         if (det == static_cast<Real>(0)) {
@@ -6577,7 +6622,7 @@ public:
      * Inverse without checking if there is one.
      * @return Result.
      */
-    [[nodiscard]] Transform2 unchecked_inverse() const
+    [[nodiscard]] constexpr Transform2 unchecked_inverse() const
     {
         return Transform2(matrix.unchecked_inverse());
     }
@@ -6586,7 +6631,7 @@ public:
      * Inverse which returns null if there is none.
      * @return Inverse if there is one, null if not.
      */
-    [[nodiscard]] std::optional<Transform2> inverse() const
+    [[nodiscard]] constexpr std::optional<Transform2> inverse() const
     {
         if (valid()) {
             return unchecked_inverse();
@@ -7015,7 +7060,7 @@ public:
      * Inverse without checking if the basis is valid first.
      * @return Result.
      */
-    [[nodiscard]] Basis3 unchecked_inverse() const
+    [[nodiscard]] constexpr Basis3 unchecked_inverse() const
     {
         return Basis3(matrix.unchecked_inverse());
     }
@@ -7024,7 +7069,7 @@ public:
      * Inverse of the basis.
      * @return Inverse basis if the basis is valid or null otherwise.
      */
-    [[nodiscard]] std::optional<Basis3> inverse() const
+    [[nodiscard]] constexpr std::optional<Basis3> inverse() const
     {
         if (valid()) {
             return unchecked_inverse();
@@ -7534,17 +7579,17 @@ public:
      * @param row Index of row.
      * @return Result.
      */
-    [[nodiscard]] Real cofactor_at(const uint8_t column, const uint8_t row) const
+    [[nodiscard]] constexpr Real cofactor_at(const uint8_t column, const uint8_t row) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Matrix4", column <= 3 && row <= 3);
-        return pow(-static_cast<Real>(1), static_cast<Real>(column + 1 + row + 1)) * minor_at(column, row);
+        return ((column + row) % 2 == 0 ? static_cast<Real>(1) : static_cast<Real>(-1)) * minor_at(column, row);
     }
 
     /**
      * Cofactor matrix which is a matrix where each element is the cofactor at that element.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 cofactor() const
+    [[nodiscard]] constexpr Matrix4 cofactor() const
     {
         Matrix4 result;
         for (uint8_t c = 0; c < 4; ++c) {
@@ -7571,7 +7616,7 @@ public:
      * Adjugate matrix.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 adjugate() const
+    [[nodiscard]] constexpr Matrix4 adjugate() const
     {
         return cofactor().transpose();
     }
@@ -7580,7 +7625,7 @@ public:
      * Inverse matrix without first checking if a valid inverse if possible.
      * @return Result.
      */
-    [[nodiscard]] Matrix4 unchecked_inverse() const
+    [[nodiscard]] constexpr Matrix4 unchecked_inverse() const
     {
         return adjugate() / determinant();
     }
@@ -7589,7 +7634,7 @@ public:
      * Inverse matrix.
      * @return Inverse matrix if one exists, null otherwise.
      */
-    [[nodiscard]] std::optional<Matrix4> inverse() const
+    [[nodiscard]] constexpr std::optional<Matrix4> inverse() const
     {
         const Real det = determinant();
         if (det == static_cast<Real>(0)) {
@@ -8328,7 +8373,7 @@ public:
      * Inverse of the transform without checking if a valid inverse is possible.
      * @return Result.
      */
-    [[nodiscard]] Transform3 unchecked_inverse() const
+    [[nodiscard]] constexpr Transform3 unchecked_inverse() const
     {
         return Transform3(matrix.unchecked_inverse());
     }
@@ -8337,7 +8382,7 @@ public:
      * Inverse of the transform.
      * @return Inverse if one exists, null otherwise.
      */
-    [[nodiscard]] std::optional<Transform3> inverse() const
+    [[nodiscard]] constexpr std::optional<Transform3> inverse() const
     {
         if (valid()) {
             return unchecked_inverse();
@@ -8921,7 +8966,7 @@ constexpr Vector4<Real> Vector4<Real>::from_quaternion(const Quaternion<Real>& q
 }
 
 template <typename Real>
-Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
+constexpr Matrix4<Real> Vector4<Real>::outer(const Vector4& other) const
 {
     Matrix4<Real> result;
     for (uint8_t c = 0; c < 4; ++c) {
@@ -8939,13 +8984,13 @@ constexpr Vector4<Real> Vector4<Real>::transform(const Transform3<Real>& by) con
 }
 
 template <typename Real>
-Vector4<Real> Vector4<Real>::transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const
+constexpr Vector4<Real> Vector4<Real>::transform_at(const Vector3<Real>& origin, const Transform3<Real>& by) const
 {
     return (*this - Vector4 { origin, static_cast<Real>(0) }).transform(by) + Vector4 { origin, static_cast<Real>(0) };
 }
 
 template <typename Real>
-Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
+constexpr Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) const
 {
     auto result = zero();
     for (uint8_t c = 0; c < 4; ++c) {
