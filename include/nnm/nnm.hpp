@@ -4653,12 +4653,14 @@ public:
      * @param to Quaternion to.
      * @return Resulting normalized, three-dimensional axis.
      */
-    // TODO: test
-    [[nodiscard]] constexpr Vector3<Real> axis(const Quaternion& to) const
+    [[nodiscard]] Vector3<Real> axis_to(const Quaternion& to) const
     {
-        const Vector3<Real> cross
-            = Vector4<Real>::from_quaternion(*this).xyz().cross(Vector4<Real>::from_quaternion(to).xyz());
-        return cross.normalize();
+        const Quaternion relative = (to * inverse()).normalize();
+        const Real sin_half_angle = sqrt(static_cast<Real>(1) - sqrd(relative.w));
+        if (sin_half_angle == static_cast<Real>(0)) {
+            return Vector3<Real>::axis_x();
+        }
+        return Vector4<Real>::from_quaternion(relative).xyz() / sin_half_angle;
     }
 
     /**
@@ -4666,10 +4668,11 @@ public:
      * @param to Quaternion to.
      * @return Resulting angle in radians.
      */
-    [[nodiscard]] Real angle(const Quaternion& to) const
+    [[nodiscard]] Real angle_to(const Quaternion& to) const
     {
-        return static_cast<Real>(2)
-            * acos(Vector4<Real>::from_quaternion(*this).dot(Vector4<Real>::from_quaternion(to)));
+        Real dot = Vector4<Real>::from_quaternion(*this).dot(Vector4<Real>::from_quaternion(to));
+        dot = clamp(dot, static_cast<Real>(-1), static_cast<Real>(1));
+        return static_cast<Real>(2) * acos(dot);
     }
 
     /**

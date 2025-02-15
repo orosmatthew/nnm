@@ -3541,6 +3541,26 @@ inline void nnm_tests()
             ASSERT(q.normalize().approx_equal({ 0.182574f, -0.365148f, 0.547723f, -0.730297f }));
         }
 
+        test_section("axis_to");
+        {
+            const auto q1 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_x(), 0.0f);
+            const auto q2 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_x(), nnm::pi<float>() / 4.0f);
+            ASSERT(q1.axis_to(q2).approx_equal(nnm::Vector3f::axis_x()));
+            const auto q3 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_y(), nnm::pi<float>() / 9.0f);
+            const auto q4 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_y(), -nnm::pi<float>() / 3.0f);
+            ASSERT(q3.axis_to(q4).approx_equal(-nnm::Vector3f::axis_y()));
+        }
+
+        test_section("angle_to");
+        {
+            const auto q1 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_x(), 0.0f);
+            const auto q2 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_x(), nnm::pi<float>() / 4.0f);
+            ASSERT(nnm::approx_equal(q1.angle_to(q2), nnm::pi<float>() / 4.0f));
+            const auto q3 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_y(), nnm::pi<float>() / 9.0f);
+            const auto q4 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_y(), -nnm::pi<float>() / 3.0f);
+            ASSERT(nnm::approx_equal(q3.angle_to(q4), 4.0f * nnm::pi<float>() / 9.0f));
+        }
+
         test_section("axis");
         {
             const auto axis = nnm::Vector3(2.0f, -1.0f, 0.5f).normalize();
