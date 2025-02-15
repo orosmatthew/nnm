@@ -51,7 +51,4 @@ inline void test_failed(const char* file, const int line)
     if (expression)              \
         test_failed(__FILE__, __LINE__);
 
-#define ASSERT_CONSTEXPR(expr) ;
-#define RUN_CONSTEXPR(expr) ;
-
 #endif

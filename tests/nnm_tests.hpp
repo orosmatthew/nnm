@@ -1144,12 +1144,11 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v4_copy(1.0f, 2.0f);
                 v4_copy += v5;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(4.0f, 6.0f));
         }
 
@@ -1161,12 +1160,11 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v5_copy = v5;
                 v5_copy -= v4;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(2.0f, 2.0f))
         }
 
@@ -1178,12 +1176,11 @@ inline void nnm_tests()
 
         test_section("operator*=(const Vector2&)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v4_copy = v4;
                 v4_copy *= v5;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(3.0f, 8.0f));
         }
 
@@ -1208,12 +1205,11 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v4_copy = v4;
                 v4_copy *= 2.0f;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(2.0f, 4.0f));
         }
 
@@ -1225,12 +1221,11 @@ inline void nnm_tests()
 
         test_section("operator/=(const Vector2&)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v5_copy = v5;
                 v5_copy /= v4;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(3.0f, 2.0f));
         }
 
@@ -1248,12 +1243,11 @@ inline void nnm_tests()
 
         test_section("operator/=(float)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 nnm::Vector2 v5_copy = v5;
                 v5_copy /= 2.0f;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2(1.5f, 2.0f));
         }
 
@@ -1536,12 +1530,11 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v4_copy = v4;
                 v4_copy += v5;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(4, 6));
         }
 
@@ -1553,12 +1546,11 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v5_copy = v5;
                 v5_copy -= v4;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(2, 2));
         }
 
@@ -1570,12 +1562,11 @@ inline void nnm_tests()
 
         test_section("operator*=(const Vector2i&)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v4_copy = v4;
                 v4_copy *= v5;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(3, 8));
         }
 
@@ -1593,12 +1584,11 @@ inline void nnm_tests()
 
         test_section("operator*=(int)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v4_copy = v4;
                 v4_copy *= 2;
                 return v4_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(2, 4));
         }
 
@@ -1610,12 +1600,11 @@ inline void nnm_tests()
 
         test_section("operator/=(const Vector2i&)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v5_copy = v5;
                 v5_copy /= v4;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(3, 2));
         }
 
@@ -1633,12 +1622,11 @@ inline void nnm_tests()
 
         test_section("operator/=(int)");
         {
-            constexpr auto c = [=] {
+            constexpr auto result = [=] {
                 auto v5_copy = v5;
                 v5_copy /= 2;
                 return v5_copy;
-            };
-            constexpr auto result = c();
+            }();
             ASSERT(result == nnm::Vector2i(1, 2));
         }
 
@@ -1650,9 +1638,12 @@ inline void nnm_tests()
 
         test_section("operator%=(const Vector2i&)");
         {
-            auto v4_copy = v4;
-            RUN_CONSTEXPR(v4_copy %= v5);
-            ASSERT(v4_copy == nnm::Vector2i(1, 2));
+            constexpr auto result = [=] {
+                auto v4_copy = v4;
+                v4_copy %= v5;
+                return v4_copy;
+            }();
+            ASSERT(result == nnm::Vector2i(1, 2));
         }
 
         test_section("operator%(int)");
@@ -1669,9 +1660,12 @@ inline void nnm_tests()
 
         test_section("operator%=(int)");
         {
-            auto v4_copy = v4;
-            RUN_CONSTEXPR(v4_copy %= 2);
-            ASSERT(v4_copy == nnm::Vector2i(1, 0));
+            constexpr auto result = [=] {
+                auto v4_copy = v4;
+                v4_copy %= 2;
+                return v4_copy;
+            }();
+            ASSERT(result == nnm::Vector2i(1, 0));
         }
 
         test_section("operator+");
@@ -1706,7 +1700,7 @@ inline void nnm_tests()
         test_section("hash");
         {
             constexpr nnm::Vector2i v7(1, 2);
-            RUN_CONSTEXPR(nnm::Vector2ii::Hash()(v7));
+            const auto _ = nnm::Vector2ii::Hash()(v7);
         }
     }
 
@@ -2170,64 +2164,74 @@ inline void nnm_tests()
         {
             constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
             constexpr nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
-            ASSERT_CONSTEXPR(v1.scale(v2).approx_equal({ -4.0f, 1.0f, -30.0f }));
+            constexpr auto result = v1.scale(v2);
+            ASSERT(result.approx_equal({ -4.0f, 1.0f, -30.0f }));
         }
 
         test_section("scale_at");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
             constexpr nnm::Vector3 v2 { -4.0f, 0.5f, 10.0f };
-            ASSERT_CONSTEXPR(v1.scale_at(origin, v2).approx_equal({ -19.0f, 1.75f, -120.0f }));
+            constexpr auto result = v1.scale_at(origin, v2);
+            ASSERT(result.approx_equal({ -19.0f, 1.75f, -120.0f }));
         }
 
         test_section("shear_x");
         {
             constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-            ASSERT_CONSTEXPR(v1.shear_x(0.5f, -0.5f).approx_equal({ 1.0f, 2.5f, -3.5f }));
+            constexpr auto result = v1.shear_x(0.5f, -0.5f);
+            ASSERT(result.approx_equal({ 1.0f, 2.5f, -3.5f }));
         }
 
         test_section("shear_x_at");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT_CONSTEXPR(v1.shear_x_at(origin, 0.5f, -0.5f).approx_equal({ 1.0f, 4.0f, -5.0f }));
+            constexpr auto result = v1.shear_x_at(origin, 0.5f, -0.5f);
+            ASSERT(result.approx_equal({ 1.0f, 4.0f, -5.0f }));
         }
 
         test_section("shear_y");
         {
             constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-            ASSERT_CONSTEXPR(v1.shear_y(0.5f, -0.5f).approx_equal({ 2.0f, 2.0f, -4.0f }));
+            constexpr auto result = v1.shear_y(0.5f, -0.5f);
+            ASSERT(result.approx_equal({ 2.0f, 2.0f, -4.0f }));
         }
 
         test_section("shear_y_at");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT_CONSTEXPR(v1.shear_y_at(origin, 0.5f, -0.5f).approx_equal({ 1.25f, 2.0f, -3.25f }));
+            constexpr auto result = v1.shear_y_at(origin, 0.5f, -0.5f);
+            ASSERT(result.approx_equal({ 1.25f, 2.0f, -3.25f }));
         }
 
         test_section("shear_z");
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT_CONSTEXPR(v1.shear_z(0.5f, -0.5f).approx_equal({ -0.5f, 3.5f, -3.0f }));
+            constexpr auto result = v1.shear_z(0.5f, -0.5f);
+            ASSERT(result.approx_equal({ -0.5f, 3.5f, -3.0f }));
         }
 
         test_section("shear_z_at");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-            ASSERT_CONSTEXPR(v1.shear_z_at(origin, 0.5f, -0.5f).approx_equal({ -5.5f, 8.5f, -3.0f }));
+            constexpr auto result = v1.shear_z_at(origin, 0.5f, -0.5f);
+            ASSERT(result.approx_equal({ -5.5f, 8.5f, -3.0f }));
         }
 
         test_section("transform(const Basis3&)");
         {
             constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
             constexpr nnm::Basis3f basis({ { 1.0f, -3.0f, -2.0f }, { 4.0f, -0.5f, 0.78f }, { 0.0f, 2.8f, 10.0f } });
-            ASSERT_CONSTEXPR(v1.transform(basis).approx_equal({ 9.0f, -12.4f, -30.44f }));
+            constexpr auto result = v1.transform(basis);
+            ASSERT(result.approx_equal({ 9.0f, -12.4f, -30.44f }));
         }
 
         test_section("transform_at(const Vector3&, const Basis3&)");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
             constexpr nnm::Basis3f basis { { { 1.0f, -3.0f, -2.0f }, { 4.0f, -0.5f, 0.78f }, { 0.0f, 2.8f, 10.0f } } };
-            ASSERT_CONSTEXPR(v1.transform_at(origin, basis).approx_equal({ 3.0f, -47.15f, -127.61f }));
+            constexpr auto result = v1.transform_at(origin, basis);
+            ASSERT(result.approx_equal({ 3.0f, -47.15f, -127.61f }));
         }
 
         test_section("transform(const Transform2&)");
@@ -2236,7 +2240,7 @@ inline void nnm_tests()
             constexpr nnm::Transform2f transform(
                 { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } });
             constexpr auto result = v1.transform(transform);
-            ASSERT_CONSTEXPR(result.approx_equal({ 26.0f, -8.8f, 1.0f }));
+            ASSERT(result.approx_equal({ 26.0f, -8.8f, 1.0f }));
         }
 
         test_section("transform_at(const Vector2&, const Transform2&)");
@@ -2245,7 +2249,8 @@ inline void nnm_tests()
             constexpr nnm::Transform2f transform {
                 { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } }
             };
-            ASSERT_CONSTEXPR(v1.transform_at({ -10.0f, 0.5f }, transform).approx_equal({ 28.0f, 10.9f, 29.5f }));
+            constexpr auto result = v1.transform_at({ -10.0f, 0.5f }, transform);
+            ASSERT(result.approx_equal({ 28.0f, 10.9f, 29.5f }));
         }
 
         test_section("transform(const Transform3&, Real)");
@@ -2256,7 +2261,8 @@ inline void nnm_tests()
                   { -10.0f, 0.5f, 20.6f, 0.0f },
                   { 1.0f, 3.0f, 3.3f, -1.0f },
                   { 9.9f, -7.54f, 20.0f, 0.1f } });
-            ASSERT_CONSTEXPR(v1.transform(transform).approx_equal({ 45.9f, 6.96f, -34.6f }));
+            constexpr auto result = v1.transform(transform);
+            ASSERT(result.approx_equal({ 45.9f, 6.96f, -34.6f }));
             ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
         }
 
@@ -2267,7 +2273,8 @@ inline void nnm_tests()
                                                      { -10.0f, 0.5f, 20.6f, 0.0f },
                                                      { 1.0f, 3.0f, 3.3f, -1.0f },
                                                      { 9.9f, -7.54f, 20.0f, 0.1f } } };
-            ASSERT_CONSTEXPR(v1.transform_at(origin, transform).approx_equal({ 50.9f, -16.29f, -97.5f }));
+            constexpr auto result = v1.transform_at(origin, transform);
+            ASSERT(result.approx_equal({ 50.9f, -16.29f, -97.5f }));
             ASSERT(v1.transform_at(origin, transform, -2.4f).approx_equal({ 17.24f, 9.346f, -165.5f }));
         }
 
@@ -2402,9 +2409,12 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            auto v1_copy = v1;
-            RUN_CONSTEXPR(v1_copy += v2);
-            ASSERT(v1_copy == nnm::Vector3(4.0f, 6.0f, 1.0f));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy += v2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3(4.0f, 6.0f, 1.0f));
         }
 
         test_section("operator-(const Vector3&)");
@@ -2415,8 +2425,12 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy -= v1) == nnm::Vector3(2.0f, 2.0f, -5.0f));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy -= v1;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3(2.0f, 2.0f, -5.0f));
         }
 
         test_section("operator*(const Vector3&)");
@@ -2427,14 +2441,19 @@ inline void nnm_tests()
 
         test_section("operator*=(const Vector3&)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy *= v2) == nnm::Vector3(3.0f, 8.0f, -6.0f));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= v2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3(3.0f, 8.0f, -6.0f));
         }
 
         test_section("operator*(const Matrix3&)");
         {
-            nnm::Matrix3f matrix { { 1.0f, -3.0f, 4.0f }, { -1.6f, 0.5f, 20.0f }, { 0.0f, 2.0f, 1.0f } };
-            ASSERT_CONSTEXPR((v2 * matrix).approx_equal({ -17.0f, -42.8f, 6.0f }))
+            constexpr nnm::Matrix3f matrix { { 1.0f, -3.0f, 4.0f }, { -1.6f, 0.5f, 20.0f }, { 0.0f, 2.0f, 1.0f } };
+            constexpr auto result = v2 * matrix;
+            ASSERT(result.approx_equal({ -17.0f, -42.8f, 6.0f }))
         }
 
         test_section("operator*(float)");
@@ -2451,8 +2470,12 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy *= 2.0f) == nnm::Vector3(2.0f, 4.0f, 6.0f));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= 2.0f;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3(2.0f, 4.0f, 6.0f));
         }
 
         test_section("operator/(const Vector3&)");
@@ -2463,8 +2486,12 @@ inline void nnm_tests()
 
         test_section("operator/=(const Vector3&)");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy /= v1) == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= v1;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3(3.0f, 2.0f, -2.0f / 3.0f));
         }
 
         test_section("operator/(float)");
@@ -2481,8 +2508,12 @@ inline void nnm_tests()
 
         test_section("operator/=(float)");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy /= 2.0) == nnm::Vector3(1.5f, 2.0f, -1.0f));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= 2.0f;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3(1.5f, 2.0f, -1.0f));
         }
 
         test_section("operator+");
@@ -2708,7 +2739,8 @@ inline void nnm_tests()
         test_section("max_index");
         {
             constexpr nnm::Vector3i v1(1, -2, 3);
-            ASSERT_CONSTEXPR(v1.max_index() == 2);
+            constexpr auto result = v1.max_index();
+            ASSERT(result == 2);
             nnm::Vector3i v2(-1, 2, -3);
             ASSERT(v2.max_index() == 1);
         }
@@ -2716,7 +2748,8 @@ inline void nnm_tests()
         test_section("min_index");
         {
             constexpr nnm::Vector3i v1(1, -2, 3);
-            ASSERT_CONSTEXPR(v1.min_index() == 1);
+            constexpr auto result = v1.min_index();
+            ASSERT(result == 1);
             nnm::Vector3i v2(-1, 2, -3);
             ASSERT(v2.min_index() == 2);
         }
@@ -2743,15 +2776,17 @@ inline void nnm_tests()
         test_section("at");
         {
             constexpr nnm::Vector3i v(1, -2, 3);
-            ASSERT_CONSTEXPR(v.at(0) == 1);
+            constexpr auto result = v.at(0);
+            ASSERT(result == 1);
             ASSERT(v.at(1) == -2);
             ASSERT(v.at(2) == 3);
         }
 
         test_section("operator[]");
         {
-            nnm::Vector3i v(1, -2, 3);
-            ASSERT_CONSTEXPR(v[0] == 1);
+            constexpr nnm::Vector3i v(1, -2, 3);
+            constexpr auto result = v[0];
+            ASSERT(result == 1);
             ASSERT(v[1] == -2);
             ASSERT(v[2] == 3);
         }
@@ -2782,8 +2817,12 @@ inline void nnm_tests()
 
         test_section("operator+=(const Vector3i&)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy += v2) == nnm::Vector3i(-2, 6, 97));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy += v2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(-2, 6, 97));
         }
 
         test_section("operator-(const Vector3i&)");
@@ -2794,8 +2833,12 @@ inline void nnm_tests()
 
         test_section("operator-=(const Vector3i&)");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy -= v1) == nnm::Vector3i(-4, 2, 103));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy -= v1;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(-4, 2, 103));
         }
 
         test_section("operator*(const Vector3i&)");
@@ -2806,8 +2849,12 @@ inline void nnm_tests()
 
         test_section("operator*=(const Vector3i&)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy *= v2) == nnm::Vector3i(-3, 8, -300));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= v2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(-3, 8, -300));
         }
 
         test_section("operator*(int)");
@@ -2824,8 +2871,12 @@ inline void nnm_tests()
 
         test_section("operator*=(int)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy *= 2) == nnm::Vector3i(2, 4, -6));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= 2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(2, 4, -6));
         }
 
         test_section("operator/(const Vector3i&)");
@@ -2836,8 +2887,12 @@ inline void nnm_tests()
 
         test_section("operator/=(const Vector3i&)");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy /= v1) == nnm::Vector3i(-3, 2, -33));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= v1;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(-3, 2, -33));
         }
 
         test_section("operator/(int)");
@@ -2854,8 +2909,12 @@ inline void nnm_tests()
 
         test_section("operator/=(int)");
         {
-            auto v2_copy = v2;
-            ASSERT_CONSTEXPR((v2_copy /= 2) == nnm::Vector3i(-1, 2, 50));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= 2;
+                return v2_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(-1, 2, 50));
         }
 
         test_section("operator%(const Vector3i&)");
@@ -2866,8 +2925,12 @@ inline void nnm_tests()
 
         test_section("operator%=(const Vector3i&)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy %= v2) == nnm::Vector3i(1, 2, -3));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy %= v2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(1, 2, -3));
         }
 
         test_section("operator%(int)");
@@ -2884,8 +2947,12 @@ inline void nnm_tests()
 
         test_section("operator%=(int)");
         {
-            auto v1_copy = v1;
-            ASSERT_CONSTEXPR((v1_copy %= 2) == nnm::Vector3i(1, 0, -1));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy %= 2;
+                return v1_copy;
+            }();
+            ASSERT(result == nnm::Vector3i(1, 0, -1));
         }
 
         test_section("operator+");
@@ -2902,7 +2969,8 @@ inline void nnm_tests()
 
         test_section("operator<");
         {
-            ASSERT_CONSTEXPR(v2 < v1);
+            constexpr auto result = v2 < v1;
+            ASSERT(result);
             ASSERT_FALSE(v1 < v2);
         }
 
@@ -2916,7 +2984,7 @@ inline void nnm_tests()
         test_section("hash");
         {
             constexpr nnm::Vector3i v { 1, -2, 3 };
-            RUN_CONSTEXPR(nnm::Vector3ii::Hash()(v));
+            const auto _ = nnm::Vector3ii::Hash()(v);
         }
     }
 
@@ -3142,12 +3210,13 @@ inline void nnm_tests()
 
         test_section("transform");
         {
-            nnm::Transform3f transform(
+            constexpr nnm::Transform3f transform(
                 { { 1.0f, 2.0f, -3.0f, 4.0f },
                   { -10.0f, 0.5f, 20.6f, 0.0f },
                   { 1.0f, 3.0f, 3.3f, -1.0f },
                   { 9.9f, -7.54f, 20.0f, 0.1f } });
-            ASSERT_CONSTEXPR(v1.transform(transform).approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
+            constexpr auto result = v1.transform(transform);
+            ASSERT(result.approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
         }
 
         test_section("transform_at");
@@ -3268,8 +3337,12 @@ inline void nnm_tests()
 
         test_section("operator+=(const Vector4&)");
         {
-            auto v1_copy = v1;
-            ASSERT((v1_copy += v2).approx_equal({ 3.0f, 7.0f, -5.0f, 5.5f }));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy += v2;
+                return v1_copy;
+            }();
+            ASSERT(result.approx_equal({ 3.0f, 7.0f, -5.0f, 5.5f }));
         }
 
         test_section("operator-(const Vector4&)");
@@ -3280,8 +3353,12 @@ inline void nnm_tests()
 
         test_section("operator-=(const Vector4&)");
         {
-            auto v1_copy = v1;
-            ASSERT((v1_copy -= v2).approx_equal({ -5.0f, -3.0f, -1.0f, 2.5f }));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy -= v2;
+                return v1_copy;
+            }();
+            ASSERT(result.approx_equal({ -5.0f, -3.0f, -1.0f, 2.5f }));
         }
 
         test_section("operator*(const Vector4&)");
@@ -3292,8 +3369,12 @@ inline void nnm_tests()
 
         test_section("operator*=(const Vector4&)");
         {
-            auto v1_copy = v1;
-            ASSERT((v1_copy *= v2).approx_equal({ -4.0f, 10.0f, 6.0f, 6.0f }));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= v2;
+                return v1_copy;
+            }();
+            ASSERT(result.approx_equal({ -4.0f, 10.0f, 6.0f, 6.0f }));
         }
 
         test_section("operator*(const Matrix4&)");
@@ -3319,8 +3400,12 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            auto v1_copy = v1;
-            ASSERT((v1_copy *= 2.0f).approx_equal({ -2.0f, 4.0f, -6.0f, 8.0f }));
+            constexpr auto result = [=] {
+                auto v1_copy = v1;
+                v1_copy *= 2.0f;
+                return v1_copy;
+            }();
+            ASSERT(result.approx_equal({ -2.0f, 4.0f, -6.0f, 8.0f }));
         }
 
         test_section("operator/(const Vector4&)");
@@ -3343,8 +3428,12 @@ inline void nnm_tests()
 
         test_section("operator/=(float)");
         {
-            auto v2_copy = v2;
-            ASSERT((v2_copy /= 2.0f).approx_equal({ 2.0f, 2.5f, -1.0f, 0.75f }));
+            constexpr auto result = [=] {
+                auto v2_copy = v2;
+                v2_copy /= 2.0f;
+                return v2_copy;
+            }();
+            ASSERT(result.approx_equal({ 2.0f, 2.5f, -1.0f, 0.75f }));
         }
 
         test_section("operator<(const Vector4&)");
@@ -3778,9 +3867,12 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            auto m1_copy = m1;
-            RUN_CONSTEXPR(m1_copy += m4);
-            ASSERT(m1_copy.approx_equal({ { 11.0f, -4.5f }, { 34.0f, -20.0f } }));
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy += m4;
+                return m1_copy;
+            }();
+            ASSERT(result.approx_equal({ { 11.0f, -4.5f }, { 34.0f, -20.0f } }));
         }
 
         test_section("operator-");
@@ -3791,9 +3883,12 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            auto m1_copy = m1;
-            RUN_CONSTEXPR(m1_copy -= m4);
-            ASSERT(m1_copy.approx_equal({ { -9.0f, 0.5f }, { -40.0f, 28.0f } }));
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy -= m4;
+                return m1_copy;
+            }();
+            ASSERT(result.approx_equal({ { -9.0f, 0.5f }, { -40.0f, 28.0f } }));
         }
 
         test_section("operator*(const Matrix2&)");
@@ -3805,9 +3900,12 @@ inline void nnm_tests()
 
         test_section("operator*=(const Matrix2&)");
         {
-            auto m1_copy = m1;
-            RUN_CONSTEXPR(m1_copy *= m2);
-            ASSERT(m1_copy == nnm::Matrix2f({ -13.0f, 20.0f }, { 5.0f, -8.0f }));
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= m2;
+                return m1_copy;
+            }();
+            ASSERT(result == nnm::Matrix2f({ -13.0f, 20.0f }, { 5.0f, -8.0f }));
         }
 
         test_section("operator*(const Vector2&)");
@@ -3830,9 +3928,12 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            auto m1_copy = m1;
-            RUN_CONSTEXPR(m1_copy *= 2.0f);
-            ASSERT(m1_copy == nnm::Matrix2f({ 2.0f, -4.0f }, { -6.0f, 8.0f }));
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= 2.0f;
+                return m1_copy;
+            }();
+            ASSERT(result == nnm::Matrix2f({ 2.0f, -4.0f }, { -6.0f, 8.0f }));
         }
 
         test_section("operator/(float)");
@@ -3848,9 +3949,12 @@ inline void nnm_tests()
 
         test_section("operator/=");
         {
-            auto m2_copy = m2;
-            RUN_CONSTEXPR(m2_copy /= 2.0f);
-            ASSERT(m2_copy.approx_equal(nnm::Matrix2f({ -2.0f, 1.5f }, { 1.0f, -0.5f })));
+            constexpr auto result = [=] {
+                auto m2_copy = m2;
+                m2_copy /= 2.0f;
+                return m2_copy;
+            }();
+            ASSERT(result.approx_equal(nnm::Matrix2f({ -2.0f, 1.5f }, { 1.0f, -0.5f })));
         }
 
         test_section("operator<");
@@ -4334,10 +4438,13 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy += m2;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix3f expected({ 4.0f, -4.0f, -6.0f }, { -2.0f, -2.0f, -1.0f }, { 1.0f, -2.0f, 16.0f });
-            RUN_CONSTEXPR(m1_copy += m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator-");
@@ -4349,10 +4456,13 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy -= m2;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix3f expected({ -2.0f, 8.0f, 12.0f }, { -4.0f, -2.0f, -1.0f }, { 3.0f, -6.0f, -4.0f });
-            RUN_CONSTEXPR(m1_copy -= m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator*(const Matrix3&)");
@@ -4364,10 +4474,13 @@ inline void nnm_tests()
 
         test_section("operator*=(const Matrix3&)");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= m2;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix3f expected({ 3.0f, 54.0f, -39.0f }, { 1.0f, 2.0f, 3.0f }, { 13.0f, -46.0f, 55.0f });
-            RUN_CONSTEXPR(m1_copy *= m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator*(const Vector3&)");
@@ -4395,11 +4508,14 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= 5.0f;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix3f expected(
                 { 5.0f, 10.0f, 15.0f }, { -15.0f, -10.0f, -5.0f }, { 10.0f, -20.0f, 30.0f });
-            RUN_CONSTEXPR(m1_copy *= 5.0f);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator/(float)");
@@ -4420,11 +4536,14 @@ inline void nnm_tests()
 
         test_section("operator/=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy /= 2.0f;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix3f expected(
                 { 0.5f, 1.0f, 3.0f / 2.0f }, { -3.0f / 2.0f, -1.0f, -0.5f }, { 1.0f, -2.0f, 3.0f });
-            RUN_CONSTEXPR(m1_copy /= 2.0f);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator<");
@@ -5307,14 +5426,17 @@ inline void nnm_tests()
 
         test_section("operator+=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy += m2;
+                return m1_copy;
+            }();
             nnm::Matrix4f expected(
                 { 2.5f, 5.0f, 0.0f, 8.0f },
                 { -2.0f, 97.0f, -4.0f, -8.0f },
                 { 3.0f, 31.0f, -130.0f, -4297.0f },
                 { -8.0f, 101.3f, -6.0f, 0.0f });
-            RUN_CONSTEXPR(m1_copy += m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator-");
@@ -5330,14 +5452,17 @@ inline void nnm_tests()
 
         test_section("operator-=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy -= m2;
+                return m1_copy;
+            }();
             nnm::Matrix4f expected(
                 { -0.5f, -1.0f, 6.0f, 0.0f },
                 { 0.0f, -103.0f, 0.0f, 0.0f },
                 { 3.0f, -27.0f, 128.0f, 4289.0f },
                 { 0.0f, -99.3f, 0.0f, 0.0f });
-            RUN_CONSTEXPR(m1_copy -= m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator*(const Matrix4&)");
@@ -5352,13 +5477,16 @@ inline void nnm_tests()
 
         test_section("operator*=(const Matrix4&)");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= m2;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix4f expected { { -26.5f, -8.0f, -10.5f, 6.0f },
                                                { -91.0f, -310.0f, -189.0f, -396.0f },
                                                { 16756.0f, -4638.0f, 12950.0f, 400.0f },
                                                { -113.3f, -314.9f, -209.6f, -405.2f } };
-            RUN_CONSTEXPR(m1_copy *= m2);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator*(const Vector4&)");
@@ -5391,13 +5519,16 @@ inline void nnm_tests()
 
         test_section("operator*=(float)");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy *= -2.0f;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix4f expected { { -2.0, -4.0f, -6.0f, -8.0f },
                                                { 2.0f, 6.0f, 4.0f, 8.0f },
                                                { -6.0f, -4.0f, 2.0f, 8.0f },
                                                { 8.0f, -2.0f, 6.0f, 0.0f } };
-            RUN_CONSTEXPR(m1_copy *= -2.0f);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator/(float)");
@@ -5426,13 +5557,16 @@ inline void nnm_tests()
 
         test_section("operator/=");
         {
-            auto m1_copy = m1;
+            constexpr auto result = [=] {
+                auto m1_copy = m1;
+                m1_copy /= -4.0f;
+                return m1_copy;
+            }();
             constexpr nnm::Matrix4f expected { { -0.25, -0.5f, -0.75f, -1.0f },
                                                { 0.25f, 0.75f, 0.5f, 1.0f },
                                                { -0.75f, -0.5f, 0.25f, 1.0f },
                                                { 1.0f, -0.25f, 0.75f, 0.0f } };
-            RUN_CONSTEXPR(m1_copy /= -4.0f);
-            ASSERT(m1_copy.approx_equal(expected));
+            ASSERT(result.approx_equal(expected));
         }
 
         test_section("operator<");

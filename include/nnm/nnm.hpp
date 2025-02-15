@@ -2027,7 +2027,7 @@ public:
      * Hash type for 2D integer vector.
      */
     struct Hash {
-        constexpr size_t operator()(const Vector2i& vector) const noexcept
+        size_t operator()(const Vector2i& vector) const noexcept
         {
             const size_t hash1 = std::hash<Int>()(vector.x);
             const size_t hash2 = std::hash<Int>()(vector.y);
@@ -3375,7 +3375,16 @@ public:
     [[nodiscard]] constexpr const Int& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -3386,7 +3395,16 @@ public:
     constexpr Int& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -3397,7 +3415,16 @@ public:
     [[nodiscard]] constexpr const Int& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -3408,7 +3435,16 @@ public:
     constexpr Int& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Vector3i", index <= 2);
-        return *(begin() + index);
+        switch (index) {
+        case 0:
+            return x;
+        case 1:
+            return y;
+        case 2:
+            return z;
+        default:
+            return x;
+        }
     }
 
     /**
@@ -3446,7 +3482,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector3i& operator+=(const Vector3i& other)
+    constexpr Vector3i& operator+=(const Vector3i& other)
     {
         x += other.x;
         y += other.y;
@@ -3663,7 +3699,7 @@ public:
      * Hash type for 3D integer vector.
      */
     struct Hash {
-        constexpr size_t operator()(const Vector3i& vector) const noexcept
+        size_t operator()(const Vector3i& vector) const noexcept
         {
             const size_t hash1 = std::hash<Int>()(vector.x);
             const size_t hash2 = std::hash<Int>()(vector.y);
@@ -4288,7 +4324,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector4& operator+=(const Vector4& other)
+    constexpr Vector4& operator+=(const Vector4& other)
     {
         x += other.x;
         y += other.y;
@@ -4312,7 +4348,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector4& operator-=(const Vector4& other)
+    constexpr Vector4& operator-=(const Vector4& other)
     {
         x -= other.x;
         y -= other.y;
@@ -4336,7 +4372,7 @@ public:
      * @param other Other vector.
      * @return Reference to this modified vector.
      */
-    Vector4& operator*=(const Vector4& other)
+    constexpr Vector4& operator*=(const Vector4& other)
     {
         x *= other.x;
         y *= other.y;
@@ -4367,7 +4403,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector4& operator*=(const Real value)
+    constexpr Vector4& operator*=(const Real value)
     {
         x *= value;
         y *= value;
@@ -4415,7 +4451,7 @@ public:
      * @param value Value.
      * @return Reference to this modified vector.
      */
-    Vector4& operator/=(const Real value)
+    constexpr Vector4& operator/=(const Real value)
     {
         x /= value;
         y /= value;
@@ -8776,7 +8812,8 @@ constexpr Vector3<Real> Vector3<Real>::rotate_quaternion(const Quaternion<Real>&
 }
 
 template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::rotate_quaternion_at(const Vector3& origin, const Quaternion<Real>& quaternion) const
+constexpr Vector3<Real> Vector3<Real>::rotate_quaternion_at(
+    const Vector3& origin, const Quaternion<Real>& quaternion) const
 {
     return transform_at(origin, Basis3<Real>::from_rotation_quaternion(quaternion));
 }
