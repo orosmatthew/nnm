@@ -2029,9 +2029,10 @@ public:
     struct Hash {
         size_t operator()(const Vector2i& vector) const noexcept
         {
-            const size_t hash1 = std::hash<Int>()(vector.x);
-            const size_t hash2 = std::hash<Int>()(vector.y);
-            return hash1 ^ hash2 << 1;
+            // Based on Boost's hash_combine.
+            size_t seed = std::hash<Int>()(vector.x);
+            seed ^= std::hash<Int>()(vector.y) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            return seed;
         }
     };
 };
@@ -3701,10 +3702,11 @@ public:
     struct Hash {
         size_t operator()(const Vector3i& vector) const noexcept
         {
-            const size_t hash1 = std::hash<Int>()(vector.x);
-            const size_t hash2 = std::hash<Int>()(vector.y);
-            const size_t hash3 = std::hash<Int>()(vector.z);
-            return hash1 ^ hash2 << 1 ^ hash3 << 2;
+            // Based on Boost's hash_combine.
+            size_t seed = std::hash<Int>()(vector.x);
+            seed ^= std::hash<Int>()(vector.y) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            seed ^= std::hash<Int>()(vector.z) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            return seed;
         }
     };
 };
