@@ -7,8 +7,9 @@
 
 #include "test.hpp"
 
-// ReSharper disable once CppDFATimeOver
-inline void geom3_tests()
+// ReSharper disable CppDFATimeOver
+
+inline void line3_tests()
 {
     test_case("Line3");
     {
@@ -367,7 +368,10 @@ inline void geom3_tests()
             ASSERT_FALSE(l1 < nnm::Line3f::axis_x());
         }
     }
+}
 
+inline void ray3_tests()
+{
     test_case("Ray3");
     {
         test_section("Ray3()");
@@ -678,7 +682,10 @@ inline void geom3_tests()
             ASSERT_FALSE(r2 < r1);
         }
     }
+}
 
+inline void segment3_tests()
+{
     test_case("Segment3");
     {
         test_section("Segment3()");
@@ -1095,4 +1102,12 @@ inline void geom3_tests()
             ASSERT(s1.midpoint().approx_equal({ -1.5f, 1.5f, -1.5f }));
         }
     }
+}
+
+// ReSharper disable once CppDFATimeOver
+inline void geom3_tests()
+{
+    line3_tests();
+    ray3_tests();
+    segment3_tests();
 }
