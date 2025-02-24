@@ -1,6 +1,6 @@
 /* NNM - "No Nonsense Math"
- * v0.4.0
- * Copyright (c) 2024-present Matthew Oros
+ * v0.5.0
+ * Copyright (c) 2025-present Matthew Oros
  * Licensed under MIT
  */
 
