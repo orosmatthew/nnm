@@ -146,10 +146,10 @@ Vector2 rotate(Real angle) const;
 Vector2 rotate_at(const Vector2& origin, Real angle) const;
 Vector2 scale(const Vector2& factor) const;
 Vector2 scale_at(const Vector2& origin, const Vector2& factor) const;
-Vector2 shear_x(Real angle_y) const;
-Vector2 shear_x_at(const Vector2& origin, Real angle_y) const;
-Vector2 shear_y(Real angle_x) const;
-Vector2 shear_y_at(const Vector2& origin, Real angle_x) const;
+Vector2 shear_x(Real factor) const;
+Vector2 shear_x_at(const Vector2& origin, Real factor) const;
+Vector2 shear_y(Real factor) const;
+Vector2 shear_y_at(const Vector2& origin, Real factor) const;
 Vector2 transform(const Basis2& by) const;
 Vector2 transform_at(const Vector2& origin, const Basis2& by) const;
 Vector2 transform(const Transform2& by, Real z = 1.0) const;
@@ -294,11 +294,10 @@ bool operator<(const Vector2i& other) const;
 operator bool() const;
 ```
 
-### Hash
+### Types
 
 ```c++
-template <>
-struct std::hash<nnm::Vector2i> {
+struct Vector2i::Hash {
     size_t operator()(const nnm::Vector2i& vector) const noexcept;
 }
 ```
@@ -377,12 +376,12 @@ Vector3 rotate_quaternion(const Quaternion& quaternion) const;
 Vector3 rotate_quaternion_at(const Vector3& origin, const Quaternion& quaternion) const;
 Vector3 scale(const Vector3& factor) const;
 Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
-Vector3 shear_x(Real angle_y, Real angle_z) const;
-Vector3 shear_x_at(const Vector3& origin, Real angle_y, Real angle_z) const;
-Vector3 shear_y(Real angle_x, Real angle_z) const;
-Vector3 shear_y_at(const Vector3& origin, Real angle_x, Real angle_z) const;
-Vector3 shear_z(Real angle_x, Real angle_y) const;
-Vector3 shear_z_at(const Vector3& origin, Real angle_x, Real angle_y) const;
+Vector3 shear_x(Real factor_y, Real factor_z) const;
+Vector3 shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const;
+Vector3 shear_y(Real factor_x, Real factor_z) const;
+Vector3 shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const;
+Vector3 shear_z(Real factor_x, Real factor_y) const;
+Vector3 shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const;
 Vector3 transform(const Basis3& by) const;
 Vector3 transform_at(const Vector3& origin, const Basis3& by) const;
 Vector3 transform(const Transform2& by) const;
@@ -531,11 +530,10 @@ bool operator<(const Vector3i& other) const;
 operator bool() const;
 ```
 
-### Hash
+### Types
 
 ```c++
-template <>
-struct std::hash<nnm::Vector3i> {
+struct Vector3i::Hash {
     size_t operator()(const nnm::Vector3i& vector) const noexcept;
 }
 ```
@@ -820,8 +818,8 @@ explicit Basis2(const Matrix2& matrix);
 ```c++
 static Basis2 from_rotation(Real angle);
 static Basis2 from_scale(const Vector2& factor);
-static Basis2 from_shear_x(Real angle_y);
-static Basis2 from_shear_y(Real angle_x);
+static Basis2 from_shear_x(Real factor);
+static Basis2 from_shear_y(Real factor);
 ```
 
 ### Methods
@@ -836,10 +834,10 @@ Basis2 rotate(Real angle) const;
 Basis2 rotate_local(Real angle) const;
 Basis2 scale(const Vector2& factor) const;
 Basis2 scale_local(const Vector2& factor) const;
-Basis2 shear_x(Real angle_y) const;
-Basis2 shear_x_local(Real angle_y) const;
-Basis2 shear_y(Real angle_x) const;
-Basis2 shear_y_local(Real angle_x) const;
+Basis2 shear_x(Real factor) const;
+Basis2 shear_x_local(Real factor) const;
+Basis2 shear_y(Real factor) const;
+Basis2 shear_y_local(Real factor) const;
 Basis2 transform(const Basis2& by) const;
 Basis2 transform_local(const Basis2& by) const;
 bool approx_equal(const Basis2& other) const;
@@ -977,8 +975,8 @@ static Transform2 from_basis(const Basis2& basis);
 static Transform2 from_translation(const Vector2& pos);
 static Transform2 from_rotation(Real angle);
 static Transform2 from_scale(const Vector2& factor);
-static Transform2 from_shear_x(Real angle_y);
-static Transform2 from_shear_y(Real angle_x);
+static Transform2 from_shear_x(Real factor);
+static Transform2 from_shear_y(Real factor);
 ```
 
 ### Methods
@@ -998,10 +996,10 @@ Transform2 rotate(Real angle) const;
 Transform2 rotate_local(Real angle) const;
 Transform2 scale(const Vector2& factor) const;
 Transform2 scale_local(const Vector2& factor) const;
-Transform2 shear_x(Real angle_y) const;
-Transform2 shear_x_local(Real angle_y) const;
-Transform2 shear_y(Real angle_x) const;
-Transform2 shear_y_local(Real angle_x) const;
+Transform2 shear_x(Real factor) const;
+Transform2 shear_x_local(Real factor) const;
+Transform2 shear_y(Real factor) const;
+Transform2 shear_y_local(Real factor) const;
 Transform2 transform(const Transform2& by) const;
 Transform2 transform_local(const Transform2& by) const;
 bool approx_equal(const Transform2& other) const;
@@ -1050,9 +1048,9 @@ explicit Basis3(const Matrix3& matrix);
 static Basis3 from_rotation_axis_angle(const Vector3& axis, Real angle);
 static Basis3 from_rotation_quaternion(const Quaternion& quaternion);
 static Basis3 from_scale(const Vector3& factor)
-static Basis3 from_shear_x(Real angle_y, Real angle_z);
-static Basis3 from_shear_y(Real angle_x, Real angle_z);
-static Basis3 from_shear_z(Real angle_x, Real angle_y);
+static Basis3 from_shear_x(Real factor_y, Real factor_z);
+static Basis3 from_shear_y(Real factor_x, Real factor_z);
+static Basis3 from_shear_z(Real factor_x, Real factor_y);
 ```
 
 ### Methods
@@ -1069,12 +1067,12 @@ Basis3 rotate_quaternion(const Quaternion& quaternion) const;
 Basis3 rotate_quaternion_local(const Quaternion& quaternion) const;
 Basis3 scale(const Vector3& factor) const;
 Basis3 scale_local(const Vector3& factor) const;
-Basis3 shear_x(Real angle_y, Real angle_z) const;
-Basis3 shear_x_local(Real angle_y, Real angle_z) const;
-Basis3 shear_y(Real angle_x, Real angle_z) const;
-Basis3 shear_y_local(Real angle_x, Real angle_z) const;
-Basis3 shear_z(Real angle_x, Real angle_y) const;
-Basis3 shear_z_local(Real angle_x, Real angle_y) const;
+Basis3 shear_x(Real factor_y, Real factor_z) const;
+Basis3 shear_x_local(Real factor_y, Real factor_z) const;
+Basis3 shear_y(Real factor_x, Real factor_z) const;
+Basis3 shear_y_local(Real factor_x, Real factor_z) const;
+Basis3 shear_z(Real factor_x, Real factor_y) const;
+Basis3 shear_z_local(Real factor_x, Real factor_y) const;
 Basis3 transform(const Basis3& by) const;
 Basis3 transform_local(const Basis3& by) const;
 bool approx_equal(const Basis3& other) const;
@@ -1225,9 +1223,9 @@ static Transform3 from_translation(const Vector3& translation);
 static Transform3 from_rotation_axis_angle(const Vector3& axis, Real angle);
 static Transform3 from_rotation_quaternion(const Quaternion& quaternion);
 static Transform3 from_scale(const Vector3& factor);
-static Transform3 from_shear_x(Real angle_y, Real angle_z);
-static Transform3 from_shear_y(Real angle_x, Real angle_z);
-static Transform3 from_shear_z(Real angle_x, Real angle_y);
+static Transform3 from_shear_x(Real factor_y, Real factor_z);
+static Transform3 from_shear_y(Real factor_x, Real factor_z);
+static Transform3 from_shear_z(Real factor_x, Real factor_y);
 static Transform3 from_perspective_left_hand_neg1to1(Real fov, Real aspect_ratio, Real near_clip, Real far_clip);
 static Transform3 from_perspective_left_hand_0to1(Real fov, Real aspect_ratio, Real near_clip, Real far_clip);
 static Transform3 from_perspective_right_hand_neg1to1(Real fov, Real aspect_ratio, Real near_clip, Real far_clip);
@@ -1257,12 +1255,12 @@ Transform3 rotate_quaternion(const Quaternion& quaternion) const;
 Transform3 rotate_quaternion_local(const Quaternion& quaternion) const;
 Transform3 scale(const Vector3& factor) const;
 Transform3 scale_local(const Vector3& factor) const;
-Transform3 shear_x(Real angle_y, Real angle_z) const;
-Transform3 shear_x_local(Real angle_y, Real angle_z) const;
-Transform3 shear_y(Real angle_x, Real angle_z) const;
-Transform3 shear_y_local(Real angle_x, Real angle_z) const;
-Transform3 shear_z(Real angle_x, Real angle_y) const;
-Transform3 shear_z_local(Real angle_x, Real angle_y) const;
+Transform3 shear_x(Real factor_y, Real factor_z) const;
+Transform3 shear_x_local(Real factor_y, Real factor_z) const;
+Transform3 shear_y(Real factor_x, Real factor_z) const;
+Transform3 shear_y_local(Real factor_x, Real factor_z) const;
+Transform3 shear_z(Real factor_x, Real factor_y) const;
+Transform3 shear_z_local(Real factor_x, Real factor_y) const;
 Transform3 transform(const Transform3& by) const;
 Transform3 transform_local(const Transform3& by) const;
 bool approx_equal(const Transform3& other) const;

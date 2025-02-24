@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.5.0
+
+### Breaking Changes
+
+* Move `Vector2i` and `Vector3i` hash functors out of std. They are now under `Vector2i::Hash` and `Vector3i::Hash`
+  respectively.
+* Replace shear methods input from angles to shear factors. This allows for `constexpr` and is computationally less
+  expensive.
+* Rename `Quaternion` `axis(const Quaternion&)` and `angle(Quaternion&)` to `axis_to(const Quaternion&)` and
+  `angle_to(const Quaternion&)` respectively to avoid confusion with `axis()` and `angle()` methods.
+
+### New Features
+
+* Add doc-comments to all functions and methods.
+* Significantly more `constexpr`. Almost all functions and methods are `constexpr` other than those that require
+  trigonometric or square-root functions.
+* Hash functions for `Vector2i` and `Vector3i` now use an improved method based on Boost's `hash_combine` which should
+  improve hashing quality.
+
 ## v0.4.0
 
 ### Breaking Changes
