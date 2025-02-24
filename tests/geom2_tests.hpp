@@ -10,7 +10,7 @@
 // ReSharper disable CppUseStructuredBinding
 // ReSharper disable CppDFATimeOver
 
-inline void geom2_tests()
+inline void line2_tests()
 {
     test_case("Line2");
     {
@@ -711,7 +711,10 @@ inline void geom2_tests()
             ASSERT_FALSE(line1 != line1);
         }
     }
+}
 
+inline void ray2_tests()
+{
     test_case("Ray2");
     {
         test_section("Line2()");
@@ -1452,7 +1455,10 @@ inline void geom2_tests()
             ASSERT_FALSE(ray1 != ray1);
         }
     }
+}
 
+inline void segment2_tests()
+{
     test_case("Segment2");
     {
         test_section("Segment2()");
@@ -2203,7 +2209,10 @@ inline void geom2_tests()
             ASSERT_FALSE(s1 < s2);
         }
     }
+}
 
+inline void arc2_tests()
+{
     test_case("Arc2");
     {
         test_section("Arc2()");
@@ -3341,7 +3350,10 @@ inline void geom2_tests()
             ASSERT_FALSE(arc2 < arc2);
         }
     }
+}
 
+inline void circle2_tests()
+{
     test_case("Circle2");
     {
         test_section("Circle2()");
@@ -3972,7 +3984,10 @@ inline void geom2_tests()
             ASSERT(c1 < nnm::Circle2f({ 2.000001f, -3.0001f }, 4.999999f))
         }
     }
+}
 
+inline void triangle2_tests()
+{
     test_case("Triangle2");
     {
         test_section("Triangle()");
@@ -4740,7 +4755,10 @@ inline void geom2_tests()
             ASSERT_FALSE(tri2 < tri2);
         }
     }
+}
 
+inline void rectangle2_tests()
+{
     test_case("Rectangle2");
     {
         test_section("Rectangle2()");
@@ -5276,7 +5294,10 @@ inline void geom2_tests()
             ASSERT_FALSE(r2 < r2);
         }
     }
+}
 
+inline void aligned_rectangle2_tests()
+{
     test_case("AlignedRectangle2");
     {
         test_section("AlignedRectangle2()");
@@ -5705,4 +5726,16 @@ inline void geom2_tests()
             ASSERT_FALSE(nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }) < a1);
         }
     }
+}
+
+inline void geom2_tests()
+{
+    line2_tests();
+    ray2_tests();
+    segment2_tests();
+    arc2_tests();
+    circle2_tests();
+    triangle2_tests();
+    rectangle2_tests();
+    aligned_rectangle2_tests();
 }
