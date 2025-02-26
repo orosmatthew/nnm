@@ -667,30 +667,30 @@ inline void line2_tests()
 
         test_section("shear_x_at");
         {
-            const auto result = line3.shear_x_at({ -2.0f, 3.0f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 0.09383f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.865334f, 0.501195f }))
+            const auto result = line3.shear_x_at({ -2.0f, 3.0f }, 0.5f);
+            ASSERT(result.origin.approx_equal({ 1.0f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.83205f, 0.5547f }))
         }
 
         test_section("shear_x");
         {
-            const nnm::Line2f result = line3.shear_x(nnm::pi<float>() / 3.0f);
-            ASSERT(result.origin.approx_equal({ 1.26794919f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+            const nnm::Line2f result = line3.shear_x(0.5f);
+            ASSERT(result.origin.approx_equal({ 2.5f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.83205f, 0.5547f }));
         }
 
         test_section("shear_y_at");
         {
-            const auto result = line3.shear_y_at({ -2.0f, 3.0f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, 2.632713f }));
-            ASSERT(result.direction.approx_equal({ 0.501195f, 0.865334f }));
+            const auto result = line3.shear_y_at({ -2.0f, 3.0f }, 0.5f);
+            ASSERT(result.origin.approx_equal({ 3.0f, 1.5f }));
+            ASSERT(result.direction.approx_equal({ 0.5547f, 0.83205f }));
         }
 
         test_section("shear_y");
         {
-            const nnm::Line2f result = line3.shear_y(-nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -3.17963f }));
-            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
+            const nnm::Line2f result = line3.shear_y(0.5f);
+            ASSERT(result.origin.approx_equal({ 3.0f, 0.5f }));
+            ASSERT(result.direction.approx_equal({ 0.5547f, 0.83205f }));
         }
 
         test_section("operator<");
@@ -1411,30 +1411,30 @@ inline void ray2_tests()
 
         test_section("shear_x_at");
         {
-            const auto result = ray3.shear_x_at({ 2.0f, -1.5f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.36327f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.865334f, 0.501195f }));
+            const auto result = ray3.shear_x_at({ 2.0f, -1.5f }, 0.5f);
+            ASSERT(result.origin.approx_equal({ 3.25f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.83205f, 0.5547f }));
         }
 
         test_section("shear_x");
         {
-            const nnm::Ray2f result = ray3.shear_x(nnm::pi<float>() / 3.0f);
-            ASSERT(result.origin.approx_equal({ 1.26794919f, -1.0f }));
-            ASSERT(result.direction.approx_equal({ 0.939071f, 0.343724f }));
+            const nnm::Ray2f result = ray3.shear_x(0.5f);
+            ASSERT(result.origin.approx_equal({ 2.5f, -1.0f }));
+            ASSERT(result.direction.approx_equal({ 0.83205f, 0.5547f }));
         }
 
         test_section("shear_y_at");
         {
-            const auto result = ray3.shear_y_at({ 2.0f, -1.5f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -0.27346f }));
-            ASSERT(result.direction.approx_equal({ 0.501195f, 0.865334f }));
+            const auto result = ray3.shear_y_at({ 2.0f, -1.5f }, 0.5f);
+            ASSERT(result.origin.approx_equal({ 3.0f, -0.5f }));
+            ASSERT(result.direction.approx_equal({ 0.5547f, 0.83205f }));
         }
 
         test_section("shear_y");
         {
-            const nnm::Ray2f result = ray3.shear_y(-nnm::pi<float>() / 5.0f);
-            ASSERT(result.origin.approx_equal({ 3.0f, -3.17963f }));
-            ASSERT(result.direction.approx_equal({ 0.964585f, 0.263773f }));
+            const nnm::Ray2f result = ray3.shear_y(0.5f);
+            ASSERT(result.origin.approx_equal({ 3.0f, 0.5f }));
+            ASSERT(result.direction.approx_equal({ 0.5547f, 0.83205f }));
         }
 
         test_section("operator<");
@@ -2146,30 +2146,30 @@ inline void segment2_tests()
 
         test_section("shear_x_at");
         {
-            const auto result = s1.shear_x_at({ 1.0f, 2.0f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.from.approx_equal({ -1.90617f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -1.54691f, 4.0f }));
+            const auto result = s1.shear_x_at({ 1.0f, 2.0f }, 0.5f);
+            ASSERT(result.from.approx_equal({ -1.0f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -2.0f, 4.0f }));
         }
 
         test_section("shear_x");
         {
-            const auto result = s1.shear_x(nnm::pi<float>() / 5.0f);
-            ASSERT(result.from.approx_equal({ -0.453085f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -0.0938299f, 4.0f }));
+            const auto result = s1.shear_x(0.5f);
+            ASSERT(result.from.approx_equal({ 0.0f, -2.0f }));
+            ASSERT(result.to.approx_equal({ -1.0f, 4.0f }));
         }
 
         test_section("shear_y_at");
         {
-            const auto result = s1.shear_y_at({ 1.0f, 2.0f }, nnm::pi<float>() / 5.0f);
+            const auto result = s1.shear_y_at({ 1.0f, 2.0f }, 0.5f);
             ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -3.0f, 1.09383f }));
+            ASSERT(result.to.approx_equal({ -3.0f, 2.0f }));
         }
 
         test_section("shear_y");
         {
-            const auto result = s1.shear_y(nnm::pi<float>() / 5.0f);
-            ASSERT(result.from.approx_equal({ 1.0f, -1.27346f }));
-            ASSERT(result.to.approx_equal({ -3.0f, 1.82037f }));
+            const auto result = s1.shear_y(0.5f);
+            ASSERT(result.from.approx_equal({ 1.0f, -1.5f }));
+            ASSERT(result.to.approx_equal({ -3.0f, 2.5f }));
         }
 
         test_section("approx_coincident");
