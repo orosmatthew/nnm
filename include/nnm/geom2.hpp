@@ -2040,13 +2040,31 @@ public:
     }
 };
 
+/**
+ * 2D arc.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Arc2 {
 public:
+    /**
+     * Pivot.
+     */
     Vector2<Real> pivot;
+
+    /**
+     * Start point.
+     */
     Vector2<Real> from;
+
+    /**
+     * Angle extended from start point about the pivot.
+     */
     Real angle;
 
+    /**
+     * Initialize will zero pivot, zero start, and zero angle.
+     */
     constexpr Arc2()
         : pivot { Vector2<Real>::zero() }
         , from { Vector2<Real>::zero() }
@@ -2054,6 +2072,12 @@ public:
     {
     }
 
+    /**
+     * Initialize with pivot, start, and angle.
+     * @param pivot Pivot.
+     * @param from Start.
+     * @param angle Angle.
+     */
     constexpr Arc2(const Vector2<Real>& pivot, const Vector2<Real>& from, const Real angle)
         : pivot { pivot }
         , from { from }
@@ -2061,6 +2085,14 @@ public:
     {
     }
 
+    /**
+     * Arc from a pivot and radius that starts at an angle and ends at another angle.
+     * @param pivot Pivot.
+     * @param radius Radius.
+     * @param angle_from Start angle.
+     * @param angle_to End angle.
+     * @return Result.
+     */
     static Arc2 from_pivot_radius_angle_to_angle(
         const Vector2<Real>& pivot, const Real radius, const Real angle_from, const Real angle_to)
     {
@@ -2069,6 +2101,14 @@ public:
         return { pivot, from, angle };
     }
 
+    /**
+     * Arc from a start point, intersection point, and end point.
+     * Does not check if all points are collinear; would result in a divide-by-zero.
+     * @param from Start point.
+     * @param through Point to intersect.
+     * @param to End point.
+     * @return Result.
+     */
     static Arc2 from_points_unchecked(const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
     {
         const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
@@ -2092,6 +2132,13 @@ public:
         return Arc2 { pivot, from, angle };
     }
 
+    /**
+     * Arc from a start point, intersection point, and end point.
+     * @param from Start point.
+     * @param through Point to intersect.
+     * @param to End point.
+     * @return Result.
+     */
     static std::optional<Arc2> from_points(
         const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
     {
@@ -2119,31 +2166,56 @@ public:
         return Arc2 { pivot.value(), from, angle };
     }
 
+    /**
+     * Normalize angle between -pi and pi.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
         return { pivot, from, nnm::normalize_angle(angle) };
     }
 
+    /**
+     * Radius.
+     * @return Result.
+     */
     [[nodiscard]] Real radius() const
     {
         return pivot.distance(from);
     }
 
+    /**
+     * Squared radius.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real radius_sqrd() const
     {
         return pivot.distance_sqrd(from);
     }
 
+    /**
+     * Angle of start point in radians.
+     * @return Result.
+     */
     [[nodiscard]] Real angle_from() const
     {
         return nnm::normalize_angle(pivot.angle_to(from));
     }
 
+    /**
+     * Angle of end point in radians.
+     * @return Result.
+     */
     [[nodiscard]] Real angle_to() const
     {
         return angle_from() + angle;
     }
 
+    /**
+     * Determine if approximately intersects point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
     {
         if (!nnm::approx_equal(point.distance_sqrd(pivot), sqrd(radius()))) {
@@ -2154,12 +2226,22 @@ public:
         return angle_in_range(point_angle, angle_from(), angle_to());
     }
 
+    /**
+     * Point on the arc at an angle in radians. Does not check if the point is within range.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle) const
     {
         const Real r = radius();
         return { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
     }
 
+    /**
+     * Point on the arc at an angle in radians.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle) const
     {
         const Real r = radius();
@@ -2169,21 +2251,37 @@ public:
         return Vector2<Real> { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
     }
 
+    /**
+     * End point.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> to() const
     {
         return unchecked_point_at(angle_to());
     }
 
+    /**
+     * Arc-length.
+     * @return Result.
+     */
     [[nodiscard]] Real length() const
     {
         return abs(radius() * angle);
     }
 
+    /**
+     * Squared arc-length.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return radius_sqrd() * sqrd(angle);
     }
 
+    /**
+     * Midpoint.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> midpoint() const
     {
         return Arc2 { pivot, from, angle / static_cast<Real>(2) }.to();
