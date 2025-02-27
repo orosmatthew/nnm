@@ -694,51 +694,116 @@ public:
     }
 };
 
+/**
+ * 2D Ray.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Ray2 {
 public:
+    /**
+     * Origin
+     */
     Vector2<Real> origin;
+    /**
+     * Normalized direction.
+     */
     Vector2<Real> direction;
 
+    /**
+     * Initialize with zero origin and in the direction of the x-axis.
+     */
     constexpr Ray2()
         : origin { Vector2<Real>::zero() }
-        , direction { static_cast<Real>(1), static_cast<Real>(0) }
+        , direction { Vector2<Real>::axis_x() }
     {
     }
 
+    /**
+     * Initialize with origin and direction. No normalization for the direction is done.
+     * @param origin Origin.
+     * @param direction Normalized direction.
+     */
     constexpr Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
         : origin { origin }
         , direction { direction }
     {
     }
 
+    /**
+     * Cast from another type.
+     * @tparam Other Other floating-point type.
+     * @param other Other ray.
+     */
+    template <typename Other>
+    explicit constexpr Ray2(const Ray2<Other> other)
+        : origin { other.origin }
+        , direction { other.direction }
+    {
+    }
+
+    /**
+     * Ray with origin in the direction of another point.
+     * @param from Origin.
+     * @param to To.
+     * @return Result.
+     */
     static Ray2 from_point_to_point(const Vector2<Real>& from, const Vector2<Real>& to)
     {
         return { from, from.direction(to) };
     }
 
+    /**
+     * Normalize the direction.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 normalize() const
     {
         return { origin, direction.normalize() };
     }
 
+    /**
+     * Determine if approximately collinear with a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
     {
         return Line2<Real>::from_ray(*this).approx_contains(point);
     }
 
+    /**
+     * Deteremine if approximately collinear with 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_collinear(const Line2<Real>& line) const
     {
         return Line2<Real>::from_ray(*this).approx_coincident(line);
     }
 
+    /**
+     * Determine if approximately collinear with another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_collinear(const Ray2& other) const
     {
         return Line2<Real>::from_ray(*this).approx_coincident(Line2<Real>::from_ray(other));
     }
 
+    /**
+     * Determine if approximately collinear with 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& segment) const;
 
+    /**
+     * Determine if approximately contains a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -749,6 +814,11 @@ public:
         return approx_equal(t.x, t.y);
     }
 
+    /**
+     * Closest signed-distance to point. Positive if in the direction of the ray, negative otherwise.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real signed_distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -758,11 +828,21 @@ public:
         return direction.cross(diff);
     }
 
+    /**
+     * Closest distance to point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         return abs(signed_distance(point));
     }
 
+    /**
+     * Closest distance to 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -771,6 +851,11 @@ public:
         return line.distance(origin);
     }
 
+    /**
+     * Closest distance to other ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -788,42 +873,107 @@ public:
         return min(d1, d2);
     }
 
+    /**
+     * Closest distance to 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const;
 
+    /**
+     * Closest distance to 2D arc.
+     * @param arc 2D arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
 
+    /**
+     * Closest distance to 2D circle.
+     * @param circle 2D circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
+    /**
+     * Closest distance to 2D triangle.
+     * @param triangle 2D triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Closest distance to 2D rectangle.
+     * @param rectangle 2D rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Closest distance to 2D aligned-rectangle.
+     * @param rectangle 2D aligned-rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if approximately parallel to 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
     }
 
+    /**
+     * Determine if approximately parallel to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_parallel(const Ray2& other) const
     {
         return approx_zero(direction.cross(other.direction));
     }
 
+    /**
+     * Determine if approximately parallel to 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_parallel(const Segment2<Real>& segment) const;
 
+    /**
+     * Determine if approximately perpendicular to 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
     {
         return approx_zero(direction.dot(line.direction));
     }
 
+    /**
+     * Determine if approximately perpendicular to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_perpendicular(const Ray2& other) const
     {
         return approx_zero(direction.dot(other.direction));
     }
 
+    /**
+     * Determine if approximately perpendicular to 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_perpendicular(const Segment2<Real>& segment) const;
 
+    /**
+     * Determine if intersects 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         const Real dir_cross = direction.cross(line.direction);
@@ -835,6 +985,11 @@ public:
         return t_ray >= static_cast<Real>(0);
     }
 
+    /**
+     * Intersection point with 2D line.
+     * @param line 2D line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
     {
         const Real dir_cross = direction.cross(line.direction);
@@ -849,6 +1004,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects with another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -861,6 +1021,11 @@ public:
         return t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0);
     }
 
+    /**
+     * Intersection point with another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -876,35 +1041,110 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
+    /**
+     * Intersection point with 2D segment.
+     * @param segment 2D segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
+    /**
+     * Determine if intersects 2D arc.
+     * @param arc 2D arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
 
+    /**
+     * Intersection points with 2D arc. If only single intersection, both returned points are equal.
+     * @param arc 2D arc.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const;
 
+    /**
+     * Determine if intersects 2D circle.
+     * @param circle 2D circle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
+    /**
+     * Intersection points with 2D circle. If only single intersection, both returned points are equal.
+     * @param circle 2D circle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
+    /**
+     * Determine if intersects 2D triangle.
+     * @param triangle 2D triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Intersection points with 2D triangle. If only single intersection, both returned points are equal.
+     * @param triangle 2D triangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Determine if intersects 2D rectangle.
+     * @param rectangle 2D rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersection points with 2D rectangle. If only single intersection, both returned points are equal.
+     * @param rectangle 2D rectangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects 2D aligned-rectangle.
+     * @param rectangle 2D aligned-rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersection points with 2D aligned-rectangle. If only single intersection, both returned points are equal.
+     * @param rectangle 2D aligned-rectangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(
         const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if approximately tangent to 2D arc.
+     * @param arc 2D arc.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
 
+    /**
+     * Determine if approximately tangent to 2D circle.
+     * @param circle 2D circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
 
+    /**
+     * Scalar that represent the projection of a point onto the ray.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
     {
         const Real t = (point - origin).dot(direction);
@@ -914,66 +1154,135 @@ public:
         return t;
     }
 
+    /**
+     * Projection of point on the ray.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         return origin + direction * project_point_scalar(point);
     }
 
+    /**
+     * Translate by an offset.
+     * @param by Offset.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 translate(const Vector2<Real>& by) const
     {
         return { origin.translate(by), direction };
     }
 
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Origin.
+     * @param by Scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
         return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
     }
 
+    /**
+     * Scale about the origin by a factor.
+     * @param by Scale factor.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 scale(const Vector2<Real>& by) const
     {
         return { origin.scale(by), direction.scale(by).normalize() };
     }
 
+    /**
+     * Rotate about an origin by an angle.
+     * @param rotate_origin Origin.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { origin.rotate_at(rotate_origin, angle), direction.rotate(angle).normalize() };
     }
 
+    /**
+     * Rotate about the origin by an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Ray2 rotate(const Real angle) const
     {
         return { origin.rotate(angle), direction.rotate(angle).normalize() };
     }
 
-    [[nodiscard]] Ray2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
+    /**
+     * Shear along the x-axis about an origin.
+     * @param shear_origin Origin.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor_y) const
     {
-        return { origin.shear_x_at(shear_origin, angle_y), direction.shear_x(angle_y).normalize() };
+        return { origin.shear_x_at(shear_origin, factor_y), direction.shear_x(factor_y).normalize() };
     }
 
-    [[nodiscard]] Ray2 shear_x(const Real angle_y) const
+    /**
+     * Shear along the x-axis about the origin.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray2 shear_x(const Real factor_y) const
     {
-        return { origin.shear_x(angle_y), direction.shear_x(angle_y).normalize() };
+        return { origin.shear_x(factor_y), direction.shear_x(factor_y).normalize() };
     }
 
-    [[nodiscard]] Ray2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    /**
+     * Shear along the y-axis about an origin.
+     * @param shear_origin Origin.
+     * @param factor_x X-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray2 shear_y_at(const Vector2<Real>& shear_origin, const Real factor_x) const
     {
-        return { origin.shear_y_at(shear_origin, angle_x), direction.shear_y(angle_x).normalize() };
+        return { origin.shear_y_at(shear_origin, factor_x), direction.shear_y(factor_x).normalize() };
     }
 
-    [[nodiscard]] Ray2 shear_y(const Real angle_x) const
+    /**
+     * Shear along the y-axis about the origin.
+     * @param factor_x X-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray2 shear_y(const Real factor_x) const
     {
-        return { origin.shear_y(angle_x), direction.shear_y(angle_x).normalize() };
+        return { origin.shear_y(factor_x), direction.shear_y(factor_x).normalize() };
     }
 
+    /**
+     * Determine if origin and direction are equal with another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator==(const Ray2& other) const
     {
         return origin == other.origin && direction == other.direction;
     }
 
+    /**
+     * Determine if origin or direction are not equal with another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator!=(const Ray2& other) const
     {
         return origin != other.origin || direction != other.direction;
     }
 
+    /**
+     * Lexicographical comparison with another ray in the order of origin then direction.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator<(const Ray2& other) const
     {
         if (origin != other.origin) {
