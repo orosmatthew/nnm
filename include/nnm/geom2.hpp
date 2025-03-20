@@ -3051,29 +3051,61 @@ public:
     }
 };
 
+/**
+ * 2D circle.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Circle2 {
 public:
+    /**
+     * Center.
+     */
     Vector2<Real> center;
+
+    /**
+     * Radius
+     */
     Real radius;
 
+    /**
+     * Default initialize to zero center and radius of 1.
+     */
     constexpr Circle2()
         : center { Vector2<Real>::zero() }
         , radius { static_cast<Real>(1) }
     {
     }
 
+    /**
+     * Initialize with center and radius.
+     * @param center Center.
+     * @param radius Radius.
+     */
     constexpr Circle2(const Vector2<Real>& center, const Real radius)
         : center { center }
         , radius { radius }
     {
     }
 
+    /**
+     * Circle with a center and intersects a point.
+     * @param center Center.
+     * @param point Point.
+     * @return Result.
+     */
     static Circle2 from_center_point(const Vector2<Real>& center, const Vector2<Real>& point)
     {
         return { center, center.distance(point) };
     }
 
+    /**
+     * Circle from 3 points without checking for collinearity. Will result in a divide-by-zero otherwise.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @param point3 Third point.
+     * @return Result.
+     */
     static Circle2 from_points_unchecked(
         const Vector2<Real>& point1, const Vector2<Real>& point2, const Vector2<Real>& point3)
     {
@@ -3090,6 +3122,13 @@ public:
         return Circle2 { center, radius };
     }
 
+    /**
+     * Circle from points which checks for collinearity.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @param point3 Third point.
+     * @return Circle if exists, null if all 3 points are collinear.
+     */
     static std::optional<Circle2> from_points(
         const Vector2<Real>& point1, const Vector2<Real>& point2, const Vector2<Real>& point3)
     {
@@ -3109,61 +3148,117 @@ public:
         return Circle2 { center.value(), radius };
     }
 
+    /**
+     * Length of the path around the circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real circumference() const
     {
         return static_cast<Real>(2) * pi<Real>() * radius;
     }
 
+    /**
+     * Length of the path around the circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real perimeter() const
     {
         return circumference();
     }
 
+    /**
+     * Area.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real area() const
     {
         return pi<Real>() * sqrd(radius);
     }
 
+    /**
+     * Distance of a segment that intersects the center and edges of the circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real diameter() const
     {
         return static_cast<Real>(2) * radius;
     }
 
+    /**
+     * Determine if contains point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         return (point - center).length_sqrd() <= sqrd(radius);
     }
 
+    /**
+     * Closest signed-distance to point. Positive if outside and negative if inside the circle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         return center.distance(point) - radius;
     }
 
+    /**
+     * Closest distance to point. Zero if point is inside circle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         return max(static_cast<Real>(0), signed_distance(point));
     }
 
+    /**
+     * Closest distance to line. Zero if intersects or is inside circle.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         return max(static_cast<Real>(0), line.distance(center) - radius);
     }
 
+    /**
+     * Closest distance to ray. Zero if intersects or is inside circle.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         return max(static_cast<Real>(0), ray.distance(center) - radius);
     }
 
+    /**
+     * Closest distance to segment. Zero if intersects or is inside circle.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         return max(static_cast<Real>(0), segment.distance(center) - radius);
     }
 
+    /**
+     * Closest distance to arc. Zero if intersects or is inside circle.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         return max(static_cast<Real>(0), arc.distance(center) - radius);
     }
 
+    /**
+     * Closest distance to another circle. Zero if intersects or inside this circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2& other) const
     {
         const Real dist = center.distance(other.center);
@@ -3171,17 +3266,42 @@ public:
         return max(static_cast<Real>(0), dist - radius_sum);
     }
 
+    /**
+     * Closest distance to triangle. Zero if intersects or inside circle.
+     * @param triangle Triangle
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Closest distance to rectangle. Zero if intersects or inside circle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Closest distance to aligned rectangle. Zero if intersects or inside circle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Point on the edge of the circle at an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
     }
 
+    /**
+     * Direction perpendicular from the edge of the circle at a given angle. Normal points outward from the center.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_at(const Real angle) const
     {
         return Vector2<Real>::axis_x().rotate(angle);
