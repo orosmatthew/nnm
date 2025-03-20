@@ -2287,6 +2287,11 @@ public:
         return Arc2 { pivot, from, angle / static_cast<Real>(2) }.to();
     }
 
+    /**
+     * Project point onto the arc.
+     * @param point Point to project.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = pivot.direction(point);
@@ -2302,6 +2307,11 @@ public:
         return from;
     }
 
+    /**
+     * Closest distance to point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         if (point == pivot) {
@@ -2319,6 +2329,11 @@ public:
         return min(from_dist, to_dist);
     }
 
+    /**
+     * Closest signed-distance to point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const Real dist = distance(point);
@@ -2331,6 +2346,11 @@ public:
         return cross <= static_cast<Real>(0) ? dist : -dist;
     }
 
+    /**
+     * Closest distance to lin.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -2347,6 +2367,11 @@ public:
         return to_from_min_dist;
     }
 
+    /**
+     * Closest distance to ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -2365,6 +2390,11 @@ public:
         return to_from_origin_min_dist;
     }
 
+    /**
+     * Closest distance to segment.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -2385,6 +2415,11 @@ public:
         return ends_min_dist;
     }
 
+    /**
+     * Closest distance to other arc.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2& other) const
     {
         if (intersects(other)) {
@@ -2409,14 +2444,39 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
+    /**
+     * Closest distance to triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Closest distance to rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Closest distance to aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -2441,6 +2501,11 @@ public:
             || angle_in_range(intersection2_angle, from_angle_, to_angle_);
     }
 
+    /**
+     * Intersection points with line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -2477,6 +2542,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         const Real r = radius();
@@ -2503,6 +2573,11 @@ public:
         return in_arc1 || in_arc2;
     }
 
+    /**
+     * Intersection points with ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         const Real r = radius();
@@ -2543,6 +2618,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects segment.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         const Real r = radius();
@@ -2574,6 +2654,11 @@ public:
         return valid1 || valid2;
     }
 
+    /**
+     * Intersection points with segment. If only single intersection, both returned points are equal.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         const Real r = radius();
@@ -2616,6 +2701,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects other arc.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2& other) const
     {
         if (const Vector2<Real> other_to = other.to();
@@ -2658,6 +2748,11 @@ public:
         return (in_arc1_1 && in_arc2_1) || (in_arc1_2 && in_arc2_2);
     }
 
+    /**
+     * Intersection points with other arc. If only single intersection, both returned points are equal.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const
     {
         if (const Vector2<Real> other_to = other.to();
@@ -2713,16 +2808,46 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
+    /**
+     * Intersection points with circle. If only single intersection, both returned points are equal.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Circle2<Real>& circle) const;
 
+    /**
+     * Determine if intersects triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Determine if intersects rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects with aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if approximately tangent to line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -2736,6 +2861,11 @@ public:
         return approx_contains(p);
     }
 
+    /**
+     * Determine if approximately tangent to ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - pivot;
@@ -2752,6 +2882,11 @@ public:
         return approx_contains(p);
     }
 
+    /**
+     * Determine if approximately tangent to segment.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.from - pivot;
@@ -2770,6 +2905,11 @@ public:
         return approx_contains(p);
     }
 
+    /**
+     * Determine if approximately tangent to other arc.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Arc2& other) const
     {
         if (pivot == other.pivot) {
@@ -2788,33 +2928,70 @@ public:
         return (approx_contains(p1) && other.approx_contains(p1)) || (approx_contains(p2) && other.approx_contains(p2));
     }
 
+    /**
+     * Determine if approximately tangent to circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Circle2<Real>& circle) const;
 
-    [[nodiscard]] Arc2 translate(const Vector2<Real>& by) const
+    /**
+     * Translate by offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Arc2 translate(const Vector2<Real>& offset) const
     {
-        return Arc2 { pivot.translate(by), from.translate(by), angle };
+        return Arc2 { pivot.translate(offset), from.translate(offset), angle };
     }
 
-    [[nodiscard]] Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
-        return Arc2 { pivot.scale_at(scale_origin, by), from.scale_at(scale_origin, by), angle };
+        return Arc2 { pivot.scale_at(scale_origin, factor), from.scale_at(scale_origin, factor), angle };
     }
 
-    [[nodiscard]] Arc2 scale(const Vector2<Real>& by) const
+    /**
+     * Scale about the origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Arc2 scale(const Vector2<Real>& factor) const
     {
-        return Arc2 { pivot.scale(by), from.scale(by), angle };
+        return Arc2 { pivot.scale(factor), from.scale(factor), angle };
     }
 
+    /**
+     * Rotate about an origin by an angle.
+     * @param rotate_origin Rotate origin.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return Arc2 { pivot.rotate_at(rotate_origin, angle), from.rotate_at(rotate_origin, angle), this->angle };
     }
 
+    /**
+     * Rotate about the origin by an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Arc2 rotate(const Real angle) const
     {
         return Arc2 { pivot.rotate(angle), from.rotate(angle), this->angle };
     }
 
+    /**
+     * Determine if approximately coincident to another arc.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_coincident(const Arc2& other) const
     {
         if (!pivot.approx_equal(other.pivot)) {
@@ -2826,22 +3003,42 @@ public:
             || (from.approx_equal(other_to) && to_.approx_equal(other.from));
     }
 
+    /**
+     * Determine if `from`, `pivot`, and `angle` are all approximately equal to another arc.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
         return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
             && nnm::approx_equal(angle, other.angle);
     }
 
+    /**
+     * Determine if all members are exactly equal.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator==(const Arc2& other) const
     {
         return pivot == other.pivot && from == other.from && angle == other.angle;
     }
 
+    /**
+     * Determine if any members are not equal.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator!=(const Arc2& other) const
     {
         return pivot != other.pivot || from != other.from || angle != other.angle;
     }
 
+    /**
+     * Lexicographical compare in the order of `pivot`, `from`, and `angle`.
+     * @param other Other arc.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator<(const Arc2& other) const
     {
         if (pivot != other.pivot) {
