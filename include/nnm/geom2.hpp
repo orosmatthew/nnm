@@ -3817,21 +3817,42 @@ public:
     }
 };
 
+/**
+ * 2D triangle.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Triangle2 {
 public:
+    /**
+     * Vertices.
+     */
     Vector2<Real> vertices[3];
 
+    /**
+     * Default initializes to all vertices at the origin.
+     */
     constexpr Triangle2()
         : vertices { Vector2<Real>::zero(), Vector2<Real>::zero(), Vector2<Real>::zero() }
     {
     }
 
+    /**
+     * Initialize with provided vertices.
+     * @param vertex0 First vertex.
+     * @param vertex1 Second vertex.
+     * @param vertex2 Third vertex.
+     */
     constexpr Triangle2(const Vector2<Real>& vertex0, const Vector2<Real>& vertex1, const Vector2<Real>& vertex2)
         : vertices { vertex0, vertex1, vertex2 }
     {
     }
 
+    /**
+     * Edge as a line segment in the order of vertex 0 to 1, 1 to 2, then 2 to 0.
+     * @param index Index.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Segment2<Real> edge(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3839,11 +3860,19 @@ public:
         return { vertices[index], vertices[next_index] };
     }
 
+    /**
+     * Centroid which is the average between all vertices.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2<Real> centroid() const
     {
         return (vertices[0] + vertices[1] + vertices[2]) / static_cast<Real>(3);
     }
 
+    /**
+     * Circumcenter which is the intersection between the perpendicular bisectors of the edges.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2<Real> circumcenter() const
     {
         const Segment2<Real> e0 = edge(0);
@@ -3853,21 +3882,37 @@ public:
         return l0.unchecked_intersection(l1);
     }
 
+    /**
+     * Perimeter which is the combined length of all edges.
+     * @return Result.
+     */
     [[nodiscard]] Real perimeter() const
     {
         return edge(0).length() + edge(1).length() + edge(2).length();
     }
 
+    /**
+     * Incenter which is the intersection between the interior angles' bisectors.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> incenter() const
     {
         return angle_bisector(0).unchecked_intersection(angle_bisector(1));
     }
 
+    /**
+     * Orthocenter which is the intersection between the altitudes of the triangle.
+     * @return
+     */
     [[nodiscard]] constexpr Vector2<Real> orthocenter() const
     {
         return Line2<Real>::from_segment(altitude(0)).unchecked_intersection(Line2<Real>::from_segment(altitude(1)));
     }
 
+    /**
+     * Area.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real area() const
     {
         const Real sum = vertices[0].x * (vertices[1].y - vertices[2].y)
@@ -3875,6 +3920,13 @@ public:
         return abs(sum) / static_cast<Real>(2);
     }
 
+    /**
+     * Median which is the line segment from a vertex to the midpoint of its opposite edge.
+     * It is indexed in the order of vertex 0 to midpoint of edge 1, vertex 1 to midpoint of edge 2, then vertex 2 to
+     * midpoint of edge 0.
+     * @param index Index of a vertex.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Segment2<Real> median(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3882,12 +3934,23 @@ public:
         return { vertices[index], edge(next_index).midpoint() };
     }
 
+    /**
+     * Perpendicular bisector of an edge.
+     * The perpendicular bisector is a line that divides an edge in half and is perpendicular to the edge.
+     * @param index Index of an edge.
+     * @return Result.
+     */
     [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
         return { edge(index).midpoint(), edge(index).direction().arbitrary_perpendicular() };
     }
 
+    /**
+     * Interior angle at a vertex index.
+     * @param index Index of a vertex.
+     * @return Result.
+     */
     [[nodiscard]] Real angle(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3898,6 +3961,12 @@ public:
         return acos(dir1.dot(dir2) / (dir1.length() * dir2.length()));
     }
 
+    /**
+     * Perpendicular bisector of the interior angles in the order of the angle at vertex 0, 1, then 2.
+     * The perpendicular bisector is a line that divides an interior angle evenly in half.
+     * @param index Index of a vertex.
+     * @return Result.
+     */
     [[nodiscard]] Line2<Real> angle_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3909,6 +3978,11 @@ public:
         return { vertices[index], bisector_dir };
     }
 
+    /**
+     * Normal of an edge which is the vector perpendicular to the edge and points outward from the triangle.
+     * @param index Index of an edge.
+     * @return
+     */
     [[nodiscard]] Vector2<Real> normal(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3920,6 +3994,11 @@ public:
         return reverse ? -normal : normal;
     }
 
+    /**
+     * Altitude which is a line segment through a vertex to a perpendicular line extending from its opposite edge.
+     * @param index Index of a vertex.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> altitude(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -3931,11 +4010,21 @@ public:
         return { vertex, intersection };
     }
 
+    /**
+     * A point that is the result of linearly interpolating between all vertices with given weights.
+     * @param weights Weights.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector2<Real> lerp_point(const Vector3<Real>& weights) const
     {
         return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
     }
 
+    /**
+     * Barycentric coordinates of a point which is the weights for linearly interpolating between the vertices.
+     * @param point Point.
+     * @return Barycentric coordinates.
+     */
     [[nodiscard]] constexpr Vector3<Real> barycentric(const Vector2<Real>& point) const
     {
         const Vector2<Real> v0 = vertices[1] - vertices[0];
@@ -3951,17 +4040,30 @@ public:
         return { x, y, z };
     }
 
+    /**
+     * Circumcircle which is a circle that intersects all vertices.
+     * @return Result.
+     */
     [[nodiscard]] Circle2<Real> circumcircle() const
     {
         return Circle2<Real>::from_points_unchecked(vertices[0], vertices[1], vertices[2]);
     }
 
+    /**
+     * Incircle which is a circle inside the triangle and tangent to all edges.
+     * @return Result.
+     */
     [[nodiscard]] Circle2<Real> incircle() const
     {
         const Vector2<Real> center = incenter();
         return { center, edge(0).distance(center) };
     }
 
+    /**
+     * Determine if point is inside the triangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector3<Real> b = barycentric(point);
@@ -3969,6 +4071,11 @@ public:
             && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
     }
 
+    /**
+     * Closest signed-distance to the edges of the triangle. Negative if inside, positive if outside.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         Real min_dist = std::numeric_limits<Real>::max();
@@ -3981,6 +4088,11 @@ public:
         return contains(point) ? -min_dist : min_dist;
     }
 
+    /**
+     * Closest distance to a point. Zero if point is inside the triangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         if (contains(point)) {
@@ -3996,6 +4108,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -4011,6 +4128,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -4026,6 +4148,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a line segment. Zero if segment is inside triangle.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -4041,6 +4168,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to an arc. Zero if arc is inside the triangle.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (intersects(arc)) {
@@ -4056,6 +4188,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a circle. Zero if circle is inside triangle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -4071,6 +4208,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to another triangle. Zero if other triangle is inside this triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2& other) const
     {
         if (intersects(other)) {
@@ -4086,10 +4228,25 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a rectangle. Zero if rectangle is inside triangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Closest distance to an aligned rectangle. Zero if aligned rectangle is inside triangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -4100,6 +4257,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> points;
@@ -4115,6 +4277,11 @@ public:
         return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
+    /**
+     * Determine if intersects with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
         if (contains(ray.origin)) {
@@ -4128,6 +4295,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         std::array<Vector2<Real>, 2> points;
@@ -4146,6 +4318,11 @@ public:
         return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
+    /**
+     * Determine if intersects a line segment. Being inside the triangle is considered an intersection.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
     {
         if (contains(segment.from) || contains(segment.to)) {
@@ -4159,6 +4336,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points with a line segment. If only single intersection, both returned points are equal.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         std::array<Vector2<Real>, 2> points;
@@ -4177,6 +4359,11 @@ public:
         return points[1] < points[0] ? std::array { points[1], points[0] } : points;
     }
 
+    /**
+     * Determine if intersects an arc. Being inside the triangle is an intersection.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
@@ -4190,6 +4377,11 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects circle. Being inside the triangle is an intersection.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -4203,6 +4395,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with a circle.
+     * @param circle Circle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const auto depth_on_normal
@@ -4257,6 +4454,11 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects another triangle. Being inside the triangle is an intersection.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle2& other) const
     {
         for (const Vector2<Real>& vertex : other.vertices) {
@@ -4272,6 +4474,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with another triangle.
+     * @param other Other triangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2& other) const
     {
         const auto depth_on_normal
@@ -4308,14 +4515,38 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects a rectangle. Being inside the triangle is an intersection.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersect depth with a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects an aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersect depth with an aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if approximately equilateral which is where all edges have the same length.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
@@ -4323,6 +4554,12 @@ public:
             && nnm::approx_equal(edge(2).length_sqrd(), edge(0).length_sqrd());
     }
 
+    /**
+     * Determine if approximately similar to another triangle.
+     * Similarity is determined if one triangle can be translated, rotated, scaled, or flipped to become the other.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_similar(const Triangle2& other) const
     {
         std::array angles { angle(0), angle(1), angle(2) };
@@ -4341,6 +4578,10 @@ public:
         return false;
     }
 
+    /**
+     * Determine if approximately a right triangle. This is if one of the interior angles is 90 degrees.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_right() const
     {
         constexpr Real right_angle = pi<float>() / static_cast<Real>(2);
@@ -4348,11 +4589,22 @@ public:
             || nnm::approx_equal(angle(2), right_angle);
     }
 
-    [[nodiscard]] Triangle2 translate(const Vector2<Real>& by) const
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 translate(const Vector2<Real>& offset) const
     {
-        return { vertices[0].translate(by), vertices[1].translate(by), vertices[2].translate(by) };
+        return { vertices[0].translate(offset), vertices[1].translate(offset), vertices[2].translate(offset) };
     }
 
+    /**
+     * Rotate about an origin by an angle.
+     * @param rotate_origin Rotation origin.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Triangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { vertices[0].rotate_at(rotate_origin, angle),
@@ -4360,47 +4612,91 @@ public:
                  vertices[2].rotate_at(rotate_origin, angle) };
     }
 
+    /**
+     * Rotate about the origin by an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Triangle2 rotate(const Real angle) const
     {
         return { vertices[0].rotate(angle), vertices[1].rotate(angle), vertices[2].rotate(angle) };
     }
 
-    [[nodiscard]] Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
-        return { vertices[0].scale_at(scale_origin, by),
-                 vertices[1].scale_at(scale_origin, by),
-                 vertices[2].scale_at(scale_origin, by) };
+        return { vertices[0].scale_at(scale_origin, factor),
+                 vertices[1].scale_at(scale_origin, factor),
+                 vertices[2].scale_at(scale_origin, factor) };
     }
 
-    [[nodiscard]] Triangle2 scale(const Vector2<Real>& by) const
+    /**
+     * Scale about the origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 scale(const Vector2<Real>& factor) const
     {
-        return { vertices[0].scale(by), vertices[1].scale(by), vertices[2].scale(by) };
+        return { vertices[0].scale(factor), vertices[1].scale(factor), vertices[2].scale(factor) };
     }
 
-    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real angle_y) const
+    /**
+     * Shear along the x-axis about an origin by a shear factor.
+     * @param shear_origin Shear origin.
+     * @param factor Y-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor) const
     {
-        return { vertices[0].shear_x_at(shear_origin, angle_y),
-                 vertices[1].shear_x_at(shear_origin, angle_y),
-                 vertices[2].shear_x_at(shear_origin, angle_y) };
+        return { vertices[0].shear_x_at(shear_origin, factor),
+                 vertices[1].shear_x_at(shear_origin, factor),
+                 vertices[2].shear_x_at(shear_origin, factor) };
     }
 
-    [[nodiscard]] Triangle2 shear_x(const Real angle_y) const
+    /**
+     * Shear along the x-axis about the origin by a shear factor.
+     * @param factor Y-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 shear_x(const Real factor) const
     {
-        return { vertices[0].shear_x(angle_y), vertices[1].shear_x(angle_y), vertices[2].shear_x(angle_y) };
+        return { vertices[0].shear_x(factor), vertices[1].shear_x(factor), vertices[2].shear_x(factor) };
     }
 
-    [[nodiscard]] Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    /**
+     * Shear along the y-axis about an origin by a shear factor.
+     * @param shear_origin Shear origin.
+     * @param factor X-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real factor) const
     {
-        return { vertices[0].shear_y_at(shear_origin, angle_x),
-                 vertices[1].shear_y_at(shear_origin, angle_x),
-                 vertices[2].shear_y_at(shear_origin, angle_x) };
+        return { vertices[0].shear_y_at(shear_origin, factor),
+                 vertices[1].shear_y_at(shear_origin, factor),
+                 vertices[2].shear_y_at(shear_origin, factor) };
     }
 
-    [[nodiscard]] Triangle2 shear_y(const Real angle_x) const
+    /**
+     * Shear along the y-axis about the origin by a shear factor.
+     * @param factor X-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Triangle2 shear_y(const Real factor) const
     {
-        return { vertices[0].shear_y(angle_x), vertices[1].shear_y(angle_x), vertices[2].shear_y(angle_x) };
+        return { vertices[0].shear_y(factor), vertices[1].shear_y(factor), vertices[2].shear_y(factor) };
     }
 
+    /**
+     * Determine if approximately coincident with another triangle which is if the vertices of both triangle are
+     * approximately equal regardless of vertex order.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_coincident(const Triangle2& other) const
     {
         const std::array permutations {
@@ -4416,22 +4712,42 @@ public:
         return false;
     }
 
+    /**
+     * Determine if vertices are approximately equal to another triangle's vertices.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Triangle2& other) const
     {
         return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
             && vertices[2].approx_equal(other.vertices[2]);
     }
 
+    /**
+     * Determine if all vertices are exactly equal to another triangle's vertices.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator==(const Triangle2& other) const
     {
         return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
     }
 
+    /**
+     * Determine if any vertices are not exactly equal to another triangle's vertices.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator!=(const Triangle2& other) const
     {
         return vertices[0] != other.vertices[0] || vertices[1] != other.vertices[1] || vertices[2] != other.vertices[2];
     }
 
+    /**
+     * Lexicographical comparison in the order of the vertices.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator<(const Triangle2& other) const
     {
         if (vertices[0] == other.vertices[0]) {
