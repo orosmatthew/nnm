@@ -24,132 +24,263 @@ class Segment3;
 using Segment3f = Segment3<float>;
 using Segment3d = Segment3<double>;
 
+/**
+ * 3D infinite line.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Line3 {
 public:
-    Vector3<Real> origin;
+    /**
+     * Point that the line intersects.
+     */
+    Vector3<Real> point;
+
+    /**
+     * Direction.
+     */
     Vector3<Real> direction;
 
+    /**
+     * Default initialize with zero point in the direction of the x-axis.
+     */
     constexpr Line3()
-        : origin { Vector3<Real>::zero() }
+        : point { Vector3<Real>::zero() }
         , direction { Vector3<Real>::axis_x() }
     {
     }
 
-    constexpr Line3(const Vector3<Real>& origin, const Vector3<Real>& direction)
-        : origin { origin }
+    /**
+     * Initialize with a point that the line intersects and a direction. The direction should be normalized.
+     * @param point Point.
+     * @param direction Normalized direction.
+     */
+    constexpr Line3(const Vector3<Real>& point, const Vector3<Real>& direction)
+        : point { point }
         , direction { direction }
     {
     }
 
+    /**
+     * Line that intersects two points.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @return Result.
+     */
     static Line3 from_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
     {
         return { point1, point1.direction(point2) };
     }
 
+    /**
+     * Line that is an extension from a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     static Line3 from_ray(const Ray3<Real>& ray);
 
+    /**
+     * Line that intersects the origin and is in the direction of the x-axis.
+     * @return Result.
+     */
     static constexpr Line3 axis_x()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_x() };
     }
 
+    /**
+     * Line that intersects the origin and is in the direction of the y-axis.
+     * @return Result.
+     */
     static constexpr Line3 axis_y()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_y() };
     }
 
+    /**
+     * Line that intersects the origin and is in the direction of the z-axis.
+     * @return
+     */
     static constexpr Line3 axis_z()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_z() };
     }
 
-    static constexpr Line3 axis_x_offset(const Real y, const Real z)
+    /**
+     * Line that is in the direction of the x-axis and is offset from the y and z axes.
+     * @param offset_y Y-Axis offset.
+     * @param offset_z Z-Axis offset.
+     * @return Result.
+     */
+    static constexpr Line3 axis_x_offset(const Real offset_y, const Real offset_z)
     {
-        return { { static_cast<Real>(0), y, z }, Vector3<Real>::axis_x() };
+        return { { static_cast<Real>(0), offset_y, offset_z }, Vector3<Real>::axis_x() };
     }
 
-    static constexpr Line3 axis_y_offset(const Real x, const Real z)
+    /**
+     * Line that is in the direction of the y-axis and is offset from the x and z axes.
+     * @param offset_x X-Axis offset.
+     * @param offset_z Z-Axis offset.
+     * @return Result.
+     */
+    static constexpr Line3 axis_y_offset(const Real offset_x, const Real offset_z)
     {
-        return { { x, static_cast<Real>(0), z }, Vector3<Real>::axis_y() };
+        return { { offset_x, static_cast<Real>(0), offset_z }, Vector3<Real>::axis_y() };
     }
 
-    static constexpr Line3 axis_z_offset(const Real x, const Real y)
+    /**
+     * Line that is in the direction of the z-axis and is offset from the x and y axes.
+     * @param offset_x X-Axis offset.
+     * @param offset_y Y-Axis offset.
+     * @return Result.
+     */
+    static constexpr Line3 axis_z_offset(const Real offset_x, const Real offset_y)
     {
-        return { { x, y, static_cast<Real>(0) }, Vector3<Real>::axis_z() };
+        return { { offset_x, offset_y, static_cast<Real>(0) }, Vector3<Real>::axis_z() };
     }
 
+    /**
+     * Line that is parallel to this line and intersects a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Line3 parallel_containing(const Vector3<Real>& point) const
     {
         return { point, direction };
     }
 
+    /**
+     * Line that is perpendicular to this line and intersects a point.
+     * Both direction and -direction are valid for the resulting line.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Line3 arbitrary_perpendicular_containing(const Vector3<Real>& point) const
     {
         return { point, direction.arbitrary_perpendicular() };
     }
 
+    /**
+     * Normalize the line's direction.
+     * @return Result.
+     */
     [[nodiscard]] Line3 normalize() const
     {
-        return { origin, direction.normalize() };
+        return { point, direction.normalize() };
     }
 
+    /**
+     * Determine if approximately collinear with a ray which means
+     * that all points for both the line and the ray exist on the same line.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_collinear(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if approximately intersects a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = point - origin;
+        const Vector3<Real> dir = point - this->point;
         const Real t = dir.dot(direction);
-        const Vector3<Real> proj = origin + direction * t;
+        const Vector3<Real> proj = this->point + direction * t;
         return proj.approx_equal(point);
     }
 
+    /**
+     * Closest distance to a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
     {
-        return (point - origin).cross(direction).length();
+        return (point - this->point).cross(direction).length();
     }
 
+    /**
+     * Closest distance to another line. Zero if they intersect.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         if (dir_cross.approx_zero()) {
-            return distance(other.origin);
+            return distance(other.point);
         }
-        const Vector3<Real> diff = origin - other.origin;
+        const Vector3<Real> diff = point - other.point;
         return abs(dir_cross.dot(diff)) / dir_cross.length();
     }
 
+    /**
+     * Closest distance to a ray. Zero if they intersect.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if approximately parallel with another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_parallel(const Line3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
 
+    /**
+     * Determine if approximately parallel to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_parallel(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if approximately perpendicular to another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_perpendicular(const Line3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
+    /**
+     * Determine if approximately perpendicular to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if approximately intersects another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_intersects(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return approx_contains(other.origin);
+            return approx_contains(other.point);
         }
-        const Vector3<Real> diff = other.origin - origin;
+        const Vector3<Real> diff = other.point - point;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p = origin + direction * t;
-        const Vector3<Real> p_other = other.origin + other.direction * t_other;
+        const Vector3<Real> p = point + direction * t;
+        const Vector3<Real> p_other = other.point + other.direction * t_other;
         return p.approx_equal(p_other);
     }
 
+    /**
+     * Intersection point with another line.
+     * @param other Other line.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -157,16 +288,21 @@ public:
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = other.origin - origin;
+        const Vector3<Real> diff = other.point - point;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p = origin + direction * t;
-        if (const Vector3<Real> p_other = other.origin + other.direction * t_other; !p.approx_equal(p_other)) {
+        const Vector3<Real> p = point + direction * t;
+        if (const Vector3<Real> p_other = other.point + other.direction * t_other; !p.approx_equal(p_other)) {
             return std::nullopt;
         }
         return p;
     }
 
+    /**
+     * Determine if approximately intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const;
 
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3<Real>& ray) const;
