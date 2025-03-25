@@ -4760,13 +4760,31 @@ public:
     }
 };
 
+/**
+ * 2D rectangle.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Rectangle2 {
 public:
+    /**
+     * Center.
+     */
     Vector2<Real> center;
+
+    /**
+     * Size.
+     */
     Vector2<Real> size;
+
+    /**
+     * Rotation angle.
+     */
     Real angle;
 
+    /**
+     * Default initialize centered at the origin with zero size and zero rotation.
+     */
     constexpr Rectangle2()
         : center { Vector2<Real>::zero() }
         , size { Vector2<Real>::zero() }
@@ -4774,6 +4792,12 @@ public:
     {
     }
 
+    /**
+     * Initialize with center, size, and rotation angle.
+     * @param center Center.
+     * @param size Size.
+     * @param angle Rotation angle in radians.
+     */
     constexpr Rectangle2(const Vector2<Real>& center, const Vector2<Real>& size, const Real angle)
         : center { center }
         , size { size }
@@ -4781,84 +4805,145 @@ public:
     {
     }
 
+    /**
+     * Vertex in the negative x and negative y corner before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_nx_ny() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
         return (center - half_size).rotate_at(center, angle);
     }
 
+    /**
+     * Vertex in the negative x and positive y corner before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_nx_py() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
         return Vector2<Real> { center.x - half_size.x, center.y + half_size.y }.rotate_at(center, angle);
     }
 
+    /**
+     * Vertex in the positive x and negative y corner before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_px_ny() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
         return Vector2<Real> { center.x + half_size.x, center.y - half_size.y }.rotate_at(center, angle);
     }
 
+    /**
+     * Vertex in the positive x and positive y corner before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_px_py() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
         return (center + half_size).rotate_at(center, angle);
     }
 
+    /**
+     * Edge in the negative x direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_nx() const
     {
         return { vertex_nx_ny(), vertex_nx_py() };
     }
 
+    /**
+     * Edge in the negative y direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_ny() const
     {
         return { vertex_nx_ny(), vertex_px_ny() };
     }
 
+    /**
+     * Edge in the positive x direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_px() const
     {
         return { vertex_px_ny(), vertex_px_py() };
     }
 
+    /**
+     * Edge in the positive y direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_py() const
     {
         return { vertex_nx_py(), vertex_px_py() };
     }
 
+    /**
+     * Normal of the edge in the negative x direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_nx() const
     {
         const Vector2<Real> dir = edge_nx().direction();
         return { -dir.y, dir.x };
     }
 
+    /**
+     * Normal of the edge in the negative y direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_ny() const
     {
         const Vector2<Real> dir = edge_ny().direction();
         return { dir.y, -dir.x };
     }
 
+    /**
+     * Normal of the edge in the positive x direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_px() const
     {
         const Vector2<Real> dir = edge_px().direction();
         return { dir.y, -dir.x };
     }
 
+    /**
+     * Normal of the edge in the positive y direction before rotation.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_py() const
     {
         const Vector2<Real> dir = edge_py().direction();
         return { -dir.y, dir.x };
     }
 
+    /**
+     * Area.
+     * @return Area.
+     */
     [[nodiscard]] constexpr Real area() const
     {
         return size.x * size.y;
     }
 
+    /**
+     * Perimeter which is the combined length of all edges.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Real perimeter() const
     {
         return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
     }
 
+    /**
+     * Determine if point is inside the rectangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
@@ -4866,6 +4951,11 @@ public:
         return abs(local_point.x) <= half_size.x && abs(local_point.y) <= half_size.y;
     }
 
+    /**
+     * Closest signed distance to the edges of the rectangle. Negative if inside, positive if outside the rectangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -4879,6 +4969,11 @@ public:
         return contains(point) ? -min_dist : min_dist;
     }
 
+    /**
+     * Closest distance to point. Zero if point is inside the rectangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
@@ -4887,6 +4982,11 @@ public:
         return local_point.distance(closest);
     }
 
+    /**
+     * Closest distance to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -4903,6 +5003,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -4919,6 +5024,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a line segment. Zero if line segment is inside the rectangle.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.from)) {
@@ -4938,6 +5048,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to an arc. Zero if arc is inside the rectangle.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
@@ -4957,6 +5072,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a circle. Zero if circle is inside the rectangle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -4976,6 +5096,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a triangle. Zero if triangle is inside the rectangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
@@ -4995,6 +5120,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to another rectangle. Zero if other rectangle is inside of this rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2& other) const
     {
         if (contains(other.vertex_nx_ny())) {
@@ -5019,14 +5149,29 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to an aligned rectangle. Zero if the aligned rectangle is inside of this rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
             || edge_py().intersects(line);
     }
 
+    /**
+     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -5049,12 +5194,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
             || edge_py().intersects(ray);
     }
 
+    /**
+     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -5077,12 +5232,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects a line segment. Being inside the rectangle is an intersection.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
     }
 
+    /**
+     * Intersection points with a line segment. If only single intersection, both returned points are equal.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -5106,12 +5271,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects an arc. Being inside the rectangle is an intersection.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
+    /**
+     * Determine if intersects a circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -5124,6 +5299,11 @@ public:
         return dist_sqrd <= sqrd(circle.radius);
     }
 
+    /**
+     * Intersect depth with a circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
@@ -5144,6 +5324,11 @@ public:
             : Vector2<Real> { static_cast<Real>(0), diff_y }.rotate(angle);
     }
 
+    /**
+     * Determine if intersects a triangle. Being inside the rectangle is an intersection.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -5160,6 +5345,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const
     {
         const auto depth_on_normal
@@ -5206,6 +5396,11 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects another rectangle. Being inside this rectangle is an intersection.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2& other) const
     {
         const std::array<Vector2<Real>, 4> vertices_other
@@ -5224,6 +5419,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2& other) const
     {
         const auto depth_on_normal
@@ -5269,35 +5469,77 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects an aligned rectangle. Being inside this rectangle is an intersection.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersect depth with an aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
-    [[nodiscard]] Rectangle2 translate(const Vector2<Real>& by) const
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Rectangle2 translate(const Vector2<Real>& offset) const
     {
-        return { center.translate(by), size, angle };
+        return { center.translate(offset), size, angle };
     }
 
+    /**
+     * Rotate about an origin by an angle.
+     * @param rotate_origin Rotation origin.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Rectangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { center.rotate_at(rotate_origin, angle), size, normalize_angle(this->angle + angle) };
     }
 
+    /**
+     * Rotate about the origin by an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Rectangle2 rotate(const Real angle) const
     {
         return { center.rotate(angle), size, normalize_angle(this->angle + angle) };
     }
 
-    [[nodiscard]] Rectangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Rectangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
-        return { center.scale_at(scale_origin, by), size.scale(by), angle };
+        return { center.scale_at(scale_origin, factor), size.scale(factor), angle };
     }
 
-    [[nodiscard]] Rectangle2 scale(const Vector2<Real>& by) const
+    /**
+     * Scale about the origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Rectangle2 scale(const Vector2<Real>& factor) const
     {
-        return { center.scale(by), size.scale(by), angle };
+        return { center.scale(factor), size.scale(factor), angle };
     }
 
+    /**
+     * Determine if approximately coincident which is if all vertices are approximately equal regardless of their order.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
@@ -5331,22 +5573,42 @@ public:
         return false;
     }
 
+    /**
+     * Determine if all members are approximately equal to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_equal(const Rectangle2& other) const
     {
         return center.approx_equal(other.center) && size.approx_equal(other.size)
             && nnm::approx_equal(angle, other.angle);
     }
 
+    /**
+     * Determine if all members are exactly equal with another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool operator==(const Rectangle2& other) const
     {
         return center == other.center && size == other.size && angle == other.angle;
     }
 
+    /**
+     * Determine if any members are not exactly equal with another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool operator!=(const Rectangle2& other) const
     {
         return center != other.center || size != other.size || angle != other.angle;
     }
 
+    /**
+     * Lexicographical comparison in the order of center, size, the rotation angle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool operator<(const Rectangle2& other) const
     {
         if (center == other.center) {
