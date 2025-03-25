@@ -5621,24 +5621,49 @@ public:
     }
 };
 
+/**
+ * 2D axis-aligned rectangle.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class AlignedRectangle2 {
 public:
+    /**
+     * Minimum corner.
+     */
+
     Vector2<Real> min;
+    /**
+     * Maximum corner.
+     */
     Vector2<Real> max;
 
+    /**
+     * Default initialize to zero minimum and zero maximum.
+     */
     constexpr AlignedRectangle2()
         : min { Vector2<Real>::zero() }
         , max { Vector2<Real>::zero() }
     {
     }
 
+    /**
+     * Initialize with minimum and maximum corners.
+     * @param min Minimum corner.
+     * @param max Maximum corner.
+     */
     constexpr AlignedRectangle2(const Vector2<Real>& min, const Vector2<Real>& max)
         : min { min }
         , max { max }
     {
     }
 
+    /**
+     * Smallest aligned rectangle that contains two points.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @return Result.
+     */
     static constexpr AlignedRectangle2 from_bounding_points(const Vector2<Real>& point1, const Vector2<Real>& point2)
     {
         const Vector2<Real> min = { nnm::min(point1.x, point2.x), nnm::min(point1.y, point2.y) };
@@ -5646,11 +5671,21 @@ public:
         return { min, max };
     }
 
+    /**
+     * Smallest aligned rectangle that contains a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
     static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment)
     {
         return from_bounding_points(segment.from, segment.to);
     }
 
+    /**
+     * Smallest aligned rectangle that contains an arc.
+     * @param arc Arc.
+     * @return Result.
+     */
     static AlignedRectangle2 from_bounding_arc(const Arc2<Real>& arc)
     {
         const Real half_pi = pi<float>() / static_cast<Real>(2);
@@ -5676,6 +5711,11 @@ public:
         return { min, max };
     }
 
+    /**
+     * Smallest aligned rectangle that contains a circle.
+     * @param circle Circle.
+     * @return Result.
+     */
     static AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle)
     {
         const Vector2<Real> min = circle.center - Vector2<Real>::all(circle.radius);
@@ -5683,6 +5723,11 @@ public:
         return { min, max };
     }
 
+    /**
+     * Smallest aligned rectangle that contains a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     static AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle)
     {
         Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
@@ -5696,6 +5741,11 @@ public:
         return { min, max };
     }
 
+    /**
+     * Smallest aligned rectangle that contains a non-aligned rectangle.
+     * @param rectangle Non-aligned rectangle.
+     * @return Result.
+     */
     static AlignedRectangle2 from_bounding_rectangle(const Rectangle2<Real>& rectangle)
     {
         Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
@@ -5712,88 +5762,158 @@ public:
         return { min, max };
     }
 
+    /**
+     * Vertex in the negative x and negative y corner.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_nx_ny() const
     {
         return min;
     }
 
+    /**
+     * Vertex in the negative x and positive y corner.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_nx_py() const
     {
         return { min.x, max.y };
     }
 
+    /**
+     * Vertex in the positive x and negative y corner.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_px_ny() const
     {
         return { max.x, min.y };
     }
 
+    /**
+     * Vertex in the positive x and positive y corner.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> vertex_px_py() const
     {
         return max;
     }
 
+    /**
+     * Edge in the negative x direction.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_nx() const
     {
         return { vertex_nx_ny(), vertex_nx_py() };
     }
 
+    /**
+     * Edge in the negative y direction.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_ny() const
     {
         return { vertex_nx_ny(), vertex_px_ny() };
     }
 
+    /**
+     * Edge in the positive x direction.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_px() const
     {
         return { vertex_px_ny(), vertex_px_py() };
     }
 
+    /**
+     * Edge in the positive y direction.
+     * @return Result.
+     */
     [[nodiscard]] Segment2<Real> edge_py() const
     {
         return { vertex_nx_py(), vertex_px_py() };
     }
 
+    /**
+     * Normal of the edge in the negative x direction.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_nx() const
     {
         return -Vector2<Real>::axis_x();
     }
 
+    /**
+     * Normal of the edge in the negative y direction.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_ny() const
     {
         return -Vector2<Real>::axis_y();
     }
 
+    /**
+     * Normal of the edge in the positive x direction.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_px() const
     {
         return Vector2<Real>::axis_x();
     }
 
+    /**
+     * Normal of the edge in the positive y direction.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> normal_py() const
     {
         return Vector2<Real>::axis_y();
     }
 
+    /**
+     * Size.
+     * @return Result.
+     */
     [[nodiscard]] Vector2<Real> size() const
     {
         return max - min;
     }
 
+    /**
+     * Area.
+     * @return Result.
+     */
     [[nodiscard]] Real area() const
     {
         const Vector2<Real> s = size();
         return s.x * s.y;
     }
 
+    /**
+     * Perimeter which is the combined length of all edges.
+     * @return Result.
+     */
     [[nodiscard]] Real perimeter() const
     {
         const Vector2<Real> s = size();
         return static_cast<Real>(2) * s.x + static_cast<Real>(2) * s.y;
     }
 
+    /**
+     * Determine if point is inside the rectangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }
 
+    /**
+     * Closest signed-distance of point to the rectangle's edges. Negative if inside, positive if outside.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5807,12 +5927,22 @@ public:
         return contains(point) ? -min_dist : min_dist;
     }
 
+    /**
+     * Closest distance to the rectangle. Zero if point is inside the rectangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> closest = point.clamp(min, max);
         return point.distance(closest);
     }
 
+    /**
+     * Closest distance to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5829,6 +5959,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5845,6 +5980,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a line segment. Zero if the line segment is inside the rectangle.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.from)) {
@@ -5864,6 +6004,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to an arc. Zero if the arc is inside the rectangle.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
@@ -5883,6 +6028,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a circle. Zero if the circle is inside the rectangle.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -5902,6 +6052,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a triangle. Zero if the triangle is inside the rectangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
@@ -5921,6 +6076,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a non-aligned rectangle. Zero if the non-aligned rectangle is inside this rectangle.
+     * @param rectangle Non-aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const
     {
         if (intersects(rectangle)) {
@@ -5940,6 +6100,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to another aligned rectangle. Zero if other rectangle is inside this rectangle.
+     * @param other Other aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const AlignedRectangle2& other) const
     {
         if (intersects(other)) {
@@ -5959,12 +6124,22 @@ public:
         return min_dist;
     }
 
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
             || edge_py().intersects(line);
     }
 
+    /**
+     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -5987,12 +6162,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
             || edge_py().intersects(ray);
     }
 
+    /**
+     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -6015,12 +6200,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects a line segment. Being inside the rectangle is an intersection.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
     }
 
+    /**
+     * Intersection points with a line segment. If only single intersection, both returned points are equal.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         std::array<Vector2<Real>, 2> inters;
@@ -6044,12 +6239,22 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects an arc. Being inside the rectangle is an intersection.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
+    /**
+     * Determine if intersects a circle. Being inside the rectangle is an intersection.
+     * @param circle Circle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -6060,6 +6265,11 @@ public:
         return dist_sqrd <= sqrd(circle.radius);
     }
 
+    /**
+     * Intersect depth with a circle.
+     * @param circle Circle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Vector2<Real> closest = circle.center.clamp(min, max);
@@ -6078,6 +6288,11 @@ public:
             : Vector2<Real> { static_cast<Real>(0), diff_y };
     }
 
+    /**
+     * Determine if intersects a triangle. Being in the rectangle is an intersection.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -6094,6 +6309,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with a triangle.
+     * @param triangle Triangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const
     {
         const auto depth_on_normal
@@ -6140,6 +6360,11 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects a non-aligned rectangle. Being inside this rectangle is an intersection.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const
     {
         const std::array<Vector2<Real>, 4> vertices_rect = {
@@ -6159,6 +6384,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with a non-aligned rectangle.
+     * @param rectangle Non-aligned rectangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const
     {
         const auto depth_on_normal
@@ -6211,6 +6441,11 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if intersects another aligned rectangle.
+     * @param other Other aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2& other) const
     {
         const std::array<Vector2<Real>, 4> vertices_other
@@ -6229,6 +6464,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersect depth with another aligned rectangle.
+     * @param other Other aligned rectangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2& other) const
     {
         const auto depth_on_normal
@@ -6276,21 +6516,41 @@ public:
         return min_normal * min_overlap;
     }
 
+    /**
+     * Determine if minimum and maximum corners are approximately equal with another aligned rectangle.
+     * @param rectangle Other aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_equal(const AlignedRectangle2& rectangle) const
     {
         return min.approx_equal(rectangle.min) && max.approx_equal(rectangle.max);
     }
 
+    /**
+     * Determine if minimum and maximum corners are exactly equal with another aligned rectangle.
+     * @param other Other aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool operator==(const AlignedRectangle2& other) const
     {
         return min == other.min && max == other.max;
     }
 
+    /**
+     * Determine if either minimum or maximum corners are not exactly equal with another aligned rectangle.
+     * @param other Other aligned rectangle.
+     * @return
+     */
     [[nodiscard]] bool operator!=(const AlignedRectangle2& other) const
     {
         return min != other.min || max != other.max;
     }
 
+    /**
+     * Lexicographical comparison in the order of minimum then maximum.
+     * @param other Other aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool operator<(const AlignedRectangle2& other) const
     {
         if (min == other.min) {
