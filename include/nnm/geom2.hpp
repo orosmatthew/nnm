@@ -3307,6 +3307,11 @@ public:
         return Vector2<Real>::axis_x().rotate(angle);
     }
 
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         if (contains(line.origin)) {
@@ -3319,6 +3324,11 @@ public:
         return discriminant >= static_cast<Real>(0);
     }
 
+    /**
+     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
@@ -3336,6 +3346,11 @@ public:
         return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
     }
 
+    /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         if (contains(ray.origin)) {
@@ -3360,6 +3375,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
@@ -3388,6 +3408,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects segment. Being inside the circle is considered an intersection.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         if (contains(segment.from) || contains(segment.to)) {
@@ -3419,6 +3444,11 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points with a segment. If only single intersection, both returned points are equal.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.to - segment.from;
@@ -3451,6 +3481,11 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Determine if intersects with an arc. Being inside the circle is considered an intersection.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         if (contains(arc.from)) {
@@ -3477,6 +3512,11 @@ public:
         return in_arc;
     }
 
+    /**
+     * Intersection points with an arc. If only single intersection, both returned points are equal.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2<Real>& arc) const
     {
         const Real dist = center.distance(arc.pivot);
@@ -3509,11 +3549,21 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * Deteremine if intersects another circle. Being inside the circle is considered an intersction.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Circle2& other) const
     {
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
     }
 
+    /**
+     * Intersection depth with another circle.
+     * @param other Other circle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2& other) const
     {
         const Vector2<Real> diff = other.center - center;
@@ -3530,18 +3580,53 @@ public:
         return diff.normalize() * depth;
     }
 
+    /**
+     * Determine if intersects a triangle. Being inside the circle is considered an intersection.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Intersect depth with triangle.
+     * @param triangle Triangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const;
 
+    /**
+     * Determine if intersects a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersect depth with rectangle.
+     * @param rectangle Rectangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
+    /**
+     * Determine if intersects an aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Intersect depth with an aligned rectangle.
+     * @param rectangle Aligned rectangle.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
+    /**
+     * Deteremine if approximately tangent to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
@@ -3551,10 +3636,15 @@ public:
         return approx_zero(discriminant);
     }
 
-    [[nodiscard]] constexpr bool approx_tangent(const Ray2<Real>& line) const
+    /**
+     * Determine if approximately tangent to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_tangent(const Ray2<Real>& ray) const
     {
-        const Vector2<Real> dir = line.origin - center;
-        const Real twice_dot = static_cast<Real>(2) * dir.dot(line.direction);
+        const Vector2<Real> dir = ray.origin - center;
+        const Real twice_dot = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - sqrd(radius);
         if (const Real discriminant = sqrd(twice_dot) - static_cast<Real>(4) * dist_sqrd_minus_radius_sqrd;
             !approx_zero(discriminant)) {
@@ -3564,6 +3654,11 @@ public:
         return t >= static_cast<Real>(0);
     }
 
+    /**
+     * Determine if approximately tangent to a segment.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.from - center;
@@ -3579,6 +3674,11 @@ public:
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
     }
 
+    /**
+     * Determine if approximately tangent to an arc.
+     * @param arc Arc.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const
     {
         if (center == arc.pivot) {
@@ -3595,6 +3695,11 @@ public:
         return angle_in_range(arc_circle_angle, arc.angle_from(), arc.angle_to());
     }
 
+    /**
+     * Determine if approximately tangent to another circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_tangent(const Circle2& other) const
     {
         if (center == other.center) {
@@ -3605,51 +3710,104 @@ public:
             || nnm::approx_equal(dist_sqrd, sqrd(radius - other.radius));
     }
 
-    [[nodiscard]] Circle2 translate(const Vector2<Real>& by) const
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Circle2 translate(const Vector2<Real>& offset) const
     {
-        return { center.translate(by), radius };
+        return { center.translate(offset), radius };
     }
 
+    /**
+     * Rotate about an origin by an angle.
+     * @param rotate_origin Rotation origin.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Circle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { center.rotate_at(rotate_origin, angle), radius };
     }
 
+    /**
+     * Rotate about the origin by an angle.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Circle2 rotate(const Real angle) const
     {
         return { center.rotate(angle), radius };
     }
 
-    [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real factor) const
     {
-        return { center.scale_at(scale_origin, Vector2<Real>::all(by)), abs(radius * by) };
+        return { center.scale_at(scale_origin, Vector2<Real>::all(factor)), abs(radius * factor) };
     }
 
-    [[nodiscard]] Circle2 scale(const Real by) const
+    /**
+     * Scale about the origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Circle2 scale(const Real factor) const
     {
-        return { center.scale(Vector2<Real>::all(by)), abs(radius * by) };
+        return { center.scale(Vector2<Real>::all(factor)), abs(radius * factor) };
     }
 
+    /**
+     * Determine if approximately coincient to another circle which means if the center and radius are both
+     * approximately equal.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_coincident(const Circle2& other) const
     {
         return approx_equal(other);
     }
 
+    /**
+     * Determine if all members are approximately equal to another circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Circle2& other) const
     {
         return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
     }
 
+    /**
+     * Determine if all members are equal with another circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator==(const Circle2& other) const
     {
         return center == other.center && radius == other.radius;
     }
 
+    /**
+     * Determine if any members are not equal with another circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator!=(const Circle2& other) const
     {
         return center != other.center || radius != other.radius;
     }
 
+    /**
+     * Lexicographical comparison in the order of center then radius with another circle.
+     * @param other Other circle.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator<(const Circle2& other) const
     {
         if (center != other.center) {
