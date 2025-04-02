@@ -305,114 +305,231 @@ public:
      */
     [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const;
 
+    /**
+     * Intersection point with a ray.
+     * @param ray Ray.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3<Real>& ray) const;
 
+    /**
+     * Project point on the line.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = point - origin;
+        const Vector3<Real> dir = point - this->point;
         const Real t = dir.dot(direction);
-        return origin + direction * t;
+        return this->point + direction * t;
     }
 
+    /**
+     * Determine if approximately coincident with another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_coincident(const Line3& other) const
     {
         if (!approx_parallel(other)) {
             return false;
         }
-        const Vector3<Real> diff = origin - other.origin;
+        const Vector3<Real> diff = point - other.point;
         return diff.cross(other.direction).approx_zero();
     }
 
-    [[nodiscard]] Line3 translate(const Vector3<Real>& by) const
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 translate(const Vector3<Real>& offset) const
     {
-        return { origin.translate(by), direction };
+        return { point.translate(offset), direction };
     }
 
-    [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
-        return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
+        return { point.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
     }
 
-    [[nodiscard]] Line3 scale(const Vector3<Real>& by) const
+    /**
+     * Scale about the origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 scale(const Vector3<Real>& factor) const
     {
-        return { origin.scale(by), direction.scale(by).normalize() };
+        return { point.scale(factor), direction.scale(factor).normalize() };
     }
 
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param rotate_origin Rotate origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Line3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
-        return { origin.rotate_axis_angle_at(rotate_origin, axis, angle),
+        return { point.rotate_axis_angle_at(rotate_origin, axis, angle),
                  direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    /**
+     * Rotate about the origin by an axis and angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Line3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
-        return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
+        return { point.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param rotate_origin Rotate origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Line3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
-        return { origin.rotate_quaternion_at(rotate_origin, quaternion),
+        return { point.rotate_quaternion_at(rotate_origin, quaternion),
                  direction.rotate_quaternion(quaternion).normalize() };
     }
 
+    /**
+     * Rotate about the origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Line3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
-        return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
+        return { point.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real angle_y, const Real angle_z) const
+    /**
+     * Shear about an origin along the x-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_y Y-Axis shear factor.
+     * @param factor_z Z-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
-        return { origin.shear_x_at(shear_origin, angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
+        return { point.shear_x_at(shear_origin, factor_y, factor_z),
+                 direction.shear_x(factor_y, factor_z).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_x(const Real angle_y, const Real angle_z) const
+    /**
+     * Shear about the origin along the x-axis.
+     * @param factor_y Y-Axis shear factor.
+     * @param factor_z Z-Axis shear factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_x(const Real factor_y, const Real factor_z) const
     {
-        return { origin.shear_x(angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
+        return { point.shear_x(factor_y, factor_z), direction.shear_x(factor_y, factor_z).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_z) const
+    /**
+     * Shear about an origin along the y-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
-        return { origin.shear_y_at(shear_origin, angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+        return { point.shear_y_at(shear_origin, factor_x, factor_z),
+                 direction.shear_y(factor_x, factor_z).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_y(const Real angle_x, const Real angle_z) const
+    /**
+     * Shear about the origin along the y-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_y(const Real factor_x, const Real factor_z) const
     {
-        return { origin.shear_y(angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+        return { point.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_y) const
+    /**
+     * Shear about an origin along the z-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
-        return { origin.shear_z_at(shear_origin, angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
+        return { point.shear_z_at(shear_origin, factor_x, factor_y),
+                 direction.shear_z(factor_x, factor_y).normalize() };
     }
 
-    [[nodiscard]] Line3 shear_z(const Real angle_x, const Real angle_y) const
+    /**
+     * Shear about the origin along the z-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 shear_z(const Real factor_x, const Real factor_y) const
     {
-        return { origin.shear_z(angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
+        return { point.shear_z(factor_x, factor_y), direction.shear_z(factor_x, factor_y).normalize() };
     }
 
+    /**
+     * Determine if the point and direction are approximately equal to another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_equal(const Line3& other) const
     {
-        return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
+        return point.approx_equal(other.point) && direction.approx_equal(other.direction);
     }
 
+    /**
+     * Determine if point and direction are exactly equal to another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool operator==(const Line3& other) const
     {
-        return origin == other.origin && direction == other.direction;
+        return point == other.point && direction == other.direction;
     }
 
+    /**
+     * Determine if either point or direction are not exactly equal to another line.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool operator!=(const Line3& other) const
     {
-        return origin != other.origin || direction != other.direction;
+        return point != other.point || direction != other.direction;
     }
 
+    /**
+     * Lexicographical comparison in the order of point then direction.
+     * @param other Other line.
+     * @return Result.
+     */
     [[nodiscard]] bool operator<(const Line3& other) const
     {
-        if (origin == other.origin) {
+        if (point == other.point) {
             return direction < other.direction;
         }
-        return origin < other.origin;
+        return point < other.point;
     }
 };
 
