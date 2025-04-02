@@ -533,34 +533,69 @@ public:
     }
 };
 
+/**
+ * 3D ray.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Ray3 {
 public:
+    /**
+     * Origin.
+     */
     Vector3<Real> origin;
+
+    /**
+     * Normalized direction.
+     */
     Vector3<Real> direction;
 
+    /**
+     * Default initialize with zero origin and in the direction of the positive x-axis.
+     */
     constexpr Ray3()
         : origin { Vector3<Real>::zero() }
         , direction { Vector3<Real>::axis_x() }
     {
     }
 
+    /**
+     * Initialize with an origin and direction. No normalization is done on the direction.
+     * @param origin Origin.
+     * @param direction Direction.
+     */
     constexpr Ray3(const Vector3<Real>& origin, const Vector3<Real>& direction)
         : origin { origin }
         , direction { direction }
     {
     }
 
+    /**
+     * Ray from a point in the direction of another point.
+     * @param from Origin.
+     * @param to Point in the direction of the ray.
+     * @return Result.
+     */
     static Ray3 from_point_to_point(const Vector3<Real>& from, const Vector3<Real>& to)
     {
         return { from, from.direction(to) };
     }
 
+    /**
+     * Normalize the direction.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 normalize() const
     {
         return { origin, direction.normalize() };
     }
 
+    /**
+     * Determine if approximately collinear with a point which means
+     * that the point exists on the line extending in both +direction and -direction.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_collinear(const Vector3<Real>& point) const
     {
         return Line3<Real>::from_ray(*this).approx_contains(point);
