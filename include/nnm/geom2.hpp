@@ -588,7 +588,7 @@ public:
     }
 
     /**
-     * Scale about the origin by a factor.
+     * Scale about the global origin by a factor.
      * @param by Scale factor.
      * @return Result.
      */
@@ -609,7 +609,7 @@ public:
     }
 
     /**
-     * Rotate about the origin by an angle.
+     * Rotate about the global origin by an angle.
      * @param angle Angle in radians.
      * @return Result.
      */
@@ -630,7 +630,7 @@ public:
     }
 
     /**
-     * Shear along the x-axis about the origin.
+     * Shear along the x-axis about the global origin.
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
@@ -651,7 +651,7 @@ public:
     }
 
     /**
-     * Shear along the y-axis about the origin.
+     * Shear along the y-axis about the global origin.
      * @param factor_x X-Axis factor.
      * @return Result.
      */
@@ -773,7 +773,7 @@ public:
     }
 
     /**
-     * Deteremine if approximately collinear with 2D line.
+     * Determine if approximately collinear with 2D line.
      * @param line 2D line.
      * @return Result.
      */
@@ -1302,18 +1302,18 @@ public:
     /**
      * Start point.
      */
-    Vector2<Real> from;
+    Vector2<Real> start;
     /**
      * End point.
      */
-    Vector2<Real> to;
+    Vector2<Real> end;
 
     /**
      * Initialize with both start and end points zero.
      */
     constexpr Segment2()
-        : from { Vector2<Real>::zero() }
-        , to { Vector2<Real>::zero() }
+        : start { Vector2<Real>::zero() }
+        , end { Vector2<Real>::zero() }
     {
     }
 
@@ -1323,8 +1323,8 @@ public:
      * @param to End point.
      */
     constexpr Segment2(const Vector2<Real>& from, const Vector2<Real>& to)
-        : from { from }
-        , to { to }
+        : start { from }
+        , end { to }
     {
     }
 
@@ -1335,8 +1335,8 @@ public:
      */
     template <typename Other>
     explicit constexpr Segment2(const Segment2<Other>& other)
-        : from { Vector2<Other> { other.from } }
-        , to { Vector2<Other> { other.to } }
+        : start { Vector2<Other> { other.from } }
+        , end { Vector2<Other> { other.to } }
     {
     }
 
@@ -1347,8 +1347,8 @@ public:
      */
     [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
     {
-        const Vector2<Real> diff1 = point - from;
-        const Vector2<Real> diff2 = to - from;
+        const Vector2<Real> diff1 = point - start;
+        const Vector2<Real> diff2 = end - start;
         return approx_zero(diff1.cross(diff2));
     }
 
@@ -1362,7 +1362,7 @@ public:
         if (!approx_parallel(line)) {
             return false;
         }
-        const Vector2<Real> diff = from - line.origin;
+        const Vector2<Real> diff = start - line.origin;
         return approx_zero(diff.cross(line.direction));
     }
 
@@ -1376,7 +1376,7 @@ public:
         if (!approx_parallel(ray)) {
             return false;
         }
-        const Vector2<Real> diff = from - ray.origin;
+        const Vector2<Real> diff = start - ray.origin;
         return approx_zero(diff.cross(ray.direction));
     }
 
@@ -1390,8 +1390,8 @@ public:
         if (!approx_parallel(other)) {
             return false;
         }
-        const Vector2<Real> diff = from - other.from;
-        return approx_zero(diff.cross(other.to - other.from));
+        const Vector2<Real> diff = start - other.start;
+        return approx_zero(diff.cross(other.end - other.start));
     }
 
     /**
@@ -1401,8 +1401,8 @@ public:
      */
     [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
     {
-        const Vector2<Real> diff1 = point - from;
-        const Vector2<Real> diff2 = to - from;
+        const Vector2<Real> diff1 = point - start;
+        const Vector2<Real> diff2 = end - start;
         if (!approx_zero(diff1.cross(diff2))) {
             return false;
         }
@@ -1418,21 +1418,21 @@ public:
      */
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
-        const Vector2<Real> dir = to - from;
-        const Vector2<Real> diff = point - from;
+        const Vector2<Real> dir = end - start;
+        const Vector2<Real> diff = point - start;
         Real t = diff.dot(dir) / dir.dot(dir);
         Vector2<Real> closest;
         if (t < static_cast<Real>(0)) {
-            closest = from;
+            closest = start;
         }
         else if (t > static_cast<Real>(1)) {
-            closest = to;
+            closest = end;
         }
         else {
-            closest = from + dir * t;
+            closest = start + dir * t;
         }
         const Real dist = (point - closest).length();
-        return sign(dir.cross(point - from)) * dist;
+        return sign(dir.cross(point - start)) * dist;
     }
 
     /**
@@ -1442,16 +1442,16 @@ public:
      */
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
-        const Vector2<Real> dir = to - from;
-        const Vector2<Real> diff = point - from;
+        const Vector2<Real> dir = end - start;
+        const Vector2<Real> diff = point - start;
         Real t = diff.dot(dir) / dir.dot(dir);
         if (t < static_cast<Real>(0)) {
             return diff.length();
         }
         if (t > static_cast<Real>(1)) {
-            return (point - to).length();
+            return (point - end).length();
         }
-        Vector2<Real> proj = from + dir * t;
+        Vector2<Real> proj = start + dir * t;
         return (point - proj).length();
     }
 
@@ -1465,8 +1465,8 @@ public:
         if (intersects(line)) {
             return static_cast<Real>(0);
         }
-        const Real d1 = line.distance(from);
-        const Real d2 = line.distance(to);
+        const Real d1 = line.distance(start);
+        const Real d2 = line.distance(end);
         return min(d1, d2);
     }
 
@@ -1480,8 +1480,8 @@ public:
         if (intersects(ray)) {
             return static_cast<Real>(0);
         }
-        const Real d1 = ray.distance(from);
-        const Real d2 = ray.distance(to);
+        const Real d1 = ray.distance(start);
+        const Real d2 = ray.distance(end);
         const Real d3 = distance(ray.origin);
         return min(d1, min(d2, d3));
     }
@@ -1496,10 +1496,10 @@ public:
         if (intersects(other)) {
             return static_cast<Real>(0);
         }
-        const Real d1 = distance(other.from);
-        const Real d2 = distance(other.to);
-        const Real d3 = other.distance(from);
-        const Real d4 = other.distance(to);
+        const Real d1 = distance(other.start);
+        const Real d2 = distance(other.end);
+        const Real d3 = other.distance(start);
+        const Real d4 = other.distance(end);
         return min(d1, min(d2, min(d3, d4)));
     }
 
@@ -1544,7 +1544,7 @@ public:
      */
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
     {
-        return to - from;
+        return end - start;
     }
 
     /**
@@ -1563,7 +1563,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
     {
-        return approx_zero((to - from).cross(line.direction));
+        return approx_zero((end - start).cross(line.direction));
     }
 
     /**
@@ -1573,7 +1573,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_parallel(const Ray2<Real>& ray) const
     {
-        return approx_zero((to - from).cross(ray.direction));
+        return approx_zero((end - start).cross(ray.direction));
     }
 
     /**
@@ -1583,7 +1583,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_parallel(const Segment2& other) const
     {
-        return approx_zero((to - from).cross(other.to - other.from));
+        return approx_zero((end - start).cross(other.end - other.start));
     }
 
     /**
@@ -1593,7 +1593,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
     {
-        return approx_zero((to - from).dot(line.direction));
+        return approx_zero((end - start).dot(line.direction));
     }
 
     /**
@@ -1603,7 +1603,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_perpendicular(const Ray2<Real>& ray) const
     {
-        return approx_zero((to - from).dot(ray.direction));
+        return approx_zero((end - start).dot(ray.direction));
     }
 
     /**
@@ -1613,7 +1613,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_perpendicular(const Segment2& other) const
     {
-        return approx_zero((to - from).dot(other.to - other.from));
+        return approx_zero((end - start).dot(other.end - other.start));
     }
 
     /**
@@ -1623,12 +1623,12 @@ public:
      */
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
-        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir = end - start;
         const Real dir_cross = dir.cross(line.direction);
         if (dir_cross == static_cast<Real>(0)) {
             return false;
         }
-        const Vector2<Real> diff = line.origin - from;
+        const Vector2<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction) / dir_cross;
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1);
     }
@@ -1640,17 +1640,17 @@ public:
      */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
     {
-        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir = end - start;
         const Real dir_cross = dir.cross(line.direction);
         if (dir_cross == static_cast<Real>(0)) {
             return std::nullopt;
         }
-        const Vector2<Real> diff = line.origin - from;
+        const Vector2<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction) / dir_cross;
         if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
             return std::nullopt;
         }
-        return from + dir * t;
+        return start + dir * t;
     }
 
     /**
@@ -1660,12 +1660,12 @@ public:
      */
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
-        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir = end - start;
         const Real dir_cross = dir.cross(ray.direction);
         if (dir_cross == static_cast<Real>(0)) {
             return false;
         }
-        const Vector2<Real> diff = ray.origin - from;
+        const Vector2<Real> diff = ray.origin - start;
         const Real t = diff.cross(ray.direction) / dir_cross;
         const Real t_ray = diff.cross(dir) / dir_cross;
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_ray >= static_cast<Real>(0);
@@ -1678,18 +1678,18 @@ public:
      */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const
     {
-        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir = end - start;
         const Real dir_cross = dir.cross(ray.direction);
         if (dir_cross == static_cast<Real>(0)) {
             return std::nullopt;
         }
-        const Vector2<Real> diff = ray.origin - from;
+        const Vector2<Real> diff = ray.origin - start;
         const Real t = diff.cross(ray.direction) / dir_cross;
         const Real t_ray = diff.cross(dir) / dir_cross;
         if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_ray < static_cast<Real>(0)) {
             return std::nullopt;
         }
-        return from + dir * t;
+        return start + dir * t;
     }
 
     /**
@@ -1699,13 +1699,13 @@ public:
      */
     [[nodiscard]] constexpr bool intersects(const Segment2& other) const
     {
-        const Vector2<Real> dir = to - from;
-        const Vector2<Real> dir_other = other.to - other.from;
+        const Vector2<Real> dir = end - start;
+        const Vector2<Real> dir_other = other.end - other.start;
         const Real dir_cross = dir.cross(dir_other);
         if (dir_cross == static_cast<Real>(0)) {
             return false;
         }
-        const Vector2<Real> diff = other.from - from;
+        const Vector2<Real> diff = other.start - start;
         const Real t = diff.cross(dir_other) / dir_cross;
         const Real t_other = diff.cross(dir) / dir_cross;
         return t >= static_cast<Real>(0) && t <= static_cast<Real>(1) && t_other >= static_cast<Real>(0)
@@ -1719,20 +1719,20 @@ public:
      */
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2& other) const
     {
-        const Vector2<Real> dir = to - from;
-        const Vector2<Real> dir_other = other.to - other.from;
+        const Vector2<Real> dir = end - start;
+        const Vector2<Real> dir_other = other.end - other.start;
         const Real dir_cross = dir.cross(dir_other);
         if (dir_cross == static_cast<Real>(0)) {
             return std::nullopt;
         }
-        const Vector2<Real> diff = other.from - from;
+        const Vector2<Real> diff = other.start - start;
         const Real t = diff.cross(dir_other) / dir_cross;
         const Real t_other = diff.cross(dir) / dir_cross;
         if (t < static_cast<Real>(0) || t > static_cast<Real>(1) || t_other < static_cast<Real>(0)
             || t_other > static_cast<Real>(1)) {
             return std::nullopt;
         }
-        return from + dir * t;
+        return start + dir * t;
     }
 
     /**
@@ -1827,19 +1827,19 @@ public:
      */
     [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
     {
-        const Vector2<Real> dir = to - from;
+        const Vector2<Real> dir = end - start;
         const Real length_sqrd = dir.dot(dir);
         if (length_sqrd == static_cast<Real>(0)) {
-            return from;
+            return start;
         }
-        const Real t = (point - from).dot(dir) / length_sqrd;
+        const Real t = (point - start).dot(dir) / length_sqrd;
         if (t < static_cast<Real>(0)) {
-            return from;
+            return start;
         }
         if (t > static_cast<Real>(1)) {
-            return to;
+            return end;
         }
-        return from + dir * t;
+        return start + dir * t;
     }
 
     /**
@@ -1848,7 +1848,7 @@ public:
      */
     [[nodiscard]] constexpr Real unchecked_slope() const
     {
-        return (to.y - from.y) / (to.x - from.x);
+        return (end.y - start.y) / (end.x - start.x);
     }
 
     /**
@@ -1857,11 +1857,11 @@ public:
      */
     [[nodiscard]] constexpr std::optional<Real> slope() const
     {
-        const Real denom = to.x - from.x;
+        const Real denom = end.x - start.x;
         if (denom == static_cast<Real>(0)) {
             return std::nullopt;
         }
-        return (to.y - from.y) / denom;
+        return (end.y - start.y) / denom;
     }
 
     /**
@@ -1870,7 +1870,7 @@ public:
      */
     [[nodiscard]] constexpr Real length_sqrd() const
     {
-        return sqrd(to.x - from.x) + sqrd(to.y - from.y);
+        return sqrd(end.x - start.x) + sqrd(end.y - start.y);
     }
 
     /**
@@ -1888,7 +1888,7 @@ public:
      */
     [[nodiscard]] constexpr Vector2<Real> midpoint() const
     {
-        return (to + from) / static_cast<Real>(2);
+        return (end + start) / static_cast<Real>(2);
     }
 
     /**
@@ -1898,7 +1898,7 @@ public:
      */
     [[nodiscard]] Segment2 translate(const Vector2<Real>& by) const
     {
-        return { from.translate(by), to.translate(by) };
+        return { start.translate(by), end.translate(by) };
     }
 
     /**
@@ -1909,7 +1909,7 @@ public:
      */
     [[nodiscard]] Segment2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
-        return { from.scale_at(scale_origin, by), to.scale_at(scale_origin, by) };
+        return { start.scale_at(scale_origin, by), end.scale_at(scale_origin, by) };
     }
 
     /**
@@ -1919,7 +1919,7 @@ public:
      */
     [[nodiscard]] Segment2 scale(const Vector2<Real>& by) const
     {
-        return { from.scale(by), to.scale(by) };
+        return { start.scale(by), end.scale(by) };
     }
 
     /**
@@ -1930,7 +1930,7 @@ public:
      */
     [[nodiscard]] Segment2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return { from.rotate_at(rotate_origin, angle), to.rotate_at(rotate_origin, angle) };
+        return { start.rotate_at(rotate_origin, angle), end.rotate_at(rotate_origin, angle) };
     }
 
     /**
@@ -1940,7 +1940,7 @@ public:
      */
     [[nodiscard]] Segment2 rotate(const Real angle) const
     {
-        return { from.rotate(angle), to.rotate(angle) };
+        return { start.rotate(angle), end.rotate(angle) };
     }
 
     /**
@@ -1951,7 +1951,7 @@ public:
      */
     [[nodiscard]] Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor_y) const
     {
-        return { from.shear_x_at(shear_origin, factor_y), to.shear_x_at(shear_origin, factor_y) };
+        return { start.shear_x_at(shear_origin, factor_y), end.shear_x_at(shear_origin, factor_y) };
     }
 
     /**
@@ -1961,7 +1961,7 @@ public:
      */
     [[nodiscard]] Segment2 shear_x(const Real factor_y) const
     {
-        return { from.shear_x(factor_y), to.shear_x(factor_y) };
+        return { start.shear_x(factor_y), end.shear_x(factor_y) };
     }
 
     /**
@@ -1972,7 +1972,7 @@ public:
      */
     [[nodiscard]] Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
-        return { from.shear_y_at(shear_origin, angle_x), to.shear_y_at(shear_origin, angle_x) };
+        return { start.shear_y_at(shear_origin, angle_x), end.shear_y_at(shear_origin, angle_x) };
     }
 
     /**
@@ -1982,7 +1982,7 @@ public:
      */
     [[nodiscard]] Segment2 shear_y(const Real factor_x) const
     {
-        return { from.shear_y(factor_x), to.shear_y(factor_x) };
+        return { start.shear_y(factor_x), end.shear_y(factor_x) };
     }
 
     /**
@@ -1992,8 +1992,8 @@ public:
      */
     [[nodiscard]] constexpr bool approx_coincident(const Segment2& other) const
     {
-        return (from.approx_equal(other.from) && to.approx_equal(other.to))
-            || (from.approx_equal(other.to) && to.approx_equal(other.from));
+        return (start.approx_equal(other.start) && end.approx_equal(other.end))
+            || (start.approx_equal(other.end) && end.approx_equal(other.start));
     }
 
     /**
@@ -2003,7 +2003,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_equal(const Segment2& other) const
     {
-        return from.approx_equal(other.from) && to.approx_equal(other.to);
+        return start.approx_equal(other.start) && end.approx_equal(other.end);
     }
 
     /**
@@ -2013,7 +2013,7 @@ public:
      */
     [[nodiscard]] constexpr bool operator==(const Segment2& other) const
     {
-        return from == other.from && to == other.to;
+        return start == other.start && end == other.end;
     }
 
     /**
@@ -2023,7 +2023,7 @@ public:
      */
     [[nodiscard]] constexpr bool operator!=(const Segment2& other) const
     {
-        return from != other.from || to != other.to;
+        return start != other.start || end != other.end;
     }
 
     /**
@@ -2033,10 +2033,10 @@ public:
      */
     [[nodiscard]] constexpr bool operator<(const Segment2& other) const
     {
-        if (from != other.from) {
-            return from < other.from;
+        if (start != other.start) {
+            return start < other.start;
         }
-        return to < other.to;
+        return end < other.end;
     }
 };
 
@@ -2055,7 +2055,7 @@ public:
     /**
      * Start point.
      */
-    Vector2<Real> from;
+    Vector2<Real> start;
 
     /**
      * Angle extended from start point about the pivot.
@@ -2067,7 +2067,7 @@ public:
      */
     constexpr Arc2()
         : pivot { Vector2<Real>::zero() }
-        , from { Vector2<Real>::zero() }
+        , start { Vector2<Real>::zero() }
         , angle { static_cast<Real>(0) }
     {
     }
@@ -2080,7 +2080,7 @@ public:
      */
     constexpr Arc2(const Vector2<Real>& pivot, const Vector2<Real>& from, const Real angle)
         : pivot { pivot }
-        , from { from }
+        , start { from }
         , angle { angle }
     {
     }
@@ -2089,63 +2089,64 @@ public:
      * Arc from a pivot and radius that starts at an angle and ends at another angle.
      * @param pivot Pivot.
      * @param radius Radius.
-     * @param angle_from Start angle.
-     * @param angle_to End angle.
+     * @param angle_start Start angle.
+     * @param angle_end End angle.
      * @return Result.
      */
     static Arc2 from_pivot_radius_angle_to_angle(
-        const Vector2<Real>& pivot, const Real radius, const Real angle_from, const Real angle_to)
+        const Vector2<Real>& pivot, const Real radius, const Real angle_start, const Real angle_end)
     {
-        const Vector2<Real> from { pivot.x + radius * cos(angle_from), pivot.y + radius * sin(angle_from) };
-        const Real angle = angle_to - angle_from;
+        const Vector2<Real> from { pivot.x + radius * cos(angle_start), pivot.y + radius * sin(angle_start) };
+        const Real angle = angle_end - angle_start;
         return { pivot, from, angle };
     }
 
     /**
      * Arc from a start point, intersection point, and end point.
      * Does not check if all points are collinear; would result in a divide-by-zero.
-     * @param from Start point.
+     * @param start Start point.
      * @param through Point to intersect.
-     * @param to End point.
+     * @param end End point.
      * @return Result.
      */
-    static Arc2 from_points_unchecked(const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
+    static Arc2 from_points_unchecked(
+        const Vector2<Real>& start, const Vector2<Real>& through, const Vector2<Real>& end)
     {
-        const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
-        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, to }.midpoint();
-        const Vector2<Real> dir1 = through - from;
-        const Vector2<Real> dir2 = to - through;
+        const Vector2<Real> mid1 = nnm::Segment2<Real> { start, through }.midpoint();
+        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, end }.midpoint();
+        const Vector2<Real> dir1 = through - start;
+        const Vector2<Real> dir2 = end - through;
         const Vector2<Real> perp1 = dir1.arbitrary_perpendicular();
         const Vector2<Real> perp2 = dir2.arbitrary_perpendicular();
         const Line2<Real> l1 { mid1, perp1 };
         const Line2<Real> l2 { mid2, perp2 };
         const Vector2<Real> pivot = l1.unchecked_intersection(l2);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real angle_from = remainder(pivot.angle_to(from) + pi<Real>(), two_pi);
-        const Real angle_to = remainder(pivot.angle_to(to) + pi<Real>(), two_pi);
+        const Real angle_start = remainder(pivot.angle_to(start) + pi<Real>(), two_pi);
+        const Real angle_end = remainder(pivot.angle_to(end) + pi<Real>(), two_pi);
         const Real angle_through = remainder(pivot.angle_to(through) + pi<Real>(), two_pi);
-        const Real angle_diff = abs(nnm::normalize_angle(angle_to - angle_from));
-        const bool in_range = angle_in_range(angle_through, angle_from, angle_to);
-        const Real angle = in_range ? angle_to - angle_from
-            : angle_to < angle_from ? two_pi - angle_diff
-                                    : -two_pi + angle_diff;
-        return Arc2 { pivot, from, angle };
+        const Real angle_diff = abs(nnm::normalize_angle(angle_end - angle_start));
+        const bool in_range = angle_in_range(angle_through, angle_start, angle_end);
+        const Real angle = in_range   ? angle_end - angle_start
+            : angle_end < angle_start ? two_pi - angle_diff
+                                      : -two_pi + angle_diff;
+        return Arc2 { pivot, start, angle };
     }
 
     /**
      * Arc from a start point, intersection point, and end point.
-     * @param from Start point.
+     * @param start Start point.
      * @param through Point to intersect.
-     * @param to End point.
+     * @param end End point.
      * @return Result.
      */
     static std::optional<Arc2> from_points(
-        const Vector2<Real>& from, const Vector2<Real>& through, const Vector2<Real>& to)
+        const Vector2<Real>& start, const Vector2<Real>& through, const Vector2<Real>& end)
     {
-        const Vector2<Real> mid1 = nnm::Segment2<Real> { from, through }.midpoint();
-        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, to }.midpoint();
-        const Vector2<Real> dir1 = through - from;
-        const Vector2<Real> dir2 = to - through;
+        const Vector2<Real> mid1 = nnm::Segment2<Real> { start, through }.midpoint();
+        const Vector2<Real> mid2 = nnm::Segment2<Real> { through, end }.midpoint();
+        const Vector2<Real> dir1 = through - start;
+        const Vector2<Real> dir2 = end - through;
         const Vector2<Real> perp1 = dir1.arbitrary_perpendicular();
         const Vector2<Real> perp2 = dir2.arbitrary_perpendicular();
         const Line2<Real> l1 { mid1, perp1 };
@@ -2154,16 +2155,16 @@ public:
         if (!pivot.has_value()) {
             return std::nullopt;
         }
-        const Real angle_from = pivot->angle_to(from);
-        const Real angle_to = pivot->angle_to(to);
+        const Real angle_start = pivot->angle_to(start);
+        const Real angle_end = pivot->angle_to(end);
         const Real angle_through = pivot->angle_to(through);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real angle_diff = abs(nnm::normalize_angle(angle_to - angle_from));
-        const bool in_range = angle_in_range(angle_through, angle_from, angle_to);
-        const Real angle = in_range ? angle_to - angle_from
-            : angle_to < angle_from ? two_pi - angle_diff
-                                    : -two_pi + angle_diff;
-        return Arc2 { pivot.value(), from, angle };
+        const Real angle_diff = abs(nnm::normalize_angle(angle_end - angle_start));
+        const bool in_range = angle_in_range(angle_through, angle_start, angle_end);
+        const Real angle = in_range   ? angle_end - angle_start
+            : angle_end < angle_start ? two_pi - angle_diff
+                                      : -two_pi + angle_diff;
+        return Arc2 { pivot.value(), start, angle };
     }
 
     /**
@@ -2172,7 +2173,7 @@ public:
      */
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
-        return { pivot, from, nnm::normalize_angle(angle) };
+        return { pivot, start, nnm::normalize_angle(angle) };
     }
 
     /**
@@ -2181,7 +2182,7 @@ public:
      */
     [[nodiscard]] Real radius() const
     {
-        return pivot.distance(from);
+        return pivot.distance(start);
     }
 
     /**
@@ -2190,25 +2191,25 @@ public:
      */
     [[nodiscard]] constexpr Real radius_sqrd() const
     {
-        return pivot.distance_sqrd(from);
+        return pivot.distance_sqrd(start);
     }
 
     /**
      * Angle of start point in radians.
      * @return Result.
      */
-    [[nodiscard]] Real angle_from() const
+    [[nodiscard]] Real angle_start() const
     {
-        return nnm::normalize_angle(pivot.angle_to(from));
+        return nnm::normalize_angle(pivot.angle_to(start));
     }
 
     /**
      * Angle of end point in radians.
      * @return Result.
      */
-    [[nodiscard]] Real angle_to() const
+    [[nodiscard]] Real angle_end() const
     {
-        return angle_from() + angle;
+        return angle_start() + angle;
     }
 
     /**
@@ -2223,7 +2224,7 @@ public:
         }
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real point_angle = remainder(pivot.angle_to(point), two_pi);
-        return angle_in_range(point_angle, angle_from(), angle_to());
+        return angle_in_range(point_angle, angle_start(), angle_end());
     }
 
     /**
@@ -2245,7 +2246,7 @@ public:
     [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle) const
     {
         const Real r = radius();
-        if (!angle_in_range(angle, angle_from(), angle_to())) {
+        if (!angle_in_range(angle, angle_start(), angle_end())) {
             return std::nullopt;
         }
         return Vector2<Real> { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
@@ -2255,9 +2256,9 @@ public:
      * End point.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> to() const
+    [[nodiscard]] Vector2<Real> end() const
     {
-        return unchecked_point_at(angle_to());
+        return unchecked_point_at(angle_end());
     }
 
     /**
@@ -2284,7 +2285,7 @@ public:
      */
     [[nodiscard]] Vector2<Real> midpoint() const
     {
-        return Arc2 { pivot, from, angle / static_cast<Real>(2) }.to();
+        return Arc2 { pivot, start, angle / static_cast<Real>(2) }.end();
     }
 
     /**
@@ -2298,13 +2299,13 @@ public:
         const Vector2<Real> proj = pivot + dir * radius();
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(proj) + two_pi, two_pi);
-            angle_in_range(proj_angle, angle_from(), angle_to())) {
+            angle_in_range(proj_angle, angle_start(), angle_end())) {
             return proj;
         }
-        if (const Vector2<Real> to_ = to(); point.distance_sqrd(from) >= point.distance_sqrd(to_)) {
+        if (const Vector2<Real> to_ = end(); point.distance_sqrd(start) >= point.distance_sqrd(to_)) {
             return to_;
         }
-        return from;
+        return start;
     }
 
     /**
@@ -2321,11 +2322,11 @@ public:
         const Vector2<Real> proj = pivot + dir * radius();
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(proj) + two_pi, two_pi);
-            angle_in_range(proj_angle, angle_from(), angle_to())) {
+            angle_in_range(proj_angle, angle_start(), angle_end())) {
             return point.distance(proj);
         }
-        const Real from_dist = point.distance(from);
-        const Real to_dist = point.distance(to());
+        const Real from_dist = point.distance(start);
+        const Real to_dist = point.distance(end());
         return min(from_dist, to_dist);
     }
 
@@ -2337,8 +2338,8 @@ public:
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const Real dist = distance(point);
-        const Vector2<Real> from_point = point - from;
-        const Vector2<Real> from_to = to() - from;
+        const Vector2<Real> from_point = point - start;
+        const Vector2<Real> from_to = end() - start;
         const Real cross = from_to.cross(from_point);
         if (angle < static_cast<Real>(0)) {
             return cross > static_cast<Real>(0) ? dist : -dist;
@@ -2356,12 +2357,12 @@ public:
         if (intersects(line)) {
             return static_cast<Real>(0);
         }
-        Real to_from_min_dist = min(line.distance(from), line.distance(to()));
+        Real to_from_min_dist = min(line.distance(start), line.distance(end()));
         const Real proj_scalar = (pivot - line.origin).dot(line.direction);
         const Vector2<Real> closest_point_on_line = line.origin + line.direction * proj_scalar;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_line), two_pi);
-            angle_in_range(proj_angle, angle_from(), angle_to())) {
+            angle_in_range(proj_angle, angle_start(), angle_end())) {
             return min(abs(pivot.distance(closest_point_on_line) - radius()), to_from_min_dist);
         }
         return to_from_min_dist;
@@ -2377,13 +2378,13 @@ public:
         if (intersects(ray)) {
             return static_cast<Real>(0);
         }
-        const Real to_from_origin_min_dist = min(distance(ray.origin), min(ray.distance(from), ray.distance(to())));
+        const Real to_from_origin_min_dist = min(distance(ray.origin), min(ray.distance(start), ray.distance(end())));
         const Real proj_scalar = (pivot - ray.origin).dot(ray.direction);
         if (proj_scalar >= static_cast<Real>(0)) {
             const Vector2<Real> closest_point_on_ray = ray.origin + ray.direction * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_ray), two_pi);
-                angle_in_range(proj_angle, angle_from(), angle_to())) {
+                angle_in_range(proj_angle, angle_start(), angle_end())) {
                 return min(abs(pivot.distance(closest_point_on_ray) - radius()), to_from_origin_min_dist);
             }
         }
@@ -2401,14 +2402,14 @@ public:
             return static_cast<Real>(0);
         }
         const Real ends_min_dist = min(
-            distance(segment.from), min(distance(segment.to), min(segment.distance(from), segment.distance(to()))));
+            distance(segment.start), min(distance(segment.end), min(segment.distance(start), segment.distance(end()))));
         const Vector2<Real> seg_dir = segment.direction_unnormalized();
-        const Real proj_scalar = (pivot - segment.from).dot(seg_dir) / seg_dir.dot(seg_dir);
+        const Real proj_scalar = (pivot - segment.start).dot(seg_dir) / seg_dir.dot(seg_dir);
         if (proj_scalar >= static_cast<Real>(0) && proj_scalar <= static_cast<Real>(1)) {
-            const Vector2<Real> closest_point_on_seg = segment.from + seg_dir * proj_scalar;
+            const Vector2<Real> closest_point_on_seg = segment.start + seg_dir * proj_scalar;
             const Real two_pi = static_cast<Real>(2) * pi<Real>();
             if (const Real proj_angle = remainder(pivot.angle_to(closest_point_on_seg), two_pi);
-                angle_in_range(proj_angle, angle_from(), angle_to())) {
+                angle_in_range(proj_angle, angle_start(), angle_end())) {
                 return min(abs(pivot.distance(closest_point_on_seg) - radius()), ends_min_dist);
             }
         }
@@ -2437,10 +2438,10 @@ public:
             p2 = other.point_at(angle2);
         }
         Real min_dist
-            = p1.has_value() && p2.has_value() ? min(p1->distance(*p2), other.distance(from)) : other.distance(from);
-        min_dist = min(min_dist, other.distance(to()));
-        min_dist = min(min_dist, distance(other.from));
-        min_dist = min(min_dist, distance(other.to()));
+            = p1.has_value() && p2.has_value() ? min(p1->distance(*p2), other.distance(start)) : other.distance(start);
+        min_dist = min(min_dist, other.distance(end()));
+        min_dist = min(min_dist, distance(other.start));
+        min_dist = min(min_dist, distance(other.end()));
         return min_dist;
     }
 
@@ -2493,8 +2494,8 @@ public:
         const Vector2<Real> intersection1 = line.origin + line.direction * t1;
         const Vector2<Real> intersection2 = line.origin + line.direction * t2;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const Real intersection1_angle = remainder(pivot.angle_to(intersection1), two_pi);
         const Real intersection2_angle = remainder(pivot.angle_to(intersection2), two_pi);
         return angle_in_range(intersection1_angle, from_angle_, to_angle_)
@@ -2522,8 +2523,8 @@ public:
         const Vector2<Real> intersection1 = line.origin + line.direction * t1;
         const Vector2<Real> intersection2 = line.origin + line.direction * t2;
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const Real intersection1_angle = remainder(pivot.angle_to(intersection1), two_pi);
         const Real intersection2_angle = remainder(pivot.angle_to(intersection2), two_pi);
         const bool in_arc1 = angle_in_range(intersection1_angle, from_angle_, to_angle_);
@@ -2561,8 +2562,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const auto in_arc = [&](const Real t) -> bool {
             const Vector2<Real> intersection = ray.origin + ray.direction * t;
             const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
@@ -2592,8 +2593,8 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / static_cast<Real>(2);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const auto intersection = [&](const Real t) -> std::optional<Vector2<Real>> {
             const Vector2<Real> point = ray.origin + ray.direction * t;
             if (const Real intersection_angle = modf(pivot.angle_to(point) + two_pi, two_pi);
@@ -2626,7 +2627,7 @@ public:
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         const Real r = radius();
-        const Vector2<Real> pivot_seg_from_dir = segment.from - pivot;
+        const Vector2<Real> pivot_seg_from_dir = segment.start - pivot;
         const Vector2<Real> seg_dir = segment.direction_unnormalized();
         const Real twice_dot_dir = static_cast<Real>(2) * pivot_seg_from_dir.dot(seg_dir);
         const Real dot_minus_r_sqrd = pivot_seg_from_dir.dot(pivot_seg_from_dir) - sqrd(r);
@@ -2639,16 +2640,16 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
         };
         const auto in_segment
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
-        const Vector2<Real> intersection1 = segment.from + seg_dir * t1;
-        const Vector2<Real> intersection2 = segment.from + seg_dir * t2;
+        const Vector2<Real> intersection1 = segment.start + seg_dir * t1;
+        const Vector2<Real> intersection2 = segment.start + seg_dir * t2;
         const bool valid1 = in_segment(t1) && in_arc(intersection1);
         const bool valid2 = in_segment(t2) && in_arc(intersection2);
         return valid1 || valid2;
@@ -2662,7 +2663,7 @@ public:
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
         const Real r = radius();
-        const Vector2<Real> pivot_seg_from_dir = segment.from - pivot;
+        const Vector2<Real> pivot_seg_from_dir = segment.start - pivot;
         const Vector2<Real> seg_dir = segment.direction_unnormalized();
         const Real twice_dot_dir = static_cast<Real>(2) * pivot_seg_from_dir.dot(seg_dir);
         const Real dot_minus_r_sqrd = pivot_seg_from_dir.dot(pivot_seg_from_dir) - sqrd(r);
@@ -2675,16 +2676,16 @@ public:
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real t2 = (-twice_dot_dir + sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle_ = angle_from();
-        const Real to_angle_ = angle_to();
+        const Real from_angle_ = angle_start();
+        const Real to_angle_ = angle_end();
         const auto in_arc = [&](const Vector2<Real>& intersection) -> bool {
             const Real intersection_angle = modf(pivot.angle_to(intersection) + two_pi, two_pi);
             return angle_in_range(intersection_angle, from_angle_, to_angle_);
         };
         const auto in_segment
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
-        const Vector2<Real> intersection1 = segment.from + seg_dir * t1;
-        const Vector2<Real> intersection2 = segment.from + seg_dir * t2;
+        const Vector2<Real> intersection1 = segment.start + seg_dir * t1;
+        const Vector2<Real> intersection2 = segment.start + seg_dir * t2;
         const bool valid1 = in_segment(t1) && in_arc(intersection1);
         const bool valid2 = in_segment(t2) && in_arc(intersection2);
         if (valid1 && valid2) {
@@ -2708,8 +2709,8 @@ public:
      */
     [[nodiscard]] bool intersects(const Arc2& other) const
     {
-        if (const Vector2<Real> other_to = other.to();
-            from.approx_equal(other.from) || from.approx_equal(other_to) || to().approx_equal(other_to)) {
+        if (const Vector2<Real> other_to = other.end();
+            start.approx_equal(other.start) || start.approx_equal(other_to) || end().approx_equal(other_to)) {
             return true;
         }
         const Real r1 = radius();
@@ -2729,10 +2730,10 @@ public:
         const Vector2<Real> intersection2
             = pivots_line_base - Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle1 = angle_from();
-        const Real to_angle1 = angle_to();
-        const Real from_angle2 = other.angle_from();
-        const Real to_angle2 = other.angle_to();
+        const Real from_angle1 = angle_start();
+        const Real to_angle1 = angle_end();
+        const Real from_angle2 = other.angle_start();
+        const Real to_angle2 = other.angle_end();
         const auto in_arc
             = [&](const Vector2<Real>& intersection,
                   const Vector2<Real>& pivot,
@@ -2755,8 +2756,8 @@ public:
      */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Arc2& other) const
     {
-        if (const Vector2<Real> other_to = other.to();
-            from.approx_equal(other.from) || from.approx_equal(other_to) || to().approx_equal(other_to)) {
+        if (const Vector2<Real> other_to = other.end();
+            start.approx_equal(other.start) || start.approx_equal(other_to) || end().approx_equal(other_to)) {
             return std::nullopt;
         }
         const Real r1 = radius();
@@ -2776,10 +2777,10 @@ public:
         const Vector2<Real> intersection2
             = pivots_line_base - Vector2<Real> { -pivot_diff.y, pivot_diff.x } * (perp_dist_intersections / pivot_dist);
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
-        const Real from_angle1 = angle_from();
-        const Real to_angle1 = angle_to();
-        const Real from_angle2 = other.angle_from();
-        const Real to_angle2 = other.angle_to();
+        const Real from_angle1 = angle_start();
+        const Real to_angle1 = angle_end();
+        const Real from_angle2 = other.angle_start();
+        const Real to_angle2 = other.angle_end();
         const auto in_arc
             = [&](const Vector2<Real>& intersection,
                   const Vector2<Real>& pivot,
@@ -2889,7 +2890,7 @@ public:
      */
     [[nodiscard]] bool approx_tangent(const Segment2<Real>& segment) const
     {
-        const Vector2<Real> dir = segment.from - pivot;
+        const Vector2<Real> dir = segment.start - pivot;
         const Vector2<Real> segment_dir = segment.direction();
         const Real twice_dot = static_cast<Real>(2) * dir.dot(segment_dir);
         const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - radius_sqrd();
@@ -2901,7 +2902,7 @@ public:
         if (t < static_cast<Real>(0) || t > segment.length()) {
             return false;
         }
-        const Vector2<Real> p = segment.from + segment_dir * t;
+        const Vector2<Real> p = segment.start + segment_dir * t;
         return approx_contains(p);
     }
 
@@ -2942,7 +2943,7 @@ public:
      */
     [[nodiscard]] Arc2 translate(const Vector2<Real>& offset) const
     {
-        return Arc2 { pivot.translate(offset), from.translate(offset), angle };
+        return Arc2 { pivot.translate(offset), start.translate(offset), angle };
     }
 
     /**
@@ -2953,7 +2954,7 @@ public:
      */
     [[nodiscard]] Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
-        return Arc2 { pivot.scale_at(scale_origin, factor), from.scale_at(scale_origin, factor), angle };
+        return Arc2 { pivot.scale_at(scale_origin, factor), start.scale_at(scale_origin, factor), angle };
     }
 
     /**
@@ -2963,7 +2964,7 @@ public:
      */
     [[nodiscard]] Arc2 scale(const Vector2<Real>& factor) const
     {
-        return Arc2 { pivot.scale(factor), from.scale(factor), angle };
+        return Arc2 { pivot.scale(factor), start.scale(factor), angle };
     }
 
     /**
@@ -2974,7 +2975,7 @@ public:
      */
     [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
-        return Arc2 { pivot.rotate_at(rotate_origin, angle), from.rotate_at(rotate_origin, angle), this->angle };
+        return Arc2 { pivot.rotate_at(rotate_origin, angle), start.rotate_at(rotate_origin, angle), this->angle };
     }
 
     /**
@@ -2984,7 +2985,7 @@ public:
      */
     [[nodiscard]] Arc2 rotate(const Real angle) const
     {
-        return Arc2 { pivot.rotate(angle), from.rotate(angle), this->angle };
+        return Arc2 { pivot.rotate(angle), start.rotate(angle), this->angle };
     }
 
     /**
@@ -2997,10 +2998,10 @@ public:
         if (!pivot.approx_equal(other.pivot)) {
             return false;
         }
-        const Vector2<Real> to_ = to();
-        const Vector2<Real> other_to = other.to();
-        return (from.approx_equal(other.from) && to_.approx_equal(other_to))
-            || (from.approx_equal(other_to) && to_.approx_equal(other.from));
+        const Vector2<Real> to_ = end();
+        const Vector2<Real> other_to = other.end();
+        return (start.approx_equal(other.start) && to_.approx_equal(other_to))
+            || (start.approx_equal(other_to) && to_.approx_equal(other.start));
     }
 
     /**
@@ -3010,7 +3011,7 @@ public:
      */
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
-        return from.approx_equal(other.from) && pivot.approx_equal(other.pivot)
+        return start.approx_equal(other.start) && pivot.approx_equal(other.pivot)
             && nnm::approx_equal(angle, other.angle);
     }
 
@@ -3021,7 +3022,7 @@ public:
      */
     [[nodiscard]] constexpr bool operator==(const Arc2& other) const
     {
-        return pivot == other.pivot && from == other.from && angle == other.angle;
+        return pivot == other.pivot && start == other.start && angle == other.angle;
     }
 
     /**
@@ -3031,11 +3032,11 @@ public:
      */
     [[nodiscard]] constexpr bool operator!=(const Arc2& other) const
     {
-        return pivot != other.pivot || from != other.from || angle != other.angle;
+        return pivot != other.pivot || start != other.start || angle != other.angle;
     }
 
     /**
-     * Lexicographical compare in the order of `pivot`, `from`, and `angle`.
+     * Lexicographical compare in the order of pivot, start, then angle.
      * @param other Other arc.
      * @return Result.
      */
@@ -3044,8 +3045,8 @@ public:
         if (pivot != other.pivot) {
             return pivot < other.pivot;
         }
-        if (from != other.from) {
-            return from < other.from;
+        if (start != other.start) {
+            return start < other.start;
         }
         return angle < other.angle;
     }
@@ -3415,11 +3416,11 @@ public:
      */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
-        if (contains(segment.from) || contains(segment.to)) {
+        if (contains(segment.start) || contains(segment.end)) {
             return true;
         }
-        const Vector2<Real> seg_dir = segment.to - segment.from;
-        const Vector2<Real> circle_dir = segment.from - center;
+        const Vector2<Real> seg_dir = segment.end - segment.start;
+        const Vector2<Real> circle_dir = segment.start - center;
         const Real seg_len_sqrd = seg_dir.dot(seg_dir);
         const Real twice_proj_len = static_cast<Real>(2) * circle_dir.dot(seg_dir);
         const Real dist_sqrd_minus_radius_sqrd = circle_dir.dot(circle_dir) - sqrd(radius);
@@ -3451,8 +3452,8 @@ public:
      */
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Segment2<Real>& segment) const
     {
-        const Vector2<Real> seg_dir = segment.to - segment.from;
-        const Vector2<Real> circle_dir = segment.from - center;
+        const Vector2<Real> seg_dir = segment.end - segment.start;
+        const Vector2<Real> circle_dir = segment.start - center;
         const Real seg_len_sqrd = seg_dir.dot(seg_dir);
         const Real twice_proj_len = static_cast<Real>(2) * circle_dir.dot(seg_dir);
         const Real dist_sqrd_minus_radius_sqrd = circle_dir.dot(circle_dir) - sqrd(radius);
@@ -3466,16 +3467,16 @@ public:
         const Real t2 = (-twice_proj_len + disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
             && t2 <= static_cast<Real>(1)) {
-            const Vector2<Real> p1 = segment.from + seg_dir * t1;
-            const Vector2<Real> p2 = segment.from + seg_dir * t2;
+            const Vector2<Real> p1 = segment.start + seg_dir * t1;
+            const Vector2<Real> p2 = segment.start + seg_dir * t2;
             return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
         }
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
-            const Vector2<Real> p = segment.from + seg_dir * t1;
+            const Vector2<Real> p = segment.start + seg_dir * t1;
             return std::array { p, p };
         }
         if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
-            const Vector2<Real> p = segment.from + seg_dir * t2;
+            const Vector2<Real> p = segment.start + seg_dir * t2;
             return std::array { p, p };
         }
         return std::nullopt;
@@ -3488,7 +3489,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
-        if (contains(arc.from)) {
+        if (contains(arc.start)) {
             return true;
         }
         const Real dist = center.distance(arc.pivot);
@@ -3505,8 +3506,8 @@ public:
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real inter1_angle = remainder(arc.pivot.angle_to(inter1), two_pi);
         const Real inter2_angle = remainder(arc.pivot.angle_to(inter2), two_pi);
-        const Real arc_from_angle = arc.angle_from();
-        const Real arc_to_angle = arc.angle_to();
+        const Real arc_from_angle = arc.angle_start();
+        const Real arc_to_angle = arc.angle_end();
         const bool in_arc = angle_in_range(inter1_angle, arc_from_angle, arc_to_angle)
             || angle_in_range(inter2_angle, arc_from_angle, arc_to_angle);
         return in_arc;
@@ -3533,8 +3534,8 @@ public:
         const Real two_pi = static_cast<Real>(2) * pi<Real>();
         const Real inter1_angle = remainder(arc.pivot.angle_to(inter1), two_pi);
         const Real inter2_angle = remainder(arc.pivot.angle_to(inter2), two_pi);
-        const Real arc_from_angle = arc.angle_from();
-        const Real arc_to_angle = arc.angle_to();
+        const Real arc_from_angle = arc.angle_start();
+        const Real arc_to_angle = arc.angle_end();
         const bool inter1_in_arc = angle_in_range(inter1_angle, arc_from_angle, arc_to_angle);
         const bool inter2_in_arc = angle_in_range(inter2_angle, arc_from_angle, arc_to_angle);
         if (inter1_in_arc && inter2_in_arc) {
@@ -3550,7 +3551,7 @@ public:
     }
 
     /**
-     * Deteremine if intersects another circle. Being inside the circle is considered an intersction.
+     * Determine if intersects another circle. Being inside the circle is considered an intersection.
      * @param other Other circle.
      * @return Result.
      */
@@ -3623,7 +3624,7 @@ public:
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Deteremine if approximately tangent to a line.
+     * Determine if approximately tangent to a line.
      * @param line Line.
      * @return Result.
      */
@@ -3661,8 +3662,8 @@ public:
      */
     [[nodiscard]] constexpr bool approx_tangent(const Segment2<Real>& segment) const
     {
-        const Vector2<Real> dir = segment.from - center;
-        const Vector2<Real> segment_dir = segment.to - segment.from;
+        const Vector2<Real> dir = segment.start - center;
+        const Vector2<Real> segment_dir = segment.end - segment.start;
         const Real twice_dot = static_cast<Real>(2) * dir.dot(segment_dir);
         const Real dist_sqrd_minus_radius_sqrd = dir.dot(dir) - sqrd(radius);
         const Real len_sqrd = segment.length_sqrd();
@@ -3692,7 +3693,7 @@ public:
             return false;
         }
         const Real arc_circle_angle = contains(arc.pivot) ? center.angle_to(arc.pivot) : arc.pivot.angle_to(center);
-        return angle_in_range(arc_circle_angle, arc.angle_from(), arc.angle_to());
+        return angle_in_range(arc_circle_angle, arc.angle_start(), arc.angle_end());
     }
 
     /**
@@ -3763,7 +3764,7 @@ public:
     }
 
     /**
-     * Determine if approximately coincient to another circle which means if the center and radius are both
+     * Determine if approximately coincident to another circle which means if the center and radius are both
      * approximately equal.
      * @param other Other circle.
      * @return Result.
@@ -4004,7 +4005,7 @@ public:
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
         const Vector2<Real>& vertex = vertices[index];
         const Segment2<Real> base = edge((index + 1) % 3);
-        const Vector2<Real> perp_dir = (base.to - base.from).arbitrary_perpendicular().normalize();
+        const Vector2<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
         const Line2<Real> altitude_line { vertex, perp_dir };
         const Vector2<Real> intersection = altitude_line.unchecked_intersection(Line2<Real>::from_segment(base));
         return { vertex, intersection };
@@ -4325,7 +4326,7 @@ public:
      */
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
     {
-        if (contains(segment.from) || contains(segment.to)) {
+        if (contains(segment.start) || contains(segment.end)) {
             return true;
         }
         for (int i = 0; i < 3; ++i) {
@@ -4366,7 +4367,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
-        if (contains(arc.from)) {
+        if (contains(arc.start)) {
             return true;
         }
         for (int i = 0; i < 3; ++i) {
@@ -5031,7 +5032,7 @@ public:
      */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
-        if (contains(segment.from)) {
+        if (contains(segment.start)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5055,7 +5056,7 @@ public:
      */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
-        if (contains(arc.from)) {
+        if (contains(arc.start)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5239,7 +5240,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
-        return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
+        return contains(segment.start) || contains(segment.end) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
     }
 
@@ -5278,7 +5279,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
-        return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
+        return contains(arc.start) || contains(arc.end()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
@@ -5678,7 +5679,7 @@ public:
      */
     static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment)
     {
-        return from_bounding_points(segment.from, segment.to);
+        return from_bounding_points(segment.start, segment.end);
     }
 
     /**
@@ -5690,8 +5691,8 @@ public:
     {
         const Real half_pi = pi<float>() / static_cast<Real>(2);
         std::array<std::optional<Vector2<Real>>, 6> points {
-            arc.from,
-            arc.to(),
+            arc.start,
+            arc.end(),
             arc.point_at(static_cast<Real>(0)),
             arc.point_at(half_pi),
             arc.point_at(pi<float>()),
@@ -5987,7 +5988,7 @@ public:
      */
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
-        if (contains(segment.from)) {
+        if (contains(segment.start)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6011,7 +6012,7 @@ public:
      */
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
-        if (contains(arc.from)) {
+        if (contains(arc.start)) {
             return static_cast<Real>(0);
         }
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6207,7 +6208,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
-        return contains(segment.from) || contains(segment.to) || edge_nx().intersects(segment)
+        return contains(segment.start) || contains(segment.end) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
     }
 
@@ -6246,7 +6247,7 @@ public:
      */
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
-        return contains(arc.from) || contains(arc.to()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
+        return contains(arc.start) || contains(arc.end()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
             || edge_px().intersects(arc) || edge_py().intersects(arc);
     }
 
@@ -6617,7 +6618,7 @@ constexpr bool Line2<Real>::intersects(const Circle2<Real>& circle) const
 template <typename Real>
 Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 {
-    return { segment.from, (segment.to - segment.from).normalize() };
+    return { segment.start, (segment.end - segment.start).normalize() };
 }
 
 template <typename Real>

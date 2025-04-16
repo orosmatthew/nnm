@@ -1464,15 +1464,15 @@ inline void segment2_tests()
         test_section("Segment2()");
         {
             constexpr nnm::Segment2f s {};
-            ASSERT(s.from == nnm::Vector2f::zero());
-            ASSERT(s.to == nnm::Vector2f::zero());
+            ASSERT(s.start == nnm::Vector2f::zero());
+            ASSERT(s.end == nnm::Vector2f::zero());
         }
 
         test_section("Segment2(const Vector2&, const Vector2&)");
         {
             constexpr nnm::Segment2f s { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
-            ASSERT(s.from == nnm::Vector2f(1.0f, -2.0f));
-            ASSERT(s.to == nnm::Vector2f(-3.0f, 4.0f));
+            ASSERT(s.start == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(s.end == nnm::Vector2f(-3.0f, 4.0f));
         }
 
         constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
@@ -2112,64 +2112,64 @@ inline void segment2_tests()
         test_section("translate");
         {
             const auto result = s1.translate({ -3.0f, 3.0f });
-            ASSERT(result.from.approx_equal({ -2.0f, 1.0f }));
-            ASSERT(result.to.approx_equal({ -6.0f, 7.0f }));
+            ASSERT(result.start.approx_equal({ -2.0f, 1.0f }));
+            ASSERT(result.end.approx_equal({ -6.0f, 7.0f }));
         }
 
         test_section("scale_at");
         {
             const auto result = s1.scale_at({ 1.0f, 2.0f }, { -1.0f, 3.0f });
-            ASSERT(result.from.approx_equal({ 1.0f, -10.0f }));
-            ASSERT(result.to.approx_equal({ 5.0f, 8.0f }));
+            ASSERT(result.start.approx_equal({ 1.0f, -10.0f }));
+            ASSERT(result.end.approx_equal({ 5.0f, 8.0f }));
         }
 
         test_section("scale");
         {
             const auto result = s1.scale({ -1.0f, 3.0f });
-            ASSERT(result.from.approx_equal({ -1.0f, -6.0f }));
-            ASSERT(result.to.approx_equal({ 3.0f, 12.0f }));
+            ASSERT(result.start.approx_equal({ -1.0f, -6.0f }));
+            ASSERT(result.end.approx_equal({ 3.0f, 12.0f }));
         }
 
         test_section("rotate_at");
         {
             const auto result = s1.rotate_at({ 1.0f, 2.0f }, nnm::pi<float>() / 5.0f);
-            ASSERT(result.from.approx_equal({ 3.35115f, -1.23607f }));
-            ASSERT(result.to.approx_equal({ -3.41164f, 1.266893f }));
+            ASSERT(result.start.approx_equal({ 3.35115f, -1.23607f }));
+            ASSERT(result.end.approx_equal({ -3.41164f, 1.266893f }));
         }
 
         test_section("rotate");
         {
             const auto result = s1.rotate(nnm::pi<float>() / 5.0f);
-            ASSERT(result.from.approx_equal({ 1.98459f, -1.03025f }));
-            ASSERT(result.to.approx_equal({ -4.77819f, 1.47271f }));
+            ASSERT(result.start.approx_equal({ 1.98459f, -1.03025f }));
+            ASSERT(result.end.approx_equal({ -4.77819f, 1.47271f }));
         }
 
         test_section("shear_x_at");
         {
             const auto result = s1.shear_x_at({ 1.0f, 2.0f }, 0.5f);
-            ASSERT(result.from.approx_equal({ -1.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -2.0f, 4.0f }));
+            ASSERT(result.start.approx_equal({ -1.0f, -2.0f }));
+            ASSERT(result.end.approx_equal({ -2.0f, 4.0f }));
         }
 
         test_section("shear_x");
         {
             const auto result = s1.shear_x(0.5f);
-            ASSERT(result.from.approx_equal({ 0.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -1.0f, 4.0f }));
+            ASSERT(result.start.approx_equal({ 0.0f, -2.0f }));
+            ASSERT(result.end.approx_equal({ -1.0f, 4.0f }));
         }
 
         test_section("shear_y_at");
         {
             const auto result = s1.shear_y_at({ 1.0f, 2.0f }, 0.5f);
-            ASSERT(result.from.approx_equal({ 1.0f, -2.0f }));
-            ASSERT(result.to.approx_equal({ -3.0f, 2.0f }));
+            ASSERT(result.start.approx_equal({ 1.0f, -2.0f }));
+            ASSERT(result.end.approx_equal({ -3.0f, 2.0f }));
         }
 
         test_section("shear_y");
         {
             const auto result = s1.shear_y(0.5f);
-            ASSERT(result.from.approx_equal({ 1.0f, -1.5f }));
-            ASSERT(result.to.approx_equal({ -3.0f, 2.5f }));
+            ASSERT(result.start.approx_equal({ 1.0f, -1.5f }));
+            ASSERT(result.end.approx_equal({ -3.0f, 2.5f }));
         }
 
         test_section("approx_coincident");
@@ -2218,7 +2218,7 @@ inline void arc2_tests()
         test_section("Arc2()");
         {
             constexpr nnm::Arc2f a {};
-            ASSERT(a.from == nnm::Vector2f::zero());
+            ASSERT(a.start == nnm::Vector2f::zero());
             ASSERT(a.pivot == nnm::Vector2f::zero());
             ASSERT(a.angle == 0.0f);
         }
@@ -2227,7 +2227,7 @@ inline void arc2_tests()
         {
             constexpr nnm::Arc2f a { { -3.0f, 4.0f }, { 1.0f, -2.0f }, 5.0f };
             ASSERT(a.pivot == nnm::Vector2f(-3.0f, 4.0f));
-            ASSERT(a.from == nnm::Vector2f(1.0f, -2.0f));
+            ASSERT(a.start == nnm::Vector2f(1.0f, -2.0f));
             ASSERT(a.angle == 5.0f);
         }
 
@@ -2294,8 +2294,8 @@ inline void arc2_tests()
             constexpr nnm::Arc2f arc3 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, 5.0f * nnm::pi<float>() / 2.0f };
             constexpr nnm::Arc2f arc4 { { -3.0f, 4.0f }, { 1.0f, -2.0f }, -5.0f * nnm::pi<float>() / 2.0f };
             const auto result = arc3.normalize_angle();
-            ASSERT(result.approx_equal({ arc3.pivot, arc3.from, nnm::pi<float>() / 2.0f }));
-            ASSERT(arc4.normalize_angle().approx_equal({ arc4.pivot, arc4.from, -nnm::pi<float>() / 2.0f }));
+            ASSERT(result.approx_equal({ arc3.pivot, arc3.start, nnm::pi<float>() / 2.0f }));
+            ASSERT(arc4.normalize_angle().approx_equal({ arc4.pivot, arc4.start, -nnm::pi<float>() / 2.0f }));
         }
 
         test_section("radius");
@@ -2313,30 +2313,30 @@ inline void arc2_tests()
 
         test_section("angle_from");
         {
-            ASSERT(nnm::approx_equal(arc1.angle_from(), -0.9827937232473f));
-            ASSERT(nnm::approx_equal(arc2.angle_from(), 0.5880026035f));
+            ASSERT(nnm::approx_equal(arc1.angle_start(), -0.9827937232473f));
+            ASSERT(nnm::approx_equal(arc2.angle_start(), 0.5880026035f));
             constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
             constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
-            ASSERT(nnm::approx_equal(arc3.angle_from(), 2.67794504459f));
-            ASSERT(nnm::approx_equal(arc4.angle_from(), 0.463647608991f));
+            ASSERT(nnm::approx_equal(arc3.angle_start(), 2.67794504459f));
+            ASSERT(nnm::approx_equal(arc4.angle_start(), 0.463647608991f));
             constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
             constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
-            ASSERT(nnm::approx_equal(arc5.angle_from(), 2.55359005f));
-            ASSERT(nnm::approx_equal(arc6.angle_from(), -0.339292614454f));
+            ASSERT(nnm::approx_equal(arc5.angle_start(), 2.55359005f));
+            ASSERT(nnm::approx_equal(arc6.angle_start(), -0.339292614454f));
         }
 
         test_section("angle_to");
         {
-            ASSERT(nnm::approx_equal(arc1.angle_to(), 0.5880026035f));
-            ASSERT(nnm::approx_equal(arc2.angle_to(), -0.9827937232473f));
+            ASSERT(nnm::approx_equal(arc1.angle_end(), 0.5880026035f));
+            ASSERT(nnm::approx_equal(arc2.angle_end(), -0.9827937232473f));
             constexpr nnm::Arc2f arc3 { { -3.0f, 5.0f }, { -9.0f, 8.0 }, -2.2142974355882f };
             constexpr nnm::Arc2f arc4 { { -3.0f, 5.0f }, { 3.0f, 8.0 }, 2.2142974355882f };
-            ASSERT(nnm::approx_equal(arc3.angle_to(), 0.463647608991f));
-            ASSERT(nnm::approx_equal(arc4.angle_to(), 2.67794504459f));
+            ASSERT(nnm::approx_equal(arc3.angle_end(), 0.463647608991f));
+            ASSERT(nnm::approx_equal(arc4.angle_end(), 2.67794504459f));
             constexpr nnm::Arc2f arc5 { { -6.0f, 1.0f }, { -9.0f, 3.0f }, 3.3903026426833f };
             constexpr nnm::Arc2f arc6 { { -6.0f, 1.0f }, { -2.6f, -0.2f }, -3.3903026426833f };
-            ASSERT(nnm::approx_equal(arc5.angle_to(), 5.9438926927255f));
-            ASSERT(nnm::approx_equal(arc6.angle_to(), -3.7295952571374f));
+            ASSERT(nnm::approx_equal(arc5.angle_end(), 5.9438926927255f));
+            ASSERT(nnm::approx_equal(arc6.angle_end(), -3.7295952571374f));
         }
 
         test_section("approx_contains");
@@ -2375,8 +2375,8 @@ inline void arc2_tests()
 
         test_section("to");
         {
-            ASSERT(arc1.to().approx_equal({ 3.0f, 8.0f }));
-            ASSERT(arc2.to().approx_equal({ 1.0f, -2.0f }));
+            ASSERT(arc1.end().approx_equal({ 3.0f, 8.0f }));
+            ASSERT(arc2.end().approx_equal({ 1.0f, -2.0f }));
         }
 
         test_section("length");

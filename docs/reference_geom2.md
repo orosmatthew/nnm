@@ -104,10 +104,10 @@ Line2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
 Line2 scale(const Vector2& by) const;
 Line2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Line2 rotate(Real angle) const;
-Line2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
-Line2 shear_x(Real angle_y) const;
-Line2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
-Line2 shear_y(Real angle_x) const;
+Line2 shear_x_at(const Vector2& shear_origin, Real factor_y) const;
+Line2 shear_x(Real factor_y) const;
+Line2 shear_y_at(const Vector2& shear_origin, Real factor_x) const;
+Line2 shear_y(Real factor_x) const;
 ```
 
 ### Operators
@@ -197,10 +197,10 @@ Ray2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
 Ray2 scale(const Vector2& by) const;
 Ray2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Ray2 rotate(Real angle) const;
-Ray2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
-Ray2 shear_x(Real angle_y) const;
-Ray2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
-Ray2 shear_y(Real angle_x) const;
+Ray2 shear_x_at(const Vector2& shear_origin, Real factor_y) const;
+Ray2 shear_x(Real factor_y) const;
+Ray2 shear_y_at(const Vector2& shear_origin, Real factor_x) const;
+Ray2 shear_y(Real factor_x) const;
 ```
 
 ### Operators
@@ -223,15 +223,15 @@ using Segment2d = Segment2<double>;
 ### Members
 
 ```cpp
-Vector2 from;
-Vector2 to;
+Vector2 start;
+Vector2 end;
 ```
 
 ### Constructors
 
 ```cpp
 Segment2();
-Segment2(const Vector2& from, const Vector2& to);
+Segment2(const Vector2& start, const Vector2& end);
 ```
 
 ### Methods
@@ -289,10 +289,10 @@ Segment2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
 Segment2 scale(const Vector2& by) const;
 Segment2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Segment2 rotate(Real angle) const;
-Segment2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
-Segment2 shear_x(Real angle_y) const;
-Segment2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
-Segment2 shear_y(Real angle_x) const;
+Segment2 shear_x_at(const Vector2& shear_origin, Real factor_y) const;
+Segment2 shear_x(Real factor_y) const;
+Segment2 shear_y_at(const Vector2& shear_origin, Real factor_x) const;
+Segment2 shear_y(Real factor_x) const;
 bool approx_coincident(const Segment2& other) const;
 bool approx_equal(const Segment2& other) const;
 ```
@@ -318,7 +318,7 @@ using Arc2d = Arc2<double>;
 
 ```cpp
 Vector2 pivot;
-Vector2 from;
+Vector2 start;
 Real angle;
 ```
 
@@ -326,15 +326,15 @@ Real angle;
 
 ```cpp
 Arc2();
-Arc2(const Vector2& pivot, const Vector2& from, Real angle);
+Arc2(const Vector2& pivot, const Vector2& start, Real angle);
 ```
 
 ### Static Methods
 
 ```cpp
-static Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_from, Real angle_to);
-static Arc2 from_points_unchecked(const Vector2& from, const Vector2& through, const Vector2& to);
-static std::optional<Arc2> from_points(const Vector2& from, const Vector2& through, const Vector2& to);
+static Arc2 from_pivot_radius_angle_to_angle(const Vector2& pivot, Real radius, Real angle_start, Real angle_end);
+static Arc2 from_points_unchecked(const Vector2& start, const Vector2& through, const Vector2& end);
+static std::optional<Arc2> from_points(const Vector2& start, const Vector2& through, const Vector2& end);
 ```
 
 ### Methods
@@ -343,12 +343,12 @@ static std::optional<Arc2> from_points(const Vector2& from, const Vector2& throu
 Arc2 normalize_angle() const;
 Real radius() const;
 Real radius_sqrd() const;
-Real angle_from() const;
-REal angle_to() const;
+Real angle_start() const;
+REal angle_end() const;
 bool approx_contains(const Vector2& point) const;
 Vector2 unchecked_point_at(Real angle) const;
 std::optional<Vector2> point_at(Real angle) const;
-Vector2 to() const;
+Vector2 end() const;
 Real length() const;
 Real length_sqrd() const;
 Vector2 midpoint() const;
@@ -564,10 +564,10 @@ Triangle2 rotate_at(const Vector2& rotate_origin, Real angle) const;
 Triangle2 rotate(Real angle) const;
 Triangle2 scale_at(const Vector2& scale_origin, const Vector2& by) const;
 Triangle2 scale(const Vector2& by) const;
-Triangle2 shear_x_at(const Vector2& shear_origin, Real angle_y) const;
-Triangle2 shear_x(Real angle_y) const;
-Triangle2 shear_y_at(const Vector2& shear_origin, Real angle_x) const;
-Triangle2 shear_y(Real angle_x) const;
+Triangle2 shear_x_at(const Vector2& shear_origin, Real factor_y) const;
+Triangle2 shear_x(Real factor_y) const;
+Triangle2 shear_y_at(const Vector2& shear_origin, Real factor_x) const;
+Triangle2 shear_y(Real factor_x) const;
 bool approx_coincident(const Triangle2& other) const;
 bool approx_equal(const Triangle2& other) const;
 ```
