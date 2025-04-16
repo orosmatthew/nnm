@@ -601,22 +601,43 @@ public:
         return Line3<Real>::from_ray(*this).approx_contains(point);
     }
 
+    /**
+     * Determine if approximately collinear with a line which means that the ray existing entirely on the line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_collinear(const Line3<Real>& line) const
     {
         return Line3<Real>::from_ray(*this).approx_coincident(line);
     }
 
+    /**
+     * Determine if approximately collinear with another ray which means
+     * both rays existing on the same infinite line.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_collinear(const Ray3& other) const
     {
         return Line3<Real>::from_ray(*this).approx_coincident(Line3<Real>::from_ray(other));
     }
 
+    /**
+     * Determine if ray approximately intersects a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> proj = project_point(point);
         return proj.approx_equal(point);
     }
 
+    /**
+     * Closest distance to a point. Zero if intersects.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -627,6 +648,11 @@ public:
         return dir.cross(direction).length();
     }
 
+    /**
+     * Closest distance to a line. Zero if intersects.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -645,6 +671,11 @@ public:
         return p1.distance(p2);
     }
 
+    /**
+     * Closest distance to another ray. Zero if intersects.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -668,26 +699,51 @@ public:
         return p1.distance(p2);
     }
 
+    /**
+     * Determine if approximately parallel to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_parallel(const Line3<Real>& line) const
     {
         return direction.cross(line.direction).approx_zero();
     }
 
+    /**
+     * Determine if approximately parallel to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_parallel(const Ray3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
 
+    /**
+     * Determine if approximately perpendicular to a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_perpendicular(const Line3<Real>& line) const
     {
         return nnm::approx_zero(direction.dot(line.direction));
     }
 
+    /**
+     * Determine if approximately perpendicular to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_perpendicular(const Ray3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
+    /**
+     * Determine if approximately intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -706,6 +762,11 @@ public:
         return p.approx_equal(p_other);
     }
 
+    /**
+     * Approximate intersection with a line.
+     * @param line Line.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -726,6 +787,11 @@ public:
         return p;
     }
 
+    /**
+     * Determine if approximately intersects another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_intersects(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -747,6 +813,11 @@ public:
         return p.approx_equal(p_other);
     }
 
+    /**
+     * Approximate intersection with another ray.
+     * @param other Other ray.
+     * @return Result, null if no intersection.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -770,6 +841,11 @@ public:
         return p;
     }
 
+    /**
+     * Project point onto the ray.
+     * @param point Point.
+     * @return Resulting projected point.
+     */
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -777,21 +853,44 @@ public:
         return origin + direction * t;
     }
 
-    [[nodiscard]] Ray3 translate(const Vector3<Real>& by) const
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Ray3 translate(const Vector3<Real>& offset) const
     {
-        return { origin.translate(by), direction };
+        return { origin.translate(offset), direction };
     }
 
-    [[nodiscard]] Ray3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& by) const
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scaling origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
-        return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
+        return { origin.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
     }
 
-    [[nodiscard]] Ray3 scale(const Vector3<Real>& by) const
+    /**
+     * Scale about the global origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray3 scale(const Vector3<Real>& factor) const
     {
-        return { origin.scale(by), direction.scale(by).normalize() };
+        return { origin.scale(factor), direction.scale(factor).normalize() };
     }
 
+    /**
+     * Rotate about an origin by an axis by an angle.
+     * @param rotate_origin Rotation origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -799,11 +898,23 @@ public:
                  direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    /**
+     * Rotate about the global origin by an axis by an angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param rotate_origin Rotation origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -811,56 +922,123 @@ public:
                  direction.rotate_quaternion(quaternion).normalize() };
     }
 
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
     }
 
-    [[nodiscard]] Ray3 shear_x_at(const Vector3<Real>& shear_origin, const Real angle_y, const Real angle_z) const
+    /**
+     * Shear along the x-axis about an origin by y-axis and z-axis factors.
+     * @param shear_origin Shear origin.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
-        return { origin.shear_x_at(shear_origin, angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
+        return { origin.shear_x_at(shear_origin, factor_y, factor_z),
+                 direction.shear_x(factor_y, factor_z).normalize() };
     }
 
+    /**
+     * Shear along the x-axis about the global origin by y-axis and z-axis factors.
+     * @param angle_y Y-Axis factor.
+     * @param angle_z Z-Axis factor.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return { origin.shear_x(angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
     }
 
-    [[nodiscard]] Ray3 shear_y_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_z) const
+    /**
+     * Shear along the y-axis about an origin by x-axis and z-axis factors.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return
+     */
+    [[nodiscard]] Ray3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
-        return { origin.shear_y_at(shear_origin, angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+        return { origin.shear_y_at(shear_origin, factor_x, factor_z),
+                 direction.shear_y(factor_x, factor_z).normalize() };
     }
 
-    [[nodiscard]] Ray3 shear_y(const Real angle_x, const Real angle_z) const
+    /**
+     * Shear along the y-axis about the global origin by x-axis and z-axis factors.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Ray3 shear_y(const Real factor_x, const Real factor_z) const
     {
-        return { origin.shear_y(angle_x, angle_z), direction.shear_y(angle_x, angle_z).normalize() };
+        return { origin.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
     }
 
-    [[nodiscard]] Ray3 shear_z_at(const Vector3<Real>& shear_origin, const Real angle_x, const Real angle_y) const
+    /**
+     * Shear along the z-axis about an origin by x-axis and y-axis factors.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return
+     */
+    [[nodiscard]] Ray3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
-        return { origin.shear_z_at(shear_origin, angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
+        return { origin.shear_z_at(shear_origin, factor_x, factor_y),
+                 direction.shear_z(factor_x, factor_y).normalize() };
     }
 
+    /**
+     * Shear along the z-axis about the global origin by x-axis and y-axis factors.
+     * @param angle_x X-Axis factor.
+     * @param angle_y Y-Axis factor.
+     * @return Result.
+     */
     [[nodiscard]] Ray3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return { origin.shear_z(angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
     }
 
+    /**
+     * Determine if both origin and direction are approximately equal to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool approx_equal(const Ray3& other) const
     {
         return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
     }
 
+    /**
+     * Determine if both origin and direction are exactly equal to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator==(const Ray3& other) const
     {
         return origin == other.origin && direction == other.direction;
     }
 
+    /**
+     * Determine if either origin or direction are not exactly equal to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator!=(const Ray3& other) const
     {
         return origin != other.origin || direction != other.direction;
     }
 
+    /**
+     * Lexicographical comparison in the order of origin then direction.
+     * @param other Other ray.
+     * @return Result.
+     */
     [[nodiscard]] bool operator<(const Ray3& other) const
     {
         if (origin == other.origin) {
