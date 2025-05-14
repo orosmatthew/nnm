@@ -23,6 +23,10 @@ template <typename Real>
 class Segment3;
 using Segment3f = Segment3<float>;
 using Segment3d = Segment3<double>;
+template <typename Real>
+class Sphere;
+using SphereF = Sphere<float>;
+using SphereD = Sphere<double>;
 
 /**
  * 3D infinite line.
@@ -1560,6 +1564,151 @@ public:
     [[nodiscard]] Vector3<Real> midpoint() const
     {
         return (start + end) / static_cast<Real>(2);
+    }
+};
+
+template <typename Real>
+class Sphere {
+    /**
+     * Center
+     */
+    Vector3<Real> center;
+
+    /**
+     * Radius
+     */
+    Real radius;
+
+    /**
+     * Default initialize at the global origin and a radius of 1.
+     */
+    constexpr Sphere()
+        : center { Vector3<Real>::zero() }
+        , radius { static_cast<Real>(1) }
+    {
+    }
+
+    /**
+     * Initialize with center and radius.
+     * @param center Center.
+     * @param radius Radius.
+     */
+    constexpr Sphere(const Vector3<Real>& center, const Real radius)
+        : center { center }
+        , radius { radius }
+    {
+    }
+
+    /**
+     * From center and a point intersecting the surface.
+     * @param center Center.
+     * @param point Point that lies on the surface of the sphere.
+     * @return Result.
+     */
+    static constexpr Sphere from_center_point(const Vector3<Real>& center, const Vector3<Real>& point)
+    {
+        return Sphere(center, center.distance(point));
+    }
+
+    /**
+     * Surface area.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real surface_area() const
+    {
+        return static_cast<Real>(4) * pi<Real>() * sqrd(radius);
+    }
+
+    /**
+     * Volume.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real volume() const
+    {
+        const Real radius_cubed = radius * radius * radius;
+        return static_cast<Real>(4) / static_cast<Real>(3) * pi<Real>() * radius_cubed;
+    }
+
+    /**
+     * Diameter.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real diameter() const
+    {
+        return static_cast<Real>(2) * radius;
+    }
+
+    /**
+     * Determines if a point is contained inside the sphere.
+     * @param point Point.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        return center.distance_sqrd(point) <= sqrd(radius);
+    }
+
+    /**
+     * Closest signed-distance to a point from the surface of the sphere.
+     * Positive if outside and negative if inside the sphere.
+     * @param point Point.
+     * @return Result.
+     */
+    [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
+    {
+        return center.distance(point) - radius;
+    }
+
+    /**
+     * Closest distance to a point. Zero if point is inside the sphere.
+     * @param point Point.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        return max(static_cast<Real>(0), signed_distance(point));
+    }
+
+    /**
+     * Closest distance to a line. Zero if intersects or is inside the sphere.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        return max(static_cast<Real>(0), line.distance(center) - radius);
+    }
+
+    /**
+     * Closest distance to a ray. Zero if intersects or is inside the sphere.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        return max(static_cast<Real>(0), ray.distance(center) - radius);
+    }
+
+    /**
+     * Closest distance to a line segment. Zero if intersects or is inside the sphere.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    {
+        return max(static_cast<Real>(0), segment.distance(center) - radius);
+    }
+
+    /**
+     * Closest distance to another sphere. Zero if intersects or is inside this sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Sphere& other) const
+    {
+        const Real dist = center.distance(other.center);
+        const Real radius_sum = radius + other.radius;
+        return max(static_cast<Real>(0), dist - radius_sum);
     }
 };
 
