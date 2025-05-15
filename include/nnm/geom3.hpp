@@ -36,9 +36,9 @@ template <typename Real>
 class Line3 {
 public:
     /**
-     * Point that the line intersects.
+     * Origin.
      */
-    Vector3<Real> point;
+    Vector3<Real> origin;
 
     /**
      * Direction.
@@ -46,21 +46,21 @@ public:
     Vector3<Real> direction;
 
     /**
-     * Default initialize with zero point in the direction of the x-axis.
+     * Default initialize with zero origin in the direction of the x-axis.
      */
     constexpr Line3()
-        : point { Vector3<Real>::zero() }
+        : origin { Vector3<Real>::zero() }
         , direction { Vector3<Real>::axis_x() }
     {
     }
 
     /**
-     * Initialize with a point that the line intersects and a direction. The direction should be normalized.
-     * @param point Point.
+     * Initialize with an origin that the line intersects and a direction. The direction should be normalized.
+     * @param origin Origin.
      * @param direction Normalized direction.
      */
-    constexpr Line3(const Vector3<Real>& point, const Vector3<Real>& direction)
-        : point { point }
+    constexpr Line3(const Vector3<Real>& origin, const Vector3<Real>& direction)
+        : origin { origin }
         , direction { direction }
     {
     }
@@ -170,7 +170,7 @@ public:
      */
     [[nodiscard]] Line3 normalize() const
     {
-        return { point, direction.normalize() };
+        return { origin, direction.normalize() };
     }
 
     /**
@@ -188,9 +188,9 @@ public:
      */
     [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = point - this->point;
+        const Vector3<Real> dir = point - origin;
         const Real t = dir.dot(direction);
-        const Vector3<Real> proj = this->point + direction * t;
+        const Vector3<Real> proj = origin + direction * t;
         return proj.approx_equal(point);
     }
 
@@ -199,9 +199,9 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
-        return (point - this->point).cross(direction).length();
+        return (point - origin).cross(direction).length();
     }
 
     /**
@@ -213,9 +213,9 @@ public:
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         if (dir_cross.approx_zero()) {
-            return distance(other.point);
+            return distance(other.origin);
         }
-        const Vector3<Real> diff = point - other.point;
+        const Vector3<Real> diff = origin - other.origin;
         return abs(dir_cross.dot(diff)) / dir_cross.length();
     }
 
@@ -270,13 +270,13 @@ public:
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return approx_contains(other.point);
+            return approx_contains(other.origin);
         }
-        const Vector3<Real> diff = other.point - point;
+        const Vector3<Real> diff = other.origin - origin;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p = point + direction * t;
-        const Vector3<Real> p_other = other.point + other.direction * t_other;
+        const Vector3<Real> p = origin + direction * t;
+        const Vector3<Real> p_other = other.origin + other.direction * t_other;
         return p.approx_equal(p_other);
     }
 
@@ -292,11 +292,11 @@ public:
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = other.point - point;
+        const Vector3<Real> diff = other.origin - origin;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p = point + direction * t;
-        if (const Vector3<Real> p_other = other.point + other.direction * t_other; !p.approx_equal(p_other)) {
+        const Vector3<Real> p = origin + direction * t;
+        if (const Vector3<Real> p_other = other.origin + other.direction * t_other; !p.approx_equal(p_other)) {
             return std::nullopt;
         }
         return p;
@@ -323,9 +323,9 @@ public:
      */
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = point - this->point;
+        const Vector3<Real> dir = point - origin;
         const Real t = dir.dot(direction);
-        return this->point + direction * t;
+        return origin + direction * t;
     }
 
     /**
@@ -338,7 +338,7 @@ public:
         if (!approx_parallel(other)) {
             return false;
         }
-        const Vector3<Real> diff = point - other.point;
+        const Vector3<Real> diff = origin - other.origin;
         return diff.cross(other.direction).approx_zero();
     }
 
@@ -349,7 +349,7 @@ public:
      */
     [[nodiscard]] Line3 translate(const Vector3<Real>& offset) const
     {
-        return { point.translate(offset), direction };
+        return { origin.translate(offset), direction };
     }
 
     /**
@@ -360,17 +360,17 @@ public:
      */
     [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
-        return { point.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
+        return { origin.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
     }
 
     /**
-     * Scale about the origin by a factor.
+     * Scale about the global origin by a factor.
      * @param factor Scale factor.
      * @return Result.
      */
     [[nodiscard]] Line3 scale(const Vector3<Real>& factor) const
     {
-        return { point.scale(factor), direction.scale(factor).normalize() };
+        return { origin.scale(factor), direction.scale(factor).normalize() };
     }
 
     /**
@@ -383,19 +383,19 @@ public:
     [[nodiscard]] Line3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
-        return { point.rotate_axis_angle_at(rotate_origin, axis, angle),
+        return { origin.rotate_axis_angle_at(rotate_origin, axis, angle),
                  direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
     /**
-     * Rotate about the origin by an axis and angle.
+     * Rotate about the global origin by an axis and angle.
      * @param axis Normalized rotation axis.
      * @param angle Angle in radians.
      * @return Result.
      */
     [[nodiscard]] Line3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
-        return { point.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
+        return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
     /**
@@ -407,18 +407,18 @@ public:
     [[nodiscard]] Line3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
-        return { point.rotate_quaternion_at(rotate_origin, quaternion),
+        return { origin.rotate_quaternion_at(rotate_origin, quaternion),
                  direction.rotate_quaternion(quaternion).normalize() };
     }
 
     /**
-     * Rotate about the origin by a quaternion.
+     * Rotate about the global origin by a quaternion.
      * @param quaternion Quaternion.
      * @return Result.
      */
     [[nodiscard]] Line3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
-        return { point.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
+        return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
     }
 
     /**
@@ -430,19 +430,19 @@ public:
      */
     [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
-        return { point.shear_x_at(shear_origin, factor_y, factor_z),
+        return { origin.shear_x_at(shear_origin, factor_y, factor_z),
                  direction.shear_x(factor_y, factor_z).normalize() };
     }
 
     /**
-     * Shear about the origin along the x-axis.
+     * Shear about the global origin along the x-axis.
      * @param factor_y Y-Axis shear factor.
      * @param factor_z Z-Axis shear factor.
      * @return Result.
      */
     [[nodiscard]] Line3 shear_x(const Real factor_y, const Real factor_z) const
     {
-        return { point.shear_x(factor_y, factor_z), direction.shear_x(factor_y, factor_z).normalize() };
+        return { origin.shear_x(factor_y, factor_z), direction.shear_x(factor_y, factor_z).normalize() };
     }
 
     /**
@@ -454,19 +454,19 @@ public:
      */
     [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
-        return { point.shear_y_at(shear_origin, factor_x, factor_z),
+        return { origin.shear_y_at(shear_origin, factor_x, factor_z),
                  direction.shear_y(factor_x, factor_z).normalize() };
     }
 
     /**
-     * Shear about the origin along the y-axis.
+     * Shear about the global origin along the y-axis.
      * @param factor_x X-Axis factor.
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
     [[nodiscard]] Line3 shear_y(const Real factor_x, const Real factor_z) const
     {
-        return { point.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
+        return { origin.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
     }
 
     /**
@@ -478,62 +478,62 @@ public:
      */
     [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
-        return { point.shear_z_at(shear_origin, factor_x, factor_y),
+        return { origin.shear_z_at(shear_origin, factor_x, factor_y),
                  direction.shear_z(factor_x, factor_y).normalize() };
     }
 
     /**
-     * Shear about the origin along the z-axis.
+     * Shear about the global origin along the z-axis.
      * @param factor_x X-Axis factor.
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
     [[nodiscard]] Line3 shear_z(const Real factor_x, const Real factor_y) const
     {
-        return { point.shear_z(factor_x, factor_y), direction.shear_z(factor_x, factor_y).normalize() };
+        return { origin.shear_z(factor_x, factor_y), direction.shear_z(factor_x, factor_y).normalize() };
     }
 
     /**
-     * Determine if the point and direction are approximately equal to another line.
+     * Determine if the origin and direction are approximately equal to another line.
      * @param other Other line.
      * @return Result.
      */
     [[nodiscard]] bool approx_equal(const Line3& other) const
     {
-        return point.approx_equal(other.point) && direction.approx_equal(other.direction);
+        return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
     }
 
     /**
-     * Determine if point and direction are exactly equal to another line.
+     * Determine if origin and direction are exactly equal to another line.
      * @param other Other line.
      * @return Result.
      */
     [[nodiscard]] bool operator==(const Line3& other) const
     {
-        return point == other.point && direction == other.direction;
+        return origin == other.origin && direction == other.direction;
     }
 
     /**
-     * Determine if either point or direction are not exactly equal to another line.
+     * Determine if either origin or direction are not exactly equal to another line.
      * @param other Other line.
      * @return Result.
      */
     [[nodiscard]] bool operator!=(const Line3& other) const
     {
-        return point != other.point || direction != other.direction;
+        return origin != other.origin || direction != other.direction;
     }
 
     /**
-     * Lexicographical comparison in the order of point then direction.
+     * Lexicographical comparison in the order of origin then direction.
      * @param other Other line.
      * @return Result.
      */
     [[nodiscard]] bool operator<(const Line3& other) const
     {
-        if (point == other.point) {
+        if (origin == other.origin) {
             return direction < other.direction;
         }
-        return point < other.point;
+        return origin < other.origin;
     }
 };
 
@@ -661,7 +661,7 @@ public:
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = line.point - origin;
+        const Vector3<Real> diff = line.origin - origin;
         if (dir_cross_len_sqrd == static_cast<Real>(0)) {
             return line.distance(origin);
         }
@@ -671,7 +671,7 @@ public:
             return line.distance(origin);
         }
         const Vector3<Real> p1 = origin + direction * t;
-        const Vector3<Real> p2 = line.point + line.direction * t_line;
+        const Vector3<Real> p2 = line.origin + line.direction * t_line;
         return p1.distance(p2);
     }
 
@@ -755,14 +755,14 @@ public:
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return line.approx_contains(origin);
         }
-        const Vector3<Real> diff = line.point - origin;
+        const Vector3<Real> diff = line.origin - origin;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
         if (t < static_cast<Real>(0)) {
             return false;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = origin + direction * t;
-        const Vector3<Real> p_other = line.point + line.direction * t_other;
+        const Vector3<Real> p_other = line.origin + line.direction * t_other;
         return p.approx_equal(p_other);
     }
 
@@ -778,14 +778,14 @@ public:
         if (dir_cross_len_sqrd == static_cast<Real>(0)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = line.point - origin;
+        const Vector3<Real> diff = line.origin - origin;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
         if (t < static_cast<Real>(0)) {
             return std::nullopt;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = origin + direction * t;
-        if (const Vector3<Real> p_other = line.point + line.direction * t_other; !p.approx_equal(p_other)) {
+        if (const Vector3<Real> p_other = line.origin + line.direction * t_other; !p.approx_equal(p_other)) {
             return std::nullopt;
         }
         return p;
@@ -1113,7 +1113,7 @@ public:
         if (!approx_parallel(line)) {
             return false;
         }
-        const Vector3<Real> diff = start - line.point;
+        const Vector3<Real> diff = start - line.origin;
         return diff.cross(line.direction).approx_zero();
     }
 
@@ -1193,7 +1193,7 @@ public:
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = line.point - start;
+        const Vector3<Real> diff = line.origin - start;
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             const Real d1 = line.distance(start);
             const Real d2 = line.distance(end);
@@ -1208,7 +1208,7 @@ public:
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p1 = start.lerp(end, t);
-        const Vector3<Real> p2 = line.point + line.direction * t_line;
+        const Vector3<Real> p2 = line.origin + line.direction * t_line;
         return p1.distance(p2);
     }
 
@@ -1374,14 +1374,14 @@ public:
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return line.approx_contains(start);
         }
-        const Vector3<Real> diff = line.point - start;
+        const Vector3<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
         if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
             return false;
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = start.lerp(end, t);
-        const Vector3<Real> p_other = line.point + line.direction * t_line;
+        const Vector3<Real> p_other = line.origin + line.direction * t_line;
         return p.approx_equal(p_other);
     }
 
@@ -1398,14 +1398,14 @@ public:
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = line.point - start;
+        const Vector3<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
         if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
             return std::nullopt;
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
         const Vector3<Real> p = start.lerp(end, t);
-        if (const Vector3<Real> p_other = line.point + line.direction * t_line; !p.approx_equal(p_other)) {
+        if (const Vector3<Real> p_other = line.origin + line.direction * t_line; !p.approx_equal(p_other)) {
             return std::nullopt;
         }
         return p;
@@ -1709,6 +1709,398 @@ class Sphere {
         const Real dist = center.distance(other.center);
         const Real radius_sum = radius + other.radius;
         return max(static_cast<Real>(0), dist - radius_sum);
+    }
+
+    /**
+     * Point on the surface of the sphere in the given direction from the center.
+     * @param dir Normalized direction from the sphere's center. No normalization is done.
+     * @return Result.
+     */
+    [[nodiscard]] Real point_at(const Vector3<Real>& dir) const
+    {
+        return center.translate(dir * radius);
+    }
+
+    /**
+     * Normal of the surface of the sphere in the given direction from the center.
+     * @param dir Normalized direction from the sphere's center. No normalization is done.
+     * @return Result.
+     */
+    // ReSharper disable once CppMemberFunctionMayBeStatic
+    [[nodiscard]] Vector3<Real> normal_at(const Vector3<Real>& dir) const
+    {
+        return dir;
+    }
+
+    /**
+     * Determine if intersects with a line. Being inside the circle is considered an intersection.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir = line.origin - center;
+        const Real a = line.direction.dot(line.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        return discriminant >= static_cast<Real>(0);
+    }
+
+    /**
+     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodisacrd]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir = line.origin - center;
+        const Real a = line.direction.dot(line.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        if (discriminant == static_cast<Real>(0)) {
+            const Real t = -b / (static_cast<Real>(2) * a);
+            const Vector3<Real> p = line.origin + line.direction * t;
+            return { p, p };
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const Vector3<Real> p1 = line.origin + line.direction * t1;
+        const Vector3<Real> p2 = line.origin + line.direction * t2;
+        return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
+    }
+
+    /**
+     * Determine if intersects with a ray. Being inside the sphere is considered an intersection.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    {
+        const Vector3<Real> dir = ray.origin - center;
+        const Real a = ray.direction.dot(ray.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return false;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        return t1 >= static_cast<Real>(0) || t2 >= static_cast<Real>(0);
+    }
+
+    /**
+     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Ray3<Real>& ray) const
+    {
+        const Vector3<Real> dir = ray.origin - center;
+        const Real a = ray.direction.dot(ray.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const std::optional<Vector3<Real>> p1
+            = t1 >= static_cast<Real>(0) ? ray.origin + ray.direction * t1 : std::nullopt;
+        const std::optional<Vector3<Real>> p2
+            = t2 >= static_cast<Real>(0) ? ray.origin + ray.direction * t2 : std::nullopt;
+        if (p1.has_value() && p2.has_value()) {
+            return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
+        }
+        if (p1.has_value()) {
+            return std::array { *p1, *p1 };
+        }
+        if (p2.has_value()) {
+            return std::array { *p2, *p2 };
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * Determine if intersects with a line segment. Being inside the sphere is considered an intersection.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    {
+        const Vector3<Real> seg_dir = segment.direction();
+        const Vector3<Real> dir = segment.start - center;
+        const Real a = seg_dir.dot(seg_dir);
+        const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return false;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real seg_length = segment.length();
+        return (t1 >= static_cast<Real>(0) && t1 <= seg_length) || (t2 >= static_cast<Real>(0) && t2 <= seg_length);
+    }
+
+    /**
+     * Intersection points with a line segment. If only single intersection, both returned points are equal.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Segment3<Real>& segment) const
+    {
+        const Vector3<Real> seg_dir;
+        const Vector3<Real> dir = segment.start - center;
+        const Real a = seg_dir.dot(seg_dir);
+        const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        if (discriminant < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        const Real disc_sqrt = sqrt(discriminant);
+        const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
+        const Real seg_length = segment.length();
+        const std::optional<Vector3<Real>> p1
+            = t1 >= static_cast<Real>(0) && t1 <= seg_length ? segment.start + seg_dir * t1 : std::nullopt;
+        const std::optional<Vector3<Real>> p2
+            = t2 >= static_cast<Real>(0) && t2 <= seg_length ? segment.start + seg_dir * t2 : std::nullopt;
+        if (p1.has_value() && p2.has_value()) {
+            return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
+        }
+        if (p1.has_value()) {
+            return std::array { *p1, *p1 };
+        }
+        if (p2.has_value()) {
+            return std::array { *p2, *p2 };
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * Determine if intersects with another sphere. Being inside a sphere is considered an intersection.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] bool intersects(const Sphere& other) const
+    {
+        return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
+    }
+
+    /**
+     * Intersection depth with another sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Sphere& other) const
+    {
+        const Vector3<Real> diff = other.center - center;
+        const Real radius_sum = radius + other.radius;
+        if (diff == Vector3<Real>::zero()) {
+            return Vector3<Real>::axis_x() * radius_sum;
+        }
+        const Real dist_sqrd = diff.length_sqrd();
+        const Real dist = sqrt(dist_sqrd);
+        const Real depth = radius_sum - dist;
+        if (depth < static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        return diff.normalize() * depth;
+    }
+
+    /**
+     * Determine if approximately tangent to line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_tangent(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir = line.origin - center;
+        const Real a = line.direction.dot(line.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(line.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
+        return approx_zero(discriminant);
+    }
+
+    /**
+     * Determine if approximately tangent to ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_tangent(const Ray3<Real>& ray) const
+    {
+        const Vector3<Real> dir = ray.origin - center;
+        const Real a = ray.direction.dot(ray.direction);
+        const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        if (const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c; !approx_zero(discriminant)) {
+            return false;
+        }
+        const Real t = -b / (static_cast<Real>(2) * a);
+        return t >= static_cast<Real>(0);
+    }
+
+    /**
+     * Determine if approximately tangent to line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_tangent(const Segment3<Real>& segment) const
+    {
+        const Vector3<Real> seg_dir = segment.direction();
+        const Vector3<Real> dir = segment.start - center;
+        const Real a = seg_dir.dot(seg_dir);
+        const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
+        const Real c = dir.dot(dir) - sqrd(radius);
+        if (const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c; !approx_zero(discriminant)) {
+            return false;
+        }
+        const Real t = -b / (static_cast<Real>(2) * a);
+        return t >= static_cast<Real>(0) && t <= segment.length();
+    }
+
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere translate(const Vector3<Real>& offset) const
+    {
+        return { center.translate(offset), radius };
+    }
+
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param rotate_origin Rotation origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere rotate_axis_angle_at(
+        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { center.rotate_axis_angle_at(rotate_origin, axis, angle), radius };
+    }
+
+    /**
+     * Rotate about the global origin by an axis and angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { center.rotate_axis_angle(axis, angle), radius };
+    }
+
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param rotate_origin Rotation origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere rotate_quaternion_at(
+        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    {
+        return { center.rotate_quaternion_at(rotate_origin, quaternion), radius };
+    }
+
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { center.rotate_quaternion(quaternion), radius };
+    }
+
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere scale_at(const Vector3<Real>& scale_origin, const Real factor) const
+    {
+        return { center.scale_at(scale_origin, Vector3<Real>::all(factor)), abs(radius * factor) };
+    }
+
+    /**
+     * Scale about the global origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] Sphere scale(const Real factor)
+    {
+        return { center.scale(Vector3<Real>::all(factor)), abs(radius * factor) };
+    }
+
+    /**
+     * Determine if approximately coincident to another sphere which means
+     * if both the center and radius are approximately equal to the other sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_coincident(const Sphere& other) const
+    {
+        return approx_equal(other);
+    }
+
+    /**
+     * Determine if all members are approximately equal to another sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_equal(const Sphere& other) const
+    {
+        return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
+    }
+
+    /**
+     * Determine if all members are exactly equal to another sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator==(const Sphere& other) const
+    {
+        return center == other.center && radius == other.radius;
+    }
+
+    /**
+     * Determine if any members are not exactly equal to another sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator!=(const Sphere& other) const
+    {
+        return center != other.center || radius != other.radius;
+    }
+
+    /**
+     * Lexicographical comparison in the order of center then radius to another sphere.
+     * @param other Other sphere.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator<(const Sphere& other) const
+    {
+        if (center != other.center) {
+            return center < other.center;
+        }
+        return radius < other.radius;
     }
 };
 
