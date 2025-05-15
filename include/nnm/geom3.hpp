@@ -24,6 +24,10 @@ class Segment3;
 using Segment3f = Segment3<float>;
 using Segment3d = Segment3<double>;
 template <typename Real>
+class Plane;
+using PlaneF = Plane<float>;
+using PlaneD = Plane<double>;
+template <typename Real>
 class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
@@ -1567,6 +1571,80 @@ public:
     }
 };
 
+/**
+ * Plane.
+ * @tparam Real Floating-point type.
+ */
+template <typename Real>
+class Plane {
+    /**
+     * Origin.
+     */
+    Vector3<Real> origin;
+
+    /**
+     * Normalized normal.
+     */
+    Vector3<Real> normal;
+
+    /**
+     * Default initialize with a zero origin and normal in the direction of the positive x-axis.
+     */
+    constexpr Plane()
+        : origin { Vector3<Real>::zero() }
+        , normal { Vector3<Real>::axis_x() }
+    {
+    }
+
+    /**
+     * Initialize with an origin and normalized normal. No normalization is performed.
+     * @param origin Origin.
+     * @param normal Normalized normal.
+     */
+    constexpr Plane(const Vector3<Real>& origin, const Vector3<Real>& normal)
+        : origin { origin }
+        , normal { normal }
+    {
+    }
+
+    /**
+     * Plane that intersects all given points. Does not check for collinearity.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @param point3 Third point.
+     * @return Result.
+     */
+    static Plane from_points_unchecked(
+        const Vector3<Real>& point1, const Vector3<Real>& point2, const Vector3<Real>& point3)
+    {
+        const Vector3<Real> dir12 = point2 - point1;
+        const Vector3<Real> dir13 = point3 - point1;
+        const Vector3<Real> normal = dir12.cross(dir13).normalize();
+        return { point1, normal };
+    }
+
+    static std::optional<Plane> from_points(
+        const Vector3<Real>& point1, const Vector3<Real>& point2, const Vector3<Real>& point3)
+    {
+        const Vector3<Real> dir12 = point2 - point1;
+        const Vector3<Real> dir13 = point3 - point1;
+        const Vector3<Real> cross = dir12.cross(dir13);
+        if (cross.length() == static_cast<Real>(0)) {
+            return std::nullopt;
+        }
+        return { point1, cross.normalize() };
+    }
+
+    [[nodiscard]] Plane normalize() const
+    {
+        return { origin, normal.normalize() };
+    }
+};
+
+/**
+ * Sphere.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Sphere {
     /**
