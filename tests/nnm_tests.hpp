@@ -2156,7 +2156,7 @@ inline void nnm_tests()
         {
             constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
             constexpr nnm::QuaternionF q { 0.27948463f, 0.0698711574f, -0.111793853f, 0.95105654f };
-            const auto result = v1.rotate_quaternion_at(origin, q);
+            constexpr auto result = v1.rotate_quaternion_at(origin, q);
             ASSERT(result.approx_equal({ 0.071436f, 8.32907f, -1.36574f }));
         }
 
@@ -4766,7 +4766,7 @@ inline void nnm_tests()
 
         test_section("rotate");
         {
-            const auto t = nnm::Transform2f::from_basis_translation(nnm::Basis2f(), { 1.0f, -2.0f });
+            constexpr auto t = nnm::Transform2f::from_basis_translation(nnm::Basis2f(), { 1.0f, -2.0f });
             const auto t_rotated = t.rotate(nnm::pi<float>() / 2.0f);
             const auto t_expected = nnm::Transform2f::from_basis_translation(
                 nnm::Basis2f::from_rotation(nnm::pi<float>() / 2.0f), { 2.0f, 1.0f });
@@ -4775,7 +4775,7 @@ inline void nnm_tests()
 
         test_section("rotate_local");
         {
-            const auto t = nnm::Transform2f::from_basis_translation(nnm::Basis2f(), { 1.0f, -2.0f });
+            constexpr auto t = nnm::Transform2f::from_basis_translation(nnm::Basis2f(), { 1.0f, -2.0f });
             const auto t_rotated = t.rotate_local(nnm::pi<float>() / 2.0f);
             const auto t_expected = nnm::Transform2f::from_basis_translation(
                 nnm::Basis2f::from_rotation(nnm::pi<float>() / 2.0f), { 1.0f, -2.0f });
@@ -4788,7 +4788,7 @@ inline void nnm_tests()
         test_section("scale");
         {
             constexpr auto t_scaled = t2.scale({ 2.0f, -3.0f });
-            const auto t_expected
+            constexpr auto t_expected
                 = nnm::Transform2f::from_basis_translation(t2.basis().scale({ 2.0f, -3.0f }), { 2.0f, 6.0f });
             ASSERT(t_scaled.approx_equal(t_expected));
         }
@@ -4796,7 +4796,7 @@ inline void nnm_tests()
         test_section("scale_local");
         {
             constexpr auto t_scaled = t2.scale_local({ 2.0f, -3.0f });
-            const auto t_expected
+            constexpr auto t_expected
                 = nnm::Transform2f::from_basis_translation(t2.basis().scale_local({ 2.0f, -3.0f }), { 1.0f, -2.0f });
             ASSERT(t_scaled.approx_equal(t_expected));
         }
@@ -5317,7 +5317,7 @@ inline void nnm_tests()
             constexpr nnm::Matrix3 m2 = m1.minor_matrix_at(0, 0);
             ASSERT(m2 == nnm::Matrix3f({ -3.0f, -2.0f, -4.0f }, { 2.0f, -1.0f, -4.0f }, { 1.0f, -3.0f, 0.0f }));
 
-            const nnm::Matrix3 m3 = m1.minor_matrix_at(1, 2);
+            constexpr nnm::Matrix3 m3 = m1.minor_matrix_at(1, 2);
             ASSERT(m3 == nnm::Matrix3f({ 1.0f, 2.0f, 4.0f }, { 3.0f, 2.0f, -4.0f }, { -4.0f, 1.0f, 0.0f }));
         }
 
