@@ -1028,21 +1028,21 @@ public:
     }
 
     /**
-     * Determines if this vector is approximately parallel to another vector.
+     * Determines if this vector is parallel to another vector.
      * @param other Other vector.
-     * @return True if approximately parallel, false otherwise.
+     * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector2& other) const
     {
         return nnm::approx_zero(cross(other));
     }
 
     /**
-     * Determines if this vector is approximately perpendicular to another vector.
+     * Determines if this vector is perpendicular to another vector.
      * @param other Other vector.
-     * @return True if approximately perpendicular, false otherwise.
+     * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Vector2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector2& other) const
     {
         return nnm::approx_zero(dot(other));
     }
@@ -2563,7 +2563,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Vector3& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector3& other) const
     {
         return cross(other).approx_zero();
     }
@@ -2573,7 +2573,7 @@ public:
      * @param other Other vector.
      * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Vector3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector3& other) const
     {
         return nnm::approx_zero(dot(other));
     }

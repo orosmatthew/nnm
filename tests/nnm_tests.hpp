@@ -888,34 +888,34 @@ inline void nnm_tests()
             ASSERT(nnm::approx_equal(v1.angle_to(v2), 2.21429744f));
         }
 
-        test_section("approx_parallel");
+        test_section("parallel");
         {
             constexpr nnm::Vector2f v1 { 1.0f, -2.0f };
-            ASSERT(v1.approx_parallel(v1));
+            ASSERT(v1.parallel(v1));
             constexpr nnm::Vector2f v2 { -2.0f, 4.0f };
-            constexpr auto result = v1.approx_parallel(v2);
+            constexpr auto result = v1.parallel(v2);
             ASSERT(result);
             constexpr nnm::Vector2f v3 { 1.0f, -5.0f };
-            ASSERT_FALSE(v1.approx_parallel(v3));
+            ASSERT_FALSE(v1.parallel(v3));
         }
 
-        test_section("approx_perpendicular");
+        test_section("perpendicular");
         {
             constexpr nnm::Vector2f v1 { 1.0f, -2.0f };
             constexpr nnm::Vector2f v2 { 4.0f, 2.0f };
-            constexpr auto result = v1.approx_perpendicular(v2);
+            constexpr auto result = v1.perpendicular(v2);
             ASSERT(result);
             constexpr nnm::Vector2f v3 { -4.0f, -2.0f };
-            ASSERT(v1.approx_perpendicular(v3));
+            ASSERT(v1.perpendicular(v3));
         }
 
         test_section("arbitrary_perpendicular");
         {
             constexpr nnm::Vector2f v1 { 1.0f, -2.0f };
             constexpr auto result = v1.arbitrary_perpendicular();
-            ASSERT(v1.approx_perpendicular(result));
+            ASSERT(v1.perpendicular(result));
             constexpr nnm::Vector2f v2 { 1.0f, 0.0f };
-            ASSERT(v2.approx_perpendicular(v2.arbitrary_perpendicular()));
+            ASSERT(v2.perpendicular(v2.arbitrary_perpendicular()));
         }
 
         test_section("translate");
@@ -2092,31 +2092,31 @@ inline void nnm_tests()
             ASSERT(nnm::approx_equal(v1.angle(v2), 2.52872f))
         }
 
-        test_section("approx_parallel");
+        test_section("parallel");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-            constexpr auto result = v1.approx_parallel({ 2.0f, 4.0f, -6.0f });
+            constexpr auto result = v1.parallel({ 2.0f, 4.0f, -6.0f });
             ASSERT(result);
-            ASSERT(v1.approx_parallel(v1));
-            ASSERT(v1.approx_parallel({ -3.0f, -6.0f, 9.0f }));
-            ASSERT_FALSE(v1.approx_parallel({ 1.0f, 2.0f, 3.0f }));
+            ASSERT(v1.parallel(v1));
+            ASSERT(v1.parallel({ -3.0f, -6.0f, 9.0f }));
+            ASSERT_FALSE(v1.parallel({ 1.0f, 2.0f, 3.0f }));
         }
 
-        test_section("approx_perpendicular");
+        test_section("perpendicular");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-            constexpr auto result = v1.approx_perpendicular({ 30.0f, 0.0f, 10.0f });
+            constexpr auto result = v1.perpendicular({ 30.0f, 0.0f, 10.0f });
             ASSERT(result);
-            ASSERT(v1.approx_perpendicular({ 0.0f, -6.0f, -4.0f }));
-            ASSERT_FALSE(v1.approx_perpendicular(v1));
-            ASSERT_FALSE(v1.approx_perpendicular({ 1.0f, 2.0f, 3.0f }));
+            ASSERT(v1.perpendicular({ 0.0f, -6.0f, -4.0f }));
+            ASSERT_FALSE(v1.perpendicular(v1));
+            ASSERT_FALSE(v1.perpendicular({ 1.0f, 2.0f, 3.0f }));
         }
 
         test_section("arbitrary_perpendicular");
         {
             constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
             constexpr auto result = v1.arbitrary_perpendicular();
-            ASSERT(result.approx_perpendicular(v1));
+            ASSERT(result.perpendicular(v1));
         }
 
         test_section("translate");
