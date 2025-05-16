@@ -125,6 +125,114 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
+// TODO: test
+/**
+ * Determine if the first value is approximately less-than but not equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less(const Real a, const Real b)
+{
+    return a < b && !approx_equal(a, b);
+}
+
+// TODO: test
+/**
+ * Determine if the first value is approximately greater-than but not equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater(const Real a, const Real b)
+{
+    return a > b && !approx_equal(a, b);
+}
+
+// TODO: test
+/**
+ * Determine if the first value is approximately greater-than or equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_equal(const Real a, const Real b)
+{
+    return a <= b || approx_equal(a, b);
+}
+
+// TODO: test
+/**
+ * Determine if the first value is approximately greater-than or equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_equal(const Real a, const Real b)
+{
+    return a >= b || approx_equal(a, b);
+}
+
+// TODO: test
+/**
+ * Determine if a value is approximately less-than but not equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_zero(const Real value)
+{
+    return value < static_cast<Real>(0) && !approx_zero(value);
+}
+
+// TODO: test
+/**
+ * Determine if a value is approximately greater-than but not equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_zero(const Real value)
+{
+    return value > static_cast<Real>(0) && !approx_zero(value);
+}
+
+// TODO: test
+/**
+ * Determine if a value is approximately less-than or equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_equal_zero(const Real value)
+{
+    return value <= static_cast<Real>(0) || approx_zero(value);
+}
+
+// TODO: test
+/**
+ * Determine if a value is approximately greater-than or equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_equal_zero(const Real value)
+{
+    return value >= static_cast<Real>(0) || approx_zero(value);
+}
+
 /**
  * The least integer value greater than a value.
  * @tparam Real Floating-point type.
