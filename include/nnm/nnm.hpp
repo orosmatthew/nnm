@@ -102,6 +102,9 @@ constexpr Num max(const Num a, const Num b)
 template <typename Real>
 constexpr bool approx_zero(const Real value)
 {
+    if (value == static_cast<Real>(0)) {
+        return true;
+    }
     Real tolerance = epsilon<Real>() * abs(value);
     tolerance = max(tolerance, epsilon<Real>());
     return abs(value) <= tolerance;
@@ -143,14 +146,42 @@ constexpr bool approx_greater(const Real a, const Real b)
 template <typename Real>
 constexpr bool approx_less_equal(const Real a, const Real b)
 {
-    return a < b || approx_equal(a, b);
+    return a <= b || approx_equal(a, b);
 }
 
 // TODO: test
 template <typename Real>
 constexpr bool approx_greater_equal(const Real a, const Real b)
 {
-    return a > b || approx_equal(a, b);
+    return a >= b || approx_equal(a, b);
+}
+
+// TODO: test
+template <typename Real>
+constexpr bool approx_less_zero(const Real value)
+{
+    return value < static_cast<Real>(0) && !approx_zero(value);
+}
+
+// TODO: test
+template <typename Real>
+constexpr bool approx_greater_zero(const Real value)
+{
+    return value > static_cast<Real>(0) && !approx_zero(value);
+}
+
+// TODO: test
+template <typename Real>
+constexpr bool approx_less_equal_zero(const Real value)
+{
+    return value <= static_cast<Real>(0) || approx_zero(value);
+}
+
+// TODO: test
+template <typename Real>
+constexpr bool approx_greater_equal_zero(const Real value)
+{
+    return value >= static_cast<Real>(0) || approx_zero(value);
 }
 
 /**

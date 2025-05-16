@@ -178,19 +178,19 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a ray which means
+     * Determine if collinear with a ray which means
      * that all points for both the line and the ray exist on the same line.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Ray3<Real>& ray) const;
+    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const;
 
     /**
-     * Determine if approximately intersects a point.
+     * Determine if intersects a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
         const Real t = dir.dot(direction);
@@ -231,50 +231,50 @@ public:
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const;
 
     /**
-     * Determine if approximately parallel with another line.
+     * Determine if parallel with another line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Line3& other) const
+    [[nodiscard]] bool parallel(const Line3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
 
     /**
-     * Determine if approximately parallel to a ray.
+     * Determine if parallel to a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Ray3<Real>& ray) const;
+    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const;
 
     /**
-     * Determine if approximately perpendicular to another line.
+     * Determine if perpendicular to another line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Line3& other) const
+    [[nodiscard]] bool perpendicular(const Line3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
     /**
-     * Determine if approximately perpendicular to a ray.
+     * Determine if perpendicular to a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const;
+    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const;
 
     /**
-     * Determine if approximately intersects another line.
+     * Determine if intersects another line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Line3& other) const
+    [[nodiscard]] bool intersects(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return approx_contains(other.origin);
+            return contains(other.origin);
         }
         const Vector3<Real> diff = other.origin - origin;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
@@ -289,7 +289,7 @@ public:
      * @param other Other line.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3& other) const
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -307,18 +307,18 @@ public:
     }
 
     /**
-     * Determine if approximately intersects a ray.
+     * Determine if intersects a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const;
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const;
 
     /**
      * Intersection point with a ray.
      * @param ray Ray.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3<Real>& ray) const;
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
 
     /**
      * Project point on the line.
@@ -333,13 +333,13 @@ public:
     }
 
     /**
-     * Determine if approximately coincident with another line.
+     * Determine if coincident with another line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_coincident(const Line3& other) const
+    [[nodiscard]] bool coincident(const Line3& other) const
     {
-        if (!approx_parallel(other)) {
+        if (!parallel(other)) {
             return false;
         }
         const Vector3<Real> diff = origin - other.origin;
@@ -542,7 +542,7 @@ public:
 };
 
 /**
- * 3D ray.
+ * 3D Ray.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -599,43 +599,41 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a point which means
-     * that the point exists on the line extending in both +direction and -direction.
+     * Determine if collinear with a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Vector3<Real>& point) const
+    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
     {
-        return Line3<Real>::from_ray(*this).approx_contains(point);
+        return Line3<Real>::from_ray(*this).contains(point);
     }
 
     /**
-     * Determine if approximately collinear with a line which means that the ray existing entirely on the line.
+     * Determine if collinear with a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Line3<Real>& line) const
+    [[nodiscard]] bool collinear(const Line3<Real>& line) const
     {
-        return Line3<Real>::from_ray(*this).approx_coincident(line);
+        return Line3<Real>::from_ray(*this).coincident(line);
     }
 
     /**
-     * Determine if approximately collinear with another ray which means
-     * both rays existing on the same infinite line.
+     * Determine if collinear with another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Ray3& other) const
+    [[nodiscard]] bool collinear(const Ray3& other) const
     {
-        return Line3<Real>::from_ray(*this).approx_coincident(Line3<Real>::from_ray(other));
+        return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
     }
 
     /**
-     * Determine if ray approximately intersects a point.
+     * Determine if ray intersects a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
+    [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> proj = project_point(point);
         return proj.approx_equal(point);
@@ -649,8 +647,7 @@ public:
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
-        const Real t = dir.dot(direction);
-        if (t < static_cast<Real>(0)) {
+        if (const Real t = dir.dot(direction); approx_less_zero(t)) {
             return origin.distance(point);
         }
         return dir.cross(direction).length();
@@ -666,12 +663,12 @@ public:
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         const Vector3<Real> diff = line.origin - origin;
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+        if (approx_zero(dir_cross_len_sqrd)) {
             return line.distance(origin);
         }
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
         const Real t_line = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return line.distance(origin);
         }
         const Vector3<Real> p1 = origin + direction * t;
@@ -689,17 +686,17 @@ public:
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         const Vector3<Real> diff = other.origin - origin;
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+        if (approx_zero(dir_cross_len_sqrd)) {
             const Real d1 = distance(other.origin);
             const Real d2 = other.distance(origin);
             return min(d1, d2);
         }
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return other.distance(origin);
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0)) {
+        if (approx_less_zero(t_other)) {
             return distance(other.origin);
         }
         const Vector3<Real> p1 = origin + direction * t;
@@ -708,60 +705,60 @@ public:
     }
 
     /**
-     * Determine if approximately parallel to a line.
+     * Determine if parallel to a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Line3<Real>& line) const
+    [[nodiscard]] bool parallel(const Line3<Real>& line) const
     {
         return direction.cross(line.direction).approx_zero();
     }
 
     /**
-     * Determine if approximately parallel to another ray.
+     * Determine if parallel to another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Ray3& other) const
+    [[nodiscard]] bool parallel(const Ray3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
 
     /**
-     * Determine if approximately perpendicular to a line.
+     * Determine if perpendicular to a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Line3<Real>& line) const
+    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
     {
         return nnm::approx_zero(direction.dot(line.direction));
     }
 
     /**
-     * Determine if approximately perpendicular to another ray.
+     * Determine if perpendicular to another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Ray3& other) const
+    [[nodiscard]] bool perpendicular(const Ray3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
 
     /**
-     * Determine if approximately intersects a line.
+     * Determine if intersects a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const
+    [[nodiscard]] bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return line.approx_contains(origin);
+            return line.contains(origin);
         }
         const Vector3<Real> diff = line.origin - origin;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return false;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
@@ -771,20 +768,20 @@ public:
     }
 
     /**
-     * Approximate intersection with a line.
+     * Intersection point with a line.
      * @param line Line.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3<Real>& line) const
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        if (dir_cross_len_sqrd == static_cast<Real>(0)) {
+        if (approx_zero(dir_cross_len_sqrd)) {
             return std::nullopt;
         }
         const Vector3<Real> diff = line.origin - origin;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return std::nullopt;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
@@ -796,24 +793,24 @@ public:
     }
 
     /**
-     * Determine if approximately intersects another ray.
+     * Determine if intersects another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Ray3& other) const
+    [[nodiscard]] bool intersects(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return other.approx_contains(origin) || approx_contains(other.origin);
+            return other.contains(origin) || contains(other.origin);
         }
         const Vector3<Real> diff = other.origin - origin;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return false;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0)) {
+        if (approx_less_zero(t_other)) {
             return false;
         }
         const Vector3<Real> p = origin + direction * t;
@@ -822,11 +819,11 @@ public:
     }
 
     /**
-     * Approximate intersection with another ray.
+     * Intersection point with another ray.
      * @param other Other ray.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3& other) const
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -835,11 +832,11 @@ public:
         }
         const Vector3<Real> diff = other.origin - origin;
         const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return std::nullopt;
         }
         const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0)) {
+        if (approx_less_zero(t_other)) {
             return std::nullopt;
         }
         const Vector3<Real> p = origin + direction * t;
@@ -1057,7 +1054,7 @@ public:
 };
 
 /**
- * 3D line segment.
+ * 3D Line Segment.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -1094,12 +1091,11 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a point which means the point intersects the
-     * infinite line created from infinitely extending the line segment from both ends.
+     * Determine if collinear with a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Vector3<Real>& point) const
+    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - start;
         const Vector3<Real> diff2 = end - start;
@@ -1107,14 +1103,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a line which means the line is the same
-     * as the infinite line created by infinitely extending the segment from both ends.
+     * Determine if collinear with a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Line3<Real>& line) const
+    [[nodiscard]] bool collinear(const Line3<Real>& line) const
     {
-        if (!approx_parallel(line)) {
+        if (!parallel(line)) {
             return false;
         }
         const Vector3<Real> diff = start - line.origin;
@@ -1122,13 +1117,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a ray which means both existing on the same infinite line.
+     * Determine if collinear with a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Ray3<Real>& ray) const
+    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const
     {
-        if (!approx_parallel(ray)) {
+        if (!parallel(ray)) {
             return false;
         }
         const Vector3<Real> diff = start - ray.origin;
@@ -1136,14 +1131,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with another line segment
-     * which means they both existing on the same infinite line.
+     * Determine if collinear with another line segment.
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool approx_collinear(const Segment3& other) const
+    [[nodiscard]] bool collinear(const Segment3& other) const
     {
-        if (!approx_parallel(other)) {
+        if (!parallel(other)) {
             return false;
         }
         const Vector3<Real> diff = start - other.start;
@@ -1151,11 +1145,11 @@ public:
     }
 
     /**
-     * Determine if approximately intersects a point.
+     * Determine if contains/intersects a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
+    [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - start;
         const Vector3<Real> diff2 = end - start;
@@ -1164,7 +1158,7 @@ public:
         }
         const Real dot = diff1.dot(diff2);
         const Real length_sqrd = diff2.dot(diff2);
-        return dot >= static_cast<Real>(0) && dot <= length_sqrd;
+        return approx_greater_equal_zero(dot) && approx_less_equal(dot, length_sqrd);
     }
 
     /**
@@ -1177,10 +1171,10 @@ public:
         const Vector3<Real> dir = end - start;
         const Vector3<Real> diff = point - start;
         Real t = diff.dot(dir) / dir.dot(dir);
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return diff.length();
         }
-        if (t > static_cast<Real>(1)) {
+        if (approx_greater(t, static_cast<Real>(1))) {
             return (point - end).length();
         }
         Vector3<Real> proj = start + dir * t;
@@ -1204,10 +1198,10 @@ public:
             return min(d1, d2);
         }
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return line.distance(start);
         }
-        if (t > static_cast<Real>(1)) {
+        if (approx_greater(t, static_cast<Real>(1))) {
             return line.distance(end);
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
@@ -1234,14 +1228,14 @@ public:
             return min(d1, min(d2, d3));
         }
         const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return ray.distance(start);
         }
-        if (t > static_cast<Real>(1)) {
+        if (approx_greater(t, static_cast<Real>(1))) {
             return ray.distance(end);
         }
         const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_ray < static_cast<Real>(0)) {
+        if (approx_less_zero(t_ray)) {
             return distance(ray.origin);
         }
         const Vector3<Real> p1 = start.lerp(end, t);
@@ -1269,17 +1263,17 @@ public:
             return min(min(d1, d2), min(d3, d4));
         }
         const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0)) {
+        if (approx_less_zero(t)) {
             return other.distance(start);
         }
-        if (t > static_cast<Real>(1)) {
+        if (approx_greater(t, static_cast<Real>(1))) {
             return other.distance(end);
         }
         const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0)) {
+        if (approx_less_zero(t_other)) {
             return distance(other.start);
         }
-        if (t_other > static_cast<Real>(1)) {
+        if (approx_greater(t_other, static_cast<Real>(1))) {
             return distance(other.end);
         }
         const Vector3<Real> p1 = start.lerp(end, t);
@@ -1306,81 +1300,81 @@ public:
     }
 
     /**
-     * Determine if approximately parallel to a line.
+     * Determine if parallel to a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Line3<Real>& line) const
+    [[nodiscard]] bool parallel(const Line3<Real>& line) const
     {
         return direction().approx_parallel(line.direction);
     }
 
     /**
-     * Determine if approximately parallel to a ray.
+     * Determine if parallel to a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Ray3<Real>& ray) const
+    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const
     {
         return direction().approx_parallel(ray.direction);
     }
 
     /**
-     * Determine if approximately parallel to another line segment.
+     * Determine if parallel to another line segment.
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool approx_parallel(const Segment3& other) const
+    [[nodiscard]] bool parallel(const Segment3& other) const
     {
         return direction().approx_parallel(other.direction());
     }
 
     /**
-     * Determine if approximately perpendicular to a line.
+     * Determine if perpendicular to a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Line3<Real>& line) const
+    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
     {
         return direction().approx_perpendicular(line.direction);
     }
 
     /**
-     * Determine if approximately perpendicular to a ray.
+     * Determine if perpendicular to a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Ray3<Real>& ray) const
+    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const
     {
         return direction().approx_perpendicular(ray.direction);
     }
 
     /**
-     * Determine if approximately perpendicular to another line segment.
+     * Determine if perpendicular to another line segment.
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool approx_perpendicular(const Segment3& other) const
+    [[nodiscard]] bool perpendicular(const Segment3& other) const
     {
         return direction().approx_perpendicular(other.direction());
     }
 
     /**
-     * Determine if approximately intersects a line.
+     * Determine if intersects a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Line3<Real>& line) const
+    [[nodiscard]] bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return line.approx_contains(start);
+            return line.contains(start);
         }
         const Vector3<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return false;
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
@@ -1390,11 +1384,11 @@ public:
     }
 
     /**
-     * Approximate intersection with a line.
+     * Intersection point with a line.
      * @param line Line.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Line3<Real>& line) const
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(line.direction);
@@ -1404,7 +1398,7 @@ public:
         }
         const Vector3<Real> diff = line.origin - start;
         const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return std::nullopt;
         }
         const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
@@ -1416,25 +1410,25 @@ public:
     }
 
     /**
-     * Determine if approximately intersects a ray.
+     * Determine if intersects a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Ray3<Real>& ray) const
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(ray.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return ray.approx_contains(start) || ray.approx_contains(end);
+            return ray.contains(start) || ray.contains(end);
         }
         const Vector3<Real> diff = ray.origin - start;
         const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return false;
         }
         const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_ray < static_cast<Real>(0)) {
+        if (approx_less_zero(t_ray)) {
             return false;
         }
         const Vector3<Real> p = start.lerp(end, t);
@@ -1443,7 +1437,7 @@ public:
     }
 
     /**
-     * Approximate intersection with a ray.
+     * Intersection point with a ray.
      * @param ray Ray.
      * @return Result, null if no intersection.
      */
@@ -1457,11 +1451,11 @@ public:
         }
         const Vector3<Real> diff = ray.origin - start;
         const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return std::nullopt;
         }
         const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_ray < static_cast<Real>(0)) {
+        if (approx_less_zero(t_ray)) {
             return std::nullopt;
         }
         const Vector3<Real> p = start.lerp(end, t);
@@ -1472,27 +1466,26 @@ public:
     }
 
     /**
-     * Approximate intersection with another line segment.
+     * Intersection point with another line segment.
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool approx_intersects(const Segment3& other) const
+    [[nodiscard]] bool intersects(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(dir_other);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
         if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            return approx_contains(other.start) || approx_contains(other.end) || other.approx_contains(start)
-                || other.approx_contains(end);
+            return contains(other.start) || contains(other.end) || other.contains(start) || other.contains(end);
         }
         const Vector3<Real> diff = other.start - start;
         const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return false;
         }
         const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0) || t_other > static_cast<Real>(1)) {
+        if (approx_less_zero(t_other) || approx_greater(t_other, static_cast<Real>(1))) {
             return false;
         }
         const Vector3<Real> p = start.lerp(end, t);
@@ -1501,11 +1494,11 @@ public:
     }
 
     /**
-     * Approximate intersection with another line segment.
+     * Intersection point with another line segment.
      * @param other Other line segment.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Segment3& other) const
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
@@ -1516,11 +1509,11 @@ public:
         }
         const Vector3<Real> diff = other.start - start;
         const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t < static_cast<Real>(0) || t > static_cast<Real>(1)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return std::nullopt;
         }
         const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (t_other < static_cast<Real>(0) || t_other > static_cast<Real>(1)) {
+        if (approx_less_zero(t_other) || approx_greater(t_other, static_cast<Real>(1))) {
             return std::nullopt;
         }
         const Vector3<Real> p = start.lerp(end, t);
@@ -2142,7 +2135,7 @@ class Sphere {
      */
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
-        return center.distance_sqrd(point) <= sqrd(radius);
+        return approx_less_equal(center.distance_sqrd(point), sqrd(radius));
     }
 
     /**
@@ -2241,7 +2234,7 @@ class Sphere {
         const Real b = static_cast<Real>(2) * dir.dot(line.direction);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        return discriminant >= static_cast<Real>(0);
+        return approx_greater_equal_zero(discriminant);
     }
 
     /**
@@ -2249,17 +2242,17 @@ class Sphere {
      * @param line Line.
      * @return Result.
      */
-    [[nodisacrd]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Line3<Real>& line) const
+    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
         const Real a = line.direction.dot(line.direction);
         const Real b = static_cast<Real>(2) * dir.dot(line.direction);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        if (discriminant < static_cast<Real>(0)) {
+        if (approx_less_zero(discriminant)) {
             return std::nullopt;
         }
-        if (discriminant == static_cast<Real>(0)) {
+        if (approx_zero(discriminant)) {
             const Real t = -b / (static_cast<Real>(2) * a);
             const Vector3<Real> p = line.origin + line.direction * t;
             return { p, p };
@@ -2284,13 +2277,13 @@ class Sphere {
         const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        if (discriminant < static_cast<Real>(0)) {
+        if (approx_less_zero(discriminant)) {
             return false;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
-        return t1 >= static_cast<Real>(0) || t2 >= static_cast<Real>(0);
+        return approx_greater_equal_zero(t1) || approx_greater_equal_zero(t2);
     }
 
     /**
@@ -2305,16 +2298,16 @@ class Sphere {
         const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        if (discriminant < static_cast<Real>(0)) {
+        if (approx_less_zero(discriminant)) {
             return std::nullopt;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const std::optional<Vector3<Real>> p1
-            = t1 >= static_cast<Real>(0) ? ray.origin + ray.direction * t1 : std::nullopt;
+            = approx_greater_equal_zero(t1) ? ray.origin + ray.direction * t1 : std::nullopt;
         const std::optional<Vector3<Real>> p2
-            = t2 >= static_cast<Real>(0) ? ray.origin + ray.direction * t2 : std::nullopt;
+            = approx_greater_equal_zero(t2) ? ray.origin + ray.direction * t2 : std::nullopt;
         if (p1.has_value() && p2.has_value()) {
             return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
         }
@@ -2340,14 +2333,15 @@ class Sphere {
         const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        if (discriminant < static_cast<Real>(0)) {
+        if (approx_less_zero(discriminant)) {
             return false;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Real seg_length = segment.length();
-        return (t1 >= static_cast<Real>(0) && t1 <= seg_length) || (t2 >= static_cast<Real>(0) && t2 <= seg_length);
+        return (approx_greater_equal_zero(t1) && approx_less_equal(t1, seg_length))
+            || (approx_greater_equal_zero(t2) && approx_less_equal(t2, seg_length));
     }
 
     /**
@@ -2363,17 +2357,19 @@ class Sphere {
         const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
-        if (discriminant < static_cast<Real>(0)) {
+        if (approx_less_zero(discriminant)) {
             return std::nullopt;
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Real seg_length = segment.length();
-        const std::optional<Vector3<Real>> p1
-            = t1 >= static_cast<Real>(0) && t1 <= seg_length ? segment.start + seg_dir * t1 : std::nullopt;
-        const std::optional<Vector3<Real>> p2
-            = t2 >= static_cast<Real>(0) && t2 <= seg_length ? segment.start + seg_dir * t2 : std::nullopt;
+        const std::optional<Vector3<Real>> p1 = approx_greater_equal_zero(t1) && approx_less_equal(t1, seg_length)
+            ? segment.start + seg_dir * t1
+            : std::nullopt;
+        const std::optional<Vector3<Real>> p2 = approx_greater_equal_zero(t2) && approx_less_equal(t2, seg_length)
+            ? segment.start + seg_dir * t2
+            : std::nullopt;
         if (p1.has_value() && p2.has_value()) {
             return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
         }
@@ -2393,7 +2389,7 @@ class Sphere {
      */
     [[nodiscard]] bool intersects(const Sphere& other) const
     {
-        return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
+        return approx_less_equal(center.distance_sqrd(other.center), sqrd(radius + other.radius));
     }
 
     /**
@@ -2405,24 +2401,24 @@ class Sphere {
     {
         const Vector3<Real> diff = other.center - center;
         const Real radius_sum = radius + other.radius;
-        if (diff == Vector3<Real>::zero()) {
+        if (diff.approx_zero()) {
             return Vector3<Real>::axis_x() * radius_sum;
         }
         const Real dist_sqrd = diff.length_sqrd();
         const Real dist = sqrt(dist_sqrd);
         const Real depth = radius_sum - dist;
-        if (depth < static_cast<Real>(0)) {
+        if (approx_less_zero(depth)) {
             return std::nullopt;
         }
         return diff.normalize() * depth;
     }
 
     /**
-     * Determine if approximately tangent to line.
+     * Determine if tangent to line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool tangent(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
         const Real a = line.direction.dot(line.direction);
@@ -2433,11 +2429,11 @@ class Sphere {
     }
 
     /**
-     * Determine if approximately tangent to ray.
+     * Determine if tangent to ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool tangent(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = ray.origin - center;
         const Real a = ray.direction.dot(ray.direction);
@@ -2447,15 +2443,15 @@ class Sphere {
             return false;
         }
         const Real t = -b / (static_cast<Real>(2) * a);
-        return t >= static_cast<Real>(0);
+        return approx_greater_equal_zero(t);
     }
 
     /**
-     * Determine if approximately tangent to line segment.
+     * Determine if tangent to line segment.
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool tangent(const Segment3<Real>& segment) const
     {
         const Vector3<Real> seg_dir = segment.direction();
         const Vector3<Real> dir = segment.start - center;
@@ -2466,7 +2462,7 @@ class Sphere {
             return false;
         }
         const Real t = -b / (static_cast<Real>(2) * a);
-        return t >= static_cast<Real>(0) && t <= segment.length();
+        return approx_greater_equal_zero(t) && approx_less_equal(t, segment.length());
     }
 
     /**
@@ -2608,9 +2604,9 @@ Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
 }
 
 template <typename Real>
-bool Line3<Real>::approx_collinear(const Ray3<Real>& ray) const
+bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 {
-    return ray.approx_collinear(*this);
+    return ray.collinear(*this);
 }
 
 template <typename Real>
@@ -2620,27 +2616,27 @@ Real Line3<Real>::distance(const Ray3<Real>& ray) const
 }
 
 template <typename Real>
-bool Line3<Real>::approx_parallel(const Ray3<Real>& ray) const
+bool Line3<Real>::parallel(const Ray3<Real>& ray) const
 {
-    return ray.approx_parallel(*this);
+    return ray.parallel(*this);
 }
 
 template <typename Real>
-bool Line3<Real>::approx_perpendicular(const Ray3<Real>& ray) const
+bool Line3<Real>::perpendicular(const Ray3<Real>& ray) const
 {
-    return ray.approx_perpendicular(*this);
+    return ray.perpendicular(*this);
 }
 
 template <typename Real>
-bool Line3<Real>::approx_intersects(const Ray3<Real>& ray) const
+bool Line3<Real>::intersects(const Ray3<Real>& ray) const
 {
-    return ray.approx_intersects(*this);
+    return ray.intersects(*this);
 }
 
 template <typename Real>
-std::optional<Vector3<Real>> Line3<Real>::approx_intersection(const Ray3<Real>& ray) const
+std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real>& ray) const
 {
-    return ray.approx_intersection(*this);
+    return ray.intersection(*this);
 }
 
 }
