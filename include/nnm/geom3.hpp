@@ -1623,21 +1623,440 @@ class Plane {
         return { point1, normal };
     }
 
+    /**
+     * Plane that intersects all given points. Checks for collinearity.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @param point3 Third point.
+     * @return Result.
+     */
     static std::optional<Plane> from_points(
         const Vector3<Real>& point1, const Vector3<Real>& point2, const Vector3<Real>& point3)
     {
         const Vector3<Real> dir12 = point2 - point1;
         const Vector3<Real> dir13 = point3 - point1;
         const Vector3<Real> cross = dir12.cross(dir13);
-        if (cross.length() == static_cast<Real>(0)) {
+        if (nnm::approx_equal(cross.length(), static_cast<Real>(0))) {
             return std::nullopt;
         }
         return { point1, cross.normalize() };
     }
 
+    /**
+     * Normalize the normal.
+     * @return Result.
+     */
     [[nodiscard]] Plane normalize() const
     {
         return { origin, normal.normalize() };
+    }
+
+    /**
+     * Determine if coplanar with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    {
+        return approx_contains(line.origin) && normal.approx_perpendicular(line.direction);
+    }
+
+    /**
+     * Determine if coplanar with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
+    {
+        return approx_contains(ray.origin) && normal.approx_perpendicular(ray.direction);
+    }
+
+    /**
+     * Determine if coplanar with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
+    {
+        return approx_contains(segment.start) && approx_contains(segment.end);
+    }
+
+    /**
+     * Determine if coplanar with another plane.
+     * @param other Other plane.
+     * @return Result.
+     */
+    [[nodiscard]] bool coplanar(const Plane& other) const
+    {
+        return approx_contains(other.origin) && normal.approx_parallel(other.normal);
+    }
+
+    /**
+     * Determine if plane contains/intersects a point.
+     * @param point Point.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        const Real d = origin.dot(normal);
+        const Real proj = point.dot(normal);
+        return nnm::approx_equal(d, proj);
+    }
+
+    /**
+     * Determine the closest distance to a point. Zero if intersects.
+     * @param point Point.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> diff = point - origin;
+        return abs(diff.dot(normal) / normal.dot(normal));
+    }
+
+    /**
+     * Determine the closest distance with a line. Zero if intersects.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        if (!approx_parallel(line)) {
+            return static_cast<Real>(0);
+        }
+        return distance(line.origin);
+    }
+
+    /**
+     * Determine the closest distance with a ray. Zero if intersects.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        if (intersects(ray)) {
+            return static_cast<Real>(0);
+        }
+        return distance(ray.origin);
+    }
+
+    /**
+     * Determine the closest distance with a line segment. Zero if intersects.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    {
+        if (intersects(segment)) {
+            return static_cast<Real>(0);
+        }
+        const Real d1 = distance(segment.start);
+        const Real d2 = distance(segment.end);
+        return min(d1, d2);
+    }
+
+    /**
+     * Determine the closest distance with another plane. Zero if intersects.
+     * @param other Other plane.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Plane& other) const
+    {
+        if (!approx_parallel(other)) {
+            return static_cast<Real>(0);
+        }
+        return distance(other.origin);
+    }
+
+    /**
+     * Determine if parallel with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] bool parallel(const Line3<Real>& line) const
+    {
+        return normal.approx_perpendicular(line.direction);
+    }
+
+    /**
+     * Determine if parallel with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const
+    {
+        return normal.approx_perpendicular(ray.direction);
+    }
+
+    /**
+     * Determine if parallel with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] bool parallel(const Segment3<Real>& segment) const
+    {
+        return normal.approx_perpendicular(segment.direction());
+    }
+
+    /**
+     * Determine if parallel with another plane.
+     * @param other Other plane.
+     * @return Result.
+     */
+    [[nodiscard]] bool parallel(const Plane& other) const
+    {
+        return normal.approx_parallel(other.normal);
+    }
+
+    /**
+     * Determine if perpendicular with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
+    {
+        return normal.approx_parallel(line.direction);
+    }
+
+    /**
+     * Determine if perpendicular with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const
+    {
+        return normal.approx_parallel(ray.direction);
+    }
+
+    /**
+     * Determine if perpendicular with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] bool perpendicular(const Segment3<Real>& segment) const
+    {
+        return normal.approx_parallel(segment.direction());
+    }
+
+    /**
+     * Determine if perpendicular with another plane.
+     * @param other Other plane.
+     * @return Result.
+     */
+    [[nodiscard]] bool perpendicular(const Plane& other) const
+    {
+        return normal.approx_perpendicular(other.normal);
+    }
+
+    /**
+     * Determine if intersects with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    {
+        return !parallel(line);
+    }
+
+    /**
+     * Intersection point with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    {
+        if (approx_parallel(line)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = line.origin - origin;
+        const Real t = -diff.dot(normal) / line.direction.dot(normal);
+        return line.origin + line.direction * t;
+    }
+
+    /**
+     * Determine if intersects with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    {
+        const Real proj = ray.direction.dot(normal);
+        return approx_less_equal(proj, static_cast<Real>(0));
+    }
+
+    /**
+     * Intersection point with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
+    {
+        const Real proj = ray.direction.dot(normal);
+        if (approx_greater_equal(proj, static_cast<Real>(0))) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = ray.origin - origin;
+        const Real t = -diff.dot(normal) / proj;
+        if (approx_less(t, static_cast<Real>(0))) {
+            return std::nullopt;
+        }
+        return ray.origin + ray.direction * t;
+    }
+
+    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    {
+        const Real proj_start = (segment.start - origin).dot(normal);
+        const Real proj_end = (segment.end - origin).dot(normal);
+        const Real zero = static_cast<Real>(0);
+        return (approx_greater_equal(proj_start, zero) && approx_less_equal(proj_end, zero))
+            || (approx_less_equal(proj_start, zero) && approx_greater_equal(proj_end, zero));
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
+    {
+        const Vector3<Real> seg_dir = segment.direction();
+        const Real proj = seg_dir.dot(normal);
+        if (nnm::approx_equal(proj, static_cast<Real>(0))) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = segment.start - origin;
+        const Real t = -diff.dot(normal) / proj;
+        if (approx_less(t, static_cast<Real>(0)) || approx_greater(t, static_cast<Real>(1))) {
+            return std::nullopt;
+        }
+        return segment.start + seg_dir * t;
+    }
+
+    [[nodiscard]] bool intersects(const Plane& other) const
+    {
+        const Real dot = normal.dot(other.normal);
+        return !nnm::approx_equal(dot, static_cast<Real>(1)) && !nnm::approx_equal(dot, static_cast<Real>(-1));
+    }
+
+    [[nodiscard]] std::optional<Line3<Real>> intersection(const Plane& other) const
+    {
+        const Vector3<Real> dir = normal.cross(other.normal);
+        if (dir.approx_equal(Vector3<Real>::zero())) {
+            return std::nullopt;
+        }
+
+        const Real d1 = -normal.dot(origin);
+        const Real d2 = -other.normal.dot(other.origin);
+        Vector3<Real> point;
+        if (const uint8_t max_index = dir.max_index(); max_index == 0) {
+            point = { static_cast<Real>(0),
+                      (d2 * normal.z - d1 * other.normal.z) / dir.x,
+                      (d1 * other.normal.y - d2 * normal.y) / dir.x };
+        }
+        else if (max_index == 1) {
+            point = { (d1 * other.normal.z - d2 * normal.z) / dir.y,
+                      static_cast<Real>(0),
+                      (d2 * normal.x - d1 * other.normal.x) / dir.y };
+        }
+        else {
+            point = { (d2 * normal.y - d1 * other.normal.y) / dir.z,
+                      (d1 * other.normal.x - d2 * normal.x) / dir.z,
+                      static_cast<Real>(0) };
+        }
+        return Line3<Real> { point, dir.normalize() };
+    }
+
+    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> diff = point - origin;
+        const Real dist = diff.dot(normal) / normal.dot(normal);
+        return point - normal * dist;
+    }
+
+    [[nodiscard]] Plane translate(const Vector3<Real>& offset) const
+    {
+        return { origin.translate(offset), normal };
+    }
+
+    [[nodiscard]] Plane scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
+    {
+        return { origin.scale_at(scale_origin, factor), normal.scale(factor).normalize() };
+    }
+
+    [[nodiscard]] Plane scale(const Vector3<Real>& factor) const
+    {
+        return { origin.scale(factor), normal.scale(factor).normalize() };
+    }
+
+    [[nodiscard]] Plane rotate_axis_angle_at(
+        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { origin.rotate_axis_angle_at(rotate_origin, axis, angle),
+                 normal.rotate_axis_angle(axis, angle).normalize() };
+    }
+
+    [[nodiscard]] Plane rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { origin.rotate_axis_angle(axis, angle), normal.rotate_axis_angle(axis, angle).normalize() };
+    }
+
+    [[nodiscard]] Plane rotate_quaternion_at(
+        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    {
+        return { origin.rotate_quaternion_at(rotate_origin), normal.rotate_quaternion(quaternion).normalize() };
+    }
+
+    [[nodiscard]] Plane rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { origin.rotate_quaternion(quaternion), normal.rotate_quaternion(quaternion).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    {
+        return { origin.shear_x_at(shear_origin, factor_y, factor_z), normal.shear_x(factor_y, factor_z).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_x(const Real factor_y, const Real factor_z) const
+    {
+        return { origin.shear_x(factor_y, factor_z), normal.shear_x(factor_y, factor_z).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    {
+        return { origin.shear_y_at(shear_origin, factor_x, factor_z), normal.shear_y(factor_x, factor_z).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_y(const Real factor_x, const Real factor_z) const
+    {
+        return { origin.shear_y(factor_x, factor_z), normal.shear_y(factor_x, factor_z).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    {
+        return { origin.shear_z_at(shear_origin, factor_x, factor_y), normal.shear_z(factor_x, factor_y).normalize() };
+    }
+
+    [[nodiscard]] Plane shear_z(const Real factor_x, const Real factor_y) const
+    {
+        return { origin.shear_z(factor_x, factor_y), normal.shear_z(factor_x, factor_y).normalize() };
+    }
+
+    [[nodiscard]] bool approx_equal(const Plane& other) const
+    {
+        return origin.approx_equal(other.origin) && normal.approx_equal(other.normal);
+    }
+
+    [[nodiscard]] bool operator==(const Plane& other) const
+    {
+        return origin == other.origin && normal == other.normal;
+    }
+
+    [[nodiscard]] bool operator!=(const Plane& other) const
+    {
+        return origin != other.origin || normal != other.normal;
+    }
+
+    [[nodiscard]] bool operator<(const Plane& other) const
+    {
+        if (origin != other.origin) {
+            return origin < other.origin;
+        }
+        return normal < other.normal;
     }
 };
 
