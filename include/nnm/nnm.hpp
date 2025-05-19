@@ -128,62 +128,6 @@ constexpr bool approx_equal(const Real a, const Real b)
     return abs(a - b) <= tolerance;
 }
 
-// TODO: test
-template <typename Real>
-constexpr bool approx_less(const Real a, const Real b)
-{
-    return a < b && !approx_equal(a, b);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_greater(const Real a, const Real b)
-{
-    return a > b && !approx_equal(a, b);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_less_equal(const Real a, const Real b)
-{
-    return a <= b || approx_equal(a, b);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_greater_equal(const Real a, const Real b)
-{
-    return a >= b || approx_equal(a, b);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_less_zero(const Real value)
-{
-    return value < static_cast<Real>(0) && !approx_zero(value);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_greater_zero(const Real value)
-{
-    return value > static_cast<Real>(0) && !approx_zero(value);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_less_equal_zero(const Real value)
-{
-    return value <= static_cast<Real>(0) || approx_zero(value);
-}
-
-// TODO: test
-template <typename Real>
-constexpr bool approx_greater_equal_zero(const Real value)
-{
-    return value >= static_cast<Real>(0) || approx_zero(value);
-}
-
 /**
  * Determine if the first value is approximately less-than but not equal to the second value.
  * @tparam Real Floating-point type.
