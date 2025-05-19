@@ -185,6 +185,106 @@ constexpr bool approx_greater_equal_zero(const Real value)
 }
 
 /**
+ * Determine if the first value is approximately less-than but not equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less(const Real a, const Real b)
+{
+    return a < b && !approx_equal(a, b);
+}
+
+/**
+ * Determine if the first value is approximately greater-than but not equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater(const Real a, const Real b)
+{
+    return a > b && !approx_equal(a, b);
+}
+
+/**
+ * Determine if the first value is approximately greater-than or equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_equal(const Real a, const Real b)
+{
+    return a <= b || approx_equal(a, b);
+}
+
+/**
+ * Determine if the first value is approximately greater-than or equal to the second value.
+ * @tparam Real Floating-point type.
+ * @param a First value.
+ * @param b Second value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_equal(const Real a, const Real b)
+{
+    return a >= b || approx_equal(a, b);
+}
+
+/**
+ * Determine if a value is approximately less-than but not equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_zero(const Real value)
+{
+    return value < static_cast<Real>(0) && !approx_zero(value);
+}
+
+/**
+ * Determine if a value is approximately greater-than but not equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_zero(const Real value)
+{
+    return value > static_cast<Real>(0) && !approx_zero(value);
+}
+
+/**
+ * Determine if a value is approximately less-than or equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_less_equal_zero(const Real value)
+{
+    return value <= static_cast<Real>(0) || approx_zero(value);
+}
+
+/**
+ * Determine if a value is approximately greater-than or equal to zero.
+ * @tparam Real Floating-point type.
+ * @param value Value.
+ * @return Result.
+ */
+template <typename Real>
+constexpr bool approx_greater_equal_zero(const Real value)
+{
+    return value >= static_cast<Real>(0) || approx_zero(value);
+}
+
+/**
  * The least integer value greater than a value.
  * @tparam Real Floating-point type.
  * @param value Value to take the ceiling of.
@@ -979,21 +1079,21 @@ public:
     }
 
     /**
-     * Determines if this vector is approximately parallel to another vector.
+     * Determines if this vector is parallel to another vector.
      * @param other Other vector.
-     * @return True if approximately parallel, false otherwise.
+     * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Vector2& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector2& other) const
     {
         return nnm::approx_zero(cross(other));
     }
 
     /**
-     * Determines if this vector is approximately perpendicular to another vector.
+     * Determines if this vector is perpendicular to another vector.
      * @param other Other vector.
-     * @return True if approximately perpendicular, false otherwise.
+     * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Vector2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector2& other) const
     {
         return nnm::approx_zero(dot(other));
     }
@@ -2514,7 +2614,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Vector3& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector3& other) const
     {
         return cross(other).approx_zero();
     }
@@ -2524,7 +2624,7 @@ public:
      * @param other Other vector.
      * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Vector3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector3& other) const
     {
         return nnm::approx_zero(dot(other));
     }
