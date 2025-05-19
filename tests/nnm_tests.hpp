@@ -81,6 +81,118 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(1.0e20f, 1.000000000001e20f));
     }
 
+    test_case("approx_less");
+    {
+        constexpr auto result = nnm::approx_less(0.5f, 1.0f);
+        ASSERT(result);
+        ASSERT(nnm::approx_less(1.0f, 1.005f));
+        ASSERT_FALSE(nnm::approx_less(1.005f, 1.0f));
+        ASSERT(nnm::approx_less(1.0f, 1.01f));
+        ASSERT_FALSE(nnm::approx_less(1.01f, 1.0f));
+        ASSERT_FALSE(nnm::approx_less(-1.0f, -1.005f));
+        ASSERT(nnm::approx_less(-1.0005f, -1.0f));
+        ASSERT_FALSE(nnm::approx_less(1.0e20f, 1.000000000001e20f));
+    }
+
+    test_case("approx_greater");
+    {
+        constexpr auto result = nnm::approx_greater(0.5f, 1.0f);
+        ASSERT_FALSE(result);
+        ASSERT_FALSE(nnm::approx_greater(1.0f, 1.005f));
+        ASSERT(nnm::approx_greater(1.005f, 1.0f));
+        ASSERT_FALSE(nnm::approx_greater(1.0f, 1.01f));
+        ASSERT(nnm::approx_greater(1.01f, 1.0f));
+        ASSERT(nnm::approx_greater(-1.0f, -1.005f));
+        ASSERT_FALSE(nnm::approx_greater(-1.0005f, -1.0f));
+        ASSERT_FALSE(nnm::approx_greater(1.0e20f, 1.000000000001e20f));
+    }
+
+    test_case("approx_greater");
+    {
+        constexpr auto result = nnm::approx_less_equal(0.5f, 1.0f);
+        ASSERT(result);
+        ASSERT(nnm::approx_less_equal(1.0f, 1.005f));
+        ASSERT_FALSE(nnm::approx_less_equal(1.005f, 1.0f));
+        ASSERT(nnm::approx_less_equal(1.0f, 1.01f));
+        ASSERT_FALSE(nnm::approx_less_equal(1.01f, 1.0f));
+        ASSERT_FALSE(nnm::approx_less_equal(-1.0f, -1.005f));
+        ASSERT(nnm::approx_less_equal(-1.0005f, -1.0f));
+        ASSERT(nnm::approx_less_equal(1.0e20f, 1.000000000001e20f));
+    }
+
+    test_case("approx_greater_equal");
+    {
+        constexpr auto result = nnm::approx_greater_equal(0.5f, 1.0f);
+        ASSERT_FALSE(result);
+        ASSERT_FALSE(nnm::approx_greater_equal(1.0f, 1.005f));
+        ASSERT(nnm::approx_greater_equal(1.005f, 1.0f));
+        ASSERT_FALSE(nnm::approx_greater_equal(1.0f, 1.01f));
+        ASSERT(nnm::approx_greater_equal(1.01f, 1.0f));
+        ASSERT(nnm::approx_greater_equal(-1.0f, -1.005f));
+        ASSERT_FALSE(nnm::approx_greater_equal(-1.0005f, -1.0f));
+        ASSERT(nnm::approx_greater_equal(1.0e20f, 1.000000000001e20f));
+    }
+
+    test_case("approx_less_zero");
+    {
+        constexpr auto result = nnm::approx_less_zero(0.0f);
+        ASSERT_FALSE(result);
+        ASSERT_FALSE(nnm::approx_less_zero(0.005f));
+        ASSERT_FALSE(nnm::approx_less_zero(0.01f));
+        ASSERT(nnm::approx_less_zero(-0.005f));
+        ASSERT(nnm::approx_less_zero(-0.01f));
+        ASSERT_FALSE(nnm::approx_less_zero(1e-15f));
+        ASSERT_FALSE(nnm::approx_less_zero(1e-14f));
+        ASSERT_FALSE(nnm::approx_less_zero(-1e-15f));
+        ASSERT_FALSE(nnm::approx_less_zero(-1e-14f));
+        ASSERT_FALSE(nnm::approx_less_zero(1.0f));
+    }
+
+    test_case("approx_greater_zero");
+    {
+        constexpr auto result = nnm::approx_greater_zero(0.0f);
+        ASSERT_FALSE(result);
+        ASSERT(nnm::approx_greater_zero(0.005f));
+        ASSERT(nnm::approx_greater_zero(0.01f));
+        ASSERT_FALSE(nnm::approx_greater_zero(-0.005f));
+        ASSERT_FALSE(nnm::approx_greater_zero(-0.01f));
+        ASSERT_FALSE(nnm::approx_greater_zero(1e-15f));
+        ASSERT_FALSE(nnm::approx_greater_zero(1e-14f));
+        ASSERT_FALSE(nnm::approx_greater_zero(-1e-15f));
+        ASSERT_FALSE(nnm::approx_greater_zero(-1e-14f));
+        ASSERT(nnm::approx_greater_zero(1.0f));
+    }
+
+    test_case("approx_less_equal_zero");
+    {
+        constexpr auto result = nnm::approx_less_equal_zero(0.0f);
+        ASSERT(result);
+        ASSERT_FALSE(nnm::approx_less_equal_zero(0.005f));
+        ASSERT_FALSE(nnm::approx_less_equal_zero(0.01f));
+        ASSERT(nnm::approx_less_equal_zero(-0.005f));
+        ASSERT(nnm::approx_less_equal_zero(-0.01f));
+        ASSERT(nnm::approx_less_equal_zero(1e-15f));
+        ASSERT(nnm::approx_less_equal_zero(1e-14f));
+        ASSERT(nnm::approx_less_equal_zero(-1e-15f));
+        ASSERT(nnm::approx_less_equal_zero(-1e-14f));
+        ASSERT_FALSE(nnm::approx_less_equal_zero(1.0f));
+    }
+
+    test_case("approx_greater_equal_zero");
+    {
+        constexpr auto result = nnm::approx_greater_equal_zero(0.0f);
+        ASSERT(result);
+        ASSERT(nnm::approx_greater_equal_zero(0.005f));
+        ASSERT(nnm::approx_greater_equal_zero(0.01f));
+        ASSERT_FALSE(nnm::approx_greater_equal_zero(-0.005f));
+        ASSERT_FALSE(nnm::approx_greater_equal_zero(-0.01f));
+        ASSERT(nnm::approx_greater_equal_zero(1e-15f));
+        ASSERT(nnm::approx_greater_equal_zero(1e-14f));
+        ASSERT(nnm::approx_greater_equal_zero(-1e-15f));
+        ASSERT(nnm::approx_greater_equal_zero(-1e-14f));
+        ASSERT(nnm::approx_greater_equal_zero(1.0f));
+    }
+
     test_case("ceil");
     {
         ASSERT(nnm::ceil(5.3f) == 6.0f);
