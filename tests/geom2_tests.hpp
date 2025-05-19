@@ -80,7 +80,7 @@ inline void line2_tests()
             ASSERT(l1.tangent(c1));
             const auto l2 = nnm::Line2f::from_tangent(c1, nnm::pi<float>() / 3.0f);
             ASSERT(l2.origin.approx_equal({ 4.5f, 1.330127f }));
-            ASSERT(l2.direction.parallel(nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
+            ASSERT(l2.direction.parallel_to(nnm::Line2f::from_point_slope({ 0.0f, 3.9282032f }, -0.5773503f).direction));
             ASSERT(l2.tangent(c1));
         }
 

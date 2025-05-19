@@ -1306,7 +1306,7 @@ public:
      */
     [[nodiscard]] bool parallel(const Line3<Real>& line) const
     {
-        return direction().parallel(line.direction);
+        return direction().parallel_to(line.direction);
     }
 
     /**
@@ -1316,7 +1316,7 @@ public:
      */
     [[nodiscard]] bool parallel(const Ray3<Real>& ray) const
     {
-        return direction().parallel(ray.direction);
+        return direction().parallel_to(ray.direction);
     }
 
     /**
@@ -1326,7 +1326,7 @@ public:
      */
     [[nodiscard]] bool parallel(const Segment3& other) const
     {
-        return direction().parallel(other.direction());
+        return direction().parallel_to(other.direction());
     }
 
     /**
@@ -1336,7 +1336,7 @@ public:
      */
     [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
     {
-        return direction().perpendicular(line.direction);
+        return direction().perpendicular_to(line.direction);
     }
 
     /**
@@ -1346,7 +1346,7 @@ public:
      */
     [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const
     {
-        return direction().perpendicular(ray.direction);
+        return direction().perpendicular_to(ray.direction);
     }
 
     /**
@@ -1356,7 +1356,7 @@ public:
      */
     [[nodiscard]] bool perpendicular(const Segment3& other) const
     {
-        return direction().perpendicular(other.direction());
+        return direction().perpendicular_to(other.direction());
     }
 
     /**

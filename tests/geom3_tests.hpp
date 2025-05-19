@@ -96,7 +96,7 @@ inline void line3_tests()
         {
             constexpr auto l = l1.arbitrary_perpendicular_containing({ -5.0f, 6.0f, -7.0f });
             ASSERT(l.origin.approx_equal({ -5.0f, 6.0f, -7.0f }));
-            ASSERT(l.direction.perpendicular(l1.direction));
+            ASSERT(l.direction.perpendicular_to(l1.direction));
         }
 
         test_section("normalize");
