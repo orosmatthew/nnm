@@ -1024,7 +1024,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool parallel_to(const Vector2& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector2& other) const
     {
         return nnm::approx_zero(cross(other));
     }
@@ -1034,7 +1034,7 @@ public:
      * @param other Other vector.
      * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool perpendicular_to(const Vector2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector2& other) const
     {
         return nnm::approx_zero(dot(other));
     }
@@ -1704,7 +1704,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool parallel_to(const Vector2i& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector2i& other) const
     {
         return cross(other) == 0;
     }
@@ -1712,9 +1712,9 @@ public:
     /**
      * Determines if perpendicular to another vector.
      * @param other Other vector.
-     * @return True if perpendicular, false otherwise.
+     * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool perpendicular_to(const Vector2i& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector2i& other) const
     {
         return dot(other) == 0;
     }
@@ -2555,7 +2555,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool parallel_to(const Vector3& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector3& other) const
     {
         return cross(other).approx_zero();
     }
@@ -2565,7 +2565,7 @@ public:
      * @param other Other vector.
      * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool perpendicular_to(const Vector3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector3& other) const
     {
         return nnm::approx_zero(dot(other));
     }
@@ -3347,7 +3347,7 @@ public:
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
-    [[nodiscard]] constexpr bool parallel_to(const Vector3i& other) const
+    [[nodiscard]] constexpr bool parallel(const Vector3i& other) const
     {
         return cross(other) == zero();
     }
@@ -3357,7 +3357,7 @@ public:
      * @param other Other vector.
      * @return True if perpendicular, false otherwise.
      */
-    [[nodiscard]] constexpr bool perpendicular_to(const Vector3i& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Vector3i& other) const
     {
         return dot(other) == 0;
     }
