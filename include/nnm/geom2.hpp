@@ -230,25 +230,25 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with 2D ray.
+     * Determine if collinear with 2D ray.
      * @param ray 2D ray.
      * @return True if collinear, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Ray2<Real>& ray) const;
+    [[nodiscard]] constexpr bool collinear(const Ray2<Real>& ray) const;
 
     /**
-     * Determine if approximately collinear with 2D segment.
+     * Determine if collinear with 2D segment.
      * @param segment 2D segment.
      * @return True if collinear, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool collinear(const Segment2<Real>& segment) const;
 
     /**
-     * Determine if approximately intersects point.
+     * Determine if intersects point.
      * @param point Point.
      * @return True if contains, false otherwise.
      */
-    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> t = (point - origin) / direction;
         return approx_equal(t.x, t.y);
@@ -337,52 +337,52 @@ public:
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately parallel to other line.
+     * Determine if parallel to other line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Line2& other) const
+    [[nodiscard]] constexpr bool parallel(const Line2& other) const
     {
         return approx_zero(direction.cross(other.direction));
     }
 
     /**
-     * Determine if approximately parallel to 2D ray.
+     * Determine if parallel to 2D ray.
      * @param ray 2D ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Ray2<Real>& ray) const;
+    [[nodiscard]] constexpr bool parallel(const Ray2<Real>& ray) const;
 
     /**
-     * Determine if approximately parallel to 2D segment.
+     * Determine if parallel to 2D segment.
      * @param segment 2D segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool parallel(const Segment2<Real>& segment) const;
 
     /**
-     * Determine if approximately perpendicular to other line.
+     * Determine if perpendicular to other line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Line2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Line2& other) const
     {
         return approx_zero(direction.dot(other.direction));
     }
 
     /**
-     * Determine if approximately perpendicular to 2D ray.
+     * Determine if perpendicular to 2D ray.
      * @param ray 2D ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2<Real>& ray) const;
+    [[nodiscard]] constexpr bool perpendicular(const Ray2<Real>& ray) const;
 
     /**
-     * Determine if approximately perpendicular to 2D segment.
+     * Determine if perpendicular to 2D segment.
      * @param segment 2D segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool perpendicular(const Segment2<Real>& segment) const;
 
     /**
      * Intersection point of two lines. Does not check if parallel; a divide-by-zero would occur if parallel.
@@ -498,18 +498,18 @@ public:
     [[nodiscard]] std::optional<std::array<Vector2<Real>, 2>> intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately tangent to 2D arc.
+     * Determine if tangent to 2D arc.
      * @param arc 2D arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
+    [[nodiscard]] bool tangent(const Arc2<Real>& arc) const;
 
     /**
-     * Determine if approximately tangent to 2D circle.
+     * Determine if tangent to 2D circle.
      * @param circle 2D circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
+    [[nodiscard]] constexpr bool tangent(const Circle2<Real>& circle) const;
 
     /**
      * Scalar that represents a point projected on the line.
@@ -553,13 +553,13 @@ public:
     }
 
     /**
-     * Determine if approximately coincident with other line.
+     * Determine if coincident with other line.
      * @param other Other line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_coincident(const Line2& other) const
+    [[nodiscard]] constexpr bool coincident(const Line2& other) const
     {
-        if (!approx_parallel(other)) {
+        if (!parallel(other)) {
             return false;
         }
         const Vector2<Real> diff = origin - other.origin;
@@ -763,48 +763,48 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with a point.
+     * Determine if collinear with a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool collinear(const Vector2<Real>& point) const
     {
-        return Line2<Real>::from_ray(*this).approx_contains(point);
+        return Line2<Real>::from_ray(*this).contains(point);
     }
 
     /**
-     * Determine if approximately collinear with 2D line.
+     * Determine if collinear with 2D line.
      * @param line 2D line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool collinear(const Line2<Real>& line) const
     {
-        return Line2<Real>::from_ray(*this).approx_coincident(line);
+        return Line2<Real>::from_ray(*this).coincident(line);
     }
 
     /**
-     * Determine if approximately collinear with another ray.
+     * Determine if collinear with another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Ray2& other) const
+    [[nodiscard]] constexpr bool collinear(const Ray2& other) const
     {
-        return Line2<Real>::from_ray(*this).approx_coincident(Line2<Real>::from_ray(other));
+        return Line2<Real>::from_ray(*this).coincident(Line2<Real>::from_ray(other));
     }
 
     /**
-     * Determine if approximately collinear with 2D segment.
+     * Determine if collinear with 2D segment.
      * @param segment 2D segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool collinear(const Segment2<Real>& segment) const;
 
     /**
-     * Determine if approximately contains a point.
+     * Determine if contains a point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
         if (diff.dot(direction) < static_cast<Real>(0)) {
@@ -916,58 +916,58 @@ public:
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately parallel to 2D line.
+     * Determine if parallel to 2D line.
      * @param line 2D line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
     }
 
     /**
-     * Determine if approximately parallel to another ray.
+     * Determine if parallel to another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Ray2& other) const
+    [[nodiscard]] constexpr bool parallel(const Ray2& other) const
     {
         return approx_zero(direction.cross(other.direction));
     }
 
     /**
-     * Determine if approximately parallel to 2D segment.
+     * Determine if parallel to 2D segment.
      * @param segment 2D segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool parallel(const Segment2<Real>& segment) const;
 
     /**
-     * Determine if approximately perpendicular to 2D line.
+     * Determine if perpendicular to 2D line.
      * @param line 2D line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool perpendicular(const Line2<Real>& line) const
     {
         return approx_zero(direction.dot(line.direction));
     }
 
     /**
-     * Determine if approximately perpendicular to another ray.
+     * Determine if perpendicular to another ray.
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Ray2& other) const
     {
         return approx_zero(direction.dot(other.direction));
     }
 
     /**
-     * Determine if approximately perpendicular to 2D segment.
+     * Determine if perpendicular to 2D segment.
      * @param segment 2D segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2<Real>& segment) const;
+    [[nodiscard]] constexpr bool perpendicular(const Segment2<Real>& segment) const;
 
     /**
      * Determine if intersects 2D line.
@@ -1127,18 +1127,18 @@ public:
         const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately tangent to 2D arc.
+     * Determine if tangent to 2D arc.
      * @param arc 2D arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
+    [[nodiscard]] bool tangent(const Arc2<Real>& arc) const;
 
     /**
-     * Determine if approximately tangent to 2D circle.
+     * Determine if tangent to 2D circle.
      * @param circle 2D circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
+    [[nodiscard]] constexpr bool tangent(const Circle2<Real>& circle) const;
 
     /**
      * Scalar that represent the projection of a point onto the ray.
@@ -1341,11 +1341,11 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with point.
+     * Determine if collinear with point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool collinear(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff1 = point - start;
         const Vector2<Real> diff2 = end - start;
@@ -1353,13 +1353,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with 2D line.
+     * Determine if collinear with 2D line.
      * @param line 2D line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool collinear(const Line2<Real>& line) const
     {
-        if (!approx_parallel(line)) {
+        if (!parallel(line)) {
             return false;
         }
         const Vector2<Real> diff = start - line.origin;
@@ -1367,13 +1367,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with 2D ray.
+     * Determine if collinear with 2D ray.
      * @param ray 2D ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Ray2<Real>& ray) const
+    [[nodiscard]] constexpr bool collinear(const Ray2<Real>& ray) const
     {
-        if (!approx_parallel(ray)) {
+        if (!parallel(ray)) {
             return false;
         }
         const Vector2<Real> diff = start - ray.origin;
@@ -1381,13 +1381,13 @@ public:
     }
 
     /**
-     * Determine if approximately collinear with other segment.
+     * Determine if collinear with other segment.
      * @param other Other segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_collinear(const Segment2& other) const
+    [[nodiscard]] constexpr bool collinear(const Segment2& other) const
     {
-        if (!approx_parallel(other)) {
+        if (!parallel(other)) {
             return false;
         }
         const Vector2<Real> diff = start - other.start;
@@ -1395,11 +1395,11 @@ public:
     }
 
     /**
-     * Determine if approximately intersects point.
+     * Determine if intersects point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_contains(const Vector2<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff1 = point - start;
         const Vector2<Real> diff2 = end - start;
@@ -1557,61 +1557,61 @@ public:
     }
 
     /**
-     * Determine if approximately parallel with line.
+     * Determine if parallel with line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool parallel(const Line2<Real>& line) const
     {
         return approx_zero((end - start).cross(line.direction));
     }
 
     /**
-     * Determine if approximately parallel with ray.
+     * Determine if parallel with ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Ray2<Real>& ray) const
+    [[nodiscard]] constexpr bool parallel(const Ray2<Real>& ray) const
     {
         return approx_zero((end - start).cross(ray.direction));
     }
 
     /**
-     * Determine if approximately parallel with another segment.
+     * Determine if parallel with another segment.
      * @param other Other segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_parallel(const Segment2& other) const
+    [[nodiscard]] constexpr bool parallel(const Segment2& other) const
     {
         return approx_zero((end - start).cross(other.end - other.start));
     }
 
     /**
-     * Determine if approximately perpendicular with line.
+     * Determine if perpendicular with line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool perpendicular(const Line2<Real>& line) const
     {
         return approx_zero((end - start).dot(line.direction));
     }
 
     /**
-     * Determine if approximately perpendicular with ray.
+     * Determine if perpendicular with ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Ray2<Real>& ray) const
+    [[nodiscard]] constexpr bool perpendicular(const Ray2<Real>& ray) const
     {
         return approx_zero((end - start).dot(ray.direction));
     }
 
     /**
-     * Determine if approximately perpendicular with another segment.
+     * Determine if perpendicular with another segment.
      * @param other Other segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_perpendicular(const Segment2& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Segment2& other) const
     {
         return approx_zero((end - start).dot(other.end - other.start));
     }
@@ -1807,18 +1807,18 @@ public:
         const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately tangent to arc.
+     * Determine if tangent to arc.
      * @param arc Arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const;
+    [[nodiscard]] bool tangent(const Arc2<Real>& arc) const;
 
     /**
-     * Determine if approximately tangent to circle.
+     * Determine if tangent to circle.
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Circle2<Real>& circle) const;
+    [[nodiscard]] constexpr bool tangent(const Circle2<Real>& circle) const;
 
     /**
      * Projection of point onto segment.
@@ -1986,11 +1986,11 @@ public:
     }
 
     /**
-     * Determine if approximately coincident to another segment.
+     * Determine if coincident to another segment.
      * @param other Other segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_coincident(const Segment2& other) const
+    [[nodiscard]] constexpr bool coincident(const Segment2& other) const
     {
         return (start.approx_equal(other.start) && end.approx_equal(other.end))
             || (start.approx_equal(other.end) && end.approx_equal(other.start));
@@ -2213,11 +2213,11 @@ public:
     }
 
     /**
-     * Determine if approximately intersects point.
+     * Determine if intersects point.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool approx_contains(const Vector2<Real>& point) const
+    [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         if (!nnm::approx_equal(point.distance_sqrd(pivot), sqrd(radius()))) {
             return false;
@@ -2845,11 +2845,11 @@ public:
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately tangent to line.
+     * Determine if tangent to line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Line2<Real>& line) const
+    [[nodiscard]] bool tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
         const Real b = static_cast<Real>(2) * dir.dot(line.direction);
@@ -2859,15 +2859,15 @@ public:
         }
         const Real t = -b / static_cast<Real>(2);
         const Vector2<Real> p = line.origin + line.direction * t;
-        return approx_contains(p);
+        return contains(p);
     }
 
     /**
-     * Determine if approximately tangent to ray.
+     * Determine if tangent to ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Ray2<Real>& ray) const
+    [[nodiscard]] bool tangent(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - pivot;
         const Real b = static_cast<Real>(2) * dir.dot(ray.direction);
@@ -2880,15 +2880,15 @@ public:
             return false;
         }
         const Vector2<Real> p = ray.origin + ray.direction * t;
-        return approx_contains(p);
+        return contains(p);
     }
 
     /**
-     * Determine if approximately tangent to segment.
+     * Determine if tangent to segment.
      * @param segment Segment.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Segment2<Real>& segment) const
+    [[nodiscard]] bool tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.start - pivot;
         const Vector2<Real> segment_dir = segment.direction();
@@ -2903,15 +2903,15 @@ public:
             return false;
         }
         const Vector2<Real> p = segment.start + segment_dir * t;
-        return approx_contains(p);
+        return contains(p);
     }
 
     /**
-     * Determine if approximately tangent to other arc.
+     * Determine if tangent to other arc.
      * @param other Other arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Arc2& other) const
+    [[nodiscard]] bool tangent(const Arc2& other) const
     {
         if (pivot == other.pivot) {
             return false;
@@ -2926,15 +2926,15 @@ public:
         const Vector2<Real> dir = (other.pivot - pivot) / dist;
         const Vector2<Real> p1 = pivot + dir * r;
         const Vector2<Real> p2 = pivot - dir * other_r;
-        return (approx_contains(p1) && other.approx_contains(p1)) || (approx_contains(p2) && other.approx_contains(p2));
+        return (contains(p1) && other.contains(p1)) || (contains(p2) && other.contains(p2));
     }
 
     /**
-     * Determine if approximately tangent to circle.
+     * Determine if tangent to circle.
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Circle2<Real>& circle) const;
+    [[nodiscard]] bool tangent(const Circle2<Real>& circle) const;
 
     /**
      * Translate by offset.
@@ -2989,11 +2989,11 @@ public:
     }
 
     /**
-     * Determine if approximately coincident to another arc.
+     * Determine if coincident to another arc.
      * @param other Other arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_coincident(const Arc2& other) const
+    [[nodiscard]] bool coincident(const Arc2& other) const
     {
         if (!pivot.approx_equal(other.pivot)) {
             return false;
@@ -3624,11 +3624,11 @@ public:
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately tangent to a line.
+     * Determine if tangent to a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Line2<Real>& line) const
+    [[nodiscard]] constexpr bool tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
         const Real b = static_cast<Real>(2) * dir.dot(line.direction);
@@ -3638,11 +3638,11 @@ public:
     }
 
     /**
-     * Determine if approximately tangent to a ray.
+     * Determine if tangent to a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Ray2<Real>& ray) const
+    [[nodiscard]] constexpr bool tangent(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_dot = static_cast<Real>(2) * dir.dot(ray.direction);
@@ -3656,11 +3656,11 @@ public:
     }
 
     /**
-     * Determine if approximately tangent to a segment.
+     * Determine if tangent to a segment.
      * @param segment Segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Segment2<Real>& segment) const
+    [[nodiscard]] constexpr bool tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.start - center;
         const Vector2<Real> segment_dir = segment.end - segment.start;
@@ -3676,11 +3676,11 @@ public:
     }
 
     /**
-     * Determine if approximately tangent to an arc.
+     * Determine if tangent to an arc.
      * @param arc Arc.
      * @return Result.
      */
-    [[nodiscard]] bool approx_tangent(const Arc2<Real>& arc) const
+    [[nodiscard]] bool tangent(const Arc2<Real>& arc) const
     {
         if (center == arc.pivot) {
             return false;
@@ -3697,11 +3697,11 @@ public:
     }
 
     /**
-     * Determine if approximately tangent to another circle.
+     * Determine if tangent to another circle.
      * @param other Other circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_tangent(const Circle2& other) const
+    [[nodiscard]] constexpr bool tangent(const Circle2& other) const
     {
         if (center == other.center) {
             return false;
@@ -3764,12 +3764,11 @@ public:
     }
 
     /**
-     * Determine if approximately coincident to another circle which means if the center and radius are both
-     * approximately equal.
+     * Determine if coincident to another circle.
      * @param other Other circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_coincident(const Circle2& other) const
+    [[nodiscard]] constexpr bool coincident(const Circle2& other) const
     {
         return approx_equal(other);
     }
@@ -4545,10 +4544,10 @@ public:
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
-     * Determine if approximately equilateral which is where all edges have the same length.
+     * Determine if equilateral which is where all edges have the same length.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_equilateral() const
+    [[nodiscard]] constexpr bool equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
             && nnm::approx_equal(edge(1).length_sqrd(), edge(2).length_sqrd())
@@ -4556,12 +4555,12 @@ public:
     }
 
     /**
-     * Determine if approximately similar to another triangle.
+     * Determine if similar to another triangle.
      * Similarity is determined if one triangle can be translated, rotated, scaled, or flipped to become the other.
      * @param other Other triangle.
      * @return Result.
      */
-    [[nodiscard]] bool approx_similar(const Triangle2& other) const
+    [[nodiscard]] bool similar(const Triangle2& other) const
     {
         std::array angles { angle(0), angle(1), angle(2) };
         std::array angles_other { other.angle(0), other.angle(1), other.angle(2) };
@@ -4580,10 +4579,10 @@ public:
     }
 
     /**
-     * Determine if approximately a right triangle. This is if one of the interior angles is 90 degrees.
+     * Determine if a right triangle. This is if one of the interior angles is 90 degrees.
      * @return Result.
      */
-    [[nodiscard]] bool approx_right() const
+    [[nodiscard]] bool right() const
     {
         constexpr Real right_angle = pi<float>() / static_cast<Real>(2);
         return nnm::approx_equal(angle(0), right_angle) || nnm::approx_equal(angle(1), right_angle)
@@ -4693,12 +4692,12 @@ public:
     }
 
     /**
-     * Determine if approximately coincident with another triangle which is if the vertices of both triangle are
-     * approximately equal regardless of vertex order.
+     * Determine if coincident with another triangle which is if the vertices of both triangle are
+     * equal regardless of vertex order.
      * @param other Other triangle.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool approx_coincident(const Triangle2& other) const
+    [[nodiscard]] constexpr bool coincident(const Triangle2& other) const
     {
         const std::array permutations {
             Triangle2 { vertices[0], vertices[1], vertices[2] }, Triangle2 { vertices[0], vertices[2], vertices[1] },
@@ -4714,7 +4713,7 @@ public:
     }
 
     /**
-     * Determine if vertices are approximately equal to another triangle's vertices.
+     * Determine if vertices are equal to another triangle's vertices.
      * @param other Other triangle.
      * @return Result.
      */
@@ -5537,11 +5536,11 @@ public:
     }
 
     /**
-     * Determine if approximately coincident which is if all vertices are approximately equal regardless of their order.
+     * Determine if coincident which is if all vertices are equal regardless of their order.
      * @param other Other rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool approx_coincident(const Rectangle2& other) const
+    [[nodiscard]] bool coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
         const Vector2<Real> v2 = vertex_nx_py();
@@ -6562,27 +6561,27 @@ public:
 };
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_parallel(const Ray2<Real>& ray) const
+constexpr bool Line2<Real>::parallel(const Ray2<Real>& ray) const
 {
-    return ray.approx_parallel(*this);
+    return ray.parallel(*this);
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_parallel(const Segment2<Real>& segment) const
+constexpr bool Line2<Real>::parallel(const Segment2<Real>& segment) const
 {
-    return segment.approx_parallel(*this);
+    return segment.parallel(*this);
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_perpendicular(const Ray2<Real>& ray) const
+constexpr bool Line2<Real>::perpendicular(const Ray2<Real>& ray) const
 {
-    return ray.approx_perpendicular(*this);
+    return ray.perpendicular(*this);
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_perpendicular(const Segment2<Real>& segment) const
+constexpr bool Line2<Real>::perpendicular(const Segment2<Real>& segment) const
 {
-    return segment.approx_perpendicular(*this);
+    return segment.perpendicular(*this);
 }
 
 template <typename Real>
@@ -6622,15 +6621,15 @@ Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_collinear(const Ray2<Real>& ray) const
+constexpr bool Line2<Real>::collinear(const Ray2<Real>& ray) const
 {
-    return ray.approx_collinear(*this);
+    return ray.collinear(*this);
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_collinear(const Segment2<Real>& segment) const
+constexpr bool Line2<Real>::collinear(const Segment2<Real>& segment) const
 {
-    return segment.approx_collinear(*this);
+    return segment.collinear(*this);
 }
 
 template <typename Real>
@@ -6712,9 +6711,9 @@ std::optional<std::array<Vector2<Real>, 2>> Line2<Real>::intersections(const Arc
 }
 
 template <typename Real>
-bool Line2<Real>::approx_tangent(const Arc2<Real>& arc) const
+bool Line2<Real>::tangent(const Arc2<Real>& arc) const
 {
-    return arc.approx_tangent(*this);
+    return arc.tangent(*this);
 }
 
 template <typename Real>
@@ -6730,21 +6729,21 @@ constexpr Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
 }
 
 template <typename Real>
-constexpr bool Line2<Real>::approx_tangent(const Circle2<Real>& circle) const
+constexpr bool Line2<Real>::tangent(const Circle2<Real>& circle) const
 {
-    return circle.approx_tangent(*this);
+    return circle.tangent(*this);
 }
 
 template <typename Real>
-constexpr bool Ray2<Real>::approx_parallel(const Segment2<Real>& segment) const
+constexpr bool Ray2<Real>::parallel(const Segment2<Real>& segment) const
 {
-    return segment.approx_parallel(*this);
+    return segment.parallel(*this);
 }
 
 template <typename Real>
-constexpr bool Ray2<Real>::approx_perpendicular(const Segment2<Real>& segment) const
+constexpr bool Ray2<Real>::perpendicular(const Segment2<Real>& segment) const
 {
-    return segment.approx_perpendicular(*this);
+    return segment.perpendicular(*this);
 }
 
 template <typename Real>
@@ -6766,15 +6765,15 @@ constexpr bool Ray2<Real>::intersects(const Triangle2<Real>& triangle) const
 }
 
 template <typename Real>
-constexpr bool Ray2<Real>::approx_tangent(const Circle2<Real>& circle) const
+constexpr bool Ray2<Real>::tangent(const Circle2<Real>& circle) const
 {
-    return circle.approx_tangent(*this);
+    return circle.tangent(*this);
 }
 
 template <typename Real>
-constexpr bool Ray2<Real>::approx_collinear(const Segment2<Real>& segment) const
+constexpr bool Ray2<Real>::collinear(const Segment2<Real>& segment) const
 {
-    return segment.approx_collinear(*this);
+    return segment.collinear(*this);
 }
 
 template <typename Real>
@@ -6868,9 +6867,9 @@ std::optional<std::array<Vector2<Real>, 2>> Ray2<Real>::intersections(const Alig
 }
 
 template <typename Real>
-bool Ray2<Real>::approx_tangent(const Arc2<Real>& arc) const
+bool Ray2<Real>::tangent(const Arc2<Real>& arc) const
 {
-    return arc.approx_tangent(*this);
+    return arc.tangent(*this);
 }
 
 template <typename Real>
@@ -6959,9 +6958,9 @@ std::optional<std::array<Vector2<Real>, 2>> Segment2<Real>::intersections(
 }
 
 template <typename Real>
-bool Segment2<Real>::approx_tangent(const Arc2<Real>& arc) const
+bool Segment2<Real>::tangent(const Arc2<Real>& arc) const
 {
-    return arc.approx_tangent(*this);
+    return arc.tangent(*this);
 }
 
 template <typename Real>
@@ -7019,9 +7018,9 @@ bool Arc2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-bool Arc2<Real>::approx_tangent(const Circle2<Real>& circle) const
+bool Arc2<Real>::tangent(const Circle2<Real>& circle) const
 {
-    return circle.approx_tangent(*this);
+    return circle.tangent(*this);
 }
 
 template <typename Real>
@@ -7163,9 +7162,9 @@ constexpr bool Segment2<Real>::intersects(const Triangle2<Real>& triangle) const
 }
 
 template <typename Real>
-constexpr bool Segment2<Real>::approx_tangent(const Circle2<Real>& circle) const
+constexpr bool Segment2<Real>::tangent(const Circle2<Real>& circle) const
 {
-    return circle.approx_tangent(*this);
+    return circle.tangent(*this);
 }
 }
 
