@@ -3877,8 +3877,10 @@ public:
     {
         const Segment2<Real> e0 = edge(0);
         const Segment2<Real> e1 = edge(1);
+        // TODO: Why unnormalized?
         const Line2<Real> l0 { e0.midpoint(), e0.direction_unnormalized().arbitrary_perpendicular() };
         const Line2<Real> l1 { e1.midpoint(), e1.direction_unnormalized().arbitrary_perpendicular() };
+        // TODO: Use checked and return optional.
         return l0.unchecked_intersection(l1);
     }
 
@@ -3897,14 +3899,15 @@ public:
      */
     [[nodiscard]] Vector2<Real> incenter() const
     {
+        // TODO: Use checked intersection and return optional.
         return angle_bisector(0).unchecked_intersection(angle_bisector(1));
     }
 
     /**
      * Orthocenter which is the intersection between the altitudes of the triangle.
-     * @return
+     * @return Result.
      */
-    [[nodiscard]] constexpr Vector2<Real> orthocenter() const
+    [[nodiscard]] Vector2<Real> orthocenter() const
     {
         return Line2<Real>::from_segment(altitude(0)).unchecked_intersection(Line2<Real>::from_segment(altitude(1)));
     }
@@ -4006,6 +4009,7 @@ public:
         const Segment2<Real> base = edge((index + 1) % 3);
         const Vector2<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
         const Line2<Real> altitude_line { vertex, perp_dir };
+        // TODO: Use checked intersection and return optional.
         const Vector2<Real> intersection = altitude_line.unchecked_intersection(Line2<Real>::from_segment(base));
         return { vertex, intersection };
     }
@@ -4067,6 +4071,7 @@ public:
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector3<Real> b = barycentric(point);
+        // TODO: Use approx comparisons.
         return b.x >= static_cast<Real>(0) && b.x <= static_cast<Real>(1) && b.y >= static_cast<Real>(0)
             && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
     }

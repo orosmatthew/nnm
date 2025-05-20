@@ -28,6 +28,10 @@ class Plane;
 using PlaneF = Plane<float>;
 using PlaneD = Plane<double>;
 template <typename Real>
+class Triangle3;
+using Triangle3f = Triangle3<float>;
+using Triangle3d = Triangle3<double>;
+template <typename Real>
 class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
@@ -79,6 +83,13 @@ public:
     {
         return { point1, point1.direction(point2) };
     }
+
+    /**
+     * Extends a line segment to an infinite line.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    static Line3 from_segment(const Segment3<Real>& segment);
 
     /**
      * Line that is an extension from a ray.
@@ -2054,6 +2065,238 @@ class Plane {
 };
 
 /**
+ * 3D Triangle.
+ * @tparam Real Floating-point type.
+ */
+template <typename Real>
+class Triangle3 {
+    /**
+     * Vertices.
+     */
+    Vector3<Real> vertices[3];
+
+    /**
+     * Default initialize all vertices to origin.
+     */
+    constexpr Triangle3()
+        : vertices { Vector3<Real>::zero(), Vector3<Real>::zero(), Vector3<Real>::zero() }
+    {
+    }
+
+    /**
+     * Initialize with provided vertices.
+     * @param vertex0 First vertex.
+     * @param vertex1 Second vertex.
+     * @param vertex2 Third vertex.
+     */
+    constexpr Triangle3(const Vector3<Real>& vertex0, const Vector3<Real>& vertex1, const Vector3<Real>& vertex2)
+        : vertices { vertex0, vertex1, vertex2 }
+    {
+    }
+
+    /**
+     * Edge in the order of vertex 0 to 1, 1 to 2, then 2 to 0.
+     * @param index Edge index.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const uint8_t next_index = (index + 1) % 3;
+        return { vertices[index], vertices[next_index] };
+    }
+
+    /**
+     * Centroid which is the average between all vertices.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Vector3<Real> centroid() const
+    {
+        return (vertices[0] + vertices[1] + vertices[2]) / static_cast<Real>(3);
+    }
+
+    /**
+     * Circumcenter which is the intersection between the perpendicular bisectors of the edges.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> circumcenter() const
+    {
+        const Segment3<Real> e0 = edge(0);
+        const Segment3<Real> e1 = edge(1);
+        // TODO: arbitrary perpendicular probably won't work.
+        const Line3<Real> l0 { e0.midpoint(), e0.direction().arbitrary_perpendicular() };
+        const Line3<Real> l1 { e1.midpoint(), e1.direction().arbitrary_perpendicular() };
+        return l0.intersection(l1);
+    }
+
+    /**
+     * Perimeter which is the combined length of all edges.
+     * @return Result.
+     */
+    [[nodiscard]] Real perimeter() const
+    {
+        return edge(0).length() + edge(1).length() + edge(2).length();
+    }
+
+    /**
+     * Incenter which is the intersection between the interior angles' bisectors.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<Vector3<Real>> incenter() const
+    {
+        return angle_bisector(0).intersection(angle_bisector(1));
+    }
+
+    /**
+     * Orthocenter which is the intersection between the altitudes of the triangle.
+     * @return Result.
+     */
+    [[nodiscard]] std::optional<Vector3<Real>> orthocenter() const
+    {
+        const std::optional<Segment3<Real>> alt0 = altitude(0);
+        if (!alt0.has_value()) {
+            return std::nullopt;
+        }
+        const std::optional<Segment3<Real>> alt1 = altitude(1);
+        if (!alt1.has_value()) {
+            return std::nullopt;
+        }
+        return Line3<Real>::from_segment(*alt0).intersection(Line3<Real>::from_segment(*alt1));
+    }
+
+    /**
+     * Area.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real area() const
+    {
+        const Real sum = vertices[0].x * (vertices[1].y - vertices[2].y)
+            + vertices[1].x * (vertices[2].y - vertices[0].y) + vertices[2].x * (vertices[0].y - vertices[1].y);
+        return abs(sum) / static_cast<Real>(2);
+    }
+
+    /**
+     * Median which is the line segment from a vertex to the midpoint of its opposite edge.
+     * It is indexed in the order of vertex 0 to midpoint of edge 1, vertex 1 to midpoint of edge 2,
+     * then vertex 2 to midpoint of edge 0.
+     * @param index Index.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Segment3<Real> median(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const uint8_t next_index = (index + 1) % 3;
+        return { vertices[index], edge(next_index).midpoint() };
+    }
+
+    /**
+     * Perpendicular bisector of an edge which is a line that divides an edge in half and
+     * is perpendicular to the edge.
+     * @param index Index of the edge.
+     * @return Result.
+     */
+    [[nodiscard]] Line3<Real> perpendicular_bisector(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        // TODO: arbitrary perpendicular probably won't work.
+        return { edge(index).midpoint(), edge(index).direction().arbitrary_perpendicular() };
+    }
+
+    /**
+     * Interior angle at a vertex index.
+     * @param index Index.
+     * @return Result.
+     */
+    [[nodiscard]] Real angle(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const uint8_t next_index = (index + 1) % 3;
+        const uint8_t prev_index = (index + 2) % 3;
+        const Vector3<Real> dir1 = vertices[prev_index] - vertices[index];
+        const Vector3<Real> dir2 = vertices[next_index] - vertices[index];
+        return acos(dir1.dot(dir2) / (dir1.length() * dir2.length()));
+    }
+
+    [[nodiscard]] Line3<Real> angle_bisector(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const uint8_t next_index = (index + 1) % 3;
+        const uint8_t prev_index = (index + 2) % 3;
+        const Vector3<Real> dir1 = (vertices[prev_index] - vertices[index]).normalize();
+        const Vector3<Real> dir2 = (vertices[next_index] - vertices[index]).normalize();
+        const Vector3<Real> bisector_dir = (dir1 + dir2).normalize();
+        return { vertices[index], bisector_dir };
+    }
+
+    [[nodiscard]] Vector3<Real> normal(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const Vector3<Real> edge1_dir = edge(1).direction_unnormalized();
+        const Vector3<Real> edge2_dir = edge(2).direction_unnormalized();
+        const bool reverse = edge1_dir.cross(edge2_dir) > static_cast<Real>(0);
+        const Vector3<Real> edge_dir = edge(index).direction();
+        const Vector3<Real> normal = { -edge_dir.y, edge_dir.x };
+        return reverse ? -normal : normal;
+    }
+
+    [[nodiscard]] std::optional<Segment3<Real>> altitude(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
+        const Vector3<Real>& vertex = vertices[index];
+        const uint8_t next_index = (index + 1) % 3;
+        const Segment3<Real> base = edge(next_index);
+        // TODO: arbitrary perpendicular probably won't work.
+        const Vector3<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
+        const Line3<Real> altitude_line { vertex, perp_dir };
+        const std::optional<Vector3<Real>> intersection = altitude_line.intersection(Line3<Real>::from_segment(base));
+        if (!intersection.has_value()) {
+            return std::nullopt;
+        }
+        return { vertex, *intersection };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> lerp_point(const Vector3<Real> weights) const
+    {
+        return weights.x * vertices[0] + weights.y + *vertices[1] + weights.z * vertices[2];
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> barycentric(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> v0 = vertices[1] - vertices[0];
+        const Vector3<Real> v1 = vertices[2] - vertices[0];
+        const Vector3<Real> v2 = point - vertices[0];
+        const Real cross01 = v0.cross(v1);
+        const Real cross21 = v2.cross(v1);
+        const Real cross02 = v0.cross(v2);
+        const Real inv_cross01 = static_cast<Real>(1) / cross01;
+        const Real y = cross21 * inv_cross01;
+        const Real z = cross02 * inv_cross01;
+        const Real x = static_cast<Real>(1) - y - z;
+        return { x, y, z };
+    }
+
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> b = barycentric(point);
+        return approx_greater_equal_zero(b.x) && approx_less_equal(b.x, static_cast<Real>(1))
+            && approx_greater_equal_zero(b.y) && approx_less_equal(b.y, static_cast<Real>(1))
+            && approx_greater_equal_zero(b.z) && approx_less_equal(b.z, static_cast<Real>(1));
+    }
+
+    [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 3; ++i) {
+            const Real dist = edge(1).distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return contains(point) ? -min_dist : min_dist;
+    }
+};
+
+/**
  * Sphere.
  * @tparam Real Floating-point type.
  */
@@ -2596,6 +2839,12 @@ class Sphere {
         return radius < other.radius;
     }
 };
+
+template <typename Real>
+Line3<Real> Line3<Real>::from_segment(const Segment3<Real>& segment)
+{
+    return { segment.start, (segment.end - segment.start).normalize() };
+}
 
 template <typename Real>
 Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
