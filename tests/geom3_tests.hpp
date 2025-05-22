@@ -1204,6 +1204,74 @@ inline void plane_tests()
         constexpr auto d6 = p2.distance(p1);
         ASSERT(nnm::approx_zero(d6));
     }
+
+    test_section("parallel(const Line3&)");
+    {
+        constexpr auto r1 = p2.parallel(nnm::Line3f::axis_x());
+        ASSERT(r1);
+        constexpr auto r2 = p2.parallel(nnm::Line3f::axis_z());
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = p2.parallel(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(r3);
+        constexpr auto r4 = p2.parallel(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = p2.parallel(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r5);
+    }
+
+    test_section("parallel(const Ray3&)");
+    {
+        constexpr auto r1 = p2.parallel(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.parallel(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = p2.parallel(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(r3);
+        constexpr auto r4 = p2.parallel(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = p2.parallel(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_x() });
+        ASSERT(r5);
+        constexpr auto r6 = p2.parallel(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_z() });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("parallel(const Segment&)");
+    {
+        const auto r1 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        ASSERT(r1);
+        const auto r2 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
+        ASSERT(r2);
+        const auto r3 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        ASSERT_FALSE(r3);
+        const auto r4 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        ASSERT_FALSE(r4);
+        const auto r5 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        ASSERT_FALSE(r5);
+        const auto r6 = p2.parallel(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        ASSERT_FALSE(r6);
+        const auto r7 = p2.parallel(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
+        ASSERT_FALSE(r7);
+        const auto r8 = p2.parallel(nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } });
+        ASSERT_FALSE(r8);
+    }
+
+    test_section("parallel(const Plane&)");
+    {
+        constexpr auto r1 = p2.parallel(p2);
+        ASSERT(r1);
+        constexpr auto r2 = p2.parallel(nnm::PlaneF { p2.origin.translate({ 100.0f, 0.0f, 0.0f }), -p2.normal });
+        ASSERT(r2);
+        constexpr auto r3
+            = p2.parallel(nnm::PlaneF { p2.origin.translate({ -100.0f, 0.707107f, 0.707107f }), p2.normal });
+        ASSERT(r3);
+        constexpr auto r4
+            = p2.parallel(nnm::PlaneF { p2.origin.translate({ -100.0f, -0.707107f, -0.707107f }), p2.normal });
+        ASSERT(r4);
+        constexpr auto r5 = p1.parallel(p2);
+        ASSERT_FALSE(r5);
+        constexpr auto r6 = p2.parallel(p1);
+        ASSERT_FALSE(r6);
+    }
 }
 
 // ReSharper disable once CppDFATimeOver

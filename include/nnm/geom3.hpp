@@ -1800,7 +1800,7 @@ public:
      */
     [[nodiscard]] bool parallel(const Segment3<Real>& segment) const
     {
-        return normal.approx_perpendicular(segment.direction());
+        return normal.perpendicular(segment.direction());
     }
 
     /**
