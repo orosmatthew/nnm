@@ -1133,7 +1133,7 @@ inline void plane_tests()
     {
         constexpr auto result = p2.distance({ -1.89f, -3.46f, 1.46f });
         ASSERT(nnm::approx_zero(result));
-        ASSERT(nnm::approx_equal(p2.distance({ -1.89f, -2.752893, 2.167107f }), 1.0f));
+        ASSERT(nnm::approx_equal(p2.distance({ -1.89f, -2.752893f, 2.167107f }), 1.0f));
         ASSERT(nnm::approx_equal(p2.distance({ 100.0f, -6.995535f, -2.075535f }), 5.0f));
     }
 
@@ -1271,6 +1271,57 @@ inline void plane_tests()
         ASSERT_FALSE(r5);
         constexpr auto r6 = p2.parallel(p1);
         ASSERT_FALSE(r6);
+    }
+
+    test_section("perpendicular(const Line3&)");
+    {
+        constexpr auto r1 = p2.perpendicular(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.perpendicular(nnm::Line3f { nnm::Vector3f::zero(), p2.normal });
+        ASSERT(r2);
+        constexpr auto r3 = p2.perpendicular(nnm::Line3f { nnm::Vector3f::zero(), -p2.normal });
+        ASSERT(r3);
+        constexpr auto r4 = p2.perpendicular(nnm::Line3f::axis_z());
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("perpendicular(const Ray3&)");
+    {
+        constexpr auto r1 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), p2.normal });
+        ASSERT(r3);
+        constexpr auto r4 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), -p2.normal });
+        ASSERT(r4);
+    }
+
+    test_section("perpendicular(const Segment3&)");
+    {
+        const auto r1 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        ASSERT_FALSE(r1);
+        const auto r2 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        ASSERT_FALSE(r2);
+        const auto r3 = p2.perpendicular(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
+        ASSERT_FALSE(r3);
+        const auto r4 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 100.0f, 100.0f } });
+        ASSERT(r4);
+        const auto r5 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, nnm::Vector3f::zero() });
+        ASSERT(r5);
+        const auto r6 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, { 0.0f, -100.0, -100.0f } });
+        ASSERT(r6);
+    }
+
+    test_section("perpendicular(const Plane&)");
+    {
+        constexpr auto r1 = p2.perpendicular(p2);
+        ASSERT_FALSE(r1);
+        constexpr auto r2
+            = p2.perpendicular(nnm::PlaneF { { 100.0f, -20.0f, 0.5f }, p2.normal.arbitrary_perpendicular() });
+        ASSERT(r2);
+        constexpr auto r3 = p1.perpendicular(p2);
+        ASSERT_FALSE(r3);
     }
 }
 

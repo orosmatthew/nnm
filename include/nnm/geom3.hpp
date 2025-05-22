@@ -1818,9 +1818,9 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
-        return normal.approx_parallel(line.direction);
+        return normal.parallel(line.direction);
     }
 
     /**
@@ -1828,9 +1828,9 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
     {
-        return normal.approx_parallel(ray.direction);
+        return normal.parallel(ray.direction);
     }
 
     /**
@@ -1840,7 +1840,7 @@ public:
      */
     [[nodiscard]] bool perpendicular(const Segment3<Real>& segment) const
     {
-        return normal.approx_parallel(segment.direction());
+        return normal.parallel(segment.direction());
     }
 
     /**
@@ -1848,9 +1848,9 @@ public:
      * @param other Other plane.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Plane& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Plane& other) const
     {
-        return normal.approx_perpendicular(other.normal);
+        return normal.perpendicular(other.normal);
     }
 
     /**
@@ -1885,13 +1885,13 @@ public:
      */
     [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
-        const Real dot_norm = normal.dot(ray.direction);
-        if (approx_zero(dot_norm)) {
+        const Real proj = normal.dot(ray.direction);
+        if (approx_zero(proj)) {
             return false;
         }
         const Vector3<Real> diff = origin - ray.origin;
         const Real dot_diff = normal.dot(diff);
-        const Real t = dot_diff / dot_norm;
+        const Real t = dot_diff / proj;
         return approx_greater_equal_zero(t);
     }
 
