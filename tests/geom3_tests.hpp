@@ -1075,9 +1075,8 @@ inline void plane_tests()
     {
         const auto p
             = nnm::PlaneF::from_points_unchecked({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -2.0f, -3.0f, 4.0f });
-        ASSERT(
-            p.normal.approx_equal({ -0.0484501608f, 0.775202572f, 0.629852057f })
-            || p.normal.approx_equal(-nnm::Vector3f { -0.0484501608f, 0.775202572f, 0.629852057f }));
+        constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
+        ASSERT(p.normal.approx_equal(n) || p.normal.approx_equal(-n));
         ASSERT(p.contains({ 1.0f, -2.0f, 3.0f }));
         ASSERT(p.contains({ -4.0f, 5.0f, -6.0f }));
         ASSERT(p.contains({ -2.0f, -3.0f, 4.0f }));
@@ -1086,10 +1085,8 @@ inline void plane_tests()
     test_section("from_points");
     {
         const auto p1 = nnm::PlaneF::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -2.0f, -3.0f, 4.0f });
-        ASSERT(
-            p1.has_value()
-            && (p1->normal.approx_equal({ -0.0484501608f, 0.775202572f, 0.629852057f })
-                || p1->normal.approx_equal(-nnm::Vector3f { -0.0484501608f, 0.775202572f, 0.629852057f })))
+        constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
+        ASSERT(p1.has_value() && (p1->normal.approx_equal(n) || p1->normal.approx_equal(-n)))
         ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
         ASSERT(p1.has_value() && p1->contains({ -4.0f, 5.0f, -6.0f }));
         ASSERT(p1.has_value() && p1->contains({ -2.0f, -3.0f, 4.0f }));
@@ -1112,12 +1109,100 @@ inline void plane_tests()
     test_section("coplanar");
     {
         constexpr nnm::PlaneF p2 { p1.origin, -p1.normal };
-        ASSERT(p1.coplanar(p2));
+        constexpr auto result = p1.coplanar(p2);
+        ASSERT(result);
         constexpr nnm::PlaneF p3 { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() };
         constexpr nnm::PlaneF p4 { { 1.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_z() };
         ASSERT(p3.coplanar(p4));
         ASSERT(p4.coplanar(p3));
         ASSERT_FALSE(p1.coplanar(p4));
+    }
+
+    constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+
+    test_section("contains");
+    {
+        constexpr auto result = p2.contains({ -1.89f, -3.46f, 1.46f });
+        ASSERT(result);
+        ASSERT(p2.contains({ 1.0f, -2.0f, 0.0f }));
+        ASSERT_FALSE(p2.contains({ 1.0f, -2.0f, 1.0f }));
+        ASSERT_FALSE(p2.contains({ 5.0f, -20.0f, -100.0f }));
+    }
+
+    test_section("distance(const Vector3&)");
+    {
+        constexpr auto result = p2.distance({ -1.89f, -3.46f, 1.46f });
+        ASSERT(nnm::approx_zero(result));
+        ASSERT(nnm::approx_equal(p2.distance({ -1.89f, -2.752893, 2.167107f }), 1.0f));
+        ASSERT(nnm::approx_equal(p2.distance({ 100.0f, -6.995535f, -2.075535f }), 5.0f));
+    }
+
+    test_section("distance(const Line3&)");
+    {
+        constexpr auto d1 = p2.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
+        constexpr auto d2 = p2.distance(nnm::Line3f::axis_z());
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3 = p2.distance(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d3, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d4 = p2.distance(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = p2.distance(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_zero(d5));
+    }
+
+    test_section("distance(const Ray3&)");
+    {
+        constexpr auto d1 = p2.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
+        constexpr auto d2 = p2.distance(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3 = p2.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d3, nnm::sqrt(2.0f)));
+        constexpr auto d4 = p2.distance(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(d4, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d5 = p2.distance(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d5, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d6 = p2.distance(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_z() });
+        ASSERT(nnm::approx_zero(d6));
+    }
+
+    test_section("distance(const Segment3&)");
+    {
+        constexpr auto d1 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
+        constexpr auto d2 = p2.distance(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
+        ASSERT(nnm::approx_equal(d2, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d3 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        ASSERT(nnm::approx_zero(d3));
+        constexpr auto d4 = p2.distance(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d5, nnm::sqrt(2.0f)));
+        constexpr auto d6 = p2.distance(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        ASSERT(nnm::approx_equal(d6, nnm::sqrt(2.0f)));
+        constexpr auto d7 = p2.distance(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d7, nnm::sqrt(2.0f)));
+        constexpr auto d8 = p2.distance(nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d8, nnm::sqrt(2.0f)));
+    }
+
+    test_section("distance(const Plane&)");
+    {
+        constexpr auto d1 = p2.distance(p2);
+        ASSERT(nnm::approx_zero(d1));
+        constexpr auto d2 = p2.distance(nnm::PlaneF { p2.origin.translate({ 100.0f, 0.0f, 0.0f }), -p2.normal });
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3
+            = p2.distance(nnm::PlaneF { p2.origin.translate({ -100.0f, 0.707107f, 0.707107f }), p2.normal });
+        ASSERT(nnm::approx_equal(d3, 1.0f));
+        constexpr auto d4
+            = p2.distance(nnm::PlaneF { p2.origin.translate({ -100.0f, -0.707107f, -0.707107f }), p2.normal });
+        ASSERT(nnm::approx_equal(d4, 1.0f));
+        constexpr auto d5 = p1.distance(p2);
+        ASSERT(nnm::approx_zero(d5));
+        constexpr auto d6 = p2.distance(p1);
+        ASSERT(nnm::approx_zero(d6));
     }
 }
 

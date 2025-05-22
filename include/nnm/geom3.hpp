@@ -1691,7 +1691,7 @@ public:
      * @param other Other plane.
      * @return Result.
      */
-    [[nodiscard]] bool coplanar(const Plane& other) const
+    [[nodiscard]] constexpr bool coplanar(const Plane& other) const
     {
         return contains(other.origin) && normal.parallel(other.normal);
     }
@@ -1713,7 +1713,7 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
         return abs(diff.dot(normal) / normal.dot(normal));
@@ -1724,9 +1724,9 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    [[nodiscard]] constexpr Real distance(const Line3<Real>& line) const
     {
-        if (!approx_parallel(line)) {
+        if (!parallel(line)) {
             return static_cast<Real>(0);
         }
         return distance(line.origin);
@@ -1737,7 +1737,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr Real distance(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
             return static_cast<Real>(0);
@@ -1750,7 +1750,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr Real distance(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
             return static_cast<Real>(0);
@@ -1765,9 +1765,9 @@ public:
      * @param other Other plane.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Plane& other) const
+    [[nodiscard]] constexpr Real distance(const Plane& other) const
     {
-        if (!approx_parallel(other)) {
+        if (!parallel(other)) {
             return static_cast<Real>(0);
         }
         return distance(other.origin);
@@ -1778,9 +1778,9 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
-        return normal.approx_perpendicular(line.direction);
+        return normal.perpendicular(line.direction);
     }
 
     /**
@@ -1788,9 +1788,9 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
     {
-        return normal.approx_perpendicular(ray.direction);
+        return normal.perpendicular(ray.direction);
     }
 
     /**
@@ -1808,9 +1808,9 @@ public:
      * @param other Other plane.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Plane& other) const
+    [[nodiscard]] constexpr bool parallel(const Plane& other) const
     {
-        return normal.approx_parallel(other.normal);
+        return normal.parallel(other.normal);
     }
 
     /**
@@ -1883,10 +1883,16 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
-        const Real proj = ray.direction.dot(normal);
-        return approx_less_equal(proj, static_cast<Real>(0));
+        const Real dot_norm = normal.dot(ray.direction);
+        if (approx_zero(dot_norm)) {
+            return false;
+        }
+        const Vector3<Real> diff = origin - ray.origin;
+        const Real dot_diff = normal.dot(diff);
+        const Real t = dot_diff / dot_norm;
+        return approx_greater_equal_zero(t);
     }
 
     /**
@@ -1908,7 +1914,7 @@ public:
         return ray.origin + ray.direction * t;
     }
 
-    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
         const Real proj_start = (segment.start - origin).dot(normal);
         const Real proj_end = (segment.end - origin).dot(normal);
