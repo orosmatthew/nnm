@@ -1581,6 +1581,7 @@ public:
  */
 template <typename Real>
 class Plane {
+public:
     /**
      * Origin.
      */
@@ -1643,7 +1644,7 @@ class Plane {
         if (nnm::approx_equal(cross.length(), static_cast<Real>(0))) {
             return std::nullopt;
         }
-        return { point1, cross.normalize() };
+        return Plane { point1, cross.normalize() };
     }
 
     /**
@@ -1692,7 +1693,7 @@ class Plane {
      */
     [[nodiscard]] bool coplanar(const Plane& other) const
     {
-        return approx_contains(other.origin) && normal.approx_parallel(other.normal);
+        return contains(other.origin) && normal.parallel(other.normal);
     }
 
     /**
