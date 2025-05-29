@@ -1237,21 +1237,21 @@ inline void plane_tests()
 
     test_section("parallel(const Segment&)");
     {
-        const auto r1 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        constexpr auto r1 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
         ASSERT(r1);
-        const auto r2 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
+        constexpr auto r2 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
         ASSERT(r2);
-        const auto r3 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        constexpr auto r3 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
         ASSERT_FALSE(r3);
-        const auto r4 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        constexpr auto r4 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
         ASSERT_FALSE(r4);
-        const auto r5 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        constexpr auto r5 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
         ASSERT_FALSE(r5);
-        const auto r6 = p2.parallel(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        constexpr auto r6 = p2.parallel(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
         ASSERT_FALSE(r6);
-        const auto r7 = p2.parallel(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
+        constexpr auto r7 = p2.parallel(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
         ASSERT_FALSE(r7);
-        const auto r8 = p2.parallel(nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } });
+        constexpr auto r8 = p2.parallel(nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } });
         ASSERT_FALSE(r8);
     }
 
@@ -1299,17 +1299,17 @@ inline void plane_tests()
 
     test_section("perpendicular(const Segment3&)");
     {
-        const auto r1 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        constexpr auto r1 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
         ASSERT_FALSE(r1);
-        const auto r2 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        constexpr auto r2 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
         ASSERT_FALSE(r2);
-        const auto r3 = p2.perpendicular(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
+        constexpr auto r3 = p2.perpendicular(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
         ASSERT_FALSE(r3);
-        const auto r4 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 100.0f, 100.0f } });
+        constexpr auto r4 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 100.0f, 100.0f } });
         ASSERT(r4);
-        const auto r5 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, nnm::Vector3f::zero() });
+        constexpr auto r5 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, nnm::Vector3f::zero() });
         ASSERT(r5);
-        const auto r6 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, { 0.0f, -100.0, -100.0f } });
+        constexpr auto r6 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, { 0.0f, -100.0, -100.0f } });
         ASSERT(r6);
     }
 
@@ -1322,6 +1322,145 @@ inline void plane_tests()
         ASSERT(r2);
         constexpr auto r3 = p1.perpendicular(p2);
         ASSERT_FALSE(r3);
+    }
+
+    test_section("intersects(const Line3&)");
+    {
+        constexpr auto r1 = p2.intersects(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.intersects(nnm::Line3f::axis_z());
+        ASSERT(r2);
+        constexpr auto r3 = p2.intersects(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = p2.intersects(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(r4);
+        constexpr auto r5 = p2.intersects(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(r5);
+    }
+
+    test_section("intersection(const Line3&)");
+    {
+        constexpr auto i1 = p2.intersection(nnm::Line3f::axis_x());
+        ASSERT_FALSE(i1.has_value());
+        constexpr auto i2 = p2.intersection(nnm::Line3f::axis_z());
+        ASSERT(i2.has_value() && i2->approx_equal({ 0.0f, 0.0f, -2.0f }));
+        constexpr auto i3 = p2.intersection(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(i3.has_value());
+        constexpr auto i4 = p2.intersection(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(i4.has_value() && i4->approx_equal({ -100.0f, 2.0f, -4.0f }));
+        constexpr auto i5 = p2.intersection(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(i5.has_value() && i5->approx_equal({ -100.0f, 2.0f, -4.0f }));
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        constexpr auto r1 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        ASSERT(r3);
+        constexpr auto r4 = p2.intersects(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = p2.intersects(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(r5);
+        constexpr auto r6 = p2.intersects(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("intersection(const Ray3&)");
+    {
+        constexpr auto i1 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(i1.has_value());
+        constexpr auto i2 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        ASSERT_FALSE(i2.has_value());
+        constexpr auto i3 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        ASSERT(i3.has_value() && i3->approx_equal({ 0.0f, 0.0f, -2.0f }));
+        constexpr auto i4 = p2.intersection(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(i4.has_value());
+        constexpr auto i5 = p2.intersection(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(i5.has_value() && i5->approx_equal({ -100.0f, 2.0f, -4.0f }));
+        constexpr auto i6 = p2.intersection(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(i6.has_value());
+    }
+
+    test_section("intersects(const Segment3&)");
+    {
+        constexpr auto r1 = p2.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = p2.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        ASSERT(r2);
+        constexpr auto r3 = p2.intersects(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = p2.intersects(nnm::Segment3f { { -100.0f, -100.0f, -100.0f }, { 100.0f, 100.0f, 100.0f } });
+        ASSERT(r4);
+        constexpr auto r5 = p2.intersects(nnm::Segment3f { { 100.0f, 100.0f, 100.0f }, { -100.0f, -100.0f, -100.0f } });
+        ASSERT(r5);
+        constexpr auto r6 = p2.intersects(nnm::Segment3f { { -10.0f, -10.0f, 0.0f }, { -10.0f, -10.0, -10.0f } });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("intersection(const Segment3&)");
+    {
+        constexpr auto i1 = p2.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        ASSERT_FALSE(i1.has_value());
+        constexpr auto i2 = p2.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        ASSERT(i2.has_value() && i2->approx_equal({ 0.0f, -2.0f, 0.0f }));
+        constexpr auto i3 = p2.intersection(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
+        ASSERT_FALSE(i3.has_value());
+        constexpr auto i4
+            = p2.intersection(nnm::Segment3f { { -100.0f, -100.0f, -100.0f }, { 100.0f, 100.0f, 100.0f } });
+        ASSERT(i4.has_value() && i4->approx_equal({ -1.0f, -1.0f, -1.0f }));
+        constexpr auto i5
+            = p2.intersection(nnm::Segment3f { { 100.0f, 100.0f, 100.0f }, { -100.0f, -100.0f, -100.0f } });
+        ASSERT(i5.has_value() && i5->approx_equal({ -1.0f, -1.0f, -1.0f }));
+        constexpr auto i6 = p2.intersection(nnm::Segment3f { { -10.0f, -10.0f, 0.0f }, { -10.0f, -10.0, -10.0f } });
+        ASSERT_FALSE(i6.has_value());
+    }
+
+    test_section("intersects(const Plane&)");
+    {
+        constexpr auto r1 = p2.intersects(p2);
+        ASSERT(r1);
+        constexpr auto r2 = p2.intersects(nnm::PlaneF { p2.origin.translate({ 100.0f, 0.0f, 0.0f }), -p2.normal });
+        ASSERT(r2);
+        constexpr auto r3
+            = p2.intersects(nnm::PlaneF { p2.origin.translate({ -100.0f, 0.707107f, 0.707107f }), p2.normal });
+        ASSERT_FALSE(r3);
+        constexpr auto r4
+            = p2.intersects(nnm::PlaneF { p2.origin.translate({ -100.0f, -0.707107f, -0.707107f }), p2.normal });
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = p1.intersects(p2);
+        ASSERT(r5);
+        constexpr auto r6 = p2.intersects(p1);
+        ASSERT(r6);
+    }
+
+    test_section("intersection(const Plane&)");
+    {
+        const auto i1 = p2.intersection(p2);
+        ASSERT_FALSE(i1.has_value());
+        const auto i2 = p2.intersection(nnm::PlaneF { p2.origin.translate({ 100.0f, 0.0f, 0.0f }), -p2.normal });
+        ASSERT_FALSE(i2.has_value());
+        const auto i3
+            = p2.intersection(nnm::PlaneF { p2.origin.translate({ -100.0f, 0.707107f, 0.707107f }), p2.normal });
+        ASSERT_FALSE(i3.has_value());
+        const auto i4
+            = p2.intersection(nnm::PlaneF { p2.origin.translate({ -100.0f, -0.707107f, -0.707107f }), p2.normal });
+        ASSERT_FALSE(i4.has_value());
+        const auto i5 = p1.intersection(p2);
+        ASSERT(
+            i5.has_value() && p1.contains(i5->origin) && p2.contains(i5->origin) && p1.parallel(*i5)
+            && p2.parallel(*i5));
+        const auto i6 = p2.intersection(p1);
+        ASSERT(
+            i6.has_value() && p2.contains(i6->origin) && p2.contains(i6->origin) && p2.parallel(*i6)
+            && p2.parallel(*i6));
+        constexpr nnm::PlaneF p3 { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() };
+        const auto i7 = p2.intersection(p3);
+        ASSERT(
+            i7.has_value() && p2.contains(i7->origin) && p3.contains(i7->origin) && p2.parallel(*i7)
+            && p3.parallel(*i7));
     }
 }
 

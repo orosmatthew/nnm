@@ -1296,7 +1296,7 @@ public:
      * Non-normalized direction from the start position to the end position.
      * @return Result.
      */
-    [[nodiscard]] Vector3<Real> direction_unnormalized() const
+    [[nodiscard]] constexpr Vector3<Real> direction_unnormalized() const
     {
         return end - start;
     }
@@ -1798,9 +1798,10 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool parallel(const Segment3<Real>& segment) const
     {
-        return normal.perpendicular(segment.direction());
+        const Real proj = normal.dot(segment.direction_unnormalized());
+        return approx_zero(proj);
     }
 
     /**
@@ -1838,9 +1839,10 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool perpendicular(const Segment3<Real>& segment) const
     {
-        return normal.parallel(segment.direction());
+        const Vector3<Real> cross = normal.cross(segment.direction_unnormalized());
+        return cross.approx_zero();
     }
 
     /**
@@ -1858,9 +1860,10 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
-        return !parallel(line);
+        const Real proj = normal.dot(line.direction);
+        return !approx_zero(proj);
     }
 
     /**
@@ -1868,13 +1871,15 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
-        if (approx_parallel(line)) {
+        const Real proj = normal.dot(line.direction);
+        if (approx_zero(proj)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = line.origin - origin;
-        const Real t = -diff.dot(normal) / line.direction.dot(normal);
+        const Vector3<Real> diff = origin - line.origin;
+        const Real dot_diff = normal.dot(diff);
+        const Real t = dot_diff / proj;
         return line.origin + line.direction * t;
     }
 
@@ -1900,15 +1905,16 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
-        const Real proj = ray.direction.dot(normal);
-        if (approx_greater_equal(proj, static_cast<Real>(0))) {
+        const Real proj = normal.dot(ray.direction);
+        if (approx_zero(proj)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = ray.origin - origin;
-        const Real t = -diff.dot(normal) / proj;
-        if (approx_less(t, static_cast<Real>(0))) {
+        const Vector3<Real> diff = origin - ray.origin;
+        const Real dot_diff = normal.dot(diff);
+        const Real t = dot_diff / proj;
+        if (approx_less_zero(t)) {
             return std::nullopt;
         }
         return ray.origin + ray.direction * t;
@@ -1916,30 +1922,37 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
-        const Real proj_start = (segment.start - origin).dot(normal);
-        const Real proj_end = (segment.end - origin).dot(normal);
-        const Real zero = static_cast<Real>(0);
-        return (approx_greater_equal(proj_start, zero) && approx_less_equal(proj_end, zero))
-            || (approx_less_equal(proj_start, zero) && approx_greater_equal(proj_end, zero));
+        const Real proj = normal.dot(segment.direction_unnormalized());
+        if (approx_zero(proj)) {
+            return false;
+        }
+        const Vector3<Real> diff = origin - segment.start;
+        const Real dot_diff = normal.dot(diff);
+        const Real t = dot_diff / proj;
+        return approx_greater_equal_zero(t) && approx_less_equal(t, static_cast<Real>(1));
     }
 
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
     {
-        const Vector3<Real> seg_dir = segment.direction();
-        const Real proj = seg_dir.dot(normal);
-        if (nnm::approx_equal(proj, static_cast<Real>(0))) {
+        const Vector3<Real> seg_dir = segment.direction_unnormalized();
+        const Real proj = normal.dot(seg_dir);
+        if (approx_zero(proj)) {
             return std::nullopt;
         }
-        const Vector3<Real> diff = segment.start - origin;
-        const Real t = -diff.dot(normal) / proj;
-        if (approx_less(t, static_cast<Real>(0)) || approx_greater(t, static_cast<Real>(1))) {
+        const Vector3<Real> diff = origin - segment.start;
+        const Real dot_diff = normal.dot(diff);
+        const Real t = dot_diff / proj;
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return std::nullopt;
         }
         return segment.start + seg_dir * t;
     }
 
-    [[nodiscard]] bool intersects(const Plane& other) const
+    [[nodiscard]] constexpr bool intersects(const Plane& other) const
     {
+        if (contains(other.origin)) {
+            return true;
+        }
         const Real dot = normal.dot(other.normal);
         return !nnm::approx_equal(dot, static_cast<Real>(1)) && !nnm::approx_equal(dot, static_cast<Real>(-1));
     }
@@ -1947,7 +1960,7 @@ public:
     [[nodiscard]] std::optional<Line3<Real>> intersection(const Plane& other) const
     {
         const Vector3<Real> dir = normal.cross(other.normal);
-        if (dir.approx_equal(Vector3<Real>::zero())) {
+        if (dir.approx_zero()) {
             return std::nullopt;
         }
 
