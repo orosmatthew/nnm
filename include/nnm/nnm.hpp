@@ -1155,7 +1155,16 @@ public:
      */
     [[nodiscard]] constexpr Real max() const
     {
-        return nnm::max(x, y);
+        return at(max_index());
+    }
+
+    /**
+     * The absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_max() const
+    {
+        return at(abs_max_index());
     }
 
     /**
@@ -1164,7 +1173,16 @@ public:
      */
     [[nodiscard]] constexpr Real min() const
     {
-        return nnm::min(x, y);
+        return at(min_index());
+    }
+
+    /**
+     * The absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_min() const
+    {
+        return at(abs_min_index());
     }
 
     /**
@@ -1173,10 +1191,19 @@ public:
      */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
-        if (x > y) {
-            return 0;
-        }
         if (y > x) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Index of the absolute-value maximum component.
+     * @return Resulting index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_max_index() const
+    {
+        if (nnm::abs(y) > nnm::abs(x)) {
             return 1;
         }
         return 0;
@@ -1188,10 +1215,19 @@ public:
      */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
-        if (x < y) {
-            return 0;
-        }
         if (y < x) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Index of the absolute-value minimum component.
+     * @return Resulting index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_min_index() const
+    {
+        if (nnm::abs(y) < nnm::abs(x)) {
             return 1;
         }
         return 0;
@@ -1735,7 +1771,16 @@ public:
      */
     [[nodiscard]] constexpr Int max() const
     {
-        return nnm::max(x, y);
+        return at(max_index());
+    }
+
+    /**
+     * Absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Int abs_max() const
+    {
+        return at(abs_max_index());
     }
 
     /**
@@ -1744,7 +1789,16 @@ public:
      */
     [[nodiscard]] constexpr Int min() const
     {
-        return nnm::min(x, y);
+        return at(min_index());
+    }
+
+    /**
+     * Absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Int abs_min() const
+    {
+        return at(abs_min_index());
     }
 
     /**
@@ -1753,10 +1807,19 @@ public:
      */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
-        if (x > y) {
-            return 0;
-        }
         if (y > x) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Index of the absolute-value maximum component.
+     * @return Resulting index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_max_index() const
+    {
+        if (nnm::abs(y) > nnm::abs(x)) {
             return 1;
         }
         return 0;
@@ -1768,10 +1831,19 @@ public:
      */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
-        if (x < y) {
-            return 0;
-        }
         if (y < x) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * Index of the absolute-value minimum component.
+     * @return Resulting index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_min_index() const
+    {
+        if (nnm::abs(y) < nnm::abs(x)) {
             return 1;
         }
         return 0;
@@ -2741,7 +2813,16 @@ public:
      */
     [[nodiscard]] constexpr Real max() const
     {
-        return nnm::max(x, nnm::max(y, z));
+        return at(max_index());
+    }
+
+    /**
+     * Absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_max() const
+    {
+        return at(abs_max_index());
     }
 
     /**
@@ -2754,18 +2835,46 @@ public:
     }
 
     /**
+     * Absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_min() const
+    {
+        return at(abs_min_index());
+    }
+
+    /**
      * Index of the maximum component.
      * @return Index.
      */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
         Real max_val = x;
-        auto max_axis = 0;
+        uint8_t max_axis = 0;
         if (y > max_val) {
             max_val = y;
             max_axis = 1;
         }
         if (z > max_val) {
+            max_axis = 2;
+        }
+        return max_axis;
+    }
+
+    /**
+     * Index of the absolute-value maximum component.
+     * @return Index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_max_index() const
+    {
+        Real max_val = nnm::abs(x);
+        uint8_t max_axis = 0;
+        const Real y_abs = nnm::abs(y);
+        if (y_abs > max_val) {
+            max_val = y_abs;
+            max_axis = 1;
+        }
+        if (nnm::abs(z) > max_val) {
             max_axis = 2;
         }
         return max_axis;
@@ -2778,12 +2887,31 @@ public:
     [[nodiscard]] constexpr uint8_t min_index() const
     {
         Real min_val = x;
-        auto min_axis = 0;
+        uint8_t min_axis = 0;
         if (y < min_val) {
             min_val = y;
             min_axis = 1;
         }
         if (z < min_val) {
+            min_axis = 2;
+        }
+        return min_axis;
+    }
+
+    /**
+     * Index of the absolute-value minimum component.
+     * @return Index.
+     */
+    [[nodiscard]] constexpr uint8_t abs_min_index() const
+    {
+        Real min_val = nnm::abs(x);
+        uint8_t min_axis = 0;
+        const Real y_abs = nnm::abs(y);
+        if (y_abs < min_val) {
+            min_val = y;
+            min_axis = 1;
+        }
+        if (nnm::abs(z) < min_val) {
             min_axis = 2;
         }
         return min_axis;
@@ -3379,7 +3507,16 @@ public:
      */
     [[nodiscard]] constexpr Int max() const
     {
-        return nnm::max(x, nnm::max(y, z));
+        return at(max_index());
+    }
+
+    /**
+     * Absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Int abs_max() const
+    {
+        return at(abs_max_index());
     }
 
     /**
@@ -3388,7 +3525,16 @@ public:
      */
     [[nodiscard]] constexpr Int min() const
     {
-        return nnm::min(x, nnm::min(y, z));
+        return at(min_index());
+    }
+
+    /**
+     * Absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Int abs_min() const
+    {
+        return at(abs_min_index());
     }
 
     /**
@@ -3397,11 +3543,32 @@ public:
      */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
+        Int max_val = x;
         uint8_t max_axis = 0;
-        if (y > at(max_axis)) {
+        if (y > max_val) {
+            max_val = y;
             max_axis = 1;
         }
-        if (z > at(max_axis)) {
+        if (z > max_val) {
+            max_axis = 2;
+        }
+        return max_axis;
+    }
+
+    /**
+     * Index of the absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr uint8_t abs_max_index() const
+    {
+        Int max_val = nnm::abs(x);
+        uint8_t max_axis = 0;
+        const Int y_abs = nnm::abs(y);
+        if (y_abs > max_val) {
+            max_val = y_abs;
+            max_axis = 1;
+        }
+        if (nnm::abs(z) > max_val) {
             max_axis = 2;
         }
         return max_axis;
@@ -3413,11 +3580,32 @@ public:
      */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
+        Int min_val = x;
         uint8_t min_axis = 0;
-        if (y < at(min_axis)) {
+        if (y < min_val) {
+            min_val = y;
             min_axis = 1;
         }
-        if (z < at(min_axis)) {
+        if (z < min_val) {
+            min_axis = 2;
+        }
+        return min_axis;
+    }
+
+    /**
+     * Index of the absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr uint8_t abs_min_index() const
+    {
+        Int min_val = nnm::abs(x);
+        uint8_t min_axis = 0;
+        const Int y_abs = nnm::abs(y);
+        if (y_abs < min_val) {
+            min_val = y_abs;
+            min_axis = 1;
+        }
+        if (nnm::abs(z) < min_val) {
             min_axis = 2;
         }
         return min_axis;
@@ -4179,7 +4367,16 @@ public:
      */
     [[nodiscard]] constexpr Real max() const
     {
-        return nnm::max(x, nnm::max(y, nnm::max(z, w)));
+        return at(max_index());
+    }
+
+    /**
+     * Absolute-value maximum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_max() const
+    {
+        return at(abs_max_index());
     }
 
     /**
@@ -4188,7 +4385,16 @@ public:
      */
     [[nodiscard]] constexpr Real min() const
     {
-        return nnm::min(x, nnm::min(y, nnm::min(z, w)));
+        return at(min_index());
+    }
+
+    /**
+     * Absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real abs_min() const
+    {
+        return at(abs_min_index());
     }
 
     /**
@@ -4197,14 +4403,37 @@ public:
      */
     [[nodiscard]] constexpr uint8_t max_index() const
     {
+        Real max_val = x;
         uint8_t max_axis = 0;
-        if (y > at(max_axis)) {
+        if (y > max_val) {
+            max_val = y;
             max_axis = 1;
         }
-        if (z > at(max_axis)) {
+        if (z > max_val) {
+            max_val = z;
             max_axis = 2;
         }
-        if (w > at(max_axis)) {
+        if (w > max_val) {
+            max_axis = 3;
+        }
+        return max_axis;
+    }
+
+    [[nodiscard]] constexpr uint8_t abs_max_index() const
+    {
+        Real max_val = nnm::abs(x);
+        uint8_t max_axis = 0;
+        const Real y_abs = nnm::abs(y);
+        if (y_abs > max_val) {
+            max_val = y_abs;
+            max_axis = 1;
+        }
+        const Real z_abs = nnm::abs(z);
+        if (z_abs > max_val) {
+            max_val = z_abs;
+            max_axis = 2;
+        }
+        if (nnm::abs(w) > max_val) {
             max_axis = 3;
         }
         return max_axis;
@@ -4216,14 +4445,41 @@ public:
      */
     [[nodiscard]] constexpr uint8_t min_index() const
     {
+        Real min_val = x;
         uint8_t min_axis = 0;
-        if (y < at(min_axis)) {
+        if (y < min_val) {
+            min_val = y;
             min_axis = 1;
         }
-        if (z < at(min_axis)) {
+        if (z < min_val) {
+            min_val = z;
             min_axis = 2;
         }
-        if (w < at(min_axis)) {
+        if (w < min_val) {
+            min_axis = 3;
+        }
+        return min_axis;
+    }
+
+    /**
+     * Index of absolute-value minimum component.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr uint8_t abs_min_index() const
+    {
+        Real min_val = nnm::abs(x);
+        uint8_t min_axis = 0;
+        const Real y_abs = nnm::abs(y);
+        if (y_abs < min_val) {
+            min_val = y_abs;
+            min_axis = 1;
+        }
+        const Real z_abs = nnm::abs(z);
+        if (z_abs < min_val) {
+            min_val = z_abs;
+            min_axis = 2;
+        }
+        if (nnm::abs(w) < min_val) {
             min_axis = 3;
         }
         return min_axis;
