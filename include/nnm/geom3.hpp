@@ -1967,7 +1967,7 @@ public:
         const Real d1 = -normal.dot(origin);
         const Real d2 = -other.normal.dot(other.origin);
         Vector3<Real> point;
-        if (const uint8_t max_index = dir.max_index(); max_index == 0) {
+        if (const uint8_t max_index = dir.abs_max_index(); max_index == 0) {
             point = { static_cast<Real>(0),
                       (d2 * normal.z - d1 * other.normal.z) / dir.x,
                       (d1 * other.normal.y - d2 * normal.y) / dir.x };
