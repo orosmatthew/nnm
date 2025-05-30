@@ -1985,14 +1985,14 @@ public:
         return Line3<Real> { point, dir.normalize() };
     }
 
-    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
         const Real dist = diff.dot(normal) / normal.dot(normal);
         return point - normal * dist;
     }
 
-    [[nodiscard]] Plane translate(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Plane translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), normal };
     }

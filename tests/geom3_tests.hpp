@@ -1462,6 +1462,28 @@ inline void plane_tests()
             i7.has_value() && p2.contains(i7->origin) && p3.contains(i7->origin) && p2.parallel(*i7)
             && p3.parallel(*i7));
     }
+
+    test_section("project_point");
+    {
+        constexpr nnm::Vector3f pt1 = p2.project_point({ 1.0f, -2.0f, 3.0f });
+        ASSERT(pt1.approx_equal({ 1.0f, -3.5f, 1.5f }));
+        constexpr nnm::Vector3f pt2 = p2.project_point({ 0.0f, -2.0f, 0.0f });
+        ASSERT(pt2.approx_equal({ 0.0f, -2.0f, 0.0f }));
+        constexpr nnm::Vector3f pt3 = p2.project_point({ 3.0f, -4.0f, -2.0f });
+        ASSERT(pt3.approx_equal({ 3.0f, -2.0f, 0.0f }));
+    }
+
+    test_section("translate");
+    {
+        constexpr nnm::PlaneF p2t = p2.translate({ 1.0f, -2.0f, 3.0f });
+        ASSERT(p2t.approx_equal({ { 2.0f, -4.0f, 3.0f }, p2.normal }));
+    }
+
+    test_section("scale_at");
+    {
+        // constexpr nnm::PlaneF p2s = p2.scale_at({ 1.0f, -2.0f, 3.0f }, { 0.5f, 1.0f, -2.0f });
+        // ASSERT(p2s.approx_equal({{}, {}}))
+    }
 }
 
 // ReSharper disable once CppDFATimeOver
