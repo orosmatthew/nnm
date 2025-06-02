@@ -2022,7 +2022,8 @@ public:
     [[nodiscard]] Plane rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
-        return { origin.rotate_quaternion_at(rotate_origin), normal.rotate_quaternion(quaternion).normalize() };
+        return { origin.rotate_quaternion_at(rotate_origin, quaternion),
+                 normal.rotate_quaternion(quaternion).normalize() };
     }
 
     [[nodiscard]] Plane rotate_quaternion(const Quaternion<Real>& quaternion) const

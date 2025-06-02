@@ -1481,8 +1481,141 @@ inline void plane_tests()
 
     test_section("scale_at");
     {
-        // constexpr nnm::PlaneF p2s = p2.scale_at({ 1.0f, -2.0f, 3.0f }, { 0.5f, 1.0f, -2.0f });
-        // ASSERT(p2s.approx_equal({{}, {}}))
+        const nnm::PlaneF p2s = p2.scale_at({ -3.0f, 2.0f, -1.0f }, { 0.5f, 1.0f, -2.0f });
+        ASSERT(p2s.approx_equal({ { -1.0f, -2.0f, -3.0f }, { 0.0f, 0.447214f, -0.89442f } }));
+    }
+
+    test_section("scale");
+    {
+        const nnm::PlaneF p2s = p2.scale({ 0.5f, 1.0f, -2.0f });
+        ASSERT(p2s.approx_equal({ { 0.5f, -2.0f, 0.0f }, { 0.0f, 0.447214f, -0.89442f } }));
+    }
+
+    test_section("rotate_axis_angle_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr auto angle = nnm::pi<float>() / 5.0f;
+        const nnm::PlaneF p2r = p2.rotate_axis_angle_at(origin, axis, angle);
+        const nnm::PlaneF p2r_expected { p2.origin.rotate_axis_angle_at(origin, axis, angle),
+                                         p2.normal.rotate_axis_angle(axis, angle).normalize() };
+        ASSERT(p2r.approx_equal(p2r_expected));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr auto axis = nnm::Vector3f::axis_z();
+        constexpr auto angle = -nnm::pi<float>() / 5.0f;
+        const nnm::PlaneF p2r = p2.rotate_axis_angle(axis, angle);
+        const nnm::PlaneF p2r_expected { p2.origin.rotate_axis_angle(axis, angle),
+                                         p2.normal.rotate_axis_angle(axis, angle).normalize() };
+        ASSERT(p2r.approx_equal(p2r_expected));
+    }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        const auto quat = nnm::QuaternionF::from_axis_angle(-nnm::Vector3f::axis_y(), 3.0f * nnm::pi<float>() / 2.0f);
+        const nnm::PlaneF p2r = p2.rotate_quaternion_at(origin, quat);
+        const nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion_at(origin, quat),
+                                         p2.normal.rotate_quaternion(quat).normalize() };
+        ASSERT(p2r.approx_equal(p2r_expected));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        const auto quat = nnm::QuaternionF::from_axis_angle(-nnm::Vector3f::axis_y(), 3.0f * nnm::pi<float>() / 2.0f);
+        const nnm::PlaneF p2r = p2.rotate_quaternion(quat);
+        const nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion(quat),
+                                         p2.normal.rotate_quaternion(quat).normalize() };
+        ASSERT(p2r.approx_equal(p2r_expected));
+    }
+
+    test_section("shear_x_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr float factor_y = 2.0f;
+        constexpr float factor_z = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_x_at(origin, factor_y, factor_z);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_x_at(origin, factor_y, factor_z),
+                                         p2.normal.shear_x(factor_y, factor_z).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("shear_x");
+    {
+        constexpr float factor_y = 2.0f;
+        constexpr float factor_z = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_x(factor_y, factor_z);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_x(factor_y, factor_z),
+                                         p2.normal.shear_x(factor_y, factor_z).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("shear_y_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr float factor_x = 2.0f;
+        constexpr float factor_z = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_y_at(origin, factor_x, factor_z);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_y_at(origin, factor_x, factor_z),
+                                         p2.normal.shear_y(factor_x, factor_z).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("shear_y");
+    {
+        constexpr float factor_x = 2.0f;
+        constexpr float factor_z = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_y(factor_x, factor_z);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_y(factor_x, factor_z),
+                                         p2.normal.shear_y(factor_x, factor_z).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("shear_z_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr float factor_x = 2.0f;
+        constexpr float factor_y = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_z_at(origin, factor_x, factor_y);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_z_at(origin, factor_x, factor_y),
+                                         p2.normal.shear_z(factor_x, factor_y).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("shear_z");
+    {
+        constexpr float factor_x = 2.0f;
+        constexpr float factor_y = -0.5f;
+        const nnm::PlaneF p2s = p2.shear_z(factor_x, factor_y);
+        const nnm::PlaneF p2s_expected { p2.origin.shear_z(factor_x, factor_y),
+                                         p2.normal.shear_z(factor_x, factor_y).normalize() };
+        ASSERT(p2s.approx_equal(p2s_expected));
+    }
+
+    test_section("approx_equal");
+    {
+        ASSERT(p2.approx_equal(p2));
+        ASSERT_FALSE(p2.approx_equal(p1));
+    }
+
+    test_section("operator==");
+    {
+        ASSERT(p2 == p2);
+        ASSERT_FALSE(p1 == p2);
+    }
+
+    test_section("operator!=");
+    {
+        ASSERT(p1 != p2);
+        ASSERT_FALSE(p2 != p2);
+    }
+
+    test_section("operator<");
+    {
+        ASSERT(p2 < p1);
+        ASSERT_FALSE(p1 < p2);
     }
 }
 
