@@ -1106,7 +1106,7 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool collinear(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - start;
         const Vector3<Real> diff2 = end - start;
@@ -1118,7 +1118,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool collinear(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool collinear(const Line3<Real>& line) const
     {
         if (!parallel(line)) {
             return false;
@@ -1132,7 +1132,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool collinear(const Ray3<Real>& ray) const
     {
         if (!parallel(ray)) {
             return false;
@@ -1146,7 +1146,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool collinear(const Segment3& other) const
+    [[nodiscard]] constexpr bool collinear(const Segment3& other) const
     {
         if (!parallel(other)) {
             return false;
@@ -1160,7 +1160,7 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool contains(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - start;
         const Vector3<Real> diff2 = end - start;
@@ -1315,9 +1315,10 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
-        return direction().parallel(line.direction);
+        const Vector3<Real> proj = direction_unnormalized().cross(line.direction);
+        return proj.approx_zero();
     }
 
     /**
@@ -1325,9 +1326,10 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
     {
-        return direction().parallel(ray.direction);
+        const Vector3<Real> proj = direction_unnormalized().cross(ray.direction);
+        return proj.approx_zero();
     }
 
     /**
@@ -1335,9 +1337,10 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool parallel(const Segment3& other) const
+    [[nodiscard]] constexpr bool parallel(const Segment3& other) const
     {
-        return direction().parallel(other.direction());
+        const Vector3<Real> proj = direction_unnormalized().cross(other.direction_unnormalized());
+        return proj.approx_zero();
     }
 
     /**
@@ -1345,9 +1348,10 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
-        return direction().perpendicular(line.direction);
+        const Real proj = direction_unnormalized().dot(line.direction);
+        return approx_zero(proj);
     }
 
     /**
@@ -1355,9 +1359,10 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
     {
-        return direction().perpendicular(ray.direction);
+        const Real proj = direction_unnormalized().dot(ray.direction);
+        return approx_zero(proj);
     }
 
     /**
@@ -1365,9 +1370,10 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool perpendicular(const Segment3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Segment3& other) const
     {
-        return direction().perpendicular(other.direction());
+        const Real proj = direction_unnormalized().dot(other.direction_unnormalized());
+        return approx_zero(proj);
     }
 
     /**
@@ -1375,7 +1381,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(line.direction);
@@ -1399,7 +1405,7 @@ public:
      * @param line Line.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(line.direction);
@@ -1425,7 +1431,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(ray.direction);
@@ -1452,7 +1458,7 @@ public:
      * @param ray Ray.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> approx_intersection(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(ray.direction);
@@ -1481,7 +1487,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Segment3& other) const
+    [[nodiscard]] constexpr bool intersects(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
@@ -1509,7 +1515,7 @@ public:
      * @param other Other line segment.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3& other) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
@@ -1539,7 +1545,7 @@ public:
      * @param point Point.
      * @return Resulting projected point.
      */
-    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - start;
         const Vector3<Real> dir = direction_unnormalized();
@@ -1569,9 +1575,211 @@ public:
      * Midpoint.
      * @return Result.
      */
-    [[nodiscard]] Vector3<Real> midpoint() const
+    [[nodiscard]] constexpr Vector3<Real> midpoint() const
     {
         return (start + end) / static_cast<Real>(2);
+    }
+
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Segment3 translate(const Vector3<Real>& offset) const
+    {
+        return { start.translate(offset), end.translate(offset) };
+    }
+
+    /**
+     * Scale about an origin by a factor.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Segment3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
+    {
+        return { start.scale_at(scale_origin, factor), end.scale_at(scale_origin, factor) };
+    }
+
+    /**
+     * Scale about the global origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Segment3 scale(const Vector3<Real>& factor) const
+    {
+        return { start.scale(factor), end.scale(factor) };
+    }
+
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param rotate_origin Rotate origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 rotate_axis_angle_at(
+        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { start.rotate_axis_angle_at(rotate_origin, axis, angle),
+                 end.rotate_axis_angle_at(rotate_origin, axis, angle) };
+    }
+
+    /**
+     * Rotate about the global origin by an axis and angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { start.rotate_axis_angle(axis, angle), end.rotate_axis_angle(axis, angle) };
+    }
+
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param rotate_origin Rotate origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 rotate_quaternion_at(
+        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    {
+        return { start.rotate_quaternion_at(rotate_origin, quaternion),
+                 end.rotate_quaternion_at(rotate_origin, quaternion) };
+    }
+
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { start.rotate_quaternion(quaternion), end.rotate_quaternion(quaternion) };
+    }
+
+    /**
+     * Shear about an origin along the x-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    {
+        return { start.shear_x_at(shear_origin, factor_y, factor_z), end.shear_x_at(shear_origin, factor_y, factor_z) };
+    }
+
+    /**
+     * Shear about the global origin along the x-axis.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_x(const Real factor_y, const Real factor_z) const
+    {
+        return { start.shear_x(factor_y, factor_z), end.shear_x(factor_y, factor_z) };
+    }
+
+    /**
+     * Shear about an origin along the y-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    {
+        return { start.shear_y_at(shear_origin, factor_x, factor_z), end.shear_y_at(shear_origin, factor_x, factor_z) };
+    }
+
+    /**
+     * Shear about the global origin along the y-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_y(const Real factor_x, const Real factor_z) const
+    {
+        return { start.shear_y(factor_x, factor_z), end.shear_y(factor_x, factor_z) };
+    }
+
+    /**
+     * Shear about an origin along the z-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    {
+        return { start.shear_z_at(shear_origin, factor_x, factor_y), end.shear_z_at(shear_origin, factor_x, factor_y) };
+    }
+
+    /**
+     * Shear about the global origin along the z-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    [[nodiscard]] Segment3 shear_z(const Real factor_x, const Real factor_y) const
+    {
+        return { start.shear_z(factor_x, factor_y), end.shear_z(factor_x, factor_y) };
+    }
+
+    /**
+     * Determine if coincident with another segment.
+     * @param other Other segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool coincident(const Segment3& other) const
+    {
+        return (start.approx_equal(other.start) && end.approx_equal(other.end))
+            || (start.approx_equal(other.end) && end.approx_equal(other.start));
+    }
+
+    /**
+     * Determine if both start and end are approximately equal to another segment.
+     * @param other Other segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool approx_equal(const Segment3& other) const
+    {
+        return start.approx_equal(other.start) && end.approx_equal(other.end);
+    }
+
+    /**
+     * Determine if start and end are exactly equal to another segment.
+     * @param other Other segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator==(const Segment3& other) const
+    {
+        return start == other.start && end == other.end;
+    }
+
+    /**
+     * Determine if start and end are not exactly equal to another segment.
+     * @param other Other segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator!=(const Segment3& other) const
+    {
+        return start != other.start || end != other.end;
+    }
+
+    /**
+     * Lexicographical comparison in the order of start then end.
+     * @param other Other segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator<(const Segment3& other) const
+    {
+        if (start != other.start) {
+            return start < other.start;
+        }
+        return end < other.end;
     }
 };
 
@@ -2091,6 +2299,7 @@ public:
  */
 template <typename Real>
 class Triangle3 {
+public:
     /**
      * Vertices.
      */

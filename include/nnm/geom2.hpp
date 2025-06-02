@@ -2027,7 +2027,7 @@ public:
     }
 
     /**
-     * Lexicographical comparison in the order of from then to.
+     * Lexicographical comparison in the order of start then end.
      * @param other
      * @return
      */
