@@ -1642,7 +1642,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Segment3 rotate_quaternion_at(
+    [[nodiscard]] constexpr Segment3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
         return { start.rotate_quaternion_at(rotate_origin, quaternion),
@@ -1654,7 +1654,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Segment3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Segment3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { start.rotate_quaternion(quaternion), end.rotate_quaternion(quaternion) };
     }
@@ -1666,7 +1666,8 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Segment3 shear_x_at(
+        const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { start.shear_x_at(shear_origin, factor_y, factor_z), end.shear_x_at(shear_origin, factor_y, factor_z) };
     }
@@ -1677,7 +1678,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_x(const Real factor_y, const Real factor_z) const
+    [[nodiscard]] constexpr Segment3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return { start.shear_x(factor_y, factor_z), end.shear_x(factor_y, factor_z) };
     }
@@ -1689,7 +1690,8 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Segment3 shear_y_at(
+        const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { start.shear_y_at(shear_origin, factor_x, factor_z), end.shear_y_at(shear_origin, factor_x, factor_z) };
     }
@@ -1700,7 +1702,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_y(const Real factor_x, const Real factor_z) const
+    [[nodiscard]] constexpr Segment3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return { start.shear_y(factor_x, factor_z), end.shear_y(factor_x, factor_z) };
     }
@@ -1712,7 +1714,8 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Segment3 shear_z_at(
+        const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { start.shear_z_at(shear_origin, factor_x, factor_y), end.shear_z_at(shear_origin, factor_x, factor_y) };
     }
@@ -1723,7 +1726,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment3 shear_z(const Real factor_x, const Real factor_y) const
+    [[nodiscard]] constexpr Segment3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return { start.shear_z(factor_x, factor_y), end.shear_z(factor_x, factor_y) };
     }

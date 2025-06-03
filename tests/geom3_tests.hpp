@@ -1113,6 +1113,141 @@ inline void segment3_tests()
             s1r.start.approx_equal(s1.start.rotate_axis_angle(axis, angle))
             && s1r.end.approx_equal(s1.end.rotate_axis_angle(axis, angle)));
     }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { -5.0f, 0.2f, 3.0f };
+        constexpr nnm::QuaternionF quat { 0.0f, 0.5f, 0.05f, 0.866025388f };
+        constexpr auto s1r = s1.rotate_quaternion_at(origin, quat);
+        ASSERT(
+            s1r.start.approx_equal(s1.start.rotate_quaternion_at(origin, quat))
+            && s1r.end.approx_equal(s1.end.rotate_quaternion_at(origin, quat)));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::QuaternionF quat { 0.0f, 0.5f, 0.05f, 0.866025388f };
+        constexpr auto s1r = s1.rotate_quaternion(quat);
+        ASSERT(
+            s1r.start.approx_equal(s1.start.rotate_quaternion(quat))
+            && s1r.end.approx_equal(s1.end.rotate_quaternion(quat)));
+    }
+
+    test_section("shear_x_at");
+    {
+        constexpr nnm::Vector3f origin { -5.0f, 0.2f, 3.0f };
+        constexpr float factor_y = 0.5f;
+        constexpr float factor_z = -2.0f;
+        constexpr auto s1s = s1.shear_x_at(origin, factor_y, factor_z);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_x_at(origin, factor_y, factor_z))
+            && s1s.end.approx_equal(s1.end.shear_x_at(origin, factor_y, factor_z)));
+    }
+
+    test_section("shear_x");
+    {
+        constexpr float factor_y = 0.5f;
+        constexpr float factor_z = -2.0f;
+        constexpr auto s1s = s1.shear_x(factor_y, factor_z);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_x(factor_y, factor_z))
+            && s1s.end.approx_equal(s1.end.shear_x(factor_y, factor_z)));
+    }
+
+    test_section("shear_y_at");
+    {
+        constexpr nnm::Vector3f origin { -5.0f, 0.2f, 3.0f };
+        constexpr float factor_x = 0.5f;
+        constexpr float factor_z = -2.0f;
+        constexpr auto s1s = s1.shear_y_at(origin, factor_x, factor_z);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_y_at(origin, factor_x, factor_z))
+            && s1s.end.approx_equal(s1.end.shear_y_at(origin, factor_x, factor_z)));
+    }
+
+    test_section("shear_y");
+    {
+        constexpr float factor_x = 0.5f;
+        constexpr float factor_z = -2.0f;
+        constexpr auto s1s = s1.shear_y(factor_x, factor_z);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_y(factor_x, factor_z))
+            && s1s.end.approx_equal(s1.end.shear_y(factor_x, factor_z)));
+    }
+
+    test_section("shear_z_at");
+    {
+        constexpr nnm::Vector3f origin { -5.0f, 0.2f, 3.0f };
+        constexpr float factor_x = 0.5f;
+        constexpr float factor_y = -2.0f;
+        constexpr auto s1s = s1.shear_z_at(origin, factor_x, factor_y);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_z_at(origin, factor_x, factor_y))
+            && s1s.end.approx_equal(s1.end.shear_z_at(origin, factor_x, factor_y)));
+    }
+
+    test_section("shear_z");
+    {
+        constexpr float factor_x = 0.5f;
+        constexpr float factor_y = -2.0f;
+        constexpr auto s1s = s1.shear_z(factor_x, factor_y);
+        ASSERT(
+            s1s.start.approx_equal(s1.start.shear_z(factor_x, factor_y))
+            && s1s.end.approx_equal(s1.end.shear_z(factor_x, factor_y)));
+    }
+
+    constexpr nnm::Segment3f s2 { { -4.0f, 5.0f, -6.0f }, { 1.0f, -2.0f, 3.0f } };
+    constexpr nnm::Segment3f s3 { { 10.0f, -3.2f, 7.0f }, { 0.0f, 1.0f, -9.0f } };
+
+    test_section("coincident");
+    {
+        constexpr bool r1 = s1.coincident(s2);
+        ASSERT(r1);
+        constexpr bool r2 = s1.coincident(s3);
+        ASSERT_FALSE(r2);
+        constexpr bool r3 = s2.coincident(s2);
+        ASSERT(r3);
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr bool r1 = s1.approx_equal(s2);
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = s1.approx_equal(s3);
+        ASSERT_FALSE(r2);
+        constexpr bool r3 = s2.approx_equal(s2);
+        ASSERT(r3);
+    }
+
+    test_section("operator==");
+    {
+        constexpr bool r1 = s1 == s2;
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = s1 == s3;
+        ASSERT_FALSE(r2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr bool r3 = s2 == s2;
+        ASSERT(r3);
+    }
+
+    test_section("operator!=");
+    {
+        constexpr bool r1 = s1 != s2;
+        ASSERT(r1);
+        constexpr bool r2 = s1 != s3;
+        ASSERT(r2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr bool r3 = s2 != s2;
+        ASSERT_FALSE(r3);
+    }
+
+    test_section("operator<");
+    {
+        constexpr bool r1 = s1 < s2;
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = s2 < s1;
+        ASSERT(r2);
+    }
 }
 
 inline void plane_tests()
