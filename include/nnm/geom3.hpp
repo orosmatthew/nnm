@@ -180,6 +180,14 @@ public:
     }
 
     /**
+     * Line that is perpendicular to this line and parallel to a plane.
+     * Both direction and -direction are valid for the resulting line.
+     * @param plane Plane.
+     * @return Result.
+     */
+    [[nodiscard]] Line3 perpendicular_plane_parallel(const Plane<Real>& plane) const;
+
+    /**
      * Normalize the line's direction.
      * @return Result.
      */
@@ -1859,6 +1867,20 @@ public:
     }
 
     /**
+     * A plane that is coplanar to a triangle. Does not check if the triangle collinear.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    static Plane from_triangle_unchecked(const Triangle3<Real>& triangle);
+
+    /**
+     * A plane that is coplanar to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    static std::optional<Plane> from_triangle(const Triangle3<Real>& triangle);
+
+    /**
      * Normalize the normal.
      * @return Result.
      */
@@ -2352,14 +2374,17 @@ public:
      * Circumcenter which is the intersection between the perpendicular bisectors of the edges.
      * @return Result.
      */
-    [[nodiscard]] constexpr std::optional<Vector3<Real>> circumcenter() const
+    [[nodiscard]] std::optional<Vector3<Real>> circumcenter() const
     {
-        const Segment3<Real> e0 = edge(0);
-        const Segment3<Real> e1 = edge(1);
-        // TODO: arbitrary perpendicular probably won't work.
-        const Line3<Real> l0 { e0.midpoint(), e0.direction().arbitrary_perpendicular() };
-        const Line3<Real> l1 { e1.midpoint(), e1.direction().arbitrary_perpendicular() };
-        return l0.intersection(l1);
+        const std::optional<Line3<Real>> pb1 = perpendicular_bisector(0);
+        if (!pb1.has_value()) {
+            return std::nullopt;
+        }
+        const std::optional<Line3<Real>> pb2 = perpendicular_bisector(1);
+        if (!pb2.has_value()) {
+            return std::nullopt;
+        }
+        return pb1->intersection(*pb2);
     }
 
     /**
@@ -2401,11 +2426,11 @@ public:
      * Area.
      * @return Result.
      */
-    [[nodiscard]] constexpr Real area() const
+    [[nodiscard]] Real area() const
     {
-        const Real sum = vertices[0].x * (vertices[1].y - vertices[2].y)
-            + vertices[1].x * (vertices[2].y - vertices[0].y) + vertices[2].x * (vertices[0].y - vertices[1].y);
-        return abs(sum) / static_cast<Real>(2);
+        const Vector3<Real> dir01 = vertices[0].direction_unnormalized(vertices[1]);
+        const Vector3<Real> dir02 = vertices[0].direction_unnormalized(vertices[2]);
+        return dir01.cross(dir02).length() / static_cast<Real>(2);
     }
 
     /**
@@ -2428,11 +2453,16 @@ public:
      * @param index Index of the edge.
      * @return Result.
      */
-    [[nodiscard]] Line3<Real> perpendicular_bisector(const uint8_t index) const
+    [[nodiscard]] std::optional<Line3<Real>> perpendicular_bisector(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
-        // TODO: arbitrary perpendicular probably won't work.
-        return { edge(index).midpoint(), edge(index).direction().arbitrary_perpendicular() };
+        const std::optional<Plane<Real>> p = Plane<Real>::from_triangle(*this);
+        if (!p.has_value()) {
+            return std::nullopt;
+        }
+        const Segment3<Real> e = edge(index);
+        const Vector3<Real> dir = Line3<Real>::from_segment(e).perpendicular_plane_parallel(*p).direction;
+        return Line3<Real> { e.midpoint(), dir };
     }
 
     /**
@@ -2461,71 +2491,69 @@ public:
         return { vertices[index], bisector_dir };
     }
 
-    [[nodiscard]] Vector3<Real> normal(const uint8_t index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
-        const Vector3<Real> edge1_dir = edge(1).direction_unnormalized();
-        const Vector3<Real> edge2_dir = edge(2).direction_unnormalized();
-        const bool reverse = edge1_dir.cross(edge2_dir) > static_cast<Real>(0);
-        const Vector3<Real> edge_dir = edge(index).direction();
-        const Vector3<Real> normal = { -edge_dir.y, edge_dir.x };
-        return reverse ? -normal : normal;
-    }
-
     [[nodiscard]] std::optional<Segment3<Real>> altitude(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
         const Vector3<Real>& vertex = vertices[index];
         const uint8_t next_index = (index + 1) % 3;
-        const Segment3<Real> base = edge(next_index);
-        // TODO: arbitrary perpendicular probably won't work.
-        const Vector3<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
+        const Line3<Real> base_line = Line3<Real>::from_segment(edge(next_index));
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            return std::nullopt;
+        }
+        const Vector3<Real> perp_dir = base_line.perpendicular_plane_parallel(*plane).direction;
         const Line3<Real> altitude_line { vertex, perp_dir };
-        const std::optional<Vector3<Real>> intersection = altitude_line.intersection(Line3<Real>::from_segment(base));
+        const std::optional<Vector3<Real>> intersection = altitude_line.intersection(base_line);
         if (!intersection.has_value()) {
             return std::nullopt;
         }
-        return { vertex, *intersection };
+        return Segment3<Real> { vertex, *intersection };
     }
 
     [[nodiscard]] constexpr Vector3<Real> lerp_point(const Vector3<Real> weights) const
     {
-        return weights.x * vertices[0] + weights.y + *vertices[1] + weights.z * vertices[2];
+        return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
     }
 
-    [[nodiscard]] constexpr Vector3<Real> barycentric(const Vector3<Real>& point) const
+    [[nodiscard]] Vector3<Real> barycentric_unchecked(const Vector3<Real>& point) const
     {
-        const Vector3<Real> v0 = vertices[1] - vertices[0];
-        const Vector3<Real> v1 = vertices[2] - vertices[0];
-        const Vector3<Real> v2 = point - vertices[0];
-        const Real cross01 = v0.cross(v1);
-        const Real cross21 = v2.cross(v1);
-        const Real cross02 = v0.cross(v2);
-        const Real inv_cross01 = static_cast<Real>(1) / cross01;
-        const Real y = cross21 * inv_cross01;
-        const Real z = cross02 * inv_cross01;
-        const Real x = static_cast<Real>(1) - y - z;
-        return { x, y, z };
+        const Real area_full = area();
+        const Real area_p12 = Triangle3 { point, vertices[1], vertices[2] }.area();
+        const Real area_0p2 = Triangle3 { vertices[0], point, vertices[2] }.area();
+        const Real area_01p = Triangle3 { vertices[0], vertices[1], point }.area();
+        return Vector3<Real> { area_p12 / area_full, area_0p2 / area_full, area_01p / area_full };
     }
 
-    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    [[nodiscard]] std::optional<Vector3<Real>> barycentric(const Vector3<Real>& point) const
     {
-        const Vector3<Real> b = barycentric(point);
-        return approx_greater_equal_zero(b.x) && approx_less_equal(b.x, static_cast<Real>(1))
-            && approx_greater_equal_zero(b.y) && approx_less_equal(b.y, static_cast<Real>(1))
-            && approx_greater_equal_zero(b.z) && approx_less_equal(b.z, static_cast<Real>(1));
-    }
-
-    [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
-    {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 3; ++i) {
-            const Real dist = edge(1).distance(point);
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
+        const Real area_full = area();
+        if (approx_zero(area_full)) {
+            return std::nullopt;
         }
-        return contains(point) ? -min_dist : min_dist;
+        const Real area_p12 = Triangle3 { point, vertices[1], vertices[2] }.area();
+        const Real area_0p2 = Triangle3 { vertices[0], point, vertices[2] }.area();
+        const Real area_01p = Triangle3 { vertices[0], vertices[1], point }.area();
+        return Vector3<Real> { area_p12 / area_full, area_0p2 / area_full, area_01p / area_full };
+    }
+
+    [[nodiscard]] bool contains(const Vector3<Real>& point) const
+    {
+        if (const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+            plane.has_value() && !plane->contains(point)) {
+            return false;
+        }
+        const std::optional<Vector3<Real>> b = barycentric(point);
+        if (!b.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                if (edge(i).contains(point)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return approx_greater_equal_zero(b->x) && approx_less_equal(b->x, static_cast<Real>(1))
+            && approx_greater_equal_zero(b->y) && approx_less_equal(b->y, static_cast<Real>(1))
+            && approx_greater_equal_zero(b->z) && approx_less_equal(b->z, static_cast<Real>(1));
     }
 };
 
@@ -3086,6 +3114,13 @@ Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
 }
 
 template <typename Real>
+Line3<Real> Line3<Real>::perpendicular_plane_parallel(const Plane<Real>& plane) const
+{
+    const Vector3<Real> dir = direction.cross(plane.normal).normalize();
+    return { origin, dir };
+}
+
+template <typename Real>
 bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 {
     return ray.collinear(*this);
@@ -3119,6 +3154,18 @@ template <typename Real>
 std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real>& ray) const
 {
     return ray.intersection(*this);
+}
+
+template <typename Real>
+Plane<Real> Plane<Real>::from_triangle_unchecked(const Triangle3<Real>& triangle)
+{
+    return from_points_unchecked(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
+}
+
+template <typename Real>
+std::optional<Plane<Real>> Plane<Real>::from_triangle(const Triangle3<Real>& triangle)
+{
+    return from_points(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
 }
 
 }

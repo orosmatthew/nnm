@@ -1837,13 +1837,191 @@ inline void triangle3_tests()
         ASSERT(t1.vertices[2].approx_equal({ 4.0f, 0.0f, 2.0f }));
     }
 
-    // test_section("edge");
-    // {
-    //     constexpr nnm::Segment3f e0 = t1.edge(0);
-    //     constexpr nnm::Segment3f e1 = t1.edge(1);
-    //     constexpr nnm::Segment3f e2 = t1.edge(2);
-    //     ASSERT(e0.approx_equal())
-    // }
+    test_section("edge");
+    {
+        constexpr nnm::Segment3f e0 = t1.edge(0);
+        constexpr nnm::Segment3f e1 = t1.edge(1);
+        constexpr nnm::Segment3f e2 = t1.edge(2);
+        ASSERT(e0.approx_equal({ { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f } }));
+        ASSERT(e1.approx_equal({ { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } }));
+        ASSERT(e2.approx_equal({ { 4.0f, 0.0f, 2.0f }, { 1.0f, -2.0f, 3.0f } }));
+    }
+
+    test_section("centroid");
+    {
+        constexpr nnm::Vector3f c = t1.centroid();
+        constexpr nnm::Vector3f average = (t1.vertices[0] + t1.vertices[1] + t1.vertices[2]) / 3.0f;
+        ASSERT(c.approx_equal(average));
+    }
+
+    constexpr nnm::Triangle3f t2 { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+
+    test_section("circumcenter");
+    {
+        const std::optional<nnm::Vector3f> c1 = t1.circumcenter();
+        ASSERT(c1.has_value() && c1->approx_equal({ 0.245901704f, 0.844262301f, -0.573770523f }));
+        const std::optional<nnm::Vector3f> c2 = t2.circumcenter();
+        ASSERT_FALSE(c2.has_value());
+    }
+
+    test_section("perimeter");
+    {
+        const float p1 = t1.perimeter();
+        ASSERT(nnm::approx_equal(p1, 21.85209097f));
+        const float p2 = t2.perimeter();
+        ASSERT(nnm::approx_equal(p2, 4.0f));
+    }
+
+    test_section("orthocenter");
+    {
+        const std::optional<nnm::Vector3f> c1 = t1.orthocenter();
+        ASSERT(c1.has_value() && c1->approx_equal({ 2.50819683f, -0.688524485f, 2.14754105f }));
+        const std::optional<nnm::Vector3f> c2 = t2.orthocenter();
+        ASSERT_FALSE(c2.has_value());
+    }
+
+    constexpr nnm::Triangle3f t3 { { 4.0f, 0.0f, 2.0f }, { -2.0f, 3.0f, -4.0f }, { 1.0f, -2.0f, 3.0f } };
+
+    test_section("area");
+    {
+        const float a1 = t1.area();
+        ASSERT(nnm::approx_equal(a1, 16.5680415258f));
+        const float a2 = t2.area();
+        ASSERT(nnm::approx_zero(a2));
+        const float a3 = t3.area();
+        ASSERT(nnm::approx_equal(a3, 16.5680415258f));
+    }
+
+    test_section("median");
+    {
+        constexpr nnm::Segment3f m0 = t1.median(0);
+        ASSERT(m0.approx_equal({ { 1.0f, -2.0f, 3.0f }, { 1.0f, 1.5f, -1.0f } }));
+        constexpr nnm::Segment3f m1 = t1.median(1);
+        ASSERT(m1.approx_equal({ { -2.0f, 3.0f, -4.0f }, { 2.5f, -1.0f, 2.5f } }));
+        constexpr nnm::Segment3f m2 = t1.median(2);
+        ASSERT(m2.approx_equal({ { 4.0f, 0.0f, 2.0f }, { -0.5f, 0.5f, -0.5f } }));
+    }
+
+    test_section("perpendicular_bisector");
+    {
+        const std::optional<nnm::Line3f> pb0 = t1.perpendicular_bisector(0);
+        ASSERT(
+            pb0.has_value()
+            && pb0->approx_equal({ { -0.5f, 0.5f, -0.5f }, { -0.904320657f, -0.417378753f, 0.0894383192f } }));
+        const std::optional<nnm::Line3f> pb1 = t1.perpendicular_bisector(1);
+        ASSERT(
+            pb1.has_value()
+            && pb1->approx_equal({ { 1.0f, 1.5f, -1.0f }, { 0.694107413f, 0.603571713f, -0.392321587f } }));
+        const std::optional<nnm::Line3f> pb2 = t1.perpendicular_bisector(2);
+        ASSERT(
+            pb2.has_value()
+            & pb2->approx_equal({ { 2.5f, -1.0f, 2.5f }, { 0.532327354f, -0.435540527f, 0.725900888f } }));
+        const std::optional<nnm::Line3f> pb3 = t2.perpendicular_bisector(0);
+        ASSERT_FALSE(pb3.has_value());
+        const std::optional<nnm::Line3f> pb4 = t2.perpendicular_bisector(1);
+        ASSERT_FALSE(pb4.has_value());
+        const std::optional<nnm::Line3f> pb5 = t2.perpendicular_bisector(2);
+        ASSERT_FALSE(pb5.has_value());
+    }
+
+    test_section("angle");
+    {
+        const float a0 = t1.angle(0);
+        ASSERT(nnm::approx_equal(a0, 1.3339009374f));
+        const float a1 = t1.angle(1);
+        ASSERT(nnm::approx_equal(a1, 0.4160259987f));
+        const float a2 = t1.angle(2);
+        ASSERT(nnm::approx_equal(a2, 1.3916657175f));
+        const float a3 = t3.angle(0);
+        ASSERT(nnm::approx_equal(a3, 1.3916657175f));
+        const float a4 = t3.angle(1);
+        ASSERT(nnm::approx_equal(a4, 0.4160259987f));
+        const float a5 = t3.angle(2);
+        ASSERT(nnm::approx_equal(a5, 1.3339009374f));
+    }
+
+    test_section("angle_bisector");
+    {
+        const nnm::Line3f l1 = t1.angle_bisector(0);
+        ASSERT(l1.approx_equal({ { 1.0f, -2.0f, 3.0f }, { 0.300677031f, 0.689402819f, -0.659027338f } }));
+        const nnm::Line3f l2 = t1.angle_bisector(1);
+        ASSERT(l2.approx_equal({ { -2.0f, 3.0f, -4.0f }, { 0.508951068f, -0.450794995f, 0.733316183f } }));
+        const nnm::Line3f l3 = t1.angle_bisector(2);
+        ASSERT(l3.approx_equal({ { 4.0f, 0.0f, 2.0f }, { -0.956620216f, -0.131064415f, -0.260192215f } }));
+        const nnm::Line3f l4 = t3.angle_bisector(0);
+        ASSERT(l4.approx_equal({ { 4.0f, 0.0f, 2.0f }, { -0.956620216f, -0.131064415f, -0.260192215f } }));
+        const nnm::Line3f l5 = t3.angle_bisector(1);
+        ASSERT(l5.approx_equal({ { -2.0f, 3.0f, -4.0f }, { 0.508951068f, -0.450794995f, 0.733316183f } }));
+        const nnm::Line3f l6 = t3.angle_bisector(2);
+        ASSERT(l6.approx_equal({ { 1.0f, -2.0f, 3.0f }, { 0.300677031f, 0.689402819f, -0.659027338f } }));
+    }
+
+    test_section("altitude");
+    {
+        const std::optional<nnm::Segment3f> a1 = t1.altitude(0);
+        ASSERT(a1.has_value() && a1->approx_equal({ { 1.0f, -2.0f, 3.0f }, { 3.55555534f, 0.22222209f, 1.5555557f } }));
+        const std::optional<nnm::Segment3f> a2 = t1.altitude(1);
+        ASSERT(
+            a2.has_value()
+            && a2->approx_equal({ { -2.0f, 3.0f, -4.0f }, { 2.71428585f, -0.857142687f, 2.42857122f } }));
+        const std::optional<nnm::Segment3f> a3 = t1.altitude(2);
+        ASSERT(
+            a3.has_value() && a3->approx_equal({ { 4.0f, 0.0f, 2.0f }, { 0.710843325f, -1.51807225f, 2.32530117f } }));
+        const std::optional<nnm::Segment3f> a4 = t2.altitude(0);
+        ASSERT_FALSE(a4.has_value());
+        const std::optional<nnm::Segment3f> a5 = t2.altitude(1);
+        ASSERT_FALSE(a5.has_value());
+        const std::optional<nnm::Segment3f> a6 = t2.altitude(2);
+        ASSERT_FALSE(a6.has_value());
+    }
+
+    test_section("lerp_point");
+    {
+        constexpr nnm::Vector3f p1 = t1.lerp_point({ 0.3f, 0.1f, 0.6f });
+        constexpr nnm::Vector3f expected1 = t1.vertices[0] * 0.3f + t1.vertices[1] * 0.1f + t1.vertices[2] * 0.6f;
+        ASSERT(p1.approx_equal(expected1));
+        constexpr nnm::Vector3f p2 = t3.lerp_point({ 0.25f, 0.56f, 0.19f });
+        constexpr nnm::Vector3f expected2 = t3.vertices[0] * 0.25f + t3.vertices[1] * 0.56f + t3.vertices[2] * 0.19f;
+        ASSERT(p2.approx_equal(expected2));
+    }
+
+    test_section("barycentric_unchecked");
+    {
+        const nnm::Vector3f w1 = t1.barycentric_unchecked({ 2.5f, -0.3f, 1.7f });
+        ASSERT(w1.approx_equal({ 0.3f, 0.1f, 0.6f }));
+        const nnm::Vector3f w2 = t3.barycentric_unchecked({ 0.07f, 1.3f, -1.17f });
+        ASSERT(w2.approx_equal({ 0.25f, 0.56f, 0.19f }));
+    }
+
+    test_section("barycentric");
+    {
+        const std::optional<nnm::Vector3f> w1 = t1.barycentric({ 2.5f, -0.3f, 1.7f });
+        ASSERT(w1.has_value() && w1->approx_equal({ 0.3f, 0.1f, 0.6f }));
+        const std::optional<nnm::Vector3f> w2 = t3.barycentric({ 0.07f, 1.3f, -1.17f });
+        ASSERT(w2->approx_equal({ 0.25f, 0.56f, 0.19f }));
+        const std::optional<nnm::Vector3f> w3 = t2.barycentric(nnm::Vector3f::zero());
+        ASSERT_FALSE(w3.has_value());
+    }
+
+    test_section("contains");
+    {
+        const bool r1 = t1.contains({ 3.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.contains({ 2.5f, -0.3f, 1.7f });
+        ASSERT(r2);
+        const bool r3 = t2.contains({ 0.5f, 0.0f, 0.0f });
+        ASSERT(r3);
+        const bool r4 = t2.contains({ 0.0f, 1.0f, 0.0f });
+        ASSERT_FALSE(r4);
+        const bool r5 = t1.contains({ 3.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(r5);
+        const bool r6 = t1.contains({ 2.5f, -0.3f, 1.7f });
+        ASSERT(r6);
+        const bool r7 = t1.contains(t1.vertices[2]);
+        ASSERT(r7);
+        const bool r8 = t3.contains(t3.edge(1).midpoint());
+        ASSERT(r8);
+    }
 }
 
 // ReSharper disable once CppDFATimeOver
