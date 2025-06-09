@@ -204,6 +204,26 @@ public:
      */
     [[nodiscard]] bool collinear(const Ray3<Real>& ray) const;
 
+    [[nodiscard]] bool collinear(const Segment3<Real>& segment) const;
+
+    [[nodiscard]] bool coplanar(const Line3& other) const
+    {
+        if (parallel(other)) {
+            return true;
+        }
+        const Vector3<Real> diff = origin - other.origin;
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        return approx_zero(diff.dot(dir_cross));
+    }
+
+    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const;
+
+    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const;
+
+    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+
+    [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
+
     /**
      * Determine if intersects a point.
      * @param point Point.
@@ -646,6 +666,25 @@ public:
     {
         return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
     }
+
+    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    {
+        return Line3<Real>::from_ray(*this).coplanar(line);
+    }
+
+    [[nodiscard]] bool coplanar(const Ray3& ray) const
+    {
+        return Line3<Real>::from_ray(*this).coplanar(Line3<Real>::from_ray(ray));
+    }
+
+    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
+    {
+        return Line3<Real>::from_ray(*this).coplanar(segment);
+    }
+
+    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+
+    [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
      * Determine if ray intersects a point.
@@ -1116,9 +1155,7 @@ public:
      */
     [[nodiscard]] constexpr bool collinear(const Vector3<Real>& point) const
     {
-        const Vector3<Real> diff1 = point - start;
-        const Vector3<Real> diff2 = end - start;
-        return diff1.cross(diff2).approx_zero();
+        return Line3<Real>::from_segment(*this).contains(point);
     }
 
     /**
@@ -1128,11 +1165,7 @@ public:
      */
     [[nodiscard]] constexpr bool collinear(const Line3<Real>& line) const
     {
-        if (!parallel(line)) {
-            return false;
-        }
-        const Vector3<Real> diff = start - line.origin;
-        return diff.cross(line.direction).approx_zero();
+        return Line3<Real>::from_segment(*this).collinear(line);
     }
 
     /**
@@ -1142,11 +1175,7 @@ public:
      */
     [[nodiscard]] constexpr bool collinear(const Ray3<Real>& ray) const
     {
-        if (!parallel(ray)) {
-            return false;
-        }
-        const Vector3<Real> diff = start - ray.origin;
-        return diff.cross(ray.direction).approx_zero();
+        return Line3<Real>::from_segment(*this).collinear(ray);
     }
 
     /**
@@ -1156,12 +1185,27 @@ public:
      */
     [[nodiscard]] constexpr bool collinear(const Segment3& other) const
     {
-        if (!parallel(other)) {
-            return false;
-        }
-        const Vector3<Real> diff = start - other.start;
-        return diff.cross(other.end - other.start).approx_zero();
+        return Line3<Real>::from_segment(*this).collinear(Line3<Real>::from_segment(other));
     }
+
+    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    {
+        return Line3<Real>::from_segment(*this).coplanar(line);
+    }
+
+    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
+    {
+        return Line3<Real>::from_segment(*this).coplanar(ray);
+    }
+
+    [[nodiscard]] bool coplanar(const Segment3& other) const
+    {
+        return Line3<Real>::from_segment(*this).coplanar(Line3<Real>::from_segment(other));
+    }
+
+    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+
+    [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
      * Determine if contains/intersects a point.
@@ -1929,6 +1973,8 @@ public:
         return contains(other.origin) && normal.parallel(other.normal);
     }
 
+    [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
+
     /**
      * Determine if plane contains/intersects a point.
      * @param point Point.
@@ -2555,6 +2601,60 @@ public:
             && approx_greater_equal_zero(b->y) && approx_less_equal(b->y, static_cast<Real>(1))
             && approx_greater_equal_zero(b->z) && approx_less_equal(b->z, static_cast<Real>(1));
     }
+
+    [[nodiscard]] bool collinear() const
+    {
+        const auto l1 = Line3<Real>::from_points(vertices[0], vertices[1]);
+        const auto l2 = Line3<Real>::from_points(vertices[1], vertices[2]);
+        return l1.collinear(l2);
+    }
+
+    [[nodiscard]] bool coplanar(const Vector3<Real>& point) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            return true;
+        }
+        return plane->contains(point);
+    }
+
+    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                if (!edge(i).coplanar(line)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return plane->coplanar(line);
+    }
+
+    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
+    {
+        return coplanar(Line3<Real>::from_ray(ray));
+    }
+
+    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
+    {
+        return coplanar(Line3<Real>::from_segment(segment));
+    }
+
+    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const
+    {
+        const std::optional<Plane<Real>> p = Plane<Real>::from_triangle();
+        if (!p.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                if (!edge(i).coplanar(plane)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return p->coplanar(plane);
+    }
 };
 
 /**
@@ -3127,6 +3227,36 @@ bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 }
 
 template <typename Real>
+bool Line3<Real>::collinear(const Segment3<Real>& segment) const
+{
+    return segment.collinear(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::coplanar(const Ray3<Real>& ray) const
+{
+    return ray.coplanar(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::coplanar(const Segment3<Real>& segment) const
+{
+    return segment.coplanar(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::coplanar(const Plane<Real>& plane) const
+{
+    return plane.coplanar(*this);
+}
+
+template <typename Real>
+bool Line3<Real>::coplanar(const Triangle3<Real>& triangle) const
+{
+    return triangle.coplanar(*this);
+}
+
+template <typename Real>
 Real Line3<Real>::distance(const Ray3<Real>& ray) const
 {
     return ray.distance(*this);
@@ -3157,6 +3287,30 @@ std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real>& ray) co
 }
 
 template <typename Real>
+bool Ray3<Real>::coplanar(const Plane<Real>& plane) const
+{
+    return plane.coplanar(*this);
+}
+
+template <typename Real>
+bool Ray3<Real>::coplanar(const Triangle3<Real>& triangle) const
+{
+    return triangle.coplanar(*this);
+}
+
+template <typename Real>
+bool Segment3<Real>::coplanar(const Plane<Real>& plane) const
+{
+    return plane.coplanar(*this);
+}
+
+template <typename Real>
+bool Segment3<Real>::coplanar(const Triangle3<Real>& triangle) const
+{
+    return triangle.coplanar(*this);
+}
+
+template <typename Real>
 Plane<Real> Plane<Real>::from_triangle_unchecked(const Triangle3<Real>& triangle)
 {
     return from_points_unchecked(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
@@ -3166,6 +3320,12 @@ template <typename Real>
 std::optional<Plane<Real>> Plane<Real>::from_triangle(const Triangle3<Real>& triangle)
 {
     return from_points(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
+}
+
+template <typename Real>
+bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
+{
+    return triangle.coplanar(*this);
 }
 
 }
