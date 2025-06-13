@@ -2685,6 +2685,53 @@ public:
         }
         return p->coplanar(plane);
     }
+
+    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(point);
+        Vector3<Real> plane_proj = point;
+        if (plane.has_value()) {
+            plane_proj = plane.project_point(point);
+        }
+        if (contains(plane_proj)) {
+            return plane_proj;
+        }
+        uint8_t closest_edge = 0;
+        Real closest_edge_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 3; ++i) {
+            const Real dist = edge(i).distance(plane_proj);
+            if (dist < closest_edge_dist) {
+                closest_edge = i;
+                closest_edge_dist = dist;
+            }
+        }
+        return edge(closest_edge).project_point(plane_proj);
+    }
+
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        if (contains(point)) {
+            return static_cast<Real>(0);
+        }
+        const Vector3<Real> proj = project_point(point);
+        return point.distance(proj);
+    }
+
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        return min(edge(0).distance(line), min(edge(1).distance(line), edge(2).distance(line)));
+    }
+
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        if (intersects(ray)) {
+            return static_cast<Real>(0);
+        }
+        return min(distance(ray.origin), min(edge(0).distance(ray), min(edge(1).distance(ray), edge(2).distance(ray))));
+    }
 };
 
 /**
@@ -3357,7 +3404,6 @@ bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
 }
-
 }
 
 #endif
