@@ -94,6 +94,22 @@ constexpr Num max(const Num a, const Num b)
 }
 
 /**
+ * The maximum between values.
+ * @tparam Num Numeric type.
+ * @tparam Rest Numeric types.
+ * @param first First value.
+ * @param rest Rest of the values.
+ * @return Result.
+ */
+template <typename Num, typename... Rest>
+constexpr Num max(const Num first, const Rest... rest)
+{
+    Num max_value = first;
+    max_value = max(first, max(rest...));
+    return max_value;
+}
+
+/**
  * Determines if a value is approximately zero based on the epsilon value.
  * @tparam Real Floating-point type.
  * @param value Value to test.
@@ -566,6 +582,22 @@ constexpr Num min(const Num a, const Num b)
         return a;
     }
     return b;
+}
+
+/**
+ * The minimum between values.
+ * @tparam Num Numeric type.
+ * @tparam Rest Numeric types.
+ * @param first First value.
+ * @param rest Rest of the values.
+ * @return Result.
+ */
+template <typename Num, typename... Rest>
+constexpr Num min(const Num first, const Rest... rest)
+{
+    Num min_value = first;
+    min_value = min(first, min(rest...));
+    return min_value;
 }
 
 /**

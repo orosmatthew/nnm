@@ -30,7 +30,7 @@ inline void nnm_tests()
         ASSERT(nnm::abs(-1) == 1);
     }
 
-    test_case("max");
+    test_case("max(Num, Num)");
     {
         constexpr auto result1 = nnm::max(5.0f, 10.0f);
         ASSERT(result1 == 10.0f);
@@ -47,6 +47,25 @@ inline void nnm_tests()
         ASSERT(nnm::max(-5, -10) == -5);
         ASSERT(nnm::max(-10, -5) == -5);
         ASSERT(nnm::max(0, 0) == 0);
+    }
+
+    test_case("max(Num, Rest...)");
+    {
+        constexpr auto result1 = nnm::max(5.0f, 10.0f, -1.0f);
+        ASSERT(result1 == 10.0f);
+        ASSERT(nnm::max(10.0f, 5.0f, -1.0f) == 10.0f);
+        ASSERT(nnm::max(-5.0f, -10.0f, 100.0f) == 100.0f);
+        ASSERT(nnm::max(-10.0f, -5.0f, -7.0f) == -5.0f);
+        ASSERT(nnm::max(0.0f, 0.0f, 0.0f) == 0.0f);
+        ASSERT(nnm::max(3.14159f, 2.71828f, 1.1234f) == 3.14159f);
+        ASSERT(nnm::max(-3.14159f, -2.71828f, -1.1234f) == -1.1234f);
+
+        constexpr auto result2 = nnm::max(5, 10, -1);
+        ASSERT(result2 == 10);
+        ASSERT(nnm::max(10, 5, -1) == 10);
+        ASSERT(nnm::max(-5, -10, 100) == 100);
+        ASSERT(nnm::max(-10, -5, -7) == -5);
+        ASSERT(nnm::max(0, 0, 0) == 0);
     }
 
     test_case("approx_zero");
@@ -588,7 +607,7 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::acos(-1.0f), 3.141592654f));
     }
 
-    test_case("min");
+    test_case("min(Num, Num)");
     {
         constexpr auto result1 = nnm::min(1, 2);
         ASSERT(result1 == 1);
@@ -604,6 +623,24 @@ inline void nnm_tests()
 
         ASSERT(nnm::min('a', 'b') == 'a');
         ASSERT(nnm::min(3.14f, 2.71f) == 2.71f);
+    }
+
+    test_case("min(Num, Rest...)");
+    {
+        constexpr auto result1 = nnm::min(1, 2, 3);
+        ASSERT(result1 == 1);
+        ASSERT(nnm::min(5, 3, 1) == 1);
+        ASSERT(nnm::min(-1, -5, 2) == -5);
+        ASSERT(nnm::min(3, 3, 3) == 3);
+
+        constexpr auto result2 = nnm::min(1.0f, 2.0f, 3.0f);
+        ASSERT(result2 == 1.0f);
+        ASSERT(nnm::min(5.5f, 3.5f, 100.0f) == 3.5f);
+        ASSERT(nnm::min(-1.0f, -5.0f, -100.0f) == -100.0f);
+        ASSERT(nnm::min(3.0f, 3.0f, 3.0f) == 3.0f);
+
+        ASSERT(nnm::min('a', 'b', 'c') == 'a');
+        ASSERT(nnm::min(3.14f, 2.71f, 1.123f) == 1.123f);
     }
 
     test_case("log2");

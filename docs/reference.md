@@ -45,6 +45,7 @@ Real epsilon();
 Num sign(Num value);
 Num abs(Num value);
 Num max(Num a, Num b);
+Num max(Num first, Rest... rest);
 bool approx_zero(Real value);
 bool approx_equal(Real a, Real b);
 bool approx_less(Real a, Real b);
@@ -80,6 +81,7 @@ Real degrees(Real radians);
 Real asin(Real value);
 Real acos(Real value);
 Num min(Num a, Num b);
+Num min(Num first, Rest... rest);
 Real log2(Real value);
 ```
 
