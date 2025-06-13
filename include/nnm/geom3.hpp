@@ -2602,6 +2602,9 @@ public:
 
     [[nodiscard]] std::optional<Vector3<Real>> barycentric(const Vector3<Real>& point) const
     {
+        if (!contains(point)) {
+            return std::nullopt;
+        }
         const Real area_full = area();
         if (approx_zero(area_full)) {
             return std::nullopt;
@@ -2614,22 +2617,29 @@ public:
 
     [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
-        if (const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-            plane.has_value() && !plane->contains(point)) {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            return edge(0).contains(point) || edge(1).contains(point) || edge(2).contains(point);
+        }
+        if (!plane->contains(point)) {
             return false;
         }
-        const std::optional<Vector3<Real>> b = barycentric(point);
-        if (!b.has_value()) {
-            for (uint8_t i = 0; i < 3; ++i) {
-                if (edge(i).contains(point)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        return approx_greater_equal_zero(b->x) && approx_less_equal(b->x, static_cast<Real>(1))
-            && approx_greater_equal_zero(b->y) && approx_less_equal(b->y, static_cast<Real>(1))
-            && approx_greater_equal_zero(b->z) && approx_less_equal(b->z, static_cast<Real>(1));
+        return contains_projected(point);
+    }
+
+    [[nodiscard]] constexpr bool contains_projected(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> n = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
+        const auto edge_func = [&n](const Vector3<Real>& a, const Vector3<Real>& b, const Vector3<Real>& p) -> Real {
+            return n.dot((b - a).cross(p - a));
+        };
+        const Real e01 = edge_func(vertices[0], vertices[1], point);
+        const Real e12 = edge_func(vertices[1], vertices[2], point);
+        const Real e20 = edge_func(vertices[2], vertices[0], point);
+        const bool cond1
+            = approx_greater_equal_zero(e01) && approx_greater_equal_zero(e12) && approx_greater_equal_zero(e20);
+        const bool cond2 = approx_less_equal_zero(e01) && approx_less_equal_zero(e12) && approx_less_equal_zero(e20);
+        return cond1 || cond2;
     }
 
     [[nodiscard]] bool collinear() const
@@ -2722,7 +2732,7 @@ public:
         if (intersects(line)) {
             return static_cast<Real>(0);
         }
-        return min(edge(0).distance(line), min(edge(1).distance(line), edge(2).distance(line)));
+        return min(edge(0).distance(line), edge(1).distance(line), edge(2).distance(line));
     }
 
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
@@ -2730,7 +2740,106 @@ public:
         if (intersects(ray)) {
             return static_cast<Real>(0);
         }
-        return min(distance(ray.origin), min(edge(0).distance(ray), min(edge(1).distance(ray), edge(2).distance(ray))));
+        return min(distance(ray.origin), edge(0).distance(ray), edge(1).distance(ray), edge(2).distance(ray));
+    }
+
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    {
+        if (intersects(segment)) {
+            return static_cast<Real>(0);
+        }
+        return min(
+            distance(segment.start),
+            distance(segment.end),
+            edge(0).distance(segment),
+            edge(1).distance(segment),
+            edge(2).distance(segment));
+    }
+
+    [[nodiscard]] Real distance(const Plane<Real>& plane) const
+    {
+        if (intersects(plane)) {
+            return static_cast<Real>(0);
+        }
+        return min(plane.distance(vertices[0]), plane.distance(vertices[1]), plane.distance(vertices[2]));
+    }
+
+    [[nodiscard]] Real distance(const Triangle3& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        return min(
+            edge(0).distance(other.edge(0)),
+            edge(0).distance(other.edge(1)),
+            edge(0).distance(other.edge(2)),
+            edge(1).distance(other.edge(1)),
+            edge(1).distance(other.edge(2)),
+            edge(2).distance(other.edge(2)));
+    }
+
+    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            return edge(0).intersects(line) || edge(1).intersects(line) || edge(2).intersects(line);
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(line);
+        if (!point.has_value()) {
+            return false;
+        }
+        return contains_projected(*point);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                const std::optional<Vector3<Real>> point = edge(i).intersection(line);
+                if (point.has_value()) {
+                    return *point;
+                }
+            }
+            return std::nullopt;
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(line);
+        if (!point.has_value() || !contains_projected(point)) {
+            return std::nullopt;
+        }
+        return *point;
+    }
+
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            return edge(0).intersects(ray) || edge(1).intersects(ray) || edge(2).intersects(ray);
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(ray);
+        if (!point.has_value()) {
+            return false;
+        }
+        return contains_projected(point);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
+    {
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                const std::optional<Vector3<Real>> point = edge(i).intersection(ray);
+                if (point.has_value()) {
+                    return *point;
+                }
+            }
+            return std::nullopt;
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(ray);
+        if (!point.has_value()) {
+            return std::nullopt;
+        }
+        return contains_projected(point);
     }
 };
 

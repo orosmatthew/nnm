@@ -1998,7 +1998,7 @@ inline void triangle3_tests()
         const std::optional<nnm::Vector3f> w1 = t1.barycentric({ 2.5f, -0.3f, 1.7f });
         ASSERT(w1.has_value() && w1->approx_equal({ 0.3f, 0.1f, 0.6f }));
         const std::optional<nnm::Vector3f> w2 = t3.barycentric({ 0.07f, 1.3f, -1.17f });
-        ASSERT(w2->approx_equal({ 0.25f, 0.56f, 0.19f }));
+        ASSERT(w2.has_value() && w2->approx_equal({ 0.25f, 0.56f, 0.19f }));
         const std::optional<nnm::Vector3f> w3 = t2.barycentric(nnm::Vector3f::zero());
         ASSERT_FALSE(w3.has_value());
     }
@@ -2021,6 +2021,30 @@ inline void triangle3_tests()
         ASSERT(r7);
         const bool r8 = t3.contains(t3.edge(1).midpoint());
         ASSERT(r8);
+        const bool r9 = t2.contains({ 0.0f, -100.0f, 0.0f });
+        ASSERT_FALSE(r9);
+    }
+
+    test_section("contains_projected");
+    {
+        const bool r1 = t1.contains_projected({ 3.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.contains_projected({ 2.5f, -0.3f, 1.7f });
+        ASSERT(r2);
+        const bool r3 = t2.contains_projected({ 0.5f, 0.0f, 0.0f });
+        ASSERT(r3);
+        const bool r4 = t2.contains_projected({ 0.0f, 1.0f, 0.0f });
+        ASSERT(r4);
+        const bool r5 = t1.contains_projected({ 3.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(r5);
+        const bool r6 = t1.contains_projected({ 2.5f, -0.3f, 1.7f });
+        ASSERT(r6);
+        const bool r7 = t1.contains_projected(t1.vertices[2]);
+        ASSERT(r7);
+        const bool r8 = t3.contains_projected(t3.edge(1).midpoint());
+        ASSERT(r8);
+        const bool r9 = t2.contains_projected({ 0.0f, -100.0f, 0.0f });
+        ASSERT(r9);
     }
 
     test_section("collinear");
