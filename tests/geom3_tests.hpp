@@ -685,7 +685,7 @@ inline void segment3_tests()
 
     test_section("collinear(const Vector3&)");
     {
-        constexpr auto result = s1.collinear({ 2.9833236933f, -4.7766531707f, 6.569982648f });
+        const auto result = s1.collinear({ 2.9833236933f, -4.7766531707f, 6.569982648f });
         ASSERT(result);
         ASSERT_FALSE(s1.collinear({ 0.0f, 0.0f, 0.0f }));
         ASSERT(s1.collinear({ -1.4205585602f, 1.3887819843f, -1.3570054084f }));
@@ -694,7 +694,7 @@ inline void segment3_tests()
 
     test_section("collinear(const Line3&)");
     {
-        constexpr auto result = s1.collinear(nnm::Line3f::axis_x());
+        const auto result = s1.collinear(nnm::Line3f::axis_x());
         ASSERT_FALSE(result);
         ASSERT_FALSE(s1.collinear(nnm::Line3f::from_points({ 2.0f, -1.0f, 4.0f }, { -3.0f, 6.0f, -5.0f })));
         ASSERT(s1.collinear(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })));
@@ -704,7 +704,7 @@ inline void segment3_tests()
     test_section("collinear(const Ray3&)");
     {
         ASSERT_FALSE(s1.collinear(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f })));
-        constexpr auto result = s1.collinear(
+        const auto result = s1.collinear(
             nnm::Ray3f({ 2.9833236933f, -4.7766531707f, 6.569982648f }, { -0.40161f, 0.562254f, -0.722897f }));
         ASSERT(result);
         ASSERT(s1.collinear(nnm::Ray3f({ 2.9833236933f, -4.7766531707f, 6.569982648f }, s1.start.direction(s1.end))));
@@ -716,7 +716,7 @@ inline void segment3_tests()
 
     test_section("collinear(const Segment3&)");
     {
-        constexpr auto result = s1.collinear(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
+        const auto result = s1.collinear(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
         ASSERT_FALSE(result);
         ASSERT(s1.collinear(s1));
         ASSERT(s1.collinear(
@@ -2021,6 +2021,100 @@ inline void triangle3_tests()
         ASSERT(r7);
         const bool r8 = t3.contains(t3.edge(1).midpoint());
         ASSERT(r8);
+    }
+
+    test_section("collinear");
+    {
+        const bool r1 = t1.collinear();
+        ASSERT_FALSE(r1);
+        const bool r2 = t2.collinear();
+        ASSERT(r2);
+        const bool r3 = t3.collinear();
+        ASSERT_FALSE(r3);
+    }
+
+    test_section("coplanar(const Vector3&)");
+    {
+        const bool r1 = t1.coplanar(nnm::Vector3f::zero());
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.coplanar({ 2.5f, -0.3f, 1.7f });
+        ASSERT(r2);
+        const bool r3 = t1.coplanar({ 5.0009826255f, 0.9973796652f, 1.2891300792f });
+        ASSERT(r3);
+        const bool r4 = t2.coplanar({ 1.0f, -2.0f, 3.0f });
+        ASSERT(r4);
+        const bool r5 = t2.coplanar({ 100.0f, 0.0f, 0.0f });
+        ASSERT(r5);
+    }
+
+    test_section("coplanar(const Line3&)");
+    {
+        const bool r1 = t1.coplanar(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.coplanar(nnm::Line3f::from_segment(t1.edge(0)));
+        ASSERT(r2);
+        const bool r3 = t1.coplanar(
+            nnm::Line3f::from_points(
+                { 5.6279295263f, 0.2174812388f, 2.4491340955f }, { 3.7355435221f, 2.8096960263f, -1.3244196634f }));
+        ASSERT(r3);
+        const bool r4 = t2.coplanar(nnm::Line3f::axis_x_offset(100.0f, -100.0f));
+        ASSERT(r4);
+        const bool r5 = t2.coplanar(nnm::Line3f::axis_y());
+        ASSERT(r5);
+        const bool r6 = t2.coplanar(nnm::Line3f::axis_y_offset(-100.0f, 100.0f));
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("coplanar(const Ray3&)");
+    {
+        const bool r1 = t1.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.coplanar(nnm::Ray3f::from_point_to_point(t1.edge(0).start, t1.edge(0).end));
+        ASSERT(r2);
+        const bool r3 = t1.coplanar(
+            nnm::Ray3f::from_point_to_point(
+                { 5.6279295263f, 0.2174812388f, 2.4491340955f }, { 3.7355435221f, 2.8096960263f, -1.3244196634f }));
+        ASSERT(r3);
+        const bool r4 = t2.coplanar(nnm::Ray3f { { 0.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(r4);
+        const bool r5 = t2.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        ASSERT(r5);
+        const bool r6 = t2.coplanar(nnm::Ray3f { { -100.0f, 0.0f, 100.0f }, nnm::Vector3f::axis_y() });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("coplanar(const Segment3&)");
+    {
+        const bool r1 = t1.coplanar(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } });
+        ASSERT_FALSE(r1);
+        const bool r2 = t1.coplanar(nnm::Segment3f { t1.edge(0).start, t1.edge(0).end });
+        ASSERT(r2);
+        const bool r3 = t1.coplanar(
+            nnm::Segment3f { { 5.6279295263f, 0.2174812388f, 2.4491340955f },
+                             { 3.7355435221f, 2.8096960263f, -1.3244196634f } });
+        ASSERT(r3);
+        const bool r4 = t2.coplanar(nnm::Segment3f { { 0.0f, 100.0f, -100.0f }, { 1.0f, 100.0f, -100.0f } });
+        ASSERT(r4);
+        const bool r5 = t2.coplanar(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } });
+        ASSERT(r5);
+        const bool r6 = t2.coplanar(nnm::Segment3f { { -100.0f, 0.0f, 100.0f }, { -100.0f, 1.0f, 100.0f } });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("coplanar(const Plane&)");
+    {
+        const bool r1 = t1.coplanar(nnm::PlaneF::from_triangle_unchecked(t1));
+        ASSERT(r1);
+        const bool r2 = t1.coplanar(nnm::PlaneF::xy());
+        ASSERT_FALSE(r2);
+        const bool r3 = t2.coplanar(nnm::PlaneF::xy());
+        ASSERT(r3);
+        const bool r4 = t2.coplanar(nnm::PlaneF::xz());
+        ASSERT(r4);
+        const bool r5 = t2.coplanar(nnm::PlaneF::yz());
+        ASSERT_FALSE(r5);
+        const bool r6 = t2.coplanar(nnm::PlaneF::xz_offset(100.0f));
+        ASSERT_FALSE(r6);
     }
 }
 

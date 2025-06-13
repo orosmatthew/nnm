@@ -1153,7 +1153,7 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool collinear(const Vector3<Real>& point) const
+    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
     {
         return Line3<Real>::from_segment(*this).contains(point);
     }
@@ -1163,9 +1163,9 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool collinear(const Line3<Real>& line) const
+    [[nodiscard]] bool collinear(const Line3<Real>& line) const
     {
-        return Line3<Real>::from_segment(*this).collinear(line);
+        return Line3<Real>::from_segment(*this).coincident(line);
     }
 
     /**
@@ -1173,7 +1173,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool collinear(const Ray3<Real>& ray) const
+    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const
     {
         return Line3<Real>::from_segment(*this).collinear(ray);
     }
@@ -1183,9 +1183,9 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
-    [[nodiscard]] constexpr bool collinear(const Segment3& other) const
+    [[nodiscard]] bool collinear(const Segment3& other) const
     {
-        return Line3<Real>::from_segment(*this).collinear(Line3<Real>::from_segment(other));
+        return Line3<Real>::from_segment(*this).coincident(Line3<Real>::from_segment(other));
     }
 
     [[nodiscard]] bool coplanar(const Line3<Real>& line) const
@@ -1924,6 +1924,36 @@ public:
      */
     static std::optional<Plane> from_triangle(const Triangle3<Real>& triangle);
 
+    static constexpr Plane xy()
+    {
+        return { Vector3<Real>::zero(), Vector3<Real>::axis_z() };
+    }
+
+    static constexpr Plane xy_offset(const float z_offset)
+    {
+        return xy().translate({ static_cast<Real>(0), static_cast<Real>(0), z_offset });
+    }
+
+    static constexpr Plane xz()
+    {
+        return { Vector3<Real>::zero(), Vector3<Real>::axis_y() };
+    }
+
+    static constexpr Plane xz_offset(const float y_offset)
+    {
+        return xz().translate({ static_cast<Real>(0), y_offset, static_cast<Real>(0) });
+    }
+
+    static constexpr Plane yz()
+    {
+        return { Vector3<Real>::zero(), Vector3<Real>::axis_x() };
+    }
+
+    static constexpr Plane yz_offset(const float x_offset)
+    {
+        return yz().translate({ x_offset, static_cast<Real>(0), static_cast<Real>(0) });
+    }
+
     /**
      * Normalize the normal.
      * @return Result.
@@ -1940,7 +1970,7 @@ public:
      */
     [[nodiscard]] bool coplanar(const Line3<Real>& line) const
     {
-        return approx_contains(line.origin) && normal.approx_perpendicular(line.direction);
+        return contains(line.origin) && normal.perpendicular(line.direction);
     }
 
     /**
@@ -1958,9 +1988,9 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool coplanar(const Segment3<Real>& segment) const
     {
-        return approx_contains(segment.start) && approx_contains(segment.end);
+        return contains(segment.start) && contains(segment.end);
     }
 
     /**
@@ -2606,7 +2636,7 @@ public:
     {
         const auto l1 = Line3<Real>::from_points(vertices[0], vertices[1]);
         const auto l2 = Line3<Real>::from_points(vertices[1], vertices[2]);
-        return l1.collinear(l2);
+        return l1.coincident(l2);
     }
 
     [[nodiscard]] bool coplanar(const Vector3<Real>& point) const
@@ -2644,7 +2674,7 @@ public:
 
     [[nodiscard]] bool coplanar(const Plane<Real>& plane) const
     {
-        const std::optional<Plane<Real>> p = Plane<Real>::from_triangle();
+        const std::optional<Plane<Real>> p = Plane<Real>::from_triangle(*this);
         if (!p.has_value()) {
             for (uint8_t i = 0; i < 3; ++i) {
                 if (!edge(i).coplanar(plane)) {
