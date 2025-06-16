@@ -1042,13 +1042,13 @@ inline void segment3_tests()
         ASSERT_FALSE(i14.has_value());
     }
 
-    test_section("project_point");
+    test_section("project");
     {
-        constexpr auto p1 = s1.project_point({ 0.0f, 0.0f, 0.0f });
+        constexpr auto p1 = s1.project({ 0.0f, 0.0f, 0.0f });
         ASSERT(p1.approx_equal({ -0.4838709677f, 0.0774193548f, 0.3290322581f }))
-        constexpr auto p2 = s1.project_point({ 2.0f, -3.0f, 4.0f });
+        constexpr auto p2 = s1.project({ 2.0f, -3.0f, 4.0f });
         ASSERT(p2.approx_equal(s1.start));
-        constexpr auto p3 = s1.project_point({ -5.0f, 7.0f, -7.0f });
+        constexpr auto p3 = s1.project({ -5.0f, 7.0f, -7.0f });
         ASSERT(p3.approx_equal(s1.end));
     }
 
@@ -1674,11 +1674,11 @@ inline void plane_tests()
 
     test_section("project_point");
     {
-        constexpr nnm::Vector3f pt1 = p2.project_point({ 1.0f, -2.0f, 3.0f });
+        constexpr nnm::Vector3f pt1 = p2.project({ 1.0f, -2.0f, 3.0f });
         ASSERT(pt1.approx_equal({ 1.0f, -3.5f, 1.5f }));
-        constexpr nnm::Vector3f pt2 = p2.project_point({ 0.0f, -2.0f, 0.0f });
+        constexpr nnm::Vector3f pt2 = p2.project({ 0.0f, -2.0f, 0.0f });
         ASSERT(pt2.approx_equal({ 0.0f, -2.0f, 0.0f }));
-        constexpr nnm::Vector3f pt3 = p2.project_point({ 3.0f, -4.0f, -2.0f });
+        constexpr nnm::Vector3f pt3 = p2.project({ 3.0f, -4.0f, -2.0f });
         ASSERT(pt3.approx_equal({ 3.0f, -2.0f, 0.0f }));
     }
 
@@ -2151,6 +2151,20 @@ inline void triangle3_tests()
         ASSERT_FALSE(r5);
         const bool r6 = t2.coplanar(nnm::PlaneF::xz_offset(100.0f));
         ASSERT_FALSE(r6);
+    }
+
+    test_section("project");
+    {
+        const auto p1 = t1.project({ -1.5f, 3.5f, 3.0f });
+        ASSERT(p1.approx_equal({ -0.2336065574f, 0.1229508197f, 0.0450819672f }))
+        const auto p2 = t1.project({ -1.0f, 1.0f, 3.0f });
+        ASSERT(p2.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
+        const auto p3 = t1.project({ 0.8632112627, -3.9685633672, -1.3474929463 });
+        ASSERT(p3.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
+        const auto p4 = t2.project({ 0.5f, 100.0f, 0.0f });
+        ASSERT(p4.approx_equal({ 0.5f, 0.0f, 0.0f }));
+        const auto p5 = t2.project({ 100.0f, -100.0f, 0.0f });
+        ASSERT(p5.approx_equal({ 1.0f, 0.0f, 0.0f }));
     }
 }
 

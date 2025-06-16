@@ -1597,7 +1597,7 @@ public:
      * @param point Point.
      * @return Resulting projected point.
      */
-    [[nodiscard]] constexpr Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - start;
         const Vector3<Real> dir = direction_unnormalized();
@@ -2294,7 +2294,7 @@ public:
         return Line3<Real> { point, dir.normalize() };
     }
 
-    [[nodiscard]] constexpr Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
         const Real dist = diff.dot(normal) / normal.dot(normal);
@@ -2696,12 +2696,12 @@ public:
         return p->coplanar(plane);
     }
 
-    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] Vector3<Real> project(const Vector3<Real>& point) const
     {
-        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(point);
+        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
         Vector3<Real> plane_proj = point;
         if (plane.has_value()) {
-            plane_proj = plane.project_point(point);
+            plane_proj = plane->project(point);
         }
         if (contains(plane_proj)) {
             return plane_proj;
@@ -2715,7 +2715,7 @@ public:
                 closest_edge_dist = dist;
             }
         }
-        return edge(closest_edge).project_point(plane_proj);
+        return edge(closest_edge).project(plane_proj);
     }
 
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
