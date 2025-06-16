@@ -1533,6 +1533,8 @@ inline void plane_tests()
         ASSERT(r4);
         constexpr auto r5 = p2.intersects(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         ASSERT(r5);
+        constexpr auto r6 = p2.intersects(nnm::Line3f::axis_x_offset(-2.0f, 0.0f));
+        ASSERT(r6);
     }
 
     test_section("intersection(const Line3&)");
@@ -1547,6 +1549,8 @@ inline void plane_tests()
         ASSERT(i4.has_value() && i4->approx_equal({ -100.0f, 2.0f, -4.0f }));
         constexpr auto i5 = p2.intersection(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         ASSERT(i5.has_value() && i5->approx_equal({ -100.0f, 2.0f, -4.0f }));
+        constexpr auto i6 = p2.intersection(nnm::Line3f::axis_x_offset(-2.0f, 0.0f));
+        ASSERT_FALSE(i6.has_value());
     }
 
     test_section("intersects(const Ray3&)");
@@ -1563,6 +1567,8 @@ inline void plane_tests()
         ASSERT(r5);
         constexpr auto r6 = p2.intersects(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         ASSERT_FALSE(r6);
+        constexpr auto r7 = p2.intersects(nnm::Ray3f { { 0.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(r7);
     }
 
     test_section("intersection(const Ray3&)");
@@ -1579,6 +1585,8 @@ inline void plane_tests()
         ASSERT(i5.has_value() && i5->approx_equal({ -100.0f, 2.0f, -4.0f }));
         constexpr auto i6 = p2.intersection(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         ASSERT_FALSE(i6.has_value());
+        constexpr auto i7 = p2.intersection(nnm::Ray3f { { 0.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(i7.has_value());
     }
 
     test_section("intersects(const Segment3&)");
@@ -1595,6 +1603,8 @@ inline void plane_tests()
         ASSERT(r5);
         constexpr auto r6 = p2.intersects(nnm::Segment3f { { -10.0f, -10.0f, 0.0f }, { -10.0f, -10.0, -10.0f } });
         ASSERT_FALSE(r6);
+        constexpr auto r7 = p2.intersects(nnm::Segment3f { { 0.0f, -2.0f, 0.0f }, { 100.0f, -2.0f, 0.0f } });
+        ASSERT(r7);
     }
 
     test_section("intersection(const Segment3&)");
@@ -1613,6 +1623,8 @@ inline void plane_tests()
         ASSERT(i5.has_value() && i5->approx_equal({ -1.0f, -1.0f, -1.0f }));
         constexpr auto i6 = p2.intersection(nnm::Segment3f { { -10.0f, -10.0f, 0.0f }, { -10.0f, -10.0, -10.0f } });
         ASSERT_FALSE(i6.has_value());
+        constexpr auto i7 = p2.intersection(nnm::Segment3f { { 0.0f, -2.0f, 0.0f }, { 100.0f, -2.0f, 0.0f } });
+        ASSERT_FALSE(i7.has_value());
     }
 
     test_section("intersects(const Plane&)");

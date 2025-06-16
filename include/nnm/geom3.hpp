@@ -2172,7 +2172,7 @@ public:
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Real proj = normal.dot(line.direction);
-        return !approx_zero(proj);
+        return !approx_zero(proj) || contains(line.origin);
     }
 
     /**
@@ -2201,7 +2201,7 @@ public:
     {
         const Real proj = normal.dot(ray.direction);
         if (approx_zero(proj)) {
-            return false;
+            return contains(ray.origin);
         }
         const Vector3<Real> diff = origin - ray.origin;
         const Real dot_diff = normal.dot(diff);
@@ -2233,7 +2233,7 @@ public:
     {
         const Real proj = normal.dot(segment.direction_unnormalized());
         if (approx_zero(proj)) {
-            return false;
+            return contains(segment.start) || contains(segment.end);
         }
         const Vector3<Real> diff = origin - segment.start;
         const Real dot_diff = normal.dot(diff);
@@ -2781,7 +2781,7 @@ public:
     [[nodiscard]] bool intersects(const Line3<Real>& line) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        if (!plane.has_value()) {
+        if (!plane.has_value() || plane->coplanar(line)) {
             return edge(0).intersects(line) || edge(1).intersects(line) || edge(2).intersects(line);
         }
         const std::optional<Vector3<Real>> point = plane->intersection(line);
@@ -2813,7 +2813,7 @@ public:
     [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        if (!plane.has_value()) {
+        if (!plane.has_value() || plane->coplanar(ray)) {
             return edge(0).intersects(ray) || edge(1).intersects(ray) || edge(2).intersects(ray);
         }
         const std::optional<Vector3<Real>> point = plane->intersection(ray);
@@ -2840,6 +2840,94 @@ public:
             return std::nullopt;
         }
         return contains_projected(point);
+    }
+
+    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    {
+        std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value() || plane->coplanar(segment)) {
+            return edge(0).intersects(segment) || edge(1).intersects(segment) || edge(2).intersects(segment)
+                || contains(segment.start) || contains(segment.end);
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(segment);
+        if (!point.has_value()) {
+            return false;
+        }
+        return contains_projected(*point);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
+    {
+        std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
+        if (!plane.has_value()) {
+            for (uint8_t i = 0; i < 3; ++i) {
+                const std::optional<Vector3<Real>> point = edge(i).intersection(segment);
+                if (point.has_value()) {
+                    return *point;
+                }
+            }
+            return std::nullopt;
+        }
+        const std::optional<Vector3<Real>> point = plane->intersection(segment);
+        if (!point.has_value() || !contains_projected(*point)) {
+            return std::nullopt;
+        }
+        return *point;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
+    {
+        return plane.intersects(edge(0)) || plane.intersects(edge(1)) || plane.intersects(edge(2));
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Plane<Real>& plane) const
+    {
+        std::array<Vector3<Real>, 2> points;
+        uint8_t points_count = 0;
+        for (uint8_t i = 0; i < 3; ++i) {
+            const std::optional<Vector3<Real>> point = plane.intersection(edge(i));
+            if (!point.has_value()) {
+                continue;
+            }
+            points[points_count++] = *point;
+            if (points_count >= 2) {
+                return points;
+            }
+        }
+        if (points_count == 0) {
+            return std::nullopt;
+        }
+        if (points_count == 1) {
+            return std::array { points[0], points[0] };
+        }
+        return points;
+    }
+
+    [[nodiscard]] bool intersects(const Triangle3& other) const
+    {
+        return intersects(other.edge(0)) || intersects(other.edge(1)) || intersects(other.edge(2));
+    }
+
+    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Triangle3& other) const
+    {
+        std::array<Vector3<Real>, 2> points;
+        uint8_t points_count = 0;
+        for (uint8_t i = 0; i < 3; ++i) {
+            const std::optional<Vector3<Real>> point = intersection(other.edge(i));
+            if (point.has_value()) {
+                points[points_count++] = *point;
+            }
+            if (points_count >= 2) {
+                return points;
+            }
+        }
+        if (points_count == 0) {
+            return std::nullopt;
+        }
+        if (points_count == 1) {
+            return std::array { points[0], points[0] };
+        }
+        return points;
     }
 };
 
