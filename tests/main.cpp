@@ -7,10 +7,11 @@
 
 #include "test.hpp"
 
+// ReSharper disable once CppDFATimeOver
 int main()
 {
     nnm_tests();
     geom2_tests();
     geom3_tests();
-    END_TESTS
+    return end_tests();
 }

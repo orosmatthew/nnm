@@ -2723,7 +2723,7 @@ public:
         if (contains(point)) {
             return static_cast<Real>(0);
         }
-        const Vector3<Real> proj = project_point(point);
+        const Vector3<Real> proj = project(point);
         return point.distance(proj);
     }
 
