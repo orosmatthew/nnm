@@ -1,0 +1,11 @@
+PROJECT_NAME = [nnm] No Nonsense Math
+PROJECT_BRIEF = A "No-Nonsense", C++ 17, single-header-only Math library geared towards graphics programming.
+PROJECT_NUMBER = 0.5.0
+INPUT = include README.md
+USE_MDFILE_AS_MAINPAGE = README.md
+FILE_PATTERNS = *.hpp
+RECURSIVE = YES
+EXTRACT_ALL = YES
+GENERATE_LATEX = NO
+GENERATE_HTML = YES
+OUTPUT_DIRECTORY = docs
