@@ -50,35 +50,42 @@ Line3 axis_z_offset(Real x, Real y);
 ```cpp
 Line3 parallel_containing(const Vector3& point) const;
 Line3 arbitrary_perpendicular_containing(const Vector3& point) const;
+Line3 perpendicular_plane_parallel(const Plane& plane) const;
 Line3 normalize() const;
-bool approx_collinear(const Ray3& ray) const;
-bool approx_contains(const Vector3& point) const;
+bool collinear(const Ray3& ray) const;
+bool collinear(const Segment3& segment) const;
+bool coplanar(const Line3& other) const;
+bool coplanar(const Ray3& ray) const;
+bool coplanar(const Segment3& segment) const;
+bool coplanar(const Plane& plane) const;
+bool coplanar(const Triangle3& triangle) const;
+bool contains(const Vector3& point) const;
 Real distance(const Vector3& point) const;
 Real distance(const Line3& other) const;
 Real distance(const Ray3& ray) const;
-bool approx_parallel(const Line3& other) const;
-bool approx_parallel(const Ray3& ray) const;
-bool approx_perpendicular(const Line3& other) const;
-bool approx_perpendicular(const Ray3& ray) const;
-bool approx_intersects(const Line3& other) const;
-std::optional<Vector3> approx_intersection(const Line3& other) const;
-bool approx_intersects(const Ray3& ray) const;
-std::optional<Vector3> approx_intersection(const Ray3& ray) const;
+bool parallel(const Line3& other) const;
+bool parallel(const Ray3& ray) const;
+bool perpendicular(const Line3& other) const;
+bool perpendicular(const Ray3& ray) const;
+bool intersects(const Line3& other) const;
+std::optional<Vector3> intersection(const Line3& other) const;
+bool intersects(const Ray3& ray) const;
+std::optional<Vector3> intersection(const Ray3& ray) const;
 Vector3 project_point(const Vector3& point) const;
-bool approx_coincident(const Line3& other) const;
-Line3 translate(const Vector3& by) const;
-Line3 scale_at(const Vector3& scale_origin, const Vector3& by) const;
-Line3 scale(const Vector3& by) const;
+bool coincident(const Line3& other) const;
+Line3 translate(const Vector3& offset) const;
+Line3 scale_at(const Vector3& scale_origin, const Vector3& factor) const;
+Line3 scale(const Vector3& factor) const;
 Line3 rotate_axis_angle_at(const Vector3& rotate_origin, const Vector3& axis, Real angle) const;
 Line3 rotate_axis_angle(const Vector3& axis, Real angle) const;
 Line3 rotate_quaternion_at(const Vector3& rotate_origin, const Quaternion& quaternion) const;
 Line3 rotate_quaternion(const Quaternion& quaternion) const;
-Line3 shear_x_at(const Vector3& shear_origin, Real angle_y, Real angle_z) const;
-Line3 shear_x(Real angle_y, Real angle_z);
-Line3 shear_y_at(const Vector3& shear_origin, Real angle_x, Real angle_z) const;
-Line3 shear_y(Real angle_x, Real angle_z) const;
-Line3 shear_z_at(const Vector3& shear_origin, Real angle_x, Real angle_y) const;
-Line3 shear_z(Real angle_x, Real angle_y) const;
+Line3 shear_x_at(const Vector3& shear_origin, Real factor_y, Real factor_z) const;
+Line3 shear_x(Real factor_y, Real factor_z);
+Line3 shear_y_at(const Vector3& shear_origin, Real factor_x, Real factor_z) const;
+Line3 shear_y(Real factor_x, Real factor_z) const;
+Line3 shear_z_at(const Vector3& shear_origin, Real factor_x, Real factor_y) const;
+Line3 shear_z(Real factor_x, Real factor_y) const;
 bool approx_equal(const Line3& other) const;
 ```
 
@@ -111,6 +118,7 @@ Vector3 direction;
 ```cpp
 Ray3();
 Ray3(const Vector3& origin, const Vector3& direction);
+Ray3(const Ray3<Other>& other);
 ```
 
 ### Static Methods
@@ -123,35 +131,40 @@ Ray3 from_point_to_point(const Vector3& from, const Vector3& to);
 
 ```cpp
 Ray3 normalize() const;
-bool approx_collinear(const Vector3& point) const;
-bool approx_collinear(const Line3& line) const;
-bool approx_collinear(const Ray3& other) const;
-bool approx_contains(const Vector3& point) const;
+bool collinear(const Vector3& point) const;
+bool collinear(const Line3& line) const;
+bool collinear(const Ray3& other) const;
+bool coplanar(const Line3& line) const;
+bool coplanar(const Ray3& ray) const;
+bool coplanar(const Segment3& segment) const;
+bool coplanar(const Plane& plane) const;
+bool coplanar(const Triangle3& triangle) const;
+bool contains(const Vector3& point) const;
 Real distance(const Vector3& point) const;
 Real distance(const Line3& line) const;
 Real distance(const Ray3& other) const;
-bool approx_parallel(const Line3& line) const;
-bool approx_parallel(const Ray3& other) const;
-bool approx_perpendicular(const Line3& line) const;
-bool approx_perpendicular(const Ray3& ray) const;
-bool approx_intersects(const Line3& line) const;
-std::optional<Vector3> approx_intersection(const Line3& line) const;
-bool approx_intersects(const Ray3& other) const;
-std::optional<Vector3> approx_intersection(const Ray3& other) const;
+bool parallel(const Line3& line) const;
+bool parallel(const Ray3& other) const;
+bool perpendicular(const Line3& line) const;
+bool perpendicular(const Ray3& ray) const;
+bool intersects(const Line3& line) const;
+std::optional<Vector3> intersection(const Line3& line) const;
+bool intersects(const Ray3& other) const;
+std::optional<Vector3> intersection(const Ray3& other) const;
 Vector3 project_point(const Vector3& point) const;
-Ray3 translate(const Vector3& by) const;
-Ray3 scale_at(const Vector3& scale_origin, const Vector3& by) const;
-Ray3 scale(const Vector3& by) const;
+Ray3 translate(const Vector3& offset) const;
+Ray3 scale_at(const Vector3& scale_origin, const Vector3& offset) const;
+Ray3 scale(const Vector3& factor) const;
 Ray3 rotate_axis_angle_at(const Vector3& rotate_origin, const Vector3& axis, Real angle) const;
 Ray3 rotate_axis_angle(const Vector3& axis, Real angle) const;
 Ray3 rotate_quaternion_at(const Vector3& rotate_origin, const Quaternion& quaternion) const;
 Ray3 rotate_quaternion(const Quaternion& quaternion) const;
-Ray3 shear_x_at(const Vector3& shear_origin, Real angle_y, Real angle_z) const;
-Ray3 shear_x(Real angle_y, Real angle_z) const;
-Ray3 shear_y_at(const Vector3& shear_origin, Real angle_x, Real angle_z) const;
-Ray3 shear_y(Real angle_x, Real angle_z) const;
-Ray3 shear_z_at(const Vector3& shear_origin, Real angle_x, Real angle_y) const;
-Ray3 shear_z(Real angle_x, Real angle_y) const;
+Ray3 shear_x_at(const Vector3& shear_origin, Real factor_y, Real factor_z) const;
+Ray3 shear_x(Real factor_y, Real factor_z) const;
+Ray3 shear_y_at(const Vector3& shear_origin, Real factor_x, Real factor_z) const;
+Ray3 shear_y(Real factor_x, Real factor_z) const;
+Ray3 shear_z_at(const Vector3& shear_origin, Real factor_x, Real factor_y) const;
+Ray3 shear_z(Real factor_x, Real factor_y) const;
 bool approx_equal(const Ray3& other) const;
 ```
 
@@ -161,5 +174,26 @@ bool approx_equal(const Ray3& other) const;
 bool operator==(const Ray3& other) const;
 bool operator!=(const Ray3& other) const;
 bool operator<(const Ray3& other) const;
+```
+
+## Segment3
+
+### Aliases
+
+```cpp
+using Segment3f = Segment3<float>;
+using Segment3d = Segment3<double>;
+```
+
+### Members
+
+```cpp
+Vector3 start;
+Vector3 end;
+```
+
+### Constructors
+
+```cpp
 ```
 

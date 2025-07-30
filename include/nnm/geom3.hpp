@@ -630,6 +630,18 @@ public:
     }
 
     /**
+     * Cast from another type.
+     * @tparam Other Other type.
+     * @param other Other ray.
+     */
+    template <typename Other>
+    explicit constexpr Ray3(const Ray3<Other>& other)
+        : origin { other.origin }
+        , direction { other.direction }
+    {
+    }
+
+    /**
      * Ray from a point in the direction of another point.
      * @param from Origin.
      * @param to Point in the direction of the ray.
