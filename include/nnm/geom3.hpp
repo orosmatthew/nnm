@@ -2905,6 +2905,107 @@ public:
     }
 
     /**
+     * Determine if parallel with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
+    {
+        return edge(0).parallel(line) && edge(1).parallel(line) && edge(2).parallel(line);
+    }
+
+    /**
+     * Determine if parallel with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
+    {
+        return edge(0).parallel(ray) && edge(1).parallel(ray) && edge(2).parallel(ray);
+    }
+
+    /**
+     * Determine if parallel with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool parallel(const Segment3<Real>& segment) const
+    {
+        return edge(0).parallel(segment) && edge(1).parallel(segment) && edge(2).parallel(segment);
+    }
+
+    /**
+     * Determine if parallel with a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool parallel(const Plane<Real>& plane) const
+    {
+        return plane.parallel(edge(0)) && plane.parallel(edge(1)) && plane.parallel(edge(2));
+    }
+
+    /**
+     * Determine if parallel with another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool parallel(const Triangle3& other) const
+    {
+        return this->parallel(other.edge(0)) && this->parallel(other.edge(1)) && this->parallel(other.edge(2));
+    }
+
+    /**
+     * Determine if perpendicular with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
+    {
+        return edge(0).perpendicular(line) && edge(1).perpendicular(line) && edge(2).perpendicular(line);
+    }
+
+    /**
+     * Determine if perpendicular with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
+    {
+        return edge(0).perpendicular(ray) && edge(1).perpendicular(ray) && edge(2).perpendicular(ray);
+    }
+
+    /**
+     * Determine if perpendicular with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool perpendicular(const Segment3<Real>& segment) const
+    {
+        return edge(0).perpendicular(segment) && edge(1).perpendicular(segment) && edge(2).perpendicular(segment);
+    }
+
+    /**
+     * Determine if perpendicular with a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool perpendicular(const Plane<Real>& plane) const
+    {
+        return plane.perpendicular(edge(0)) && plane.perpendicular(edge(1)) && plane.perpendicular(edge(2));
+    }
+
+    /**
+     * Determine if perpendicular with another triangle.
+     * @param other Other triangle/
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool perpendicular(const Triangle3& other) const
+    {
+        return this->perpendicular(other.edge(0)) && this->perpendicular(other.edge(1))
+            && this->perpendicular(other.edge(2));
+    }
+
+    /**
      * Determine if intersects with a line.
      * @param line Line.
      * @return Result.
