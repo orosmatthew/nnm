@@ -3433,6 +3433,7 @@ public:
  */
 template <typename Real>
 class Sphere {
+public:
     /**
      * Center
      */
@@ -3460,6 +3461,18 @@ class Sphere {
     constexpr Sphere(const Vector3<Real>& center, const Real radius)
         : center { center }
         , radius { radius }
+    {
+    }
+
+    /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other sphere.
+     */
+    template <typename Other>
+    explicit constexpr Sphere(const Sphere<Other>& other)
+        : center { other.center }
+        , radius { static_cast<Real>(other.radius) }
     {
     }
 
@@ -3561,6 +3574,26 @@ class Sphere {
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         return max(static_cast<Real>(0), segment.distance(center) - radius);
+    }
+
+    /**
+     * Closest distance to a plane. Zero if intersects.
+     * @param plane Plane.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
+    {
+        return max(static_cast<Real>(0), plane.distance(center) - radius);
+    }
+
+    /**
+     * Closest distance to a triangle. Zero if intersects or if contains triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
+    {
+        return max(static_cast<Real>(0), triangle.distance(center) - radius);
     }
 
     /**
