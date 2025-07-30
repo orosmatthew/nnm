@@ -2580,6 +2580,11 @@ public:
         return acos(dir1.dot(dir2) / (dir1.length() * dir2.length()));
     }
 
+    /**
+     * Angle bisector of the angle at the vertex at an index.
+     * @param index Index.
+     * @return Result.
+     */
     [[nodiscard]] Line3<Real> angle_bisector(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2591,6 +2596,11 @@ public:
         return { vertices[index], bisector_dir };
     }
 
+    /**
+     * Altitude originating from the vertex at an index.
+     * @param index Index.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Segment3<Real>> altitude(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2610,11 +2620,23 @@ public:
         return Segment3<Real> { vertex, *intersection };
     }
 
+    /**
+     * Linearly interpolate between the vertices with weights.
+     * This returns the point from its barycentric coordinates.
+     * @param weights Interpolation weights.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Vector3<Real> lerp_point(const Vector3<Real> weights) const
     {
         return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
     }
 
+    /**
+     * Barycentric coordinates of a point which is its interpolation weights relative to the triangle's vertices.
+     * Containment within the triangle is not checked.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Vector3<Real> barycentric_unchecked(const Vector3<Real>& point) const
     {
         const Real area_full = area();
@@ -2624,6 +2646,12 @@ public:
         return Vector3<Real> { area_p12 / area_full, area_0p2 / area_full, area_01p / area_full };
     }
 
+    /**
+     * Barycentric coordinates of a point which is its interpolation weights relative to the triangle's vertices.
+     * Containment within the triangle is checked.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> barycentric(const Vector3<Real>& point) const
     {
         if (!contains(point)) {
@@ -2639,6 +2667,11 @@ public:
         return Vector3<Real> { area_p12 / area_full, area_0p2 / area_full, area_01p / area_full };
     }
 
+    /**
+     * Determine if contains point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2651,6 +2684,11 @@ public:
         return contains_projected(point);
     }
 
+    /**
+     * Determine if point is contained on the triangle when projected onto the plane coplanar to the triangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool contains_projected(const Vector3<Real>& point) const
     {
         const Vector3<Real> n = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
@@ -2666,6 +2704,10 @@ public:
         return cond1 || cond2;
     }
 
+    /**
+     * Determine if all vertices are collinear.
+     * @return Result.
+     */
     [[nodiscard]] bool collinear() const
     {
         const auto l1 = Line3<Real>::from_points(vertices[0], vertices[1]);
@@ -2673,6 +2715,11 @@ public:
         return l1.coincident(l2);
     }
 
+    /**
+     * Determine if coplanar with a point.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2682,6 +2729,11 @@ public:
         return plane->contains(point);
     }
 
+    /**
+     * Determine if coplanar with line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Line3<Real>& line) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2696,16 +2748,31 @@ public:
         return plane->coplanar(line);
     }
 
+    /**
+     * Determine if coplanar with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
     {
         return coplanar(Line3<Real>::from_ray(ray));
     }
 
+    /**
+     * Determine if coplanar with a segment.
+     * @param segment Segment.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
     {
         return coplanar(Line3<Real>::from_segment(segment));
     }
 
+    /**
+     * Determine if coplanar with a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Plane<Real>& plane) const
     {
         const std::optional<Plane<Real>> p = Plane<Real>::from_triangle(*this);
@@ -2720,6 +2787,11 @@ public:
         return p->coplanar(plane);
     }
 
+    /**
+     * Project point onto the triangle.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Vector3<Real> project(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2742,6 +2814,11 @@ public:
         return edge(closest_edge).project(plane_proj);
     }
 
+    /**
+     * Closest distance to a point. Zero if intersects.
+     * @param point Point.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         if (contains(point)) {
@@ -2751,6 +2828,11 @@ public:
         return point.distance(proj);
     }
 
+    /**
+     * Closest distance to a line. Zero if intersects.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         if (intersects(line)) {
@@ -2759,6 +2841,11 @@ public:
         return min(edge(0).distance(line), edge(1).distance(line), edge(2).distance(line));
     }
 
+    /**
+     * Closest distance to a ray. Zero if intersects.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -2767,6 +2854,11 @@ public:
         return min(distance(ray.origin), edge(0).distance(ray), edge(1).distance(ray), edge(2).distance(ray));
     }
 
+    /**
+     * Closest distance to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -2780,6 +2872,11 @@ public:
             edge(2).distance(segment));
     }
 
+    /**
+     * Closest distance to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Plane<Real>& plane) const
     {
         if (intersects(plane)) {
@@ -2788,6 +2885,11 @@ public:
         return min(plane.distance(vertices[0]), plane.distance(vertices[1]), plane.distance(vertices[2]));
     }
 
+    /**
+     * Closest distance to another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle3& other) const
     {
         if (intersects(other)) {
@@ -2802,6 +2904,11 @@ public:
             edge(2).distance(other.edge(2)));
     }
 
+    /**
+     * Determine if intersects with a line.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Line3<Real>& line) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2815,6 +2922,11 @@ public:
         return contains_projected(*point);
     }
 
+    /**
+     * Intersection point with a line. Returns null if coplanar intersection.
+     * @param line Line.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2834,6 +2946,11 @@ public:
         return *point;
     }
 
+    /**
+     * Determine if intersects with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2847,6 +2964,11 @@ public:
         return contains_projected(point);
     }
 
+    /**
+     * Intersection point with a ray. Returns null if coplanar intersection.
+     * @param ray Ray.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2866,6 +2988,11 @@ public:
         return contains_projected(point);
     }
 
+    /**
+     * Determine if intersects with a line segment
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
     {
         std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2880,6 +3007,11 @@ public:
         return contains_projected(*point);
     }
 
+    /**
+     * Intersection point with a line segment. Returns null if coplanar intersection.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
     {
         std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2899,11 +3031,23 @@ public:
         return *point;
     }
 
+    /**
+     * Determine if intersects with a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
     {
         return plane.intersects(edge(0)) || plane.intersects(edge(1)) || plane.intersects(edge(2));
     }
 
+    /**
+     * Intersection points with a plane and the triangle's edges.
+     * Returns equal points if only one intersection point exists.
+     * Returns null if coplanar intersection.
+     * @param plane Plane.
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Plane<Real>& plane) const
     {
         std::array<Vector3<Real>, 2> points;
@@ -2927,11 +3071,23 @@ public:
         return points;
     }
 
+    /**
+     * Determine if intersects with another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool intersects(const Triangle3& other) const
     {
         return intersects(other.edge(0)) || intersects(other.edge(1)) || intersects(other.edge(2));
     }
 
+    /**
+     * Intersection between this and another triangle's edges.
+     * Returns equal points if only one intersection exists.
+     * Returns null if coplanar intersection.
+     * @param other Other triangle
+     * @return Result.
+     */
     [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Triangle3& other) const
     {
         std::array<Vector3<Real>, 2> points;
@@ -2952,6 +3108,221 @@ public:
             return std::array { points[0], points[0] };
         }
         return points;
+    }
+
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    constexpr Triangle3 translate(const Vector3<Real>& offset) const
+    {
+        return { vertices[0].translate(offset), vertices[1].translate(offset), vertices[2].translate(offset) };
+    }
+
+    /**
+     * Scale about an origin.
+     * @param scale_origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    constexpr Triangle3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
+    {
+        return { vertices[0].scale_at(scale_origin, factor),
+                 vertices[1].scale_at(scale_origin, factor),
+                 vertices[2].scale_at(scale_origin, factor) };
+    }
+
+    /**
+     * Scale about the global origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    constexpr Triangle3 scale(const Vector3<Real>& factor) const
+    {
+        return { vertices[0].scale(factor), vertices[1].scale(factor), vertices[2].scale(factor) };
+    }
+
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param rotate_origin Rotation origin.
+     * @param axis Normalized axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    Triangle3 rotate_axis_angle_at(
+        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { vertices[0].rotate_axis_angle_at(rotate_origin, axis, angle),
+                 vertices[1].rotate_axis_angle_at(rotate_origin, axis, angle),
+                 vertices[2].rotate_axis_angle_at(rotate_origin, axis, angle) };
+    }
+
+    /**
+     * Rotate about the global origin by an axis and angle.
+     * @param axis Normalized axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    Triangle3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { vertices[0].rotate_axis_angle(axis, angle),
+                 vertices[1].rotate_axis_angle(axis, angle),
+                 vertices[2].rotate_axis_angle(axis, angle) };
+    }
+
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param rotate_origin Rotation origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    constexpr Triangle3 rotate_quaternion_at(
+        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    {
+        return { vertices[0].rotate_quaternion_at(rotate_origin, quaternion),
+                 vertices[1].rotate_quaternion_at(rotate_origin, quaternion),
+                 vertices[2].rotate_quaternion_at(rotate_origin, quaternion) };
+    }
+
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    constexpr Triangle3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { vertices[0].rotate_quaternion(quaternion),
+                 vertices[1].rotate_quaternion(quaternion),
+                 vertices[2].rotate_quaternion(quaternion) };
+    }
+
+    /**
+     * Shear about an origin along the x-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    constexpr Triangle3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    {
+        return { vertices[0].shear_x_at(shear_origin, factor_y, factor_z),
+                 vertices[1].shear_x_at(shear_origin, factor_y, factor_z),
+                 vertices[2].shear_x_at(shear_origin, factor_y, factor_z) };
+    }
+
+    /**
+     * Shear about the global origin along the x-axis.
+     * @param factor_y Y-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    constexpr Triangle3 shear_x(const Real factor_y, const Real factor_z) const
+    {
+        return { vertices[0].shear_x(factor_y, factor_z),
+                 vertices[1].shear_x(factor_y, factor_z),
+                 vertices[2].shear_x(factor_y, factor_z) };
+    }
+
+    /**
+     * Shear about an origin along the y-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return
+     */
+    constexpr Triangle3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    {
+        return { vertices[0].shear_y_at(shear_origin, factor_x, factor_z),
+                 vertices[1].shear_y_at(shear_origin, factor_x, factor_z),
+                 vertices[2].shear_y_at(shear_origin, factor_x, factor_z) };
+    }
+
+    /**
+     * Shear about the global origin along the y-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_z Z-Axis factor.
+     * @return Result.
+     */
+    constexpr Triangle3 shear_y(const Real factor_x, const Real factor_z) const
+    {
+        return { vertices[0].shear_y(factor_x, factor_z),
+                 vertices[1].shear_y(factor_x, factor_z),
+                 vertices[2].shear_y(factor_x, factor_z) };
+    }
+
+    /**
+     * Shear about an origin along the z-axis.
+     * @param shear_origin Shear origin.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    constexpr Triangle3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    {
+        return { vertices[0].shear_z_at(shear_origin, factor_x, factor_y),
+                 vertices[1].shear_z_at(shear_origin, factor_x, factor_y),
+                 vertices[2].shear_z_at(shear_origin, factor_x, factor_y) };
+    }
+
+    /**
+     * Shear about the global origin along the z-axis.
+     * @param factor_x X-Axis factor.
+     * @param factor_y Y-Axis factor.
+     * @return Result.
+     */
+    constexpr Triangle3 shear_z(const Real factor_x, const Real factor_y) const
+    {
+        return { vertices[0].shear_z(factor_x, factor_y),
+                 vertices[1].shear_z(factor_x, factor_y),
+                 vertices[2].shear_z(factor_x, factor_y) };
+    }
+
+    /**
+     * Determine if all vertices are approximately equal to another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    constexpr bool approx_equal(const Triangle3& other) const
+    {
+        return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
+            && vertices[2].approx_equal(other.vertices[2]);
+    }
+
+    /**
+     * Determine if all vertices are exactly equal to another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    constexpr bool operator==(const Triangle3& other) const
+    {
+        return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
+    }
+
+    /**
+     * Determine if any vertices are not equal to another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    constexpr bool operator!=(const Triangle3& other) const
+    {
+        return vertices[0] != other.vertices[0] || vertices[1] != other.vertices[1] || vertices[2] != other.vertices[2];
+    }
+
+    /**
+     * Lexicographical comparison in the order of vertices.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    constexpr bool operator<(const Triangle3& other) const
+    {
+        if (vertices[0] != other.vertices[0]) {
+            return vertices[0] < other.vertices[0];
+        }
+        if (vertices[1] != other.vertices[1]) {
+            return vertices[1] < other.vertices[1];
+        }
+        return vertices[2] < vertices[2];
     }
 };
 
