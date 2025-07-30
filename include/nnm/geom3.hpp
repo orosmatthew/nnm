@@ -74,6 +74,18 @@ public:
     }
 
     /**
+     * Cast from another type.
+     * @tparam Other Other type.
+     * @param other Other line.
+     */
+    template <typename Other>
+    explicit constexpr Line3(const Line3<Other>& other)
+        : origin { other.origin }
+        , direction { other.direction }
+    {
+    }
+
+    /**
      * Line that intersects two points.
      * @param point1 First point.
      * @param point2 Second point.

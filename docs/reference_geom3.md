@@ -28,12 +28,14 @@ Vector3 direction;
 ```cpp
 Line3();
 Line3(const Vector3& origin, const Vector3& direction);
+Line3(const Line3<Other>& other);
 ```
 
 ### Static Methods
 
 ```cpp
 Line3 from_points(const Vector3& point1, const Vector3& point2);
+Line3 from_segment(const Segment3& segment);
 Line3 from_ray(const Ray3& ray);
 Line3 axis_x();
 Line3 axis_y();
