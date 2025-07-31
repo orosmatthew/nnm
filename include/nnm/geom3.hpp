@@ -2540,6 +2540,7 @@ public:
     {
         return { origin.shear_x(factor_y, factor_z), normal.shear_x(factor_y, factor_z).normalize() };
     }
+
     // tested
     [[nodiscard]] Plane shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
@@ -3344,13 +3345,11 @@ public:
     }
 
     /**
-     * Intersection points with a plane and the triangle's edges.
-     * Returns equal points if only one intersection point exists.
-     * Returns null if coplanar intersection.
+     * Intersection with a plane.
      * @param plane Plane.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Plane<Real>& plane) const
+    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Plane<Real>& plane) const
     {
         std::array<Vector3<Real>, 2> points;
         uint8_t points_count = 0;
@@ -3384,13 +3383,12 @@ public:
     }
 
     /**
-     * Intersection between this and another triangle's edges.
-     * Returns equal points if only one intersection exists.
-     * Returns null if coplanar intersection.
+     * Intersection with another triangle.
+     * If polygonal intersection exists, null is returned.
      * @param other Other triangle
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Triangle3& other) const
+    [[nodiscard]] std::optional<Segment3<Real>> intersection(const Triangle3& other) const
     {
         std::array<Vector3<Real>, 2> points;
         uint8_t points_count = 0;
@@ -3407,9 +3405,9 @@ public:
             return std::nullopt;
         }
         if (points_count == 1) {
-            return std::array { points[0], points[0] };
+            return Segment3<Real> { points[0], points[0] };
         }
-        return points;
+        return Segment3<Real> { points[0], points[1] };
     }
 
     /**
@@ -3850,7 +3848,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Line3<Real>& line) const
+    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
         const Real a = line.direction.dot(line.direction);
@@ -3899,7 +3897,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Ray3<Real>& ray) const
+    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = ray.origin - center;
         const Real a = ray.direction.dot(ray.direction);
@@ -3957,7 +3955,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::array<Vector3<Real>, 2>> intersections(const Segment3<Real>& segment) const
+    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Segment3<Real>& segment) const
     {
         const Vector3<Real> seg_dir;
         const Vector3<Real> dir = segment.start - center;
