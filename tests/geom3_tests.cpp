@@ -1303,7 +1303,7 @@ inline void plane_tests()
 
     constexpr nnm::PlaneF p1 { { 1.0f, -2.0f, 3.0f }, { -0.455844f, 0.569805f, -0.683766f } };
 
-    test_section("coplanar");
+    test_section("coplanar(const Plane&)");
     {
         constexpr nnm::PlaneF p2 { p1.origin, -p1.normal };
         constexpr auto result = p1.coplanar(p2);
@@ -1672,7 +1672,7 @@ inline void plane_tests()
             && p3.parallel(*i7));
     }
 
-    test_section("project_point");
+    test_section("project");
     {
         constexpr nnm::Vector3f pt1 = p2.project({ 1.0f, -2.0f, 3.0f });
         ASSERT(pt1.approx_equal({ 1.0f, -3.5f, 1.5f }));

@@ -56,6 +56,7 @@ public:
     /**
      * Default initialize with zero origin in the direction of the x-axis.
      */
+    // tested
     constexpr Line3()
         : origin { Vector3<Real>::zero() }
         , direction { Vector3<Real>::axis_x() }
@@ -67,6 +68,7 @@ public:
      * @param origin Origin.
      * @param direction Normalized direction.
      */
+    // tested
     constexpr Line3(const Vector3<Real>& origin, const Vector3<Real>& direction)
         : origin { origin }
         , direction { direction }
@@ -91,6 +93,7 @@ public:
      * @param point2 Second point.
      * @return Result.
      */
+    // tested
     static Line3 from_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
     {
         return { point1, point1.direction(point2) };
@@ -101,6 +104,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     static Line3 from_segment(const Segment3<Real>& segment);
 
     /**
@@ -108,12 +112,14 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     static Line3 from_ray(const Ray3<Real>& ray);
 
     /**
      * Line that intersects the origin and is in the direction of the x-axis.
      * @return Result.
      */
+    // tested
     static constexpr Line3 axis_x()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_x() };
@@ -123,6 +129,7 @@ public:
      * Line that intersects the origin and is in the direction of the y-axis.
      * @return Result.
      */
+    // tested
     static constexpr Line3 axis_y()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_y() };
@@ -132,6 +139,7 @@ public:
      * Line that intersects the origin and is in the direction of the z-axis.
      * @return
      */
+    // tested
     static constexpr Line3 axis_z()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_z() };
@@ -143,6 +151,7 @@ public:
      * @param offset_z Z-Axis offset.
      * @return Result.
      */
+    // tested
     static constexpr Line3 axis_x_offset(const Real offset_y, const Real offset_z)
     {
         return { { static_cast<Real>(0), offset_y, offset_z }, Vector3<Real>::axis_x() };
@@ -154,6 +163,7 @@ public:
      * @param offset_z Z-Axis offset.
      * @return Result.
      */
+    // tested
     static constexpr Line3 axis_y_offset(const Real offset_x, const Real offset_z)
     {
         return { { offset_x, static_cast<Real>(0), offset_z }, Vector3<Real>::axis_y() };
@@ -165,6 +175,7 @@ public:
      * @param offset_y Y-Axis offset.
      * @return Result.
      */
+    // tested
     static constexpr Line3 axis_z_offset(const Real offset_x, const Real offset_y)
     {
         return { { offset_x, offset_y, static_cast<Real>(0) }, Vector3<Real>::axis_z() };
@@ -175,6 +186,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Line3 parallel_containing(const Vector3<Real>& point) const
     {
         return { point, direction };
@@ -186,6 +198,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Line3 arbitrary_perpendicular_containing(const Vector3<Real>& point) const
     {
         return { point, direction.arbitrary_perpendicular() };
@@ -203,6 +216,7 @@ public:
      * Normalize the line's direction.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 normalize() const
     {
         return { origin, direction.normalize() };
@@ -214,6 +228,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Ray3<Real>& ray) const;
 
     [[nodiscard]] bool collinear(const Segment3<Real>& segment) const;
@@ -241,6 +256,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -254,6 +270,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return (point - origin).cross(direction).length();
@@ -264,6 +281,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -279,6 +297,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const;
 
     /**
@@ -286,6 +305,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool parallel(const Line3& other) const
     {
         return direction.cross(other.direction).approx_zero();
@@ -296,6 +316,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool parallel(const Ray3<Real>& ray) const;
 
     /**
@@ -303,6 +324,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool perpendicular(const Line3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
@@ -313,6 +335,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const;
 
     /**
@@ -320,6 +343,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -340,6 +364,7 @@ public:
      * @param other Other line.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -362,6 +387,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray3<Real>& ray) const;
 
     /**
@@ -369,6 +395,7 @@ public:
      * @param ray Ray.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
 
     /**
@@ -376,6 +403,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -388,6 +416,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coincident(const Line3& other) const
     {
         if (!parallel(other)) {
@@ -402,6 +431,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), direction };
@@ -413,6 +443,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { origin.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
@@ -423,6 +454,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 scale(const Vector3<Real>& factor) const
     {
         return { origin.scale(factor), direction.scale(factor).normalize() };
@@ -435,6 +467,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -448,6 +481,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
@@ -459,6 +493,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -471,6 +506,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
@@ -483,6 +519,7 @@ public:
      * @param factor_z Z-Axis shear factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { origin.shear_x_at(shear_origin, factor_y, factor_z),
@@ -495,6 +532,7 @@ public:
      * @param factor_z Z-Axis shear factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return { origin.shear_x(factor_y, factor_z), direction.shear_x(factor_y, factor_z).normalize() };
@@ -507,6 +545,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { origin.shear_y_at(shear_origin, factor_x, factor_z),
@@ -531,6 +570,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { origin.shear_z_at(shear_origin, factor_x, factor_y),
@@ -543,6 +583,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return { origin.shear_z(factor_x, factor_y), direction.shear_z(factor_x, factor_y).normalize() };
@@ -553,6 +594,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool approx_equal(const Line3& other) const
     {
         return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
@@ -563,6 +605,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator==(const Line3& other) const
     {
         return origin == other.origin && direction == other.direction;
@@ -573,6 +616,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator!=(const Line3& other) const
     {
         return origin != other.origin || direction != other.direction;
@@ -583,6 +627,7 @@ public:
      * @param other Other line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator<(const Line3& other) const
     {
         if (origin == other.origin) {
@@ -612,6 +657,7 @@ public:
     /**
      * Default initialize with zero origin and in the direction of the positive x-axis.
      */
+    // tested
     constexpr Ray3()
         : origin { Vector3<Real>::zero() }
         , direction { Vector3<Real>::axis_x() }
@@ -623,6 +669,7 @@ public:
      * @param origin Origin.
      * @param direction Direction.
      */
+    // tested
     constexpr Ray3(const Vector3<Real>& origin, const Vector3<Real>& direction)
         : origin { origin }
         , direction { direction }
@@ -647,6 +694,7 @@ public:
      * @param to Point in the direction of the ray.
      * @return Result.
      */
+    // tested
     static Ray3 from_point_to_point(const Vector3<Real>& from, const Vector3<Real>& to)
     {
         return { from, from.direction(to) };
@@ -656,6 +704,7 @@ public:
      * Normalize the direction.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 normalize() const
     {
         return { origin, direction.normalize() };
@@ -666,6 +715,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Vector3<Real>& point) const
     {
         return Line3<Real>::from_ray(*this).contains(point);
@@ -676,6 +726,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Line3<Real>& line) const
     {
         return Line3<Real>::from_ray(*this).coincident(line);
@@ -686,6 +737,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Ray3& other) const
     {
         return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
@@ -715,6 +767,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> proj = project_point(point);
@@ -726,6 +779,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -740,6 +794,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -763,6 +818,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -791,6 +847,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool parallel(const Line3<Real>& line) const
     {
         return direction.cross(line.direction).approx_zero();
@@ -801,6 +858,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool parallel(const Ray3& other) const
     {
         return direction.cross(other.direction).approx_zero();
@@ -811,6 +869,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
     {
         return nnm::approx_zero(direction.dot(line.direction));
@@ -821,6 +880,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool perpendicular(const Ray3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
@@ -831,6 +891,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -854,6 +915,7 @@ public:
      * @param line Line.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
@@ -879,6 +941,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -905,6 +968,7 @@ public:
      * @param other Other ray.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
@@ -933,6 +997,7 @@ public:
      * @param point Point.
      * @return Resulting projected point.
      */
+    // tested
     [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
@@ -945,6 +1010,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), direction };
@@ -956,6 +1022,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { origin.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
@@ -966,6 +1033,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 scale(const Vector3<Real>& factor) const
     {
         return { origin.scale(factor), direction.scale(factor).normalize() };
@@ -978,6 +1046,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -991,6 +1060,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
@@ -1002,6 +1072,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -1014,6 +1085,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
@@ -1026,6 +1098,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { origin.shear_x_at(shear_origin, factor_y, factor_z),
@@ -1038,6 +1111,7 @@ public:
      * @param angle_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 shear_x(const Real angle_y, const Real angle_z) const
     {
         return { origin.shear_x(angle_y, angle_z), direction.shear_x(angle_y, angle_z).normalize() };
@@ -1050,6 +1124,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return
      */
+    // tested
     [[nodiscard]] Ray3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { origin.shear_y_at(shear_origin, factor_x, factor_z),
@@ -1062,6 +1137,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return { origin.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
@@ -1074,6 +1150,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return
      */
+    // tested
     [[nodiscard]] Ray3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { origin.shear_z_at(shear_origin, factor_x, factor_y),
@@ -1086,6 +1163,7 @@ public:
      * @param angle_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray3 shear_z(const Real angle_x, const Real angle_y) const
     {
         return { origin.shear_z(angle_x, angle_y), direction.shear_z(angle_x, angle_y).normalize() };
@@ -1096,6 +1174,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool approx_equal(const Ray3& other) const
     {
         return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
@@ -1106,6 +1185,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator==(const Ray3& other) const
     {
         return origin == other.origin && direction == other.direction;
@@ -1116,6 +1196,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator!=(const Ray3& other) const
     {
         return origin != other.origin || direction != other.direction;
@@ -1126,6 +1207,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool operator<(const Ray3& other) const
     {
         if (origin == other.origin) {
@@ -1155,6 +1237,7 @@ public:
     /**
      * Default initialize to start from the origin and end at one unit away in the positive x-axis.
      */
+    // tested
     constexpr Segment3()
         : start { Vector3<Real>::zero() }
         , end { Vector3<Real>::axis_x() }
@@ -1166,6 +1249,7 @@ public:
      * @param start Start position.
      * @param end End position.
      */
+    // tested
     constexpr Segment3(const Vector3<Real>& start, const Vector3<Real>& end)
         : start { start }
         , end { end }
@@ -1177,6 +1261,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Vector3<Real>& point) const
     {
         return Line3<Real>::from_segment(*this).contains(point);
@@ -1187,6 +1272,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Line3<Real>& line) const
     {
         return Line3<Real>::from_segment(*this).coincident(line);
@@ -1197,6 +1283,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Ray3<Real>& ray) const
     {
         return Line3<Real>::from_segment(*this).collinear(ray);
@@ -1207,6 +1294,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Segment3& other) const
     {
         return Line3<Real>::from_segment(*this).coincident(Line3<Real>::from_segment(other));
@@ -1236,6 +1324,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff1 = point - start;
@@ -1253,6 +1342,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = end - start;
@@ -1273,6 +1363,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1302,6 +1393,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1335,6 +1427,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1372,6 +1465,7 @@ public:
      * Non-normalized direction from the start position to the end position.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> direction_unnormalized() const
     {
         return end - start;
@@ -1381,6 +1475,7 @@ public:
      * Normalized direction from the start position to the end position.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector3<Real> direction() const
     {
         return direction_unnormalized().normalize();
@@ -1391,6 +1486,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
         const Vector3<Real> proj = direction_unnormalized().cross(line.direction);
@@ -1402,6 +1498,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
     {
         const Vector3<Real> proj = direction_unnormalized().cross(ray.direction);
@@ -1413,6 +1510,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Segment3& other) const
     {
         const Vector3<Real> proj = direction_unnormalized().cross(other.direction_unnormalized());
@@ -1424,6 +1522,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
         const Real proj = direction_unnormalized().dot(line.direction);
@@ -1435,6 +1534,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
     {
         const Real proj = direction_unnormalized().dot(ray.direction);
@@ -1446,6 +1546,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Segment3& other) const
     {
         const Real proj = direction_unnormalized().dot(other.direction_unnormalized());
@@ -1457,6 +1558,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1481,6 +1583,7 @@ public:
      * @param line Line.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1507,6 +1610,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1534,6 +1638,7 @@ public:
      * @param ray Ray.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1563,6 +1668,7 @@ public:
      * @param other Other line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1591,6 +1697,7 @@ public:
      * @param other Other line segment.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3& other) const
     {
         const Vector3<Real> dir = direction_unnormalized();
@@ -1621,6 +1728,7 @@ public:
      * @param point Point.
      * @return Resulting projected point.
      */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - start;
@@ -1633,6 +1741,7 @@ public:
      * Squared length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(end.x - start.x) + sqrd(end.y - start.y) + sqrd(end.z - start.z);
@@ -1642,6 +1751,7 @@ public:
      * Length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
@@ -1651,6 +1761,7 @@ public:
      * Midpoint.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> midpoint() const
     {
         return (start + end) / static_cast<Real>(2);
@@ -1661,6 +1772,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 translate(const Vector3<Real>& offset) const
     {
         return { start.translate(offset), end.translate(offset) };
@@ -1672,6 +1784,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { start.scale_at(scale_origin, factor), end.scale_at(scale_origin, factor) };
@@ -1682,6 +1795,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 scale(const Vector3<Real>& factor) const
     {
         return { start.scale(factor), end.scale(factor) };
@@ -1694,6 +1808,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -1707,6 +1822,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { start.rotate_axis_angle(axis, angle), end.rotate_axis_angle(axis, angle) };
@@ -1718,6 +1834,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -1730,6 +1847,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { start.rotate_quaternion(quaternion), end.rotate_quaternion(quaternion) };
@@ -1742,6 +1860,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_x_at(
         const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
@@ -1754,6 +1873,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return { start.shear_x(factor_y, factor_z), end.shear_x(factor_y, factor_z) };
@@ -1766,6 +1886,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_y_at(
         const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
@@ -1778,6 +1899,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return { start.shear_y(factor_x, factor_z), end.shear_y(factor_x, factor_z) };
@@ -1790,6 +1912,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_z_at(
         const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
@@ -1802,6 +1925,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return { start.shear_z(factor_x, factor_y), end.shear_z(factor_x, factor_y) };
@@ -1812,6 +1936,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coincident(const Segment3& other) const
     {
         return (start.approx_equal(other.start) && end.approx_equal(other.end))
@@ -1823,6 +1948,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Segment3& other) const
     {
         return start.approx_equal(other.start) && end.approx_equal(other.end);
@@ -1833,6 +1959,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Segment3& other) const
     {
         return start == other.start && end == other.end;
@@ -1843,6 +1970,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Segment3& other) const
     {
         return start != other.start || end != other.end;
@@ -1853,6 +1981,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator<(const Segment3& other) const
     {
         if (start != other.start) {
@@ -1882,6 +2011,7 @@ public:
     /**
      * Default initialize with a zero origin and normal in the direction of the positive x-axis.
      */
+    // tested
     constexpr Plane()
         : origin { Vector3<Real>::zero() }
         , normal { Vector3<Real>::axis_x() }
@@ -1893,6 +2023,7 @@ public:
      * @param origin Origin.
      * @param normal Normalized normal.
      */
+    // tested
     constexpr Plane(const Vector3<Real>& origin, const Vector3<Real>& normal)
         : origin { origin }
         , normal { normal }
@@ -1906,6 +2037,7 @@ public:
      * @param point3 Third point.
      * @return Result.
      */
+    // tested
     static Plane from_points_unchecked(
         const Vector3<Real>& point1, const Vector3<Real>& point2, const Vector3<Real>& point3)
     {
@@ -1922,6 +2054,7 @@ public:
      * @param point3 Third point.
      * @return Result.
      */
+    // tested
     static std::optional<Plane> from_points(
         const Vector3<Real>& point1, const Vector3<Real>& point2, const Vector3<Real>& point3)
     {
@@ -1982,6 +2115,7 @@ public:
      * Normalize the normal.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Plane normalize() const
     {
         return { origin, normal.normalize() };
@@ -2022,6 +2156,7 @@ public:
      * @param other Other plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Plane& other) const
     {
         return contains(other.origin) && normal.parallel(other.normal);
@@ -2034,6 +2169,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Real d = origin.dot(normal);
@@ -2046,6 +2182,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
@@ -2057,6 +2194,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Line3<Real>& line) const
     {
         if (!parallel(line)) {
@@ -2070,6 +2208,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -2083,6 +2222,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -2098,6 +2238,7 @@ public:
      * @param other Other plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Plane& other) const
     {
         if (!parallel(other)) {
@@ -2111,6 +2252,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
         return normal.perpendicular(line.direction);
@@ -2121,6 +2263,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
     {
         return normal.perpendicular(ray.direction);
@@ -2131,6 +2274,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Segment3<Real>& segment) const
     {
         const Real proj = normal.dot(segment.direction_unnormalized());
@@ -2142,6 +2286,7 @@ public:
      * @param other Other plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Plane& other) const
     {
         return normal.parallel(other.normal);
@@ -2152,6 +2297,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
         return normal.parallel(line.direction);
@@ -2162,6 +2308,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
     {
         return normal.parallel(ray.direction);
@@ -2172,6 +2319,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Segment3<Real>& segment) const
     {
         const Vector3<Real> cross = normal.cross(segment.direction_unnormalized());
@@ -2183,6 +2331,7 @@ public:
      * @param other Other plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Plane& other) const
     {
         return normal.perpendicular(other.normal);
@@ -2193,6 +2342,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Real proj = normal.dot(line.direction);
@@ -2204,6 +2354,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Real proj = normal.dot(line.direction);
@@ -2221,6 +2372,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
         const Real proj = normal.dot(ray.direction);
@@ -2238,6 +2390,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
         const Real proj = normal.dot(ray.direction);
@@ -2253,6 +2406,7 @@ public:
         return ray.origin + ray.direction * t;
     }
 
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
         const Real proj = normal.dot(segment.direction_unnormalized());
@@ -2265,6 +2419,7 @@ public:
         return approx_greater_equal_zero(t) && approx_less_equal(t, static_cast<Real>(1));
     }
 
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
     {
         const Vector3<Real> seg_dir = segment.direction_unnormalized();
@@ -2281,6 +2436,7 @@ public:
         return segment.start + seg_dir * t;
     }
 
+    // tested
     [[nodiscard]] constexpr bool intersects(const Plane& other) const
     {
         if (contains(other.origin)) {
@@ -2290,6 +2446,7 @@ public:
         return !nnm::approx_equal(dot, static_cast<Real>(1)) && !nnm::approx_equal(dot, static_cast<Real>(-1));
     }
 
+    // tested
     [[nodiscard]] std::optional<Line3<Real>> intersection(const Plane& other) const
     {
         const Vector3<Real> dir = normal.cross(other.normal);
@@ -2318,6 +2475,7 @@ public:
         return Line3<Real> { point, dir.normalize() };
     }
 
+    // tested
     [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
@@ -2325,21 +2483,25 @@ public:
         return point - normal * dist;
     }
 
+    // tested
     [[nodiscard]] constexpr Plane translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), normal };
     }
 
+    // tested
     [[nodiscard]] Plane scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { origin.scale_at(scale_origin, factor), normal.scale(factor).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane scale(const Vector3<Real>& factor) const
     {
         return { origin.scale(factor), normal.scale(factor).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -2347,11 +2509,13 @@ public:
                  normal.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { origin.rotate_axis_angle(axis, angle), normal.rotate_axis_angle(axis, angle).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -2359,56 +2523,66 @@ public:
                  normal.rotate_quaternion(quaternion).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion(quaternion), normal.rotate_quaternion(quaternion).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { origin.shear_x_at(shear_origin, factor_y, factor_z), normal.shear_x(factor_y, factor_z).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane shear_x(const Real factor_y, const Real factor_z) const
     {
         return { origin.shear_x(factor_y, factor_z), normal.shear_x(factor_y, factor_z).normalize() };
     }
-
+    // tested
     [[nodiscard]] Plane shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { origin.shear_y_at(shear_origin, factor_x, factor_z), normal.shear_y(factor_x, factor_z).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane shear_y(const Real factor_x, const Real factor_z) const
     {
         return { origin.shear_y(factor_x, factor_z), normal.shear_y(factor_x, factor_z).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { origin.shear_z_at(shear_origin, factor_x, factor_y), normal.shear_z(factor_x, factor_y).normalize() };
     }
 
+    // tested
     [[nodiscard]] Plane shear_z(const Real factor_x, const Real factor_y) const
     {
         return { origin.shear_z(factor_x, factor_y), normal.shear_z(factor_x, factor_y).normalize() };
     }
 
+    // tested
     [[nodiscard]] bool approx_equal(const Plane& other) const
     {
         return origin.approx_equal(other.origin) && normal.approx_equal(other.normal);
     }
 
+    // tested
     [[nodiscard]] bool operator==(const Plane& other) const
     {
         return origin == other.origin && normal == other.normal;
     }
 
+    // tested
     [[nodiscard]] bool operator!=(const Plane& other) const
     {
         return origin != other.origin || normal != other.normal;
     }
 
+    // tested
     [[nodiscard]] bool operator<(const Plane& other) const
     {
         if (origin != other.origin) {
@@ -2433,6 +2607,7 @@ public:
     /**
      * Default initialize all vertices to origin.
      */
+    // tested
     constexpr Triangle3()
         : vertices { Vector3<Real>::zero(), Vector3<Real>::zero(), Vector3<Real>::zero() }
     {
@@ -2444,6 +2619,7 @@ public:
      * @param vertex1 Second vertex.
      * @param vertex2 Third vertex.
      */
+    // tested
     constexpr Triangle3(const Vector3<Real>& vertex0, const Vector3<Real>& vertex1, const Vector3<Real>& vertex2)
         : vertices { vertex0, vertex1, vertex2 }
     {
@@ -2454,6 +2630,7 @@ public:
      * @param index Edge index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2465,6 +2642,7 @@ public:
      * Centroid which is the average between all vertices.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> centroid() const
     {
         return (vertices[0] + vertices[1] + vertices[2]) / static_cast<Real>(3);
@@ -2474,6 +2652,7 @@ public:
      * Circumcenter which is the intersection between the perpendicular bisectors of the edges.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> circumcenter() const
     {
         const std::optional<Line3<Real>> pb1 = perpendicular_bisector(0);
@@ -2491,6 +2670,7 @@ public:
      * Perimeter which is the combined length of all edges.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real perimeter() const
     {
         return edge(0).length() + edge(1).length() + edge(2).length();
@@ -2509,6 +2689,7 @@ public:
      * Orthocenter which is the intersection between the altitudes of the triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> orthocenter() const
     {
         const std::optional<Segment3<Real>> alt0 = altitude(0);
@@ -2526,6 +2707,7 @@ public:
      * Area.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real area() const
     {
         const Vector3<Real> dir01 = vertices[0].direction_unnormalized(vertices[1]);
@@ -2540,6 +2722,7 @@ public:
      * @param index Index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment3<Real> median(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2553,6 +2736,7 @@ public:
      * @param index Index of the edge.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Line3<Real>> perpendicular_bisector(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2570,6 +2754,7 @@ public:
      * @param index Index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real angle(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2585,6 +2770,7 @@ public:
      * @param index Index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3<Real> angle_bisector(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2601,6 +2787,7 @@ public:
      * @param index Index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Segment3<Real>> altitude(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
@@ -2626,6 +2813,7 @@ public:
      * @param weights Interpolation weights.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> lerp_point(const Vector3<Real> weights) const
     {
         return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
@@ -2637,6 +2825,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector3<Real> barycentric_unchecked(const Vector3<Real>& point) const
     {
         const Real area_full = area();
@@ -2652,6 +2841,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> barycentric(const Vector3<Real>& point) const
     {
         if (!contains(point)) {
@@ -2672,6 +2862,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool contains(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2689,6 +2880,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains_projected(const Vector3<Real>& point) const
     {
         const Vector3<Real> n = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
@@ -2708,6 +2900,7 @@ public:
      * Determine if all vertices are collinear.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear() const
     {
         const auto l1 = Line3<Real>::from_points(vertices[0], vertices[1]);
@@ -2720,6 +2913,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2734,6 +2928,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Line3<Real>& line) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2753,6 +2948,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
     {
         return coplanar(Line3<Real>::from_ray(ray));
@@ -2763,6 +2959,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
     {
         return coplanar(Line3<Real>::from_segment(segment));
@@ -2773,6 +2970,7 @@ public:
      * @param plane Plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Plane<Real>& plane) const
     {
         const std::optional<Plane<Real>> p = Plane<Real>::from_triangle(*this);
@@ -2792,6 +2990,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector3<Real> project(const Vector3<Real>& point) const
     {
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
@@ -2819,6 +3018,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         if (contains(point)) {
@@ -2833,6 +3033,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         if (intersects(line)) {
