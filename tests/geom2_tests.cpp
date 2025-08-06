@@ -2839,29 +2839,31 @@ static void arc2_tests()
             ASSERT_FALSE(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f).intersects(c1));
         }
 
-        test_section("intersections(const Circle2&)");
+        test_section("edge_intersections(const Circle2&)");
         {
             constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
-            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi<float>() / 2.0f).intersections(c1).empty());
-            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi<float>() / 2.0f).intersections(c1).empty());
-            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi<float>() / 2.0f).intersections(c1).empty());
-            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi<float>() / 2.0f).intersections(c1).empty());
-            const auto i1 = nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi<float>()).intersections(c1);
+            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
+            ASSERT(
+                nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
+            ASSERT(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
+            ASSERT(
+                nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
+            const auto i1 = nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi<float>()).edge_intersections(c1);
             ASSERT(i1.approx_equal({ { -2.97493719f, -2.5f } }));
-            const auto i2 = nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi<float>()).intersections(c1);
+            const auto i2 = nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi<float>()).edge_intersections(c1);
             ASSERT(i2.approx_equal({ { -2.97493719f, -2.5f } }));
             const auto i3
-                = nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi<float>() / 3.0f).intersections(c1);
+                = nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi<float>() / 3.0f).edge_intersections(c1);
             ASSERT(i3.approx_equal({ { -1.0f, 1.0f } }));
-            const auto i4
-                = nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi<float>() / 3.0f).intersections(c1);
+            const auto i4 = nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi<float>() / 3.0f)
+                                .edge_intersections(c1);
             ASSERT(i4.approx_equal({ { -1.0f, 1.0f } }));
-            const auto i5 = nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi<float>()).intersections(c1);
+            const auto i5 = nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi<float>()).edge_intersections(c1);
             ASSERT(i5.approx_equal({ { 5.1918968f, -6.8486079f }, { 6.26756078f, -0.394635339f } }));
-            const auto i6 = nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi<float>()).intersections(c1);
+            const auto i6 = nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi<float>()).edge_intersections(c1);
             ASSERT(i6.approx_equal({ { 5.1918968f, -6.8486079f }, { 6.26756078f, -0.394635339f } }));
-            ASSERT(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi<float>() / 2.0f).intersections(c1).empty());
-            ASSERT(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f).intersections(c1).empty());
+            ASSERT(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
+            ASSERT(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f).edge_intersections(c1).empty());
         }
 
         test_section("intersects(const Triangle&)");
@@ -3305,14 +3307,14 @@ static void circle2_tests()
             ASSERT_FALSE(c1.intersects(nnm::Line2f { { 0.0f, 100.0f }, { 1.0f, .0f } }));
         }
 
-        test_section("intersections(const Line2&)");
+        test_section("edge_intersections(const Line2&)");
         {
             constexpr nnm::Line2f line1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };
-            const auto result1 = c1.intersections(line1);
+            const auto result1 = c1.edge_intersections(line1);
             ASSERT(result1.approx_equal({ { 1.08452405f, 1.9154759f }, { 6.9154759f, -3.9154759f } }));
             constexpr nnm::Line2f line2 { { 0.0f, 3.0f }, { 0.7071067812f, 0.7071067812f } };
-            ASSERT(c1.intersections(line2).empty());
-            const auto result2 = c1.intersections(nnm::Line2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
+            ASSERT(c1.edge_intersections(line2).empty());
+            const auto result2 = c1.edge_intersections(nnm::Line2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
             ASSERT(result2.approx_equal({ { 0.0f, -7.58257294f }, { 0.0f, 1.58257294f } }));
         }
 
@@ -3332,24 +3334,24 @@ static void circle2_tests()
             ASSERT(c1.intersects(ray4));
         }
 
-        test_section("intersections(const Ray2&)");
+        test_section("edge_intersections(const Ray2&)");
         {
             constexpr nnm::Ray2f ray1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };
-            const auto result1 = c1.intersections(ray1);
+            const auto result1 = c1.edge_intersections(ray1);
             ASSERT(result1.empty());
             constexpr nnm::Ray2f ray2 { { 0.0f, 3.0f }, { 0.7071067812f, -0.7071067812f } };
-            const auto result2 = c1.intersections(ray2);
+            const auto result2 = c1.edge_intersections(ray2);
             ASSERT(result2.approx_equal({ { 1.08452405f, 1.9154759f }, { 6.9154759f, -3.9154759f } }));
             constexpr nnm::Ray2f ray3 { { 0.0f, 3.0f }, { 0.7071067812f, 0.7071067812f } };
-            const auto result3 = c1.intersections(ray3);
+            const auto result3 = c1.edge_intersections(ray3);
             ASSERT(result3.empty());
-            const auto result4 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
+            const auto result4 = c1.edge_intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, 1.0f } });
             ASSERT(result4.empty());
-            const auto result5 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, -1.0f } });
+            const auto result5 = c1.edge_intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 0.0f, -1.0f } });
             ASSERT(result5.approx_equal({ { 0.0f, -7.58257294f }, { 0.0f, 1.58257294f } }));
-            const auto result6 = c1.intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 1.0f, 0.0f } });
+            const auto result6 = c1.edge_intersections(nnm::Ray2f { { 0.0f, 100.0f }, { 1.0f, 0.0f } });
             ASSERT(result6.empty());
-            const auto result7 = c1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 0.7071067812f, -0.7071067812f } });
+            const auto result7 = c1.edge_intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 0.7071067812f, -0.7071067812f } });
             ASSERT(result7.approx_equal({ { 6.0f, -6.0f } }));
         }
 
@@ -3365,19 +3367,19 @@ static void circle2_tests()
             ASSERT(c1.intersects(s4));
         }
 
-        test_section("intersections(const Segment2&)");
+        test_section("edge_intersections(const Segment2&)");
         {
             constexpr nnm::Segment2f s1 { { 0.0f, 3.0f }, { 1.0f, 2.0f } };
-            const auto result1 = c1.intersections(s1);
+            const auto result1 = c1.edge_intersections(s1);
             ASSERT(result1.empty());
             constexpr nnm::Segment2f s2 { { 0.0f, 3.0f }, { 9.0f, -6.0f } };
-            const auto result2 = c1.intersections(s2);
+            const auto result2 = c1.edge_intersections(s2);
             ASSERT(result2.approx_equal({ { 1.08452405f, 1.9154759f }, { 6.9154759f, -3.9154759f } }));
             constexpr nnm::Segment2f s3 { { 5.0f, -2.0f }, { 0.0f, 3.0f } };
-            const auto result3 = c1.intersections(s3);
+            const auto result3 = c1.edge_intersections(s3);
             ASSERT(result3.approx_equal({ { 1.08452405f, 1.9154759f } }));
             constexpr nnm::Segment2f s4 { { 0.0f, 0.0f }, { 1.0f, 1.0f } };
-            const auto result4 = c1.intersections(s4);
+            const auto result4 = c1.edge_intersections(s4);
             ASSERT(result4.empty());
         }
 
@@ -3397,28 +3399,28 @@ static void circle2_tests()
             ASSERT_FALSE(c1.intersects(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f)));
         }
 
-        test_section("intersections(const Arc2&)");
+        test_section("edge_intersections(const Arc2&)");
         {
-            ASSERT(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi<float>() / 2.0f)).empty());
-            ASSERT(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi<float>() / 2.0f)).empty());
-            ASSERT(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi<float>() / 2.0f)).empty());
-            ASSERT(c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi<float>() / 2.0f)).empty());
-            const auto i1 = c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi<float>()));
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 0.0f }, nnm::pi<float>() / 2.0f)).empty());
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 0.0f, -2.0f }, -nnm::pi<float>() / 2.0f)).empty());
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 4.0f }, nnm::pi<float>() / 2.0f)).empty());
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { -4.0f, -2.0f }, -nnm::pi<float>() / 2.0f)).empty());
+            const auto i1 = c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, 3.0f }, nnm::pi<float>()));
             ASSERT(i1.approx_equal({ { -2.97493719f, -2.5f } }))
-            const auto i2 = c1.intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi<float>()));
+            const auto i2 = c1.edge_intersections(nnm::Arc2f({ 2.0f, -2.0f }, { 2.0f, -7.0f }, -nnm::pi<float>()));
             ASSERT(i2.approx_equal({ { -2.97493719f, -2.5f } }));
             const auto i3
-                = c1.intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi<float>() / 3.0f));
+                = c1.edge_intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -2.0f, 2.0f }, -2.0f * nnm::pi<float>() / 3.0f));
             ASSERT(i3.approx_equal({ { -1.0f, 1.0f } }))
             const auto i4
-                = c1.intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi<float>() / 3.0f));
+                = c1.edge_intersections(nnm::Arc2f({ -2.0f, 1.0f }, { -1.1339746f, 0.5f }, 2.0f * nnm::pi<float>() / 3.0f));
             ASSERT(i4.approx_equal({ { -1.0f, 1.0f } }));
-            const auto i5 = c1.intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi<float>()));
+            const auto i5 = c1.edge_intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, 0.0f }, nnm::pi<float>()));
             ASSERT(i5.approx_equal({ { 5.1918968f, -6.8486079f }, { 6.26756078f, -0.394635339f } }));
-            const auto i6 = c1.intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi<float>()));
+            const auto i6 = c1.edge_intersections(nnm::Arc2f({ 8.0f, -4.0f }, { 8.0f, -8.0f }, -nnm::pi<float>()));
             ASSERT(i6.approx_equal({ { 5.1918968f, -6.8486079f }, { 6.26756078f, -0.394635339f } }));
-            ASSERT(c1.intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi<float>() / 2.0f)).empty());
-            ASSERT(c1.intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f)).empty());
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 10.0f, 4.0f }, nnm::pi<float>() / 2.0f)).empty());
+            ASSERT(c1.edge_intersections(nnm::Arc2f({ 8.0f, 2.0f }, { 6.0f, 4.0f }, -nnm::pi<float>() / 2.0f)).empty());
         }
 
         test_section("intersects(const Circle2&)");
@@ -4113,23 +4115,23 @@ static void triangle2_tests()
             ASSERT(tri2.intersects(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f })));
         }
 
-        test_section("intersections(const Line2&)");
+        test_section("edge_intersections(const Line2&)");
         {
-            const auto result1 = tri1.intersections(nnm::Line2f::axis_x());
+            const auto result1 = tri1.edge_intersections(nnm::Line2f::axis_x());
             ASSERT(result1.approx_equal({ { -3.666667f, 0.0f }, { -1.0f, 0.0f } }));
-            const auto result2 = tri2.intersections(nnm::Line2f::axis_x());
+            const auto result2 = tri2.edge_intersections(nnm::Line2f::axis_x());
             ASSERT(result2.approx_equal({ { -3.666667f, 0.0f }, { -1.0f, 0.0f } }));
-            const auto result3 = tri1.intersections(nnm::Line2f::axis_y());
+            const auto result3 = tri1.edge_intersections(nnm::Line2f::axis_y());
             ASSERT(result3.approx_equal({ { 0.0f, 2.0f }, { 0.0f, 3.6f } }));
-            const auto result4 = tri2.intersections(nnm::Line2f::axis_y());
+            const auto result4 = tri2.edge_intersections(nnm::Line2f::axis_y());
             ASSERT(result4.approx_equal({ { 0.0f, 2.0f }, { 0.0f, 3.6f } }));
-            const auto result5 = tri1.intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
+            const auto result5 = tri1.edge_intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
             ASSERT(result5.empty());
-            const auto result6 = tri2.intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
+            const auto result6 = tri2.edge_intersections(nnm::Line2f::from_points({ 1.0f, 0.0f }, { 2.0f, 4.0f }));
             ASSERT(result6.empty());
-            const auto result7 = tri1.intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
+            const auto result7 = tri1.edge_intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
             ASSERT(result7.approx_equal({ { -3.0f, 2.4f }, { -0.538461548f, 0.923076923f } }));
-            const auto result8 = tri2.intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
+            const auto result8 = tri2.edge_intersections(nnm::Line2f::from_points({ -4.0f, 3.0f }, { 1.0f, 0.0f }));
             ASSERT(result8.approx_equal({ { -3.0f, 2.4f }, { -0.538461548f, 0.923076923f } }));
         }
 
@@ -4148,25 +4150,25 @@ static void triangle2_tests()
             ASSERT_FALSE(tri2.intersects(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } }));
         }
 
-        test_section("intersections(const Ray2&)");
+        test_section("edge_intersections(const Ray2&)");
         {
-            const auto result1 = tri1.intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
+            const auto result1 = tri1.edge_intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
             ASSERT(result1.approx_equal({ { -1.0f, 0.0f } }));
-            const auto result2 = tri2.intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
+            const auto result2 = tri2.edge_intersections(nnm::Ray2f { { -3.0f, 0.0f }, { 1.0f, 0.0f } });
             ASSERT(result2.approx_equal({ { -1.0f, 0.0f } }));
-            const auto result3 = tri1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { -1.0f, 0.0f } });
+            const auto result3 = tri1.edge_intersections(nnm::Ray2f { { 0.0f, 0.0f }, { -1.0f, 0.0f } });
             ASSERT(result3.approx_equal({ { -3.6666667f, 0.0f }, { -1.0f, 0.0f } }));
-            const auto result4 = tri1.intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { 0.0f, 1.0f }));
+            const auto result4 = tri1.edge_intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { 0.0f, 1.0f }));
             ASSERT(result4.approx_equal({ { -1.8571429f, 2.8571429f }, { -0.3333333f, 1.3333333f } }));
-            const auto result5 = tri2.intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { -2.0f, 1.0f }));
+            const auto result5 = tri2.edge_intersections(nnm::Ray2f::from_point_to_point({ 1.0f, 0.0f }, { -2.0f, 1.0f }));
             ASSERT(result5.approx_equal({ { -3.9411765f, 1.64705882f }, { -0.7142857f, 0.57142857f } }));
-            const auto result6 = tri1.intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
+            const auto result6 = tri1.edge_intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
             ASSERT(result6.approx_equal({ { 1.0f, 4.0f } }));
-            const auto result7 = tri2.intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
+            const auto result7 = tri2.edge_intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 0.0f }, { -1.0f, 2.0f }));
             ASSERT(result7.approx_equal({ { 1.0f, 4.0f } }));
-            const auto result8 = tri1.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
+            const auto result8 = tri1.edge_intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
             ASSERT(result8.empty());
-            const auto result9 = tri2.intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
+            const auto result9 = tri2.edge_intersections(nnm::Ray2f { { 0.0f, 0.0f }, { 1.0f, 0.0f } });
             ASSERT(result9.empty());
         }
 
@@ -4185,23 +4187,23 @@ static void triangle2_tests()
             ASSERT(tri2.intersects(nnm::Segment2f { { -5.0f, 0.0f }, { 2.0f, 2.0f } }));
         }
 
-        test_section("intersections(const Segment2&)");
+        test_section("edge_intersections(const Segment2&)");
         {
-            ASSERT(tri1.intersections(nnm::Segment2f { { -3.0f, 0.0f }, { -1.0f, 2.0f } }).empty());
-            ASSERT(tri2.intersections(nnm::Segment2f { { -3.0f, 0.0f }, { -1.0f, 2.0f } }).empty());
-            const auto result1 = tri1.intersections(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } });
+            ASSERT(tri1.edge_intersections(nnm::Segment2f { { -3.0f, 0.0f }, { -1.0f, 2.0f } }).empty());
+            ASSERT(tri2.edge_intersections(nnm::Segment2f { { -3.0f, 0.0f }, { -1.0f, 2.0f } }).empty());
+            const auto result1 = tri1.edge_intersections(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } });
             ASSERT(result1.approx_equal({ { -0.5f, 1.0f } }));
-            const auto result2 = tri2.intersections(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } });
+            const auto result2 = tri2.edge_intersections(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } });
             ASSERT(result2.approx_equal({ { -0.5f, 1.0f } }));
-            ASSERT(tri1.intersections(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }).empty());
-            ASSERT(tri2.intersections(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }).empty());
-            const auto result3 = tri1.intersections(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } });
+            ASSERT(tri1.edge_intersections(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }).empty());
+            ASSERT(tri2.edge_intersections(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }).empty());
+            const auto result3 = tri1.edge_intersections(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } });
             ASSERT(result3.approx_equal({ { -1.0f, 0.0f } }));
-            const auto result4 = tri2.intersections(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } });
+            const auto result4 = tri2.edge_intersections(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } });
             ASSERT(result4.approx_equal({ { -1.0f, 0.0f } }));
-            const auto result5 = tri1.intersections(nnm::Segment2f { { -5.0f, 0.0f }, { 2.0f, 2.0f } });
+            const auto result5 = tri1.edge_intersections(nnm::Segment2f { { -5.0f, 0.0f }, { 2.0f, 2.0f } });
             ASSERT(result5.approx_equal({ { -3.7272727f, 0.36363636f }, { -0.33333333f, 1.3333333f } }));
-            const auto result6 = tri2.intersections(nnm::Segment2f { { -5.0f, 0.0f }, { 2.0f, 2.0f } });
+            const auto result6 = tri2.edge_intersections(nnm::Segment2f { { -5.0f, 0.0f }, { 2.0f, 2.0f } });
             ASSERT(result6.approx_equal({ { -3.7272727f, 0.36363636f }, { -0.33333333f, 1.3333333f } }));
         }
 
@@ -4677,21 +4679,21 @@ static void rectangle2_tests()
 
         test_section("intersections(const Line2&)");
         {
-            const auto i1 = r1.intersections(nnm::Line2f::axis_x());
+            const auto i1 = r1.edge_intersections(nnm::Line2f::axis_x());
             ASSERT(i1.approx_equal({ { -0.154700637f, 0.0f }, { 0.535898447f, 0.0f } }));
-            const auto i2 = r1.intersections(nnm::Line2f::axis_y());
+            const auto i2 = r1.edge_intersections(nnm::Line2f::axis_y());
             ASSERT(i2.approx_equal({ { 0.0f, -3.15470052f }, { 0.0f, 0.267949343f } }));
-            const auto i3 = r1.intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
+            const auto i3 = r1.edge_intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
             ASSERT(i3.empty());
-            const auto i4 = r2.intersections(nnm::Line2f::axis_y());
+            const auto i4 = r2.edge_intersections(nnm::Line2f::axis_y());
             ASSERT(i4.approx_equal({ { 0.0f, 0.0f }, { 0.0f, 4.0f } }));
-            const auto i5 = r2.intersections(nnm::Line2f::axis_x_offset(-1.0f));
+            const auto i5 = r2.edge_intersections(nnm::Line2f::axis_x_offset(-1.0f));
             ASSERT(i5.empty());
-            const auto i6 = r3.intersections(nnm::Line2f::axis_x_offset(-2.0f));
+            const auto i6 = r3.edge_intersections(nnm::Line2f::axis_x_offset(-2.0f));
             ASSERT(i6.empty());
-            const auto i7 = r3.intersections(nnm::Line2f::axis_x_offset(-3.0f));
+            const auto i7 = r3.edge_intersections(nnm::Line2f::axis_x_offset(-3.0f));
             ASSERT(i7.approx_equal({ { 1.5f, -3.0f }, { 6.5f, -3.0f } }));
-            const auto i8 = r3.intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
+            const auto i8 = r3.edge_intersections(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f }));
             ASSERT(i8.approx_equal({ { 5.0f, -2.5f }, { 6.333333f, -3.5f } }));
         }
 
@@ -4704,17 +4706,17 @@ static void rectangle2_tests()
             ASSERT_FALSE(r3.intersects(nnm::Ray2f({ 4.0f, -2.0f }, { 0.0f, 1.0f })));
         }
 
-        test_section("intersections(const Ray2&)");
+        test_section("edge_intersections(const Ray2&)");
         {
-            const auto i1 = r1.intersections(nnm::Ray2f({ -0.5f, 0.0f }, { 1.0f, 0.0f }));
+            const auto i1 = r1.edge_intersections(nnm::Ray2f({ -0.5f, 0.0f }, { 1.0f, 0.0f }));
             ASSERT(i1.approx_equal({ { -0.154700637f, 0.0f }, { 0.535898447f, 0.0f } }));
-            const auto i2 = r1.intersections(nnm::Ray2f({ 2.0f, -0.5f }, { 1.0f, 0.0f }));
+            const auto i2 = r1.edge_intersections(nnm::Ray2f({ 2.0f, -0.5f }, { 1.0f, 0.0f }));
             ASSERT(i2.empty());
-            const auto i3 = r2.intersections(nnm::Ray2f({ -1.5f, 3.0f }, { 1.0f, 0.0f }));
+            const auto i3 = r2.edge_intersections(nnm::Ray2f({ -1.5f, 3.0f }, { 1.0f, 0.0f }));
             ASSERT(i3.approx_equal({ { 0.5f, 3.0f } }));
-            const auto i4 = r3.intersections(nnm::Ray2f({ 4.0f, 0.0f }, { 0.0f, -1.0f }));
+            const auto i4 = r3.edge_intersections(nnm::Ray2f({ 4.0f, 0.0f }, { 0.0f, -1.0f }));
             ASSERT(i4.approx_equal({ { 4.0f, -3.5f }, { 4.0f, -2.5f } }));
-            const auto i5 = r3.intersections(nnm::Ray2f({ 4.0f, -2.0f }, { 0.0f, 1.0f }));
+            const auto i5 = r3.edge_intersections(nnm::Ray2f({ 4.0f, -2.0f }, { 0.0f, 1.0f }));
             ASSERT(i5.empty());
         }
 
@@ -4728,19 +4730,19 @@ static void rectangle2_tests()
             ASSERT_FALSE(r3.intersects(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f })));
         }
 
-        test_section("intersections(const Segment2&)");
+        test_section("edge_intersections(const Segment2&)");
         {
-            const auto i1 = r1.intersections(nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f }));
+            const auto i1 = r1.edge_intersections(nnm::Segment2f({ -0.5f, 0.0f }, { 0.0f, 0.0f }));
             ASSERT(i1.approx_equal({ { -0.154700637f, 0.0f } }));
-            const auto i2 = r1.intersections(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }));
+            const auto i2 = r1.edge_intersections(nnm::Segment2f({ 0.0f, 0.0f }, { 1.0f, 0.0f }));
             ASSERT(i2.approx_equal({ { 0.535898447f, 0.0f } }));
-            const auto i3 = r1.intersections(nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f }));
+            const auto i3 = r1.edge_intersections(nnm::Segment2f({ 1.5f, -0.5f }, { 3.0f, -1.0f }));
             ASSERT(i3.empty());
-            const auto i4 = r2.intersections(nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f }));
+            const auto i4 = r2.edge_intersections(nnm::Segment2f({ -2.0f, 0.5f }, { 0.0f, 3.5f }));
             ASSERT(i4.empty());
-            const auto i5 = r3.intersections(nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0f }));
+            const auto i5 = r3.edge_intersections(nnm::Segment2f({ 4.0f, -2.0f }, { 4.0f, -5.0f }));
             ASSERT(i5.approx_equal({ { 4.0f, -3.5f }, { 4.0f, -2.5f } }));
-            const auto i6 = r3.intersections(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f }));
+            const auto i6 = r3.edge_intersections(nnm::Segment2f({ 5.0f, -0.5f }, { 5.0f, -2.0f }));
             ASSERT(i6.empty());
         }
 
@@ -5200,11 +5202,11 @@ static void aligned_rectangle2_tests()
             ASSERT(a1.intersects(nnm::Line2f::from_points({ -3.0f, 2.0f }, { 2.0f, 1.0f })));
         }
 
-        test_section("intersections(const Line2&)");
+        test_section("edge_intersections(const Line2&)");
         {
-            const auto i1 = a1.intersections(nnm::Line2f::from_points({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+            const auto i1 = a1.edge_intersections(nnm::Line2f::from_points({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
             ASSERT(i1.empty());
-            const auto i2 = a1.intersections(nnm::Line2f::from_points({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
+            const auto i2 = a1.edge_intersections(nnm::Line2f::from_points({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
             ASSERT(i2.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
         }
 
@@ -5215,13 +5217,13 @@ static void aligned_rectangle2_tests()
             ASSERT(a1.intersects(nnm::Ray2f::from_point_to_point({ -1.0f, 1.0f }, { -1.0f, 2.0f })));
         }
 
-        test_section("intersections(const Ray2&)");
+        test_section("edge_intersections(const Ray2&)");
         {
-            const auto i1 = a1.intersections(nnm::Ray2f::from_point_to_point({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+            const auto i1 = a1.edge_intersections(nnm::Ray2f::from_point_to_point({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
             ASSERT(i1.empty());
-            const auto i2 = a1.intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
+            const auto i2 = a1.edge_intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
             ASSERT(i2.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
-            const auto i3 = a1.intersections(nnm::Ray2f::from_point_to_point({ -1.0f, 1.0f }, { -1.0f, 2.0f }));
+            const auto i3 = a1.edge_intersections(nnm::Ray2f::from_point_to_point({ -1.0f, 1.0f }, { -1.0f, 2.0f }));
             ASSERT(i3.approx_equal({ { -1.0f, 3.0f } }));
         }
 
@@ -5233,15 +5235,15 @@ static void aligned_rectangle2_tests()
             ASSERT(a1.intersects(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f })));
         }
 
-        test_section("intersections(const Segment2&)");
+        test_section("edge_intersections(const Segment2&)");
         {
-            const auto i1 = a1.intersections(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+            const auto i1 = a1.edge_intersections(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
             ASSERT(i1.empty());
-            const auto i2 = a1.intersections(nnm::Segment2f({ 0.0f, 2.0f }, { 2.0f, 1.0f }));
+            const auto i2 = a1.edge_intersections(nnm::Segment2f({ 0.0f, 2.0f }, { 2.0f, 1.0f }));
             ASSERT(i2.approx_equal({ { 1.0f, 1.5f } }));
-            const auto i3 = a1.intersections(nnm::Segment2f({ 2.0f, 1.0f }, { -3.0f, 2.0f }));
+            const auto i3 = a1.edge_intersections(nnm::Segment2f({ 2.0f, 1.0f }, { -3.0f, 2.0f }));
             ASSERT(i3.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
-            const auto i4 = a1.intersections(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f }));
+            const auto i4 = a1.edge_intersections(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f }));
             ASSERT(i4.empty());
         }
 

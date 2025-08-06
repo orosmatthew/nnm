@@ -2935,7 +2935,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Circle2<Real>& circle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
      * Determine if intersects triangle.
@@ -3444,7 +3444,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(line.direction);
@@ -3495,7 +3495,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
@@ -3560,7 +3560,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.end - segment.start;
         const Vector2<Real> circle_dir = segment.start - center;
@@ -3623,7 +3623,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Arc2<Real>& arc) const
     {
         const Real dist = center.distance(arc.pivot);
         const Real arc_radius = arc.radius();
@@ -4368,7 +4368,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> points;
         for (int i = 0; i < 3; ++i) {
@@ -4402,7 +4402,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> points;
         for (int i = 0; i < 3; ++i) {
@@ -4436,7 +4436,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> points;
         for (int i = 0; i < 3; ++i) {
@@ -5260,7 +5260,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5288,7 +5288,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5316,7 +5316,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6198,7 +6198,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6226,7 +6226,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6254,7 +6254,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6705,13 +6705,13 @@ constexpr Real Line2<Real>::distance(const Segment2<Real>& segment) const
 template <typename Real>
 Intersections2<Real> Line2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
-    return circle.intersections(*this);
+    return circle.edge_intersections(*this);
 }
 
 template <typename Real>
 Intersections2<Real> Line2<Real>::edge_intersections(const Triangle2<Real>& triangle) const
 {
-    return triangle.intersections(*this);
+    return triangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6723,7 +6723,7 @@ bool Line2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 template <typename Real>
 Intersections2<Real> Line2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
-    return rectangle.intersections(*this);
+    return rectangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6861,13 +6861,13 @@ bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
 template <typename Real>
 Intersections2<Real> Ray2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
-    return circle.intersections(*this);
+    return circle.edge_intersections(*this);
 }
 
 template <typename Real>
 Intersections2<Real> Ray2<Real>::edge_intersections(const Triangle2<Real>& triangle) const
 {
-    return triangle.intersections(*this);
+    return triangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6879,7 +6879,7 @@ bool Ray2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 template <typename Real>
 Intersections2<Real> Ray2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
-    return rectangle.intersections(*this);
+    return rectangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6891,7 +6891,7 @@ bool Ray2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
 template <typename Real>
 Intersections2<Real> Ray2<Real>::edge_intersections(const AlignedRectangle2<Real>& rectangle) const
 {
-    return rectangle.intersections(*this);
+    return rectangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6951,13 +6951,13 @@ bool Segment2<Real>::intersects(const Circle2<Real>& circle) const
 template <typename Real>
 Intersections2<Real> Segment2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
-    return circle.intersections(*this);
+    return circle.edge_intersections(*this);
 }
 
 template <typename Real>
 Intersections2<Real> Segment2<Real>::edge_intersections(const Triangle2<Real>& triangle) const
 {
-    return triangle.intersections(*this);
+    return triangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6969,7 +6969,7 @@ bool Segment2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 template <typename Real>
 Intersections2<Real> Segment2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
-    return rectangle.intersections(*this);
+    return rectangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -6981,7 +6981,7 @@ bool Segment2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
 template <typename Real>
 Intersections2<Real> Segment2<Real>::edge_intersections(const AlignedRectangle2<Real>& rectangle) const
 {
-    return rectangle.intersections(*this);
+    return rectangle.edge_intersections(*this);
 }
 
 template <typename Real>
@@ -7021,9 +7021,9 @@ bool Arc2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-Intersections2<Real> Arc2<Real>::intersections(const Circle2<Real>& circle) const
+Intersections2<Real> Arc2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
-    return circle.intersections(*this);
+    return circle.edge_intersections(*this);
 }
 
 template <typename Real>
