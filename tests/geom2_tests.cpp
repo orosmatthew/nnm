@@ -176,6 +176,14 @@ static void line2_tests()
         ASSERT(line1.direction.approx_equal({ 1.0f, -3.0f }));
     }
 
+    test_section("Line2(const Line2<Other>&)");
+    {
+        constexpr nnm::Line2d line1 { { 1.0, -2.0 }, { 1.0, -3.0 } };
+        constexpr nnm::Line2f line2 { line1 };
+        ASSERT(line1.origin.approx_equal({ 1.0f, -2.0f }));
+        ASSERT(line2.direction.approx_equal({ 1.0f, -3.0f }));
+    }
+
     test_section("from_points");
     {
         constexpr nnm::Vector2f p1 { 1.0f, -2.0f };
@@ -318,7 +326,7 @@ static void line2_tests()
         ASSERT_FALSE(line1.contains({ 20.0f, 2.0f }));
     }
 
-    test_section("distance");
+    test_section("distance(const Vector2&)");
     {
         constexpr auto result = line2.distance({ 0.0f, 0.0f });
         ASSERT(nnm::approx_equal(result, 2.1213203436f));
@@ -707,15 +715,9 @@ static void line2_tests()
         ASSERT_FALSE(line1.tangent(circle));
     }
 
-    test_section("project_point_scalar");
+    test_section("project");
     {
-        constexpr auto result = line1.project_point_scalar({ 5.0f, 3.0f });
-        ASSERT(nnm::approx_equal(result, 3.076923076f));
-    }
-
-    test_section("project_point");
-    {
-        constexpr auto result = line1.project_point({ 5.0f, 3.0f });
+        constexpr auto result = line1.project({ 5.0f, 3.0f });
         ASSERT(result.approx_equal({ -0.18343f, 0.84024f }));
     }
 
@@ -744,7 +746,7 @@ static void line2_tests()
 
     test_section("translate");
     {
-        const nnm::Line2f result = line3.translate({ -2.0f, 3.0f });
+        constexpr nnm::Line2f result = line3.translate({ -2.0f, 3.0f });
         ASSERT(result.origin.approx_equal({ 1.0f, 2.0f }));
         ASSERT(result.direction.approx_equal(line3.direction));
     }
@@ -761,6 +763,20 @@ static void line2_tests()
         const nnm::Line2f result = line3.scale({ -2.0f, 3.0f });
         ASSERT(result.origin.approx_equal({ -6.0f, -3.0f }));
         ASSERT(result.direction.approx_equal({ -0.5547f, 0.83205f }));
+    }
+
+    test_section("rotate_at");
+    {
+        const nnm::Line2f result = line3.rotate_at({ -1.5f, 2.0f }, nnm::pi<float>() / 3.0f);
+        ASSERT(result.origin == line3.origin.rotate_at({ -1.5f, 2.0f }, nnm::pi<float>() / 3.0f));
+        ASSERT(result.direction == line3.direction.rotate(nnm::pi<float>() / 3.0f));
+    }
+
+    test_section("rotate");
+    {
+        const nnm::Line2f result = line3.rotate(nnm::pi<float>() / 3.0f);
+        ASSERT(result.origin == line3.origin.rotate(nnm::pi<float>() / 3.0f));
+        ASSERT(result.direction == line3.direction.rotate(nnm::pi<float>() / 3.0f));
     }
 
     test_section("shear_x_at");
@@ -793,19 +809,22 @@ static void line2_tests()
 
     test_section("operator<");
     {
-        ASSERT(line1 < line2);
+        constexpr auto result = line1 < line2;
+        ASSERT(result);
         ASSERT_FALSE(line2 < line1);
     }
 
     test_section("operator==");
     {
-        ASSERT_FALSE(line1 == line2);
+        constexpr auto result = line1 == line2;
+        ASSERT_FALSE(result);
         ASSERT(line1 == line1);
     }
 
     test_section("operator!=");
     {
-        ASSERT(line1 != line2);
+        constexpr auto result = line1 != line2;
+        ASSERT(result);
         ASSERT_FALSE(line1 != line1);
     }
 }
