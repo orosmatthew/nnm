@@ -2363,27 +2363,27 @@ public:
 
     /**
      * Point on the arc at an angle in radians. Does not check if the point is within range.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle) const
+    [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle_) const
     {
         const Real r = radius();
-        return { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
+        return { pivot.x + cos(angle_) * r, pivot.y + sin(angle_) * r };
     }
 
     /**
      * Point on the arc at an angle in radians.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle) const
+    [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle_) const
     {
         const Real r = radius();
-        if (!angle_in_range(angle, angle_start(), angle_end())) {
+        if (!angle_in_range(angle_, angle_start(), angle_end())) {
             return std::nullopt;
         }
-        return Vector2<Real> { pivot.x + cos(angle) * r, pivot.y + sin(angle) * r };
+        return Vector2<Real> { pivot.x + cos(angle_) * r, pivot.y + sin(angle_) * r };
     }
 
     /**
@@ -3084,22 +3084,22 @@ public:
     /**
      * Rotate about an origin by an angle.
      * @param rotate_origin Rotate origin.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle_) const
     {
-        return Arc2 { pivot.rotate_at(rotate_origin, angle), start.rotate_at(rotate_origin, angle), this->angle };
+        return Arc2 { pivot.rotate_at(rotate_origin, angle_), start.rotate_at(rotate_origin, angle_), angle };
     }
 
     /**
      * Rotate about the origin by an angle.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] Arc2 rotate(const Real angle) const
+    [[nodiscard]] Arc2 rotate(const Real angle_) const
     {
-        return Arc2 { pivot.rotate(angle), start.rotate(angle), this->angle };
+        return Arc2 { pivot.rotate(angle_), start.rotate(angle_), angle };
     }
 
     /**
@@ -5554,22 +5554,22 @@ public:
     /**
      * Rotate about an origin by an angle.
      * @param rotate_origin Rotation origin.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] Rectangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
+    [[nodiscard]] Rectangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle_) const
     {
-        return { center.rotate_at(rotate_origin, angle), size, normalize_angle(this->angle + angle) };
+        return { center.rotate_at(rotate_origin, angle_), size, normalize_angle(angle + angle_) };
     }
 
     /**
      * Rotate about the origin by an angle.
-     * @param angle Angle in radians.
+     * @param angle_ Angle in radians.
      * @return Result.
      */
-    [[nodiscard]] Rectangle2 rotate(const Real angle) const
+    [[nodiscard]] Rectangle2 rotate(const Real angle_) const
     {
-        return { center.rotate(angle), size, normalize_angle(this->angle + angle) };
+        return { center.rotate(angle_), size, normalize_angle(angle + angle_) };
     }
 
     /**
