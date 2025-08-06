@@ -1739,6 +1739,9 @@ public:
     // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
+        if (start == end) {
+            return start.approx_equal(point);
+        }
         const Vector2<Real> diff1 = point - start;
         const Vector2<Real> diff2 = end - start;
         if (!approx_zero(diff1.cross(diff2))) {
@@ -1782,6 +1785,9 @@ public:
     // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
+        if (start == end) {
+            return start.distance(point);
+        }
         const Vector2<Real> dir = end - start;
         const Vector2<Real> diff = point - start;
         Real t = diff.dot(dir) / dir.dot(dir);
@@ -4329,6 +4335,7 @@ public:
     /**
      * Default initializes to all vertices at the origin.
      */
+    // tested
     constexpr Triangle2()
         : vertices { Vector2<Real>::zero(), Vector2<Real>::zero(), Vector2<Real>::zero() }
     {
@@ -4340,8 +4347,23 @@ public:
      * @param vertex1 Second vertex.
      * @param vertex2 Third vertex.
      */
+    // tested
     constexpr Triangle2(const Vector2<Real>& vertex0, const Vector2<Real>& vertex1, const Vector2<Real>& vertex2)
         : vertices { vertex0, vertex1, vertex2 }
+    {
+    }
+
+    /**
+     * Cast from another type.
+     * @tparam Other Other type.
+     * @param other Other triangle.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Triangle2(const Triangle2<Other>& other)
+        : vertices { Vector2<Real> { other.vertices[0] },
+                     Vector2<Real> { other.vertices[1] },
+                     Vector2<Real> { other.vertices[2] } }
     {
     }
 
@@ -4350,6 +4372,7 @@ public:
      * @param index Index.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment2<Real> edge(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4361,6 +4384,7 @@ public:
      * Centroid which is the average between all vertices.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector2<Real> centroid() const
     {
         return (vertices[0] + vertices[1] + vertices[2]) / static_cast<Real>(3);
@@ -4370,21 +4394,21 @@ public:
      * Circumcenter which is the intersection between the perpendicular bisectors of the edges.
      * @return Result.
      */
-    [[nodiscard]] constexpr Vector2<Real> circumcenter() const
+    // tested
+    [[nodiscard]] std::optional<Vector2<Real>> circumcenter() const
     {
         const Segment2<Real> e0 = edge(0);
         const Segment2<Real> e1 = edge(1);
-        // TODO: Why unnormalized?
-        const Line2<Real> l0 { e0.midpoint(), e0.direction_unnormalized().arbitrary_perpendicular() };
-        const Line2<Real> l1 { e1.midpoint(), e1.direction_unnormalized().arbitrary_perpendicular() };
-        // TODO: Use checked and return optional.
-        return l0.unchecked_intersection(l1);
+        const Line2<Real> l0 { e0.midpoint(), e0.direction().arbitrary_perpendicular() };
+        const Line2<Real> l1 { e1.midpoint(), e1.direction().arbitrary_perpendicular() };
+        return l0.intersection(l1);
     }
 
     /**
      * Perimeter which is the combined length of all edges.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real perimeter() const
     {
         return edge(0).length() + edge(1).length() + edge(2).length();
@@ -4394,25 +4418,35 @@ public:
      * Incenter which is the intersection between the interior angles' bisectors.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> incenter() const
+    // tested
+    [[nodiscard]] std::optional<Vector2<Real>> incenter() const
     {
-        // TODO: Use checked intersection and return optional.
-        return angle_bisector(0).unchecked_intersection(angle_bisector(1));
+        return angle_bisector(0).intersection(angle_bisector(1));
     }
 
     /**
      * Orthocenter which is the intersection between the altitudes of the triangle.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> orthocenter() const
+    // tested
+    [[nodiscard]] std::optional<Vector2<Real>> orthocenter() const
     {
-        return Line2<Real>::from_segment(altitude(0)).unchecked_intersection(Line2<Real>::from_segment(altitude(1)));
+        const std::optional<Segment2<Real>> a0 = altitude(0);
+        if (!a0.has_value()) {
+            return std::nullopt;
+        }
+        const std::optional<Segment2<Real>> a1 = altitude(1);
+        if (!a1.has_value()) {
+            return std::nullopt;
+        }
+        return Line2<Real>::from_segment(*a0).intersection(Line2<Real>::from_segment(*a1));
     }
 
     /**
      * Area.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real area() const
     {
         const Real sum = vertices[0].x * (vertices[1].y - vertices[2].y)
@@ -4427,6 +4461,7 @@ public:
      * @param index Index of a vertex.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Segment2<Real> median(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4440,6 +4475,7 @@ public:
      * @param index Index of an edge.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4451,6 +4487,7 @@ public:
      * @param index Index of a vertex.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real angle(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4458,7 +4495,11 @@ public:
         const int prev_index = (index + 2) % 3;
         const Vector2<Real> dir1 = vertices[prev_index] - vertices[index];
         const Vector2<Real> dir2 = vertices[next_index] - vertices[index];
-        return acos(dir1.dot(dir2) / (dir1.length() * dir2.length()));
+        const Real denom = dir1.length() * dir2.length();
+        if (approx_zero(denom)) {
+            return static_cast<Real>(0);
+        }
+        return acos(dir1.dot(dir2) / denom);
     }
 
     /**
@@ -4467,6 +4508,7 @@ public:
      * @param index Index of a vertex.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line2<Real> angle_bisector(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4483,6 +4525,7 @@ public:
      * @param index Index of an edge.
      * @return
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
@@ -4499,16 +4542,19 @@ public:
      * @param index Index of a vertex.
      * @return Result.
      */
-    [[nodiscard]] Segment2<Real> altitude(const int index) const
+    // tested
+    [[nodiscard]] std::optional<Segment2<Real>> altitude(const int index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Triangle2", index >= 0 && index <= 2);
         const Vector2<Real>& vertex = vertices[index];
         const Segment2<Real> base = edge((index + 1) % 3);
         const Vector2<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
         const Line2<Real> altitude_line { vertex, perp_dir };
-        // TODO: Use checked intersection and return optional.
-        const Vector2<Real> intersection = altitude_line.unchecked_intersection(Line2<Real>::from_segment(base));
-        return { vertex, intersection };
+        const std::optional<Vector2<Real>> intersection = altitude_line.intersection(Line2<Real>::from_segment(base));
+        if (!intersection.has_value()) {
+            return std::nullopt;
+        }
+        return Segment2<Real> { vertex, *intersection };
     }
 
     /**
@@ -4516,6 +4562,7 @@ public:
      * @param weights Weights.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector2<Real> lerp_point(const Vector3<Real>& weights) const
     {
         return weights.x * vertices[0] + weights.y * vertices[1] + weights.z * vertices[2];
@@ -4526,7 +4573,8 @@ public:
      * @param point Point.
      * @return Barycentric coordinates.
      */
-    [[nodiscard]] constexpr Vector3<Real> barycentric(const Vector2<Real>& point) const
+    // tested
+    [[nodiscard]] constexpr Vector3<Real> barycentric_unchecked(const Vector2<Real>& point) const
     {
         const Vector2<Real> v0 = vertices[1] - vertices[0];
         const Vector2<Real> v1 = vertices[2] - vertices[0];
@@ -4542,22 +4590,64 @@ public:
     }
 
     /**
+     * Barycentric coordinates of a point which is the weights for linearly interpolating between the vertices.
+     * @param point Point.
+     * @return Barycentric coordinates.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> barycentric(const Vector2<Real>& point) const
+    {
+        if (!contains(point)) {
+            return std::nullopt;
+        }
+        const Vector2<Real> v0 = vertices[1] - vertices[0];
+        const Vector2<Real> v1 = vertices[2] - vertices[0];
+        const Vector2<Real> v2 = point - vertices[0];
+        const Real cross01 = v0.cross(v1);
+        const Real cross21 = v2.cross(v1);
+        const Real cross02 = v0.cross(v2);
+        if (approx_zero(cross01)) {
+            return std::nullopt;
+        }
+        const Real inv_cross01 = static_cast<Real>(1) / cross01;
+        const Real y = cross21 * inv_cross01;
+        const Real z = cross02 * inv_cross01;
+        const Real x = static_cast<Real>(1) - y - z;
+        return Vector3<Real> { x, y, z };
+    }
+
+    /**
      * Circumcircle which is a circle that intersects all vertices.
      * @return Result.
      */
-    [[nodiscard]] Circle2<Real> circumcircle() const
+    // tested
+    [[nodiscard]] std::optional<Circle2<Real>> circumcircle() const
     {
-        return Circle2<Real>::from_points_unchecked(vertices[0], vertices[1], vertices[2]);
+        return Circle2<Real>::from_points(vertices[0], vertices[1], vertices[2]);
     }
 
     /**
      * Incircle which is a circle inside the triangle and tangent to all edges.
      * @return Result.
      */
-    [[nodiscard]] Circle2<Real> incircle() const
+    // tested
+    [[nodiscard]] std::optional<Circle2<Real>> incircle() const
     {
-        const Vector2<Real> center = incenter();
-        return { center, edge(0).distance(center) };
+        const std::optional<Vector2<Real>> center = incenter();
+        if (!center.has_value()) {
+            return std::nullopt;
+        }
+        return Circle2<Real> { *center, edge(0).distance(*center) };
+    }
+
+    /**
+     * Determine if vertices are collinear.
+     * @return Result.
+     */
+    // tested
+    constexpr bool collinear() const
+    {
+        return edge(0).collinear(edge(1));
     }
 
     /**
@@ -4565,12 +4655,16 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
-        const Vector3<Real> b = barycentric(point);
-        // TODO: Use approx comparisons.
-        return b.x >= static_cast<Real>(0) && b.x <= static_cast<Real>(1) && b.y >= static_cast<Real>(0)
-            && b.y <= static_cast<Real>(1) && b.z >= static_cast<Real>(0) && b.z <= static_cast<Real>(1);
+        if (collinear()) {
+            return edge(0).contains(point) || edge(1).contains(point) || edge(2).contains(point);
+        }
+        const Vector3<Real> b = barycentric_unchecked(point);
+        return approx_greater_equal_zero(b.x) && approx_less_equal(b.x, static_cast<Real>(1))
+            && approx_greater_equal_zero(b.y) && approx_less_equal(b.y, static_cast<Real>(1))
+            && approx_greater_equal_zero(b.z) && approx_less_equal(b.z, static_cast<Real>(1));
     }
 
     /**
@@ -4595,6 +4689,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         if (contains(point)) {
@@ -4615,6 +4710,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -4635,6 +4731,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -4655,6 +4752,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -4675,6 +4773,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (intersects(arc)) {
@@ -4695,6 +4794,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -4715,6 +4815,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2& other) const
     {
         if (intersects(other)) {
@@ -4735,6 +4836,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -4742,6 +4844,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -4749,6 +4852,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -4764,6 +4868,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> points;
@@ -4780,6 +4885,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
         if (contains(ray.origin)) {
@@ -4798,6 +4904,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> points;
@@ -4814,6 +4921,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
     {
         if (contains(segment.start) || contains(segment.end)) {
@@ -4832,6 +4940,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> points;
@@ -4848,6 +4957,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         if (contains(arc.start)) {
@@ -4866,6 +4976,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -4884,6 +4995,7 @@ public:
      * @param circle Circle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const auto depth_on_normal
@@ -4943,6 +5055,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Triangle2& other) const
     {
         for (const Vector2<Real>& vertex : other.vertices) {
@@ -4963,6 +5076,7 @@ public:
      * @param other Other triangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2& other) const
     {
         const auto depth_on_normal
@@ -5004,6 +5118,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -5011,6 +5126,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -5018,6 +5134,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -5025,12 +5142,14 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
      * Determine if equilateral which is where all edges have the same length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool equilateral() const
     {
         return nnm::approx_equal(edge(0).length_sqrd(), edge(1).length_sqrd())
@@ -5044,6 +5163,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool similar(const Triangle2& other) const
     {
         std::array angles { angle(0), angle(1), angle(2) };
@@ -5078,7 +5198,8 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 translate(const Vector2<Real>& offset) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 translate(const Vector2<Real>& offset) const
     {
         return { vertices[0].translate(offset), vertices[1].translate(offset), vertices[2].translate(offset) };
     }
@@ -5089,6 +5210,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Triangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { vertices[0].rotate_at(rotate_origin, angle),
@@ -5101,6 +5223,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Triangle2 rotate(const Real angle) const
     {
         return { vertices[0].rotate(angle), vertices[1].rotate(angle), vertices[2].rotate(angle) };
@@ -5112,7 +5235,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
         return { vertices[0].scale_at(scale_origin, factor),
                  vertices[1].scale_at(scale_origin, factor),
@@ -5124,7 +5248,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 scale(const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 scale(const Vector2<Real>& factor) const
     {
         return { vertices[0].scale(factor), vertices[1].scale(factor), vertices[2].scale(factor) };
     }
@@ -5135,7 +5260,8 @@ public:
      * @param factor Y-Axis shear factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor) const
     {
         return { vertices[0].shear_x_at(shear_origin, factor),
                  vertices[1].shear_x_at(shear_origin, factor),
@@ -5147,7 +5273,8 @@ public:
      * @param factor Y-Axis shear factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 shear_x(const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 shear_x(const Real factor) const
     {
         return { vertices[0].shear_x(factor), vertices[1].shear_x(factor), vertices[2].shear_x(factor) };
     }
@@ -5158,7 +5285,8 @@ public:
      * @param factor X-Axis shear factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 shear_y_at(const Vector2<Real>& shear_origin, const Real factor) const
     {
         return { vertices[0].shear_y_at(shear_origin, factor),
                  vertices[1].shear_y_at(shear_origin, factor),
@@ -5170,7 +5298,8 @@ public:
      * @param factor X-Axis shear factor.
      * @return Result.
      */
-    [[nodiscard]] Triangle2 shear_y(const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Triangle2 shear_y(const Real factor) const
     {
         return { vertices[0].shear_y(factor), vertices[1].shear_y(factor), vertices[2].shear_y(factor) };
     }
@@ -5181,6 +5310,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coincident(const Triangle2& other) const
     {
         const std::array permutations {
@@ -5201,6 +5331,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Triangle2& other) const
     {
         return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
@@ -5212,6 +5343,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+     // tested
     [[nodiscard]] constexpr bool operator==(const Triangle2& other) const
     {
         return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
@@ -5222,6 +5354,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Triangle2& other) const
     {
         return vertices[0] != other.vertices[0] || vertices[1] != other.vertices[1] || vertices[2] != other.vertices[2];
@@ -5232,6 +5365,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+     // tested
     [[nodiscard]] constexpr bool operator<(const Triangle2& other) const
     {
         if (vertices[0] == other.vertices[0]) {

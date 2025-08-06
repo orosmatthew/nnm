@@ -3860,34 +3860,79 @@ static void triangle2_tests()
         ASSERT(t.vertices[2] == nnm::Vector2f(5.0f, 6.0f));
     }
 
+    test_section("Triangle2(const Triangle2<Other>&)");
+    {
+        constexpr nnm::Triangle2d t1 { { 1.0, -2.0 }, { -3.0, 4.0 }, { 5.0, 6.0 } };
+        constexpr nnm::Triangle2f t2 { t1 };
+        ASSERT(t2.vertices[0].approx_equal({ 1.0f, -2.0f }));
+        ASSERT(t2.vertices[1].approx_equal({ -3.0f, 4.0f }));
+        ASSERT(t2.vertices[2].approx_equal({ 5.0f, 6.0f }));
+    }
+
     constexpr nnm::Triangle2f tri1 { { -4.0f, 2.0f }, { -3.0f, -4.0f }, { 1.0f, 4.0f } };
     constexpr nnm::Triangle2f tri2 { { -3.0f, -4.0f }, { 1.0f, 4.0f }, { -4.0f, 2.0f } };
+    constexpr nnm::Triangle2f tri3 { { -1.0f, 0.0f }, { 0.0f, 0.0f }, { 1.0f, 0.0f } };
+    constexpr nnm::Triangle2f tri4 { { 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f } };
+
+    test_section("edge");
+    {
+        constexpr auto e0 = tri1.edge(0);
+        ASSERT(e0.approx_equal({ { -4.0f, 2.0f }, { -3.0f, -4.0f } }));
+        constexpr auto e1 = tri1.edge(1);
+        ASSERT(e1.approx_equal({ { -3.0f, -4.0f }, { 1.0f, 4.0f } }));
+        constexpr auto e2 = tri1.edge(2);
+        ASSERT(e2.approx_equal({ { 1.0f, 4.0f }, { -4.0f, 2.0f } }));
+    }
 
     test_section("centroid");
     {
         constexpr auto result = tri1.centroid();
         ASSERT(result.approx_equal({ -2.0f, 0.666666667f }));
         ASSERT(tri2.centroid().approx_equal({ -2.0f, 0.666666667f }));
+        ASSERT(tri3.centroid().approx_equal({ 0.0f, 0.0f }));
     }
 
     test_section("circumcenter");
     {
-        constexpr auto result = tri1.circumcenter();
-        ASSERT(result.approx_equal({ -0.125f, -0.4375f }));
-        ASSERT(tri2.circumcenter().approx_equal({ -0.125f, -0.4375f }));
+        const auto c1 = tri1.circumcenter();
+        ASSERT(c1.has_value() && c1->approx_equal({ -0.125f, -0.4375f }));
+        const auto c2 = tri2.circumcenter();
+        ASSERT(c2.has_value() && c2->approx_equal({ -0.125f, -0.4375f }));
+        const auto c3 = tri3.circumcenter();
+        ASSERT_FALSE(c3.has_value());
+        const auto c4 = tri4.circumcenter();
+        ASSERT_FALSE(c4.has_value());
+    }
+
+    test_section("perimeter");
+    {
+        ASSERT(nnm::approx_equal(tri1.perimeter(), 20.412199f));
+        ASSERT(nnm::approx_equal(tri2.perimeter(), 20.412199f));
+        ASSERT(nnm::approx_equal(tri3.perimeter(), 4.0f));
     }
 
     test_section("incenter");
     {
-        ASSERT(tri1.incenter().approx_equal({ -2.2461969f, 1.01306745f }));
-        ASSERT(tri2.incenter().approx_equal({ -2.2461969f, 1.01306745f }));
+        const auto i1 = tri1.incenter();
+        ASSERT(i1.has_value() && i1->approx_equal({ -2.2461969f, 1.01306745f }));
+        const auto i2 = tri2.incenter();
+        ASSERT(i2.has_value() && i2->approx_equal({ -2.2461969f, 1.01306745f }));
+        const auto i3 = tri3.incenter();
+        ASSERT_FALSE(i3.has_value());
+        const auto i4 = tri4.incenter();
+        ASSERT_FALSE(i4.has_value());
     }
 
     test_section("orthocenter");
     {
-        const auto result = tri1.orthocenter();
-        ASSERT(result.approx_equal({ -5.75f, 2.875f }));
-        ASSERT(tri2.orthocenter().approx_equal({ -5.75f, 2.875f }));
+        const auto o1 = tri1.orthocenter();
+        ASSERT(o1.has_value() && o1->approx_equal({ -5.75f, 2.875f }));
+        const auto o2 = tri2.orthocenter();
+        ASSERT(o2.has_value() && o2->approx_equal({ -5.75f, 2.875f }));
+        const auto o3 = tri3.orthocenter();
+        ASSERT_FALSE(o3.has_value());
+        const auto o4 = tri4.orthocenter();
+        ASSERT_FALSE(o4.has_value());
     }
 
     test_section("area");
@@ -3928,6 +3973,8 @@ static void triangle2_tests()
         ASSERT(nnm::approx_equal(tri2.angle(0), nnm::radians(36.02737339f)));
         ASSERT(nnm::approx_equal(tri2.angle(1), nnm::radians(41.6335393f)));
         ASSERT(nnm::approx_equal(tri2.angle(2), nnm::radians(102.339087f)));
+        ASSERT(nnm::approx_zero(tri3.angle(0)));
+        ASSERT(nnm::approx_zero(tri4.angle(0)));
     }
 
     test_section("angle_bisector");
@@ -3953,13 +4000,30 @@ static void triangle2_tests()
 
     test_section("altitude");
     {
-        ASSERT(tri1.altitude(0).approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
-        ASSERT(tri1.altitude(1).approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
-        ASSERT(tri1.altitude(2).approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
+        const auto a1 = tri1.altitude(0);
+        ASSERT(a1.has_value() && a1->approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
+        const auto a2 = tri1.altitude(1);
+        ASSERT(a2.has_value() && a2->approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
+        const auto a3 = tri1.altitude(2);
+        ASSERT(a3.has_value() && a3->approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
 
-        ASSERT(tri2.altitude(0).approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
-        ASSERT(tri2.altitude(1).approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
-        ASSERT(tri2.altitude(2).approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
+        const auto a4 = tri2.altitude(0);
+        ASSERT(a4.has_value() && a4->approx_equal({ { -3.0f, -4.0f }, { -5.2069f, 1.51724f } }));
+        const auto a5 = tri2.altitude(1);
+        ASSERT(a5.has_value() && a5->approx_equal({ { 1.0f, 4.0f }, { -4.189189f, 3.135131f } }));
+        const auto a6 = tri2.altitude(2);
+        ASSERT(a6.has_value() && a6->approx_equal({ { -4.0f, 2.0f }, { -0.8f, 0.4f } }));
+
+        const auto a7 = tri3.altitude(0);
+        ASSERT(a7.has_value() && a7->approx_equal({ { -1.0f, 0.0f }, { -1.0f, 0.0f } }));
+        const auto a8 = tri3.altitude(1);
+        ASSERT(a8.has_value() && a8->approx_equal({ { 0.0f, 0.0f }, { 0.0f, 0.0f } }));
+        const auto a9 = tri3.altitude(2);
+        ASSERT(a9.has_value() && a9->approx_equal({ { 1.0f, 0.0f }, { 1.0f, 0.0f } }))
+
+        ASSERT_FALSE(tri4.altitude(0).has_value());
+        ASSERT_FALSE(tri4.altitude(1).has_value());
+        ASSERT_FALSE(tri4.altitude(2).has_value());
     }
 
     test_section("lerp_point");
@@ -3971,31 +4035,59 @@ static void triangle2_tests()
         ASSERT(tri2.lerp_point({ -1.5f, 100.0f, 0.5f }).approx_equal({ 102.5f, 407.0f }));
     }
 
+    test_section("barycentric_unchecked");
+    {
+        constexpr auto r1 = tri1.barycentric_unchecked({ 0.0f, 0.0f });
+        ASSERT(tri1.lerp_point(r1).approx_equal({ 0.0f, 0.0f }));
+        constexpr auto r2 = tri2.barycentric_unchecked({ -2.0f, 1.0f });
+        ASSERT(tri2.lerp_point(r2).approx_equal({ -2.0f, 1.0f }));
+    }
+
     test_section("barycentric");
     {
-        constexpr auto r1 = tri1.barycentric({ 0.0f, 0.0f });
-        ASSERT(tri1.lerp_point(r1).approx_equal({ 0.0f, 0.0f }));
-        ASSERT(tri2.lerp_point(tri2.barycentric({ -2.0f, 1.0f })).approx_equal({ -2.0f, 1.0f }));
+        constexpr auto b1 = tri1.barycentric({ 0.0f, 0.0f });
+        ASSERT_FALSE(b1.has_value());
+        constexpr auto b2 = tri2.barycentric({ -2.0f, 1.0f });
+        ASSERT(b2.has_value() && tri2.lerp_point(*b2).approx_equal({ -2.0f, 1.0f }));
+        constexpr auto b3 = tri3.barycentric({ 0.0f, 1.0f });
+        ASSERT_FALSE(b3.has_value());
+        constexpr auto b4 = tri3.barycentric({ 0.5f, 0.0f });
+        ASSERT_FALSE(b4.has_value());
     }
 
     test_section("circumcircle");
     {
-        ASSERT(tri1.circumcircle().approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
-        ASSERT(tri2.circumcircle().approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
-        ASSERT(
-            nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f })
-                .circumcircle()
-                .approx_equal({ { 0.0f, 6.0f }, 4.47213595f }));
+        const auto c1 = tri1.circumcircle();
+        ASSERT(c1.has_value() && c1->approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
+        const auto c2 = tri2.circumcircle();
+        ASSERT(c2.has_value() && c2->approx_equal({ { -0.125f, -0.4375f }, 4.577885f }));
+        const auto c3 = nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f }).circumcircle();
+        ASSERT(c3.has_value() && c3->approx_equal({ { 0.0f, 6.0f }, 4.47213595f }));
+        const auto c4 = tri3.circumcircle();
+        ASSERT_FALSE(c4.has_value());
+        const auto c5 = tri4.circumcircle();
+        ASSERT_FALSE(c5.has_value());
     }
 
     test_section("incircle");
     {
-        ASSERT(tri1.incircle().approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
-        ASSERT(tri2.incircle().approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
-        ASSERT(
-            nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f })
-                .incircle()
-                .approx_equal(nnm::Circle2f { { -2.47213595f, 5.52786405f }, 1.52786398f }));
+        const auto i1 = tri1.incircle();
+        ASSERT(i1.has_value() && i1->approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
+        const auto i2 = tri2.incircle();
+        ASSERT(i2.has_value() && i2->approx_equal({ { -2.24619675f, 1.01306748f }, 1.5676899f }));
+        const auto i3 = nnm::Triangle2f({ -4.0f, 4.0f }, { -4.0f, 8.0f }, { 4.0f, 4.0f }).incircle();
+        ASSERT(i3.has_value() && i3->approx_equal(nnm::Circle2f { { -2.47213595f, 5.52786405f }, 1.52786398f }));
+        const auto i4 = tri3.incircle();
+        ASSERT_FALSE(i4.has_value());
+    }
+
+    test_section("collinear");
+    {
+        constexpr auto result = tri1.collinear();
+        ASSERT_FALSE(result);
+        ASSERT_FALSE(tri2.collinear());
+        ASSERT(tri3.collinear());
+        ASSERT(tri4.collinear());
     }
 
     test_section("contains");
@@ -4009,6 +4101,10 @@ static void triangle2_tests()
         ASSERT(tri2.contains({ 1.0f, 4.0f }));
         ASSERT(tri1.contains({ -1.0f, 0.0f }));
         ASSERT(tri2.contains({ -1.0f, 0.0f }));
+        ASSERT_FALSE(tri3.contains({ 0.0f, 1.0f }));
+        ASSERT(tri3.contains({ -0.5f, 0.0f }));
+        ASSERT_FALSE(tri4.contains({ 1.0f, 1.0f }));
+        ASSERT(tri4.contains({ 0.0f, 0.0f }));
     }
 
     test_section("signed_distance");
@@ -4019,6 +4115,10 @@ static void triangle2_tests()
         ASSERT(nnm::approx_equal(tri2.signed_distance({ 1.0f, 2.0f }), 0.894427f));
         ASSERT(nnm::approx_zero(tri1.signed_distance({ -1.0f, 0.0f })));
         ASSERT(nnm::approx_zero(tri2.signed_distance({ -1.0f, 0.0f })));
+        ASSERT(nnm::approx_equal(tri3.signed_distance({ 0.0f, 1.0f }), 1.0f));
+        ASSERT(nnm::approx_zero(tri3.signed_distance({ -0.5f, 0.0f })));
+        ASSERT(nnm::approx_equal(tri4.signed_distance({ 1.0f, 0.0f }), 1.0f));
+        ASSERT(nnm::approx_zero(tri4.signed_distance({ 0.0f, 0.0f })));
     }
 
     test_section("distance(const Vector2&)");
@@ -4148,21 +4248,21 @@ static void triangle2_tests()
         ASSERT(tri1.intersects(tri2));
         ASSERT(tri2.intersects(tri2));
         ASSERT(tri2.intersects(tri1));
-        constexpr nnm::Triangle2f tri3 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
-        ASSERT_FALSE(tri1.intersects(tri3));
-        ASSERT_FALSE(tri3.intersects(tri1));
-        ASSERT_FALSE(tri2.intersects(tri3));
-        ASSERT_FALSE(tri3.intersects(tri2));
-        constexpr nnm::Triangle2f tri4 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
-        ASSERT(tri1.intersects(tri4));
-        ASSERT(tri4.intersects(tri1));
-        ASSERT(tri2.intersects(tri4));
-        ASSERT(tri4.intersects(tri2));
-        constexpr nnm::Triangle2f tri5 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
-        ASSERT(tri1.intersects(tri5));
-        ASSERT(tri5.intersects(tri1));
-        ASSERT(tri2.intersects(tri5));
-        ASSERT(tri5.intersects(tri1));
+        constexpr nnm::Triangle2f tri5 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
+        ASSERT_FALSE(tri1.intersects(tri5));
+        ASSERT_FALSE(tri5.intersects(tri1));
+        ASSERT_FALSE(tri2.intersects(tri5));
+        ASSERT_FALSE(tri5.intersects(tri2));
+        constexpr nnm::Triangle2f tri6 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
+        ASSERT(tri1.intersects(tri6));
+        ASSERT(tri6.intersects(tri1));
+        ASSERT(tri2.intersects(tri6));
+        ASSERT(tri6.intersects(tri2));
+        constexpr nnm::Triangle2f tri7 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
+        ASSERT(tri1.intersects(tri7));
+        ASSERT(tri7.intersects(tri1));
+        ASSERT(tri2.intersects(tri7));
+        ASSERT(tri7.intersects(tri1));
         ASSERT(tri1.intersects(nnm::Triangle2f({ -6.0f, 3.0f }, { 4.0f, 5.0f }, { -3.0f, -6.0f })));
         ASSERT(nnm::Triangle2f({ -6.0f, 3.0f }, { 4.0f, 5.0f }, { -3.0f, -6.0f }).intersects(tri1));
     }
@@ -4173,20 +4273,20 @@ static void triangle2_tests()
         ASSERT(d1.has_value() && (d1->approx_equal({ 3.2f, -1.6f }) || d1->approx_equal({ -3.2f, 1.6f })));
         const auto d2 = tri1.intersect_depth(tri2);
         ASSERT(d2.has_value() && (d2->approx_equal({ 3.2f, -1.6f }) || d2->approx_equal({ -3.2f, 1.6f })));
-        constexpr nnm::Triangle2f tri3 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
-        ASSERT_FALSE(tri1.intersect_depth(tri3).has_value());
-        ASSERT_FALSE(tri3.intersect_depth(tri1).has_value());
-        ASSERT_FALSE(tri2.intersect_depth(tri3).has_value());
-        ASSERT_FALSE(tri3.intersect_depth(tri2).has_value());
-        constexpr nnm::Triangle2f tri4 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
-        const auto d3 = tri1.intersect_depth(tri4);
+        constexpr nnm::Triangle2f tri5 { { 1.0f, 2.0f }, { 4.0f, 5.0f }, { 2.0f, -3.0f } };
+        ASSERT_FALSE(tri1.intersect_depth(tri5).has_value());
+        ASSERT_FALSE(tri5.intersect_depth(tri1).has_value());
+        ASSERT_FALSE(tri2.intersect_depth(tri5).has_value());
+        ASSERT_FALSE(tri5.intersect_depth(tri2).has_value());
+        constexpr nnm::Triangle2f tri6 { { 4.0f, 5.0f }, { -2.0f, 1.0f }, { 2.0f, -3.0f } };
+        const auto d3 = tri1.intersect_depth(tri6);
         ASSERT(d3.has_value() && d3->approx_equal({ 1.2f, -0.6f }));
-        const auto d4 = tri4.intersect_depth(tri2);
+        const auto d4 = tri6.intersect_depth(tri2);
         ASSERT(d4.has_value() && d4->approx_equal({ -1.2f, 0.6f }));
-        constexpr nnm::Triangle2f tri5 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
-        const auto d5 = tri1.intersect_depth(tri5);
+        constexpr nnm::Triangle2f tri7 { { 2.0f, -3.0f }, { -5.0f, -1.0f }, { 4.0f, 5.0f } };
+        const auto d5 = tri1.intersect_depth(tri7);
         ASSERT(d5.has_value() && d5->approx_equal({ 2.8f, -1.4f }));
-        const auto d6 = tri5.intersect_depth(tri2);
+        const auto d6 = tri7.intersect_depth(tri2);
         ASSERT(d6.has_value() && d6->approx_equal({ -2.8f, 1.4f }));
     }
 
@@ -4407,10 +4507,12 @@ static void triangle2_tests()
     {
         constexpr auto result = tri1.equilateral();
         ASSERT_FALSE(result);
-        constexpr nnm::Triangle2f tri3 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
-        ASSERT(tri3.equilateral());
-        constexpr nnm::Triangle2f tri4 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
-        ASSERT_FALSE(tri4.equilateral());
+        constexpr nnm::Triangle2f tri5 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+        ASSERT(tri5.equilateral());
+        constexpr nnm::Triangle2f tri6 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
+        ASSERT_FALSE(tri6.equilateral());
+        ASSERT_FALSE(tri3.equilateral());
+        ASSERT(tri4.equilateral());
     }
 
     test_section("similar");
@@ -4436,10 +4538,12 @@ static void triangle2_tests()
     test_section("right");
     {
         ASSERT_FALSE(tri1.right())
-        constexpr nnm::Triangle2f tri3 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+        constexpr nnm::Triangle2f tri5 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+        ASSERT_FALSE(tri5.right());
+        constexpr nnm::Triangle2f tri6 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
+        ASSERT(tri6.right());
         ASSERT_FALSE(tri3.right());
-        constexpr nnm::Triangle2f tri4 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
-        ASSERT(tri4.right());
+        ASSERT_FALSE(tri4.right());
     }
 
     test_section("translate");
@@ -4447,7 +4551,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].translate({ -1.0f, 2.0f }),
                                              tri1.vertices[1].translate({ -1.0f, 2.0f }),
                                              tri1.vertices[2].translate({ -1.0f, 2.0f }) };
-        ASSERT(tri1.translate({ -1.0f, 2.0f }).approx_equal(expected));
+        constexpr auto result = tri1.translate({ -1.0f, 2.0f });
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("rotate_at");
@@ -4471,7 +4576,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }),
                                              tri1.vertices[1].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }),
                                              tri1.vertices[2].scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }) };
-        ASSERT(tri1.scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f }).approx_equal(expected));
+        constexpr auto result = tri1.scale_at({ -2.0f, 3.0f }, { 0.5f, -3.0f });
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("scale");
@@ -4479,7 +4585,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].scale({ 3.0f, -0.5f }),
                                              tri1.vertices[1].scale({ 3.0f, -0.5f }),
                                              tri1.vertices[2].scale({ 3.0f, -0.5f }) };
-        ASSERT(tri1.scale({ 3.0f, -0.5f }).approx_equal(expected));
+        constexpr auto result = tri1.scale({ 3.0f, -0.5f });
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("shear_x_at");
@@ -4487,7 +4594,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].shear_x_at({ 3.0f, -0.5f }, nnm::pi<float>() / 7.0f),
                                              tri1.vertices[1].shear_x_at({ 3.0f, -0.5f }, nnm::pi<float>() / 7.0f),
                                              tri1.vertices[2].shear_x_at({ 3.0f, -0.5f }, nnm::pi<float>() / 7.0f) };
-        ASSERT(tri1.shear_x_at({ 3.0f, -0.5f }, nnm::pi<float>() / 7.0f).approx_equal(expected));
+        constexpr auto result = tri1.shear_x_at({ 3.0f, -0.5f }, nnm::pi<float>() / 7.0f);
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("shear_x");
@@ -4495,7 +4603,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].shear_x(-nnm::pi<float>() / 7.0f),
                                              tri1.vertices[1].shear_x(-nnm::pi<float>() / 7.0f),
                                              tri1.vertices[2].shear_x(-nnm::pi<float>() / 7.0f) };
-        ASSERT(tri1.shear_x(-nnm::pi<float>() / 7.0f).approx_equal(expected));
+        constexpr auto result = tri1.shear_x(-nnm::pi<float>() / 7.0f);
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("shear_y_at");
@@ -4503,7 +4612,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].shear_y_at({ 4.0f, -6.7f }, -nnm::pi<float>() / 6.0f),
                                              tri1.vertices[1].shear_y_at({ 4.0f, -6.7f }, -nnm::pi<float>() / 6.0f),
                                              tri1.vertices[2].shear_y_at({ 4.0f, -6.7f }, -nnm::pi<float>() / 6.0f) };
-        ASSERT(tri1.shear_y_at({ 4.0f, -6.7f }, -nnm::pi<float>() / 6.0f).approx_equal(expected));
+        constexpr auto result = tri1.shear_y_at({ 4.0f, -6.7f }, -nnm::pi<float>() / 6.0f);
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("shear_y");
@@ -4511,7 +4621,8 @@ static void triangle2_tests()
         constexpr nnm::Triangle2f expected { tri1.vertices[0].shear_y(nnm::pi<float>() / 6.0f),
                                              tri1.vertices[1].shear_y(nnm::pi<float>() / 6.0f),
                                              tri1.vertices[2].shear_y(nnm::pi<float>() / 6.0f) };
-        ASSERT(tri1.shear_y(nnm::pi<float>() / 6.0f).approx_equal(expected));
+        constexpr auto result = tri1.shear_y(nnm::pi<float>() / 6.0f);
+        ASSERT(result.approx_equal(expected));
     }
 
     test_section("coincident");
