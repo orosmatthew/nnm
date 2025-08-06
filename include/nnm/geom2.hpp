@@ -3515,6 +3515,7 @@ public:
     /**
      * Default initialize to zero center and radius of 1.
      */
+    // tested
     constexpr Circle2()
         : center { Vector2<Real>::zero() }
         , radius { static_cast<Real>(1) }
@@ -3526,9 +3527,23 @@ public:
      * @param center Center.
      * @param radius Radius.
      */
+    // tested
     constexpr Circle2(const Vector2<Real>& center, const Real radius)
         : center { center }
         , radius { radius }
+    {
+    }
+
+    /**
+     * Cast from another type.
+     * @tparam Other Other type.
+     * @param other Other circle.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Circle2(const Circle2<Other>& other)
+        : center { other.center }
+        , radius { static_cast<Real>(other.radius) }
     {
     }
 
@@ -3538,6 +3553,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     static Circle2 from_center_point(const Vector2<Real>& center, const Vector2<Real>& point)
     {
         return { center, center.distance(point) };
@@ -3550,6 +3566,7 @@ public:
      * @param point3 Third point.
      * @return Result.
      */
+    // tested
     static Circle2 from_points_unchecked(
         const Vector2<Real>& point1, const Vector2<Real>& point2, const Vector2<Real>& point3)
     {
@@ -3573,6 +3590,7 @@ public:
      * @param point3 Third point.
      * @return Circle if exists, null if all 3 points are collinear.
      */
+    // tested
     static std::optional<Circle2> from_points(
         const Vector2<Real>& point1, const Vector2<Real>& point2, const Vector2<Real>& point3)
     {
@@ -3596,6 +3614,7 @@ public:
      * Length of the path around the circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real circumference() const
     {
         return static_cast<Real>(2) * pi<Real>() * radius;
@@ -3605,6 +3624,7 @@ public:
      * Length of the path around the circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real perimeter() const
     {
         return circumference();
@@ -3614,6 +3634,7 @@ public:
      * Area.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real area() const
     {
         return pi<Real>() * sqrd(radius);
@@ -3623,7 +3644,9 @@ public:
      * Distance of a segment that intersects the center and edges of the circle.
      * @return Result.
      */
-    [[nodiscard]] constexpr Real diameter() const
+    // tested
+    [[nodiscard]]
+    constexpr Real diameter() const
     {
         return static_cast<Real>(2) * radius;
     }
@@ -3633,6 +3656,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         return (point - center).length_sqrd() <= sqrd(radius);
@@ -3643,6 +3667,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         return center.distance(point) - radius;
@@ -3653,6 +3678,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         return max(static_cast<Real>(0), signed_distance(point));
@@ -3663,6 +3689,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         return max(static_cast<Real>(0), line.distance(center) - radius);
@@ -3673,6 +3700,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         return max(static_cast<Real>(0), ray.distance(center) - radius);
@@ -3683,6 +3711,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         return max(static_cast<Real>(0), segment.distance(center) - radius);
@@ -3693,6 +3722,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         return max(static_cast<Real>(0), arc.distance(center) - radius);
@@ -3703,6 +3733,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2& other) const
     {
         const Real dist = center.distance(other.center);
@@ -3715,6 +3746,7 @@ public:
      * @param triangle Triangle
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
     /**
@@ -3722,6 +3754,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -3729,6 +3762,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -3736,6 +3770,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> point_at(const Real angle) const
     {
         return { center.x + radius * cos(angle), center.y + radius * sin(angle) };
@@ -3746,6 +3781,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal_at(const Real angle) const
     {
         return Vector2<Real>::axis_x().rotate(angle);
@@ -3756,6 +3792,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         if (contains(line.origin)) {
@@ -3773,6 +3810,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
@@ -3795,6 +3833,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         if (contains(ray.origin)) {
@@ -3824,6 +3863,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
@@ -3853,6 +3893,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         if (contains(segment.start) || contains(segment.end)) {
@@ -3889,6 +3930,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.end - segment.start;
@@ -3921,6 +3963,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         if (contains(arc.start)) {
@@ -3952,6 +3995,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Arc2<Real>& arc) const
     {
         const Real dist = center.distance(arc.pivot);
@@ -3985,6 +4029,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Circle2& other) const
     {
         return center.distance_sqrd(other.center) <= sqrd(radius + other.radius);
@@ -3995,6 +4040,7 @@ public:
      * @param other Other circle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2& other) const
     {
         const Vector2<Real> diff = other.center - center;
@@ -4016,6 +4062,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
     /**
@@ -4023,6 +4070,7 @@ public:
      * @param triangle Triangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const;
 
     /**
@@ -4030,6 +4078,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -4037,6 +4086,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -4044,6 +4094,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -4051,6 +4102,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -4058,6 +4110,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - center;
@@ -4072,6 +4125,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
@@ -4090,6 +4144,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.start - center;
@@ -4110,6 +4165,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Arc2<Real>& arc) const
     {
         if (center == arc.pivot) {
@@ -4131,6 +4187,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Circle2& other) const
     {
         if (center == other.center) {
@@ -4146,7 +4203,8 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Circle2 translate(const Vector2<Real>& offset) const
+    // tested
+    [[nodiscard]] constexpr Circle2 translate(const Vector2<Real>& offset) const
     {
         return { center.translate(offset), radius };
     }
@@ -4157,6 +4215,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Circle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { center.rotate_at(rotate_origin, angle), radius };
@@ -4167,6 +4226,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Circle2 rotate(const Real angle) const
     {
         return { center.rotate(angle), radius };
@@ -4178,7 +4238,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Circle2 scale_at(const Vector2<Real>& scale_origin, const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Circle2 scale_at(const Vector2<Real>& scale_origin, const Real factor) const
     {
         return { center.scale_at(scale_origin, Vector2<Real>::all(factor)), abs(radius * factor) };
     }
@@ -4188,7 +4249,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Circle2 scale(const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Circle2 scale(const Real factor) const
     {
         return { center.scale(Vector2<Real>::all(factor)), abs(radius * factor) };
     }
@@ -4198,6 +4260,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coincident(const Circle2& other) const
     {
         return approx_equal(other);
@@ -4208,6 +4271,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Circle2& other) const
     {
         return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
@@ -4218,6 +4282,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Circle2& other) const
     {
         return center == other.center && radius == other.radius;
@@ -4228,6 +4293,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Circle2& other) const
     {
         return center != other.center || radius != other.radius;
@@ -4238,6 +4304,7 @@ public:
      * @param other Other circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator<(const Circle2& other) const
     {
         if (center != other.center) {

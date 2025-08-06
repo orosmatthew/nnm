@@ -3247,7 +3247,15 @@ static void circle2_tests()
         ASSERT(c.radius == 5.0f);
     }
 
-    test_section("from_center_containing_point");
+    test_section("Circle2(const Circle2<Other>&)");
+    {
+        constexpr nnm::Circle2d c1 { { 2.0, -3.0 }, 5.0 };
+        constexpr nnm::Circle2f c2 { c1 };
+        ASSERT(c2.center.approx_equal({ 2.0f, -3.0f }));
+        ASSERT(nnm::approx_equal(c2.radius, 5.0f));
+    }
+
+    test_section("from_center_point");
     {
         ASSERT(
             nnm::Circle2f::from_center_point({ -2.0f, 2.0f }, { -1.0f, 0.0f })
@@ -3753,7 +3761,8 @@ static void circle2_tests()
 
     test_section("translate");
     {
-        ASSERT(c1.translate({ 0.0f, 0.0f }).approx_equal(c1));
+        constexpr auto result = c1.translate({ 0.0f, 0.0f });
+        ASSERT(result.approx_equal(c1));
         ASSERT(c1.translate({ -20.0f, 30.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }))
         ASSERT_FALSE(c1.translate({ -20.0f, 100.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }));
     }
@@ -3775,13 +3784,15 @@ static void circle2_tests()
 
     test_section("scale_at");
     {
-        ASSERT(c1.scale_at(origin, 4.0f).approx_equal({ { 17.0f, -15.0f }, 20.0f }));
+        constexpr auto result = c1.scale_at(origin, 4.0f);
+        ASSERT(result.approx_equal({ { 17.0f, -15.0f }, 20.0f }));
         ASSERT_FALSE(c1.scale_at({ -10.0f, 200.0f }, 2.0f).approx_equal({ { 17.0f, -15.0f }, 20.0f }));
     }
 
     test_section("scale");
     {
-        ASSERT(c1.scale(-3.0f).approx_equal({ { -6.0f, 9.0f }, 15.0f }));
+        constexpr auto result = c1.scale(-3.0f);
+        ASSERT(result.approx_equal({ { -6.0f, 9.0f }, 15.0f }));
         ASSERT_FALSE(c1.scale(2.0f).approx_equal({ { -6.0f, 9.0f }, 15.0f }));
     }
 
