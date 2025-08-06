@@ -1526,6 +1526,14 @@ static void segment2_tests()
         ASSERT(s.end == nnm::Vector2f(-3.0f, 4.0f));
     }
 
+    test_section("Segment2(const Segment2<Other>&)");
+    {
+        constexpr nnm::Segment2d s1 { { 1.0, -2.0 }, { -3.0, 4.0 } };
+        constexpr nnm::Segment2f s2 { s1 };
+        ASSERT(s2.start.approx_equal({ 1.0f, -2.0f }));
+        ASSERT(s2.end.approx_equal({ -3.0f, 4.0f }));
+    }
+
     constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
 
     test_section("collinear(const Vector2&)");
@@ -1580,7 +1588,7 @@ static void segment2_tests()
         ASSERT_FALSE(s1.contains({ -5.0f, 7.0f }));
     }
 
-    test_section("distance");
+    test_section("distance(const Vector2&)");
     {
         ASSERT(nnm::approx_equal(s1.distance({ 2.0f, 3.0f }), 3.6055512755f));
         ASSERT(nnm::approx_equal(s1.distance({ 3.0f, -5.0f }), 3.6055512755f));
@@ -1705,6 +1713,12 @@ static void segment2_tests()
         ASSERT(nnm::approx_equal(s1.signed_distance({ 2.0f, 3.0f }), -3.6055512755f));
         ASSERT(nnm::approx_equal(s1.signed_distance({ 3.0f, -5.0f }), 3.6055512755f));
         ASSERT(nnm::approx_equal(s1.signed_distance({ -4.0f, 4.0f }), 1.0f));
+    }
+
+    test_section("direction_unnormalized");
+    {
+        constexpr auto result = s1.direction_unnormalized();
+        ASSERT(result.approx_equal({ -4.0f, 6.0f }));
     }
 
     test_section("direction");
@@ -2062,12 +2076,12 @@ static void segment2_tests()
         ASSERT_FALSE(seg4.tangent(c1));
     }
 
-    test_section("project_point");
+    test_section("project");
     {
-        constexpr auto result = s1.project_point({ 2.0f, 3.0f });
+        constexpr auto result = s1.project({ 2.0f, 3.0f });
         ASSERT(result.approx_equal({ -1.0f, 1.0f }));
-        ASSERT(s1.project_point({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
-        ASSERT(s1.project_point({ -5.0f, 5.0f }).approx_equal({ -3.0f, 4.0f }));
+        ASSERT(s1.project({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(s1.project({ -5.0f, 5.0f }).approx_equal({ -3.0f, 4.0f }));
     }
 
     test_section("unchecked_slope");
@@ -2105,21 +2119,21 @@ static void segment2_tests()
 
     test_section("translate");
     {
-        const auto result = s1.translate({ -3.0f, 3.0f });
+        constexpr auto result = s1.translate({ -3.0f, 3.0f });
         ASSERT(result.start.approx_equal({ -2.0f, 1.0f }));
         ASSERT(result.end.approx_equal({ -6.0f, 7.0f }));
     }
 
     test_section("scale_at");
     {
-        const auto result = s1.scale_at({ 1.0f, 2.0f }, { -1.0f, 3.0f });
+        constexpr auto result = s1.scale_at({ 1.0f, 2.0f }, { -1.0f, 3.0f });
         ASSERT(result.start.approx_equal({ 1.0f, -10.0f }));
         ASSERT(result.end.approx_equal({ 5.0f, 8.0f }));
     }
 
     test_section("scale");
     {
-        const auto result = s1.scale({ -1.0f, 3.0f });
+        constexpr auto result = s1.scale({ -1.0f, 3.0f });
         ASSERT(result.start.approx_equal({ -1.0f, -6.0f }));
         ASSERT(result.end.approx_equal({ 3.0f, 12.0f }));
     }
@@ -2140,28 +2154,28 @@ static void segment2_tests()
 
     test_section("shear_x_at");
     {
-        const auto result = s1.shear_x_at({ 1.0f, 2.0f }, 0.5f);
+        constexpr auto result = s1.shear_x_at({ 1.0f, 2.0f }, 0.5f);
         ASSERT(result.start.approx_equal({ -1.0f, -2.0f }));
         ASSERT(result.end.approx_equal({ -2.0f, 4.0f }));
     }
 
     test_section("shear_x");
     {
-        const auto result = s1.shear_x(0.5f);
+        constexpr auto result = s1.shear_x(0.5f);
         ASSERT(result.start.approx_equal({ 0.0f, -2.0f }));
         ASSERT(result.end.approx_equal({ -1.0f, 4.0f }));
     }
 
     test_section("shear_y_at");
     {
-        const auto result = s1.shear_y_at({ 1.0f, 2.0f }, 0.5f);
+        constexpr auto result = s1.shear_y_at({ 1.0f, 2.0f }, 0.5f);
         ASSERT(result.start.approx_equal({ 1.0f, -2.0f }));
         ASSERT(result.end.approx_equal({ -3.0f, 2.0f }));
     }
 
     test_section("shear_y");
     {
-        const auto result = s1.shear_y(0.5f);
+        constexpr auto result = s1.shear_y(0.5f);
         ASSERT(result.start.approx_equal({ 1.0f, -1.5f }));
         ASSERT(result.end.approx_equal({ -3.0f, 2.5f }));
     }
@@ -2199,7 +2213,8 @@ static void segment2_tests()
 
     test_section("operator<");
     {
-        ASSERT(s2 < s1);
+        constexpr auto result = s2 < s1;
+        ASSERT(result);
         ASSERT_FALSE(s1 < s2);
     }
 }

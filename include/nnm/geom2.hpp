@@ -1641,6 +1641,7 @@ public:
     /**
      * Initialize with both start and end points zero.
      */
+    // tested
     constexpr Segment2()
         : start { Vector2<Real>::zero() }
         , end { Vector2<Real>::zero() }
@@ -1652,6 +1653,7 @@ public:
      * @param from Start point.
      * @param to End point.
      */
+    // tested
     constexpr Segment2(const Vector2<Real>& from, const Vector2<Real>& to)
         : start { from }
         , end { to }
@@ -1663,10 +1665,11 @@ public:
      * @tparam Other Other floating-point type.
      * @param other Other segment.
      */
+    // tested
     template <typename Other>
     explicit constexpr Segment2(const Segment2<Other>& other)
-        : start { Vector2<Other> { other.from } }
-        , end { Vector2<Other> { other.to } }
+        : start { Vector2<Other> { other.start } }
+        , end { Vector2<Other> { other.end } }
     {
     }
 
@@ -1675,6 +1678,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff1 = point - start;
@@ -1687,6 +1691,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Line2<Real>& line) const
     {
         if (!parallel(line)) {
@@ -1701,6 +1706,7 @@ public:
      * @param ray 2D ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Ray2<Real>& ray) const
     {
         if (!parallel(ray)) {
@@ -1715,6 +1721,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Segment2& other) const
     {
         if (!parallel(other)) {
@@ -1729,6 +1736,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff1 = point - start;
@@ -1746,6 +1754,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = end - start;
@@ -1770,6 +1779,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = end - start;
@@ -1790,6 +1800,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -1805,6 +1816,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -1821,6 +1833,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2& other) const
     {
         if (intersects(other)) {
@@ -1838,6 +1851,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
 
     /**
@@ -1845,6 +1859,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
     /**
@@ -1852,6 +1867,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
     /**
@@ -1859,6 +1875,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -1866,12 +1883,14 @@ public:
      * @param rectangle Aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
      * Unnormalized direction from start point towards the end point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized() const
     {
         return end - start;
@@ -1881,6 +1900,7 @@ public:
      * Normalized direction from start point towards end point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> direction() const
     {
         return direction_unnormalized().normalize();
@@ -1891,6 +1911,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Line2<Real>& line) const
     {
         return approx_zero((end - start).cross(line.direction));
@@ -1901,6 +1922,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Ray2<Real>& ray) const
     {
         return approx_zero((end - start).cross(ray.direction));
@@ -1911,6 +1933,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Segment2& other) const
     {
         return approx_zero((end - start).cross(other.end - other.start));
@@ -1921,6 +1944,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Line2<Real>& line) const
     {
         return approx_zero((end - start).dot(line.direction));
@@ -1931,6 +1955,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Ray2<Real>& ray) const
     {
         return approx_zero((end - start).dot(ray.direction));
@@ -1941,6 +1966,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Segment2& other) const
     {
         return approx_zero((end - start).dot(other.end - other.start));
@@ -1951,6 +1977,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = end - start;
@@ -1968,6 +1995,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = end - start;
@@ -1988,6 +2016,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = end - start;
@@ -2006,6 +2035,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = end - start;
@@ -2027,6 +2057,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment2& other) const
     {
         const Vector2<Real> dir = end - start;
@@ -2047,6 +2078,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2& other) const
     {
         const Vector2<Real> dir = end - start;
@@ -2070,6 +2102,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
 
     /**
@@ -2077,6 +2110,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const;
 
     /**
@@ -2084,6 +2118,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     /**
@@ -2091,6 +2126,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
@@ -2098,6 +2134,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     /**
@@ -2105,6 +2142,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Triangle2<Real>& triangle) const;
 
     /**
@@ -2112,6 +2150,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -2119,6 +2158,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -2126,6 +2166,7 @@ public:
      * @param rectangle Aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -2133,6 +2174,7 @@ public:
      * @param rectangle Aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -2140,6 +2182,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Arc2<Real>& arc) const;
 
     /**
@@ -2147,6 +2190,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Circle2<Real>& circle) const;
 
     /**
@@ -2154,7 +2198,8 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> project(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = end - start;
         const Real length_sqrd = dir.dot(dir);
@@ -2175,6 +2220,7 @@ public:
      * Slope which does not check if vertical. If vertical, divide-by-zero will occur.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real unchecked_slope() const
     {
         return (end.y - start.y) / (end.x - start.x);
@@ -2184,6 +2230,7 @@ public:
      * Slope.
      * @return Slope if exists, null if vertical.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Real> slope() const
     {
         const Real denom = end.x - start.x;
@@ -2197,6 +2244,7 @@ public:
      * Squared length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return sqrd(end.x - start.x) + sqrd(end.y - start.y);
@@ -2206,6 +2254,7 @@ public:
      * Length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
@@ -2215,6 +2264,7 @@ public:
      * Midpoint.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Vector2<Real> midpoint() const
     {
         return (end + start) / static_cast<Real>(2);
@@ -2225,7 +2275,8 @@ public:
      * @param by Offset.
      * @return
      */
-    [[nodiscard]] Segment2 translate(const Vector2<Real>& by) const
+    // tested
+    [[nodiscard]] constexpr Segment2 translate(const Vector2<Real>& by) const
     {
         return { start.translate(by), end.translate(by) };
     }
@@ -2236,7 +2287,8 @@ public:
      * @param by Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
+    // tested
+    [[nodiscard]] constexpr Segment2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
         return { start.scale_at(scale_origin, by), end.scale_at(scale_origin, by) };
     }
@@ -2246,7 +2298,8 @@ public:
      * @param by Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 scale(const Vector2<Real>& by) const
+    // tested
+    [[nodiscard]] constexpr Segment2 scale(const Vector2<Real>& by) const
     {
         return { start.scale(by), end.scale(by) };
     }
@@ -2257,6 +2310,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { start.rotate_at(rotate_origin, angle), end.rotate_at(rotate_origin, angle) };
@@ -2267,6 +2321,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2 rotate(const Real angle) const
     {
         return { start.rotate(angle), end.rotate(angle) };
@@ -2278,7 +2333,8 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor_y) const
+    // tested
+    [[nodiscard]] constexpr Segment2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor_y) const
     {
         return { start.shear_x_at(shear_origin, factor_y), end.shear_x_at(shear_origin, factor_y) };
     }
@@ -2288,7 +2344,8 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 shear_x(const Real factor_y) const
+    // tested
+    [[nodiscard]] constexpr Segment2 shear_x(const Real factor_y) const
     {
         return { start.shear_x(factor_y), end.shear_x(factor_y) };
     }
@@ -2299,7 +2356,8 @@ public:
      * @param angle_x X-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
+    // tested
+    [[nodiscard]] constexpr Segment2 shear_y_at(const Vector2<Real>& shear_origin, const Real angle_x) const
     {
         return { start.shear_y_at(shear_origin, angle_x), end.shear_y_at(shear_origin, angle_x) };
     }
@@ -2309,7 +2367,8 @@ public:
      * @param factor_x X-Axis factor.
      * @return Result.
      */
-    [[nodiscard]] Segment2 shear_y(const Real factor_x) const
+    // tested
+    [[nodiscard]] constexpr Segment2 shear_y(const Real factor_x) const
     {
         return { start.shear_y(factor_x), end.shear_y(factor_x) };
     }
@@ -2319,6 +2378,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coincident(const Segment2& other) const
     {
         return (start.approx_equal(other.start) && end.approx_equal(other.end))
@@ -2330,6 +2390,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Segment2& other) const
     {
         return start.approx_equal(other.start) && end.approx_equal(other.end);
@@ -2340,6 +2401,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Segment2& other) const
     {
         return start == other.start && end == other.end;
@@ -2350,6 +2412,7 @@ public:
      * @param other Other segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Segment2& other) const
     {
         return start != other.start || end != other.end;
@@ -2360,6 +2423,7 @@ public:
      * @param other
      * @return
      */
+    // tested
     [[nodiscard]] constexpr bool operator<(const Segment2& other) const
     {
         if (start != other.start) {
@@ -4708,7 +4772,7 @@ public:
             Vector2<Real> closest;
             Real closest_dist_sqrd = std::numeric_limits<Real>::max();
             for (int i = 0; i < 3; ++i) {
-                const Vector2<Real> proj = edge(i).project_point(circle.center);
+                const Vector2<Real> proj = edge(i).project(circle.center);
                 const Real dist_sqrd = circle.center.distance_sqrd(proj);
                 if (dist_sqrd < closest_dist_sqrd) {
                     closest_dist_sqrd = dist_sqrd;
