@@ -847,6 +847,14 @@ static void ray2_tests()
         ASSERT(ray.direction.approx_equal({ 1.0f, -3.0f }));
     }
 
+    test_section("Ray2(const Ray2<Other>&)");
+    {
+        constexpr nnm::Ray2d ray1 { { 1.0, -2.0 }, { 1.0, -3.0 } };
+        constexpr nnm::Ray2f ray2 { ray1 };
+        ASSERT(ray2.origin.approx_equal({ 1.0f, -2.0f }));
+        ASSERT(ray2.direction.approx_equal({ 1.0f, -3.0f }));
+    }
+
     test_section("from_point_to_point");
     {
         constexpr nnm::Vector2f p1 { 1.0f, -2.0f };
@@ -1070,11 +1078,7 @@ static void ray2_tests()
         ASSERT(result);
         constexpr nnm::Ray2f r2 { { 100.0f, -100.0f }, { 0.384615391f, -0.923076928f } };
         ASSERT(r2.parallel(line1))
-        constexpr nnm::Ray2f r3 { { 1.0f, -2.0f },
-                                  {
-                                      0.923076928f,
-                                      0.384615391f,
-                                  } };
+        constexpr nnm::Ray2f r3 { { 1.0f, -2.0f }, { 0.923076928f, 0.384615391f } };
         ASSERT_FALSE(r3.parallel(line1));
     }
 
@@ -1394,7 +1398,7 @@ static void ray2_tests()
         ASSERT_FALSE(nnm::Ray2f({ 3.0f, 11.21110255f }, { -1.0f, 0.0f }).tangent(arc2));
     }
 
-    test_section("tangent");
+    test_section("tangent(const Circle2&)");
     {
         constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
         constexpr nnm::Ray2f r1 { { 0.0f, 2.0f }, { 1.0f, 0.0f } };
@@ -1410,27 +1414,19 @@ static void ray2_tests()
         ASSERT_FALSE(r5.tangent(c1));
     }
 
-    test_section("project_point_scalar");
+    test_section("project");
     {
         constexpr nnm::Ray2f r { { 1.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
-        constexpr auto result = r.project_point_scalar({ 2.0f, 3.0f });
-        ASSERT(nnm::approx_equal(result, 3.6055512755f));
-        ASSERT(nnm::approx_zero(r.project_point_scalar({ 5.0f, -5.0f })));
-    }
-
-    test_section("project_point");
-    {
-        constexpr nnm::Ray2f r { { 1.0f, -2.0f }, { -0.5547001962f, 0.8320502943f } };
-        constexpr auto result = r.project_point({ 2.0f, 3.0f });
+        constexpr auto result = r.project({ 2.0f, 3.0f });
         ASSERT(result.approx_equal({ -1.0f, 1.0f }));
-        ASSERT(r.project_point({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(r.project({ 5.0f, -5.0f }).approx_equal({ 1.0f, -2.0f }));
     }
 
     constexpr nnm::Ray2f ray3 { { 3.0f, -1.0f }, { 0.70710678f, 0.70710678f } };
 
     test_section("translate");
     {
-        const nnm::Ray2f result = ray3.translate({ -2.0f, 3.0f });
+        constexpr nnm::Ray2f result = ray3.translate({ -2.0f, 3.0f });
         ASSERT(result.origin.approx_equal({ 1.0f, 2.0f }));
         ASSERT(result.direction.approx_equal(ray3.direction));
     }
@@ -1492,19 +1488,22 @@ static void ray2_tests()
 
     test_section("operator<");
     {
-        ASSERT(ray1 < ray2);
+        constexpr auto result = ray1 < ray2;
+        ASSERT(result);
         ASSERT_FALSE(ray2 < ray1);
     }
 
     test_section("operator==");
     {
-        ASSERT_FALSE(ray1 == ray2);
+        constexpr auto result = ray1 == ray2;
+        ASSERT_FALSE(result);
         ASSERT(ray1 == ray1);
     }
 
     test_section("operator!=");
     {
-        ASSERT(ray1 != ray2);
+        constexpr auto result = ray1 != ray2;
+        ASSERT(result);
         ASSERT_FALSE(ray1 != ray1);
     }
 }

@@ -1000,6 +1000,7 @@ public:
     /**
      * Initialize with zero origin and in the direction of the x-axis.
      */
+    // tested
     constexpr Ray2()
         : origin { Vector2<Real>::zero() }
         , direction { Vector2<Real>::axis_x() }
@@ -1011,6 +1012,7 @@ public:
      * @param origin Origin.
      * @param direction Normalized direction.
      */
+    // tested
     constexpr Ray2(const Vector2<Real>& origin, const Vector2<Real>& direction)
         : origin { origin }
         , direction { direction }
@@ -1018,10 +1020,11 @@ public:
     }
 
     /**
-     * Cast from another type.
+     * Cast from another type. No normalization is done.
      * @tparam Other Other floating-point type.
      * @param other Other ray.
      */
+    // tested
     template <typename Other>
     explicit constexpr Ray2(const Ray2<Other> other)
         : origin { other.origin }
@@ -1035,6 +1038,7 @@ public:
      * @param to To.
      * @return Result.
      */
+    // tested
     static Ray2 from_point_to_point(const Vector2<Real>& from, const Vector2<Real>& to)
     {
         return { from, from.direction(to) };
@@ -1044,6 +1048,7 @@ public:
      * Normalize the direction.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 normalize() const
     {
         return { origin, direction.normalize() };
@@ -1054,6 +1059,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Vector2<Real>& point) const
     {
         return Line2<Real>::from_ray(*this).contains(point);
@@ -1064,6 +1070,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Line2<Real>& line) const
     {
         return Line2<Real>::from_ray(*this).coincident(line);
@@ -1074,6 +1081,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Ray2& other) const
     {
         return Line2<Real>::from_ray(*this).coincident(Line2<Real>::from_ray(other));
@@ -1084,6 +1092,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool collinear(const Segment2<Real>& segment) const;
 
     /**
@@ -1091,6 +1100,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -1106,6 +1116,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real signed_distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> diff = point - origin;
@@ -1120,6 +1131,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         return abs(signed_distance(point));
@@ -1130,6 +1142,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -1143,6 +1156,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -1165,6 +1179,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const;
 
     /**
@@ -1172,6 +1187,7 @@ public:
      * @param arc 2D arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const;
 
     /**
@@ -1179,6 +1195,7 @@ public:
      * @param circle 2D circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
     /**
@@ -1186,6 +1203,7 @@ public:
      * @param triangle 2D triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
     /**
@@ -1193,6 +1211,7 @@ public:
      * @param rectangle 2D rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -1200,6 +1219,7 @@ public:
      * @param rectangle 2D aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -1207,6 +1227,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Line2<Real>& line) const
     {
         return approx_zero(direction.cross(line.direction));
@@ -1217,6 +1238,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Ray2& other) const
     {
         return approx_zero(direction.cross(other.direction));
@@ -1227,6 +1249,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool parallel(const Segment2<Real>& segment) const;
 
     /**
@@ -1234,6 +1257,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Line2<Real>& line) const
     {
         return approx_zero(direction.dot(line.direction));
@@ -1244,6 +1268,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Ray2& other) const
     {
         return approx_zero(direction.dot(other.direction));
@@ -1254,6 +1279,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Segment2<Real>& segment) const;
 
     /**
@@ -1261,6 +1287,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         const Real dir_cross = direction.cross(line.direction);
@@ -1277,6 +1304,7 @@ public:
      * @param line 2D line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Line2<Real>& line) const
     {
         const Real dir_cross = direction.cross(line.direction);
@@ -1296,6 +1324,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -1313,6 +1342,7 @@ public:
      * @param other Other ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Ray2& other) const
     {
         const Real dir_cross = direction.cross(other.direction);
@@ -1333,6 +1363,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const;
 
     /**
@@ -1340,6 +1371,7 @@ public:
      * @param segment 2D segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector2<Real>> intersection(const Segment2<Real>& segment) const;
 
     /**
@@ -1347,6 +1379,7 @@ public:
      * @param arc 2D arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const;
 
     /**
@@ -1354,6 +1387,7 @@ public:
      * @param arc 2D arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const;
 
     /**
@@ -1361,6 +1395,7 @@ public:
      * @param circle 2D circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     /**
@@ -1368,6 +1403,7 @@ public:
      * @param circle 2D circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
@@ -1375,6 +1411,7 @@ public:
      * @param triangle 2D triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const;
 
     /**
@@ -1382,6 +1419,7 @@ public:
      * @param triangle 2D triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Triangle2<Real>& triangle) const;
 
     /**
@@ -1389,6 +1427,7 @@ public:
      * @param rectangle 2D rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -1396,6 +1435,7 @@ public:
      * @param rectangle 2D rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -1403,6 +1443,7 @@ public:
      * @param rectangle 2D aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -1410,6 +1451,7 @@ public:
      * @param rectangle 2D aligned-rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -1417,6 +1459,7 @@ public:
      * @param arc 2D arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Arc2<Real>& arc) const;
 
     /**
@@ -1424,30 +1467,19 @@ public:
      * @param circle 2D circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Circle2<Real>& circle) const;
-
-    /**
-     * Scalar that represent the projection of a point onto the ray.
-     * @param point Point.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Real project_point_scalar(const Vector2<Real>& point) const
-    {
-        const Real t = (point - origin).dot(direction);
-        if (t < static_cast<Real>(0)) {
-            return static_cast<Real>(0);
-        }
-        return t;
-    }
 
     /**
      * Projection of point on the ray.
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] constexpr Vector2<Real> project_point(const Vector2<Real>& point) const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> project(const Vector2<Real>& point) const
     {
-        return origin + direction * project_point_scalar(point);
+        const Real t = max(static_cast<Real>(0), (point - origin).dot(direction));
+        return origin + direction * t;
     }
 
     /**
@@ -1455,7 +1487,8 @@ public:
      * @param by Offset.
      * @return Result.
      */
-    [[nodiscard]] Ray2 translate(const Vector2<Real>& by) const
+    // tested
+    [[nodiscard]] constexpr Ray2 translate(const Vector2<Real>& by) const
     {
         return { origin.translate(by), direction };
     }
@@ -1466,6 +1499,7 @@ public:
      * @param by Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& by) const
     {
         return { origin.scale_at(scale_origin, by), direction.scale(by).normalize() };
@@ -1476,6 +1510,7 @@ public:
      * @param by Scale factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 scale(const Vector2<Real>& by) const
     {
         return { origin.scale(by), direction.scale(by).normalize() };
@@ -1487,6 +1522,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle) const
     {
         return { origin.rotate_at(rotate_origin, angle), direction.rotate(angle).normalize() };
@@ -1497,6 +1533,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 rotate(const Real angle) const
     {
         return { origin.rotate(angle), direction.rotate(angle).normalize() };
@@ -1508,6 +1545,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 shear_x_at(const Vector2<Real>& shear_origin, const Real factor_y) const
     {
         return { origin.shear_x_at(shear_origin, factor_y), direction.shear_x(factor_y).normalize() };
@@ -1518,6 +1556,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 shear_x(const Real factor_y) const
     {
         return { origin.shear_x(factor_y), direction.shear_x(factor_y).normalize() };
@@ -1529,6 +1568,7 @@ public:
      * @param factor_x X-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 shear_y_at(const Vector2<Real>& shear_origin, const Real factor_x) const
     {
         return { origin.shear_y_at(shear_origin, factor_x), direction.shear_y(factor_x).normalize() };
@@ -1539,6 +1579,7 @@ public:
      * @param factor_x X-Axis factor.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Ray2 shear_y(const Real factor_x) const
     {
         return { origin.shear_y(factor_x), direction.shear_y(factor_x).normalize() };
@@ -1549,7 +1590,8 @@ public:
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool operator==(const Ray2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator==(const Ray2& other) const
     {
         return origin == other.origin && direction == other.direction;
     }
@@ -1559,7 +1601,8 @@ public:
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool operator!=(const Ray2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator!=(const Ray2& other) const
     {
         return origin != other.origin || direction != other.direction;
     }
@@ -1569,7 +1612,8 @@ public:
      * @param other Other ray.
      * @return Result.
      */
-    [[nodiscard]] bool operator<(const Ray2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator<(const Ray2& other) const
     {
         if (origin != other.origin) {
             return origin < other.origin;
