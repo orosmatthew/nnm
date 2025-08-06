@@ -36,6 +36,142 @@ class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
 
+template <typename Real>
+class Intersections3 {
+public:
+    Vector3<Real> points[2];
+    uint8_t size;
+
+    Intersections3()
+        : points { Vector3<Real>::zero(), Vector3<Real>::zero() }
+        , size { 0 }
+    {
+    }
+
+    // ReSharper disable once CppNonExplicitConvertingConstructor
+    Intersections3(const Vector3<Real>& point) // NOLINT(*-explicit-constructor)
+        : points { point, Vector3<Real>::zero() }
+        , size { 1 }
+    {
+    }
+
+    Intersections3(const Vector3<Real>& point1, const Vector3<Real>& point2)
+        : points { point1, point2 }
+        , size { 2 }
+    {
+    }
+
+    void insert(const Vector3<Real>& point)
+    {
+        if (approx_contains(point)) {
+            return;
+        }
+        NNM_BOUNDS_CHECK_ASSERT("Intersections3", size < 2);
+        points[size++] = point;
+    }
+
+    void clear()
+    {
+        points = { Vector3<Real>::zero(), Vector3<Real>::zero() };
+        size = 0;
+    }
+
+    [[nodiscard]] static uint8_t capacity()
+    {
+        return 2;
+    }
+
+    Vector3<Real>* begin()
+    {
+        return &points[0];
+    }
+
+    Vector3<Real>* end()
+    {
+        return &points[size];
+    }
+
+    const Vector3<Real>* begin() const
+    {
+        return &points[0];
+    }
+
+    const Vector3<Real>* end() const
+    {
+        return &points[size];
+    }
+
+    [[nodiscard]] bool approx_equal(const Intersections3& other) const
+    {
+        if (size != other.size) {
+            return false;
+        }
+        if (size == 0) {
+            return true;
+        }
+        if (size == 1) {
+            return points[0].approx_equal(other.points[0]);
+        }
+        return (points[0].approx_equal(other.points[0]) && points[1].approx_equal(other.points[1]))
+            || (points[0].approx_equal(other.points[1]) && points[1].approx_equal(other.points[0]));
+    }
+
+    [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
+    {
+        for (uint8_t i = 0; i < size; ++i) {
+            if (points[i].approx_equal(point)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] bool empty() const
+    {
+        return size == 0;
+    }
+
+    Vector3<Real>& operator[](uint8_t index)
+    {
+        return points[index];
+    }
+
+    const Vector3<Real>& operator[](uint8_t index) const
+    {
+        return points[index];
+    }
+
+    Vector3<Real>& at(uint8_t index)
+    {
+        return points[index];
+    }
+
+    const Vector3<Real>& at(uint8_t index) const
+    {
+        return points[index];
+    }
+
+    bool operator==(const Intersections3& other) const
+    {
+        if (size != other.size) {
+            return false;
+        }
+        if (size == 0) {
+            return true;
+        }
+        if (size == 1) {
+            return points[0] == other.points[0];
+        }
+        return (points[0] == other.points[0] && points[1] == other.points[1])
+            || (points[0] == other.points[1] && points[1] == other.points[0]);
+    }
+
+    bool operator!=(const Intersections3& other) const
+    {
+        return !(*this == other);
+    }
+};
+
 /**
  * 3D infinite line.
  * @tparam Real Floating-point type.
@@ -3351,25 +3487,20 @@ public:
      */
     [[nodiscard]] std::optional<Segment3<Real>> intersections(const Plane<Real>& plane) const
     {
-        std::array<Vector3<Real>, 2> points;
-        uint8_t points_count = 0;
+        Intersections3<Real> inters;
         for (uint8_t i = 0; i < 3; ++i) {
             const std::optional<Vector3<Real>> point = plane.intersection(edge(i));
-            if (!point.has_value()) {
-                continue;
-            }
-            points[points_count++] = *point;
-            if (points_count >= 2) {
-                return points;
+            if (point.has_value()) {
+                inters.insert(*point);
             }
         }
-        if (points_count == 0) {
+        if (inters.size == 0) {
             return std::nullopt;
         }
-        if (points_count == 1) {
-            return std::array { points[0], points[0] };
+        if (inters.size == 1) {
+            return Segment3<Real> { inters[0], inters[0] };
         }
-        return points;
+        return Segment3<Real> { inters[0], inters[1] };
     }
 
     /**
@@ -3390,24 +3521,20 @@ public:
      */
     [[nodiscard]] std::optional<Segment3<Real>> intersection(const Triangle3& other) const
     {
-        std::array<Vector3<Real>, 2> points;
-        uint8_t points_count = 0;
+        Intersections3<Real> inters;
         for (uint8_t i = 0; i < 3; ++i) {
             const std::optional<Vector3<Real>> point = intersection(other.edge(i));
             if (point.has_value()) {
-                points[points_count++] = *point;
-            }
-            if (points_count >= 2) {
-                return points;
+                inters.insert(*point);
             }
         }
-        if (points_count == 0) {
+        if (inters.size == 0) {
             return std::nullopt;
         }
-        if (points_count == 1) {
-            return Segment3<Real> { points[0], points[0] };
+        if (inters.size == 1) {
+            return Segment3<Real> { inters[0], inters[0] };
         }
-        return Segment3<Real> { points[0], points[1] };
+        return Segment3<Real> { inters[0], inters[1] };
     }
 
     /**
@@ -3868,7 +3995,7 @@ public:
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Vector3<Real> p1 = line.origin + line.direction * t1;
         const Vector3<Real> p2 = line.origin + line.direction * t2;
-        return p2 < p1 ? std::array { p2, p1 } : std::array { p1, p2 };
+        return Segment3<Real> { p1, p2 };
     }
 
     /**
