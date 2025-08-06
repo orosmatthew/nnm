@@ -1535,6 +1535,7 @@ static void segment2_tests()
     }
 
     constexpr nnm::Segment2f s1 { { 1.0f, -2.0f }, { -3.0f, 4.0f } };
+    constexpr nnm::Segment2f s_degen { { 1.0f, 2.0f }, { 1.0f, 2.0f } };
 
     test_section("collinear(const Vector2&)");
     {
@@ -1543,6 +1544,8 @@ static void segment2_tests()
         ASSERT_FALSE(s1.collinear({ 0.0f, 0.0f }));
         ASSERT(s1.collinear({ -5.0f, 7.0f }));
         ASSERT(s1.collinear({ 3.0f, -5.0f }));
+        ASSERT(s_degen.collinear({ 0.0f, 0.0f }));
+        ASSERT(s_degen.collinear({ 1.0f, 2.0f }));
     }
 
     test_section("collinear(const Line2&)");
@@ -1552,6 +1555,8 @@ static void segment2_tests()
         ASSERT(result);
         constexpr nnm::Line2f line2 { { 3.0f, -0.5f }, { -0.5547f, 0.83205f } };
         ASSERT_FALSE(s1.collinear(line2));
+        ASSERT(nnm::Segment2f({ 0.0f, -0.5f }, { 0.0f, -0.5f }).collinear(line1));
+        ASSERT_FALSE(nnm::Segment2f({ 0.0f, -0.5f }, { 0.0f, -0.5f }).collinear(line2));
     }
 
     test_section("collinear(const Ray2&)");
@@ -1563,6 +1568,8 @@ static void segment2_tests()
         ASSERT(s1.collinear(ray2));
         constexpr nnm::Ray2f ray3 { { 3.0f, -0.5f }, { 0.5547f, -0.83205f } };
         ASSERT_FALSE(s1.collinear(ray3));
+        ASSERT(nnm::Segment2f({ 0.0f, -0.5f }, { 0.0f, -0.5f }).collinear(ray2));
+        ASSERT_FALSE(nnm::Segment2f({ 0.0f, -0.5f }, { 0.0f, -0.5f }).collinear(ray3));
     }
 
     test_section("collinear(const Segment2&)");
@@ -1574,6 +1581,9 @@ static void segment2_tests()
         ASSERT(s1.collinear(s3));
         constexpr nnm::Segment2f s4 { { 6.0f, -10.0f }, { 5.0f, -5.0f } };
         ASSERT_FALSE(s1.collinear(s4));
+        ASSERT(nnm::Segment2f({ 7.0f, -11.0f }, { 7.0f, -11.0f }).collinear(s3));
+        ASSERT_FALSE(nnm::Segment2f({ 7.0f, -11.0f }, { 7.0f, -11.0f }).collinear(s4));
+        ASSERT(nnm::Segment2f({ 7.0f, -11.0f }, { 7.0f, -11.0f }).collinear(s_degen));
     }
 
     test_section("contains");
@@ -1586,6 +1596,8 @@ static void segment2_tests()
         ASSERT_FALSE(s1.contains({ 1.0f, 1.0f }));
         ASSERT_FALSE(s1.contains({ 3.0f, -5.0f }));
         ASSERT_FALSE(s1.contains({ -5.0f, 7.0f }));
+        ASSERT_FALSE(s_degen.contains({ 0.0f, 0.0f }));
+        ASSERT(s_degen.contains({ 1.0f, 2.0f }));
     }
 
     test_section("distance(const Vector2&)");
@@ -1593,6 +1605,8 @@ static void segment2_tests()
         ASSERT(nnm::approx_equal(s1.distance({ 2.0f, 3.0f }), 3.6055512755f));
         ASSERT(nnm::approx_equal(s1.distance({ 3.0f, -5.0f }), 3.6055512755f));
         ASSERT(nnm::approx_equal(s1.distance({ -4.0f, 4.0f }), 1.0f));
+        ASSERT(nnm::approx_equal(s_degen.distance({ 2.0f, 2.0f }), 1.0f));
+        ASSERT(nnm::approx_zero(s_degen.distance({ 1.0f, 2.0f })));
     }
 
     test_section("distance(const Line2&)");
@@ -1602,6 +1616,7 @@ static void segment2_tests()
         ASSERT(nnm::approx_equal(s1.distance(nnm::Line2f::from_points({ 0.0f, 3.0f }, { 1.0f, 2.0f })), 1.4142135624f));
         ASSERT(nnm::approx_equal(s1.distance(nnm::Line2f::axis_y_offset(2.0f)), 1.0f));
         ASSERT(nnm::approx_equal(s1.distance(nnm::Line2f::from_points({ 2.0f, 0.0f }, { 0.0f, 3.0f })), 1.9414506868f));
+        ASSERT(nnm::approx_equal(s_degen.distance(nnm::Line2f::axis_x()), 2.0f));
     }
 
     test_section("distance(const Ray2&)");
@@ -1618,6 +1633,7 @@ static void segment2_tests()
         ASSERT(
             nnm::approx_equal(
                 s1.distance(nnm::Ray2f::from_point_to_point({ -4.0f, 5.0f }, { -5.0f, 4.0f })), 1.4142135624f));
+        ASSERT(nnm::approx_equal(s_degen.distance(nnm::Ray2f({ 0.0f, 0.0f }, { 1.0f, 0.0f })), 2.0f));
     }
 
     test_section("distance(const Segment2&)");
@@ -1628,6 +1644,8 @@ static void segment2_tests()
         ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { 3.0f, 3.0f }, { 2.0f, -2.0f } }), 1.0f));
         ASSERT(nnm::approx_equal(s1.distance(nnm::Segment2f { { -4.0f, 5.0f }, { -5.0f, 7.0f } }), 1.4142135624f));
         ASSERT(nnm::approx_zero(s1.distance(nnm::Segment2f { { -1.0f, 3.0f }, { -2.0f, 0.0f } })));
+        ASSERT(nnm::approx_equal(s_degen.distance(nnm::Segment2f({ 0.0f, 0.0f }, { 100.0f, 0.0f })), 2.0f));
+        ASSERT(nnm::approx_equal(s_degen.distance(nnm::Segment2f({ 1.0f, 0.0f }, { 1.0f, 0.0f })), 2.0f));
     }
 
     test_section("distance(const Arc2&)");
@@ -1654,6 +1672,7 @@ static void segment2_tests()
         ASSERT(nnm::approx_zero(nnm::Segment2f({ 2.0f, -2.0f }, { 4.0f, 7.0f }).distance(arc2)));
         ASSERT(nnm::approx_zero(nnm::Segment2f({ 4.0f, 7.0f }, { 2.0f, -2.0f }).distance(arc1)));
         ASSERT(nnm::approx_zero(nnm::Segment2f({ 4.0f, 7.0f }, { 2.0f, -2.0f }).distance(arc2)));
+        ASSERT(nnm::approx_equal(s_degen.distance(arc1), 2.7389667f));
     }
 
     test_section("distance(const Circle2&)");
@@ -1665,6 +1684,7 @@ static void segment2_tests()
         ASSERT(nnm::approx_zero(nnm::Segment2f({ -8.0f, 0.0f }, { 8.0f, 0.0f }).distance(c1)));
         ASSERT(nnm::approx_equal(nnm::Segment2f({ 0.0f, 3.0f }, { 3.0f, 3.0f }).distance(c1), 1.0f));
         ASSERT(nnm::approx_equal(nnm::Segment2f({ 0.0f, 3.0f }, { 1.0f, 3.0f }).distance(c1), 1.0827625f));
+        ASSERT(nnm::approx_equal(s_degen.distance(c1), 0.0990195f));
     }
 
     test_section("distance(const Triangle2&)");
