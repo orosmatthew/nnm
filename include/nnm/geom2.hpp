@@ -163,6 +163,26 @@ public:
     {
         return points[index];
     }
+
+    bool operator==(const Intersections2& other) const
+    {
+        if (size != other.size) {
+            return false;
+        }
+        if (size == 0) {
+            return true;
+        }
+        if (size == 1) {
+            return points[0] == other.points[0];
+        }
+        return (points[0] == other.points[0] && points[1] == other.points[1])
+            || (points[0] == other.points[1] && points[1] == other.points[0]);
+    }
+
+    bool operator!=(const Intersections2& other) const
+    {
+        return !(*this == other);
+    }
 };
 
 /**
@@ -611,8 +631,7 @@ public:
      * @param rectangle 2D rectangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Rectangle2<Real>& rectangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
      * Determine if tangent to 2D arc.
@@ -1184,7 +1203,7 @@ public:
      * @param arc 2D arc.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Arc2<Real>& arc) const;
+    [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const;
 
     /**
      * Determine if intersects 2D circle.
@@ -1198,8 +1217,7 @@ public:
      * @param circle 2D circle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Circle2<Real>& circle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
      * Determine if intersects 2D triangle.
@@ -1213,8 +1231,7 @@ public:
      * @param triangle 2D triangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Triangle2<Real>& triangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Triangle2<Real>& triangle) const;
 
     /**
      * Determine if intersects 2D rectangle.
@@ -1228,8 +1245,7 @@ public:
      * @param rectangle 2D rectangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Rectangle2<Real>& rectangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
      * Determine if intersects 2D aligned-rectangle.
@@ -1243,8 +1259,7 @@ public:
      * @param rectangle 2D aligned-rectangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const AlignedRectangle2<Real>& rectangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
      * Determine if tangent to 2D arc.
@@ -1867,7 +1882,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Arc2<Real>& arc) const;
+    [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const;
 
     /**
      * Determine if intersects circle.
@@ -1881,8 +1896,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Circle2<Real>& circle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
      * Determine if intersects triangle.
@@ -1896,8 +1910,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Triangle2<Real>& triangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Triangle2<Real>& triangle) const;
 
     /**
      * Determine if intersects rectangle.
@@ -1911,8 +1924,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const Rectangle2<Real>& rectangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const Rectangle2<Real>& rectangle) const;
 
     /**
      * Determine if intersects aligned-rectangle.
@@ -1926,8 +1938,7 @@ public:
      * @param rectangle Aligned-rectangle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> edge_intersections(
-        const AlignedRectangle2<Real>& rectangle) const;
+    [[nodiscard]] Intersections2<Real> edge_intersections(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
      * Determine if tangent to arc.
@@ -2698,7 +2709,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
         const Real r = radius();
         const Vector2<Real> pivot_origin_dir = ray.origin - pivot;
@@ -2706,7 +2717,7 @@ public:
         const Real dot_minus_r_sqrd = pivot_origin_dir.dot(pivot_origin_dir) - sqrd(r);
         const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * dot_minus_r_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return {};
         }
         const Real sqrt_discriminant = sqrt(discriminant);
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / static_cast<Real>(2);
@@ -2724,16 +2735,14 @@ public:
         };
         const std::optional<Vector2<Real>> point1 = t1 > static_cast<Real>(0) ? intersection(t1) : std::nullopt;
         const std::optional<Vector2<Real>> point2 = t2 > static_cast<Real>(0) ? intersection(t2) : std::nullopt;
-        if (point1.has_value() && point2.has_value()) {
-            return std::pair { *point1, *point2 };
-        }
+        Intersections2<Real> inters;
         if (point1.has_value()) {
-            return std::pair { *point1, *point1 };
+            inters.insert(*point1);
         }
         if (point2.has_value()) {
-            return std::pair { *point2, *point2 };
+            inters.insert(*point2);
         }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -2777,8 +2786,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
         const Real r = radius();
         const Vector2<Real> pivot_seg_from_dir = segment.start - pivot;
@@ -2788,7 +2796,7 @@ public:
         const Real seg_len_sqrd = segment.length_sqrd();
         const Real discriminant = sqrd(twice_dot_dir) - static_cast<Real>(4) * seg_len_sqrd * dot_minus_r_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return {};
         }
         const Real sqrt_discriminant = sqrt(discriminant);
         const Real t1 = (-twice_dot_dir - sqrt_discriminant) / (static_cast<Real>(2) * seg_len_sqrd);
@@ -2804,18 +2812,14 @@ public:
             = [&](const Real t) -> bool { return t >= static_cast<Real>(0) && t <= static_cast<Real>(1); };
         const Vector2<Real> intersection1 = segment.start + seg_dir * t1;
         const Vector2<Real> intersection2 = segment.start + seg_dir * t2;
-        const bool valid1 = in_segment(t1) && in_arc(intersection1);
-        const bool valid2 = in_segment(t2) && in_arc(intersection2);
-        if (valid1 && valid2) {
-            return std::pair { intersection1, intersection2 };
+        Intersections2<Real> inters;
+        if (in_segment(t1) && in_arc(intersection1)) {
+            inters.insert(intersection1);
         }
-        if (valid1) {
-            return std::pair { intersection1, intersection1 };
+        if (in_segment(t2) && in_arc(intersection2)) {
+            inters.insert(intersection2);
         }
-        if (valid2) {
-            return std::pair { intersection2, intersection2 };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -2870,11 +2874,11 @@ public:
      * @param other Other arc.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Arc2& other) const
+    [[nodiscard]] Intersections2<Real> intersections(const Arc2& other) const
     {
         if (const Vector2<Real> other_to = other.end();
             start.approx_equal(other.start) || start.approx_equal(other_to) || end().approx_equal(other_to)) {
-            return std::nullopt;
+            return {};
         }
         const Real r1 = radius();
         const Real r2 = other.radius();
@@ -2882,7 +2886,7 @@ public:
         const Real pivot_dist_sqrd = pivot_diff.dot(pivot_diff);
         const Real pivot_dist = sqrt(pivot_dist_sqrd);
         if (pivot_dist > r1 + r2 || pivot_dist < abs(r1 - r2)) {
-            return std::nullopt;
+            return {};
         }
         const Real pivot_intersect_line_dist
             = (sqrd(r1) - sqrd(r2) + pivot_dist_sqrd) / (static_cast<Real>(2) * pivot_dist);
@@ -2909,18 +2913,14 @@ public:
         const bool in_arc1_2 = in_arc(intersection2, pivot, from_angle1, to_angle1);
         const bool in_arc2_1 = in_arc(intersection1, other.pivot, from_angle2, to_angle2);
         const bool in_arc2_2 = in_arc(intersection2, other.pivot, from_angle2, to_angle2);
-        const bool intersection1_valid = in_arc1_1 && in_arc2_1;
-        const bool intersection2_valid = in_arc1_2 && in_arc2_2;
-        if (intersection1_valid && intersection2_valid) {
-            return std::pair { intersection1, intersection2 };
+        Intersections2<Real> inters;
+        if (in_arc1_1 && in_arc2_1) {
+            inters.insert(intersection1);
         }
-        if (intersection1_valid) {
-            return std::pair { intersection1, intersection1 };
+        if (in_arc1_2 && in_arc2_2) {
+            inters.insert(intersection2);
         }
-        if (intersection2_valid) {
-            return std::pair { intersection2, intersection2 };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -2935,8 +2935,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Circle2<Real>& circle) const;
+    [[nodiscard]] Intersections2<Real> intersections(const Circle2<Real>& circle) const;
 
     /**
      * Determine if intersects triangle.
@@ -3496,32 +3495,28 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - center;
         const Real twice_proj_length = static_cast<Real>(2) * dir.dot(ray.direction);
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return {};
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
         const Real t2 = (-twice_proj_length + disc_sqrt) / static_cast<Real>(2);
-        if (t1 >= static_cast<Real>(0) && t2 >= static_cast<Real>(0)) {
-            const Vector2<Real> p1 = ray.origin + ray.direction * t1;
-            const Vector2<Real> p2 = ray.origin + ray.direction * t2;
-            return std::pair { p1, p2 };
-        }
+        Intersections2<Real> inters;
         if (t1 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t1;
-            return std::pair { p, p };
+            inters.insert(p);
         }
         if (t2 >= static_cast<Real>(0)) {
             const Vector2<Real> p = ray.origin + ray.direction * t2;
-            return std::pair { p, p };
+            inters.insert(p);
         }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -3565,8 +3560,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
         const Vector2<Real> seg_dir = segment.end - segment.start;
         const Vector2<Real> circle_dir = segment.start - center;
@@ -3576,26 +3570,21 @@ public:
         const Real discriminant
             = sqrd(twice_proj_len) - static_cast<Real>(4) * seg_len_sqrd * dist_sqrd_minus_radius_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return std::nullopt;
+            return {};
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_len - disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
         const Real t2 = (-twice_proj_len + disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
-        if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1) && t2 >= static_cast<Real>(0)
-            && t2 <= static_cast<Real>(1)) {
-            const Vector2<Real> p1 = segment.start + seg_dir * t1;
-            const Vector2<Real> p2 = segment.start + seg_dir * t2;
-            return std::pair { p1, p2 };
-        }
+        Intersections2<Real> inters;
         if (t1 >= static_cast<Real>(0) && t1 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.start + seg_dir * t1;
-            return std::pair { p, p };
+            inters.insert(p);
         }
         if (t2 >= static_cast<Real>(0) && t2 <= static_cast<Real>(1)) {
             const Vector2<Real> p = segment.start + seg_dir * t2;
-            return std::pair { p, p };
+            inters.insert(p);
         }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -3634,12 +3623,12 @@ public:
      * @param arc Arc.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Arc2<Real>& arc) const
+    [[nodiscard]] Intersections2<Real> intersections(const Arc2<Real>& arc) const
     {
         const Real dist = center.distance(arc.pivot);
         const Real arc_radius = arc.radius();
         if (dist > radius + arc_radius || dist < abs(radius - arc_radius) || (dist == 0 && radius == arc_radius)) {
-            return std::nullopt;
+            return {};
         }
         const Real a = (sqrd(radius) - sqrd(arc_radius) + sqrd(dist)) / (static_cast<Real>(2) * dist);
         const Real h = sqrt(sqrd(radius) - sqrd(a));
@@ -3652,18 +3641,14 @@ public:
         const Real inter2_angle = remainder(arc.pivot.angle_to(inter2), two_pi);
         const Real arc_from_angle = arc.angle_start();
         const Real arc_to_angle = arc.angle_end();
-        const bool inter1_in_arc = angle_in_range(inter1_angle, arc_from_angle, arc_to_angle);
-        const bool inter2_in_arc = angle_in_range(inter2_angle, arc_from_angle, arc_to_angle);
-        if (inter1_in_arc && inter2_in_arc) {
-            return std::pair { inter1, inter2 };
+        Intersections2<Real> inters;
+        if (angle_in_range(inter1_angle, arc_from_angle, arc_to_angle)) {
+            inters.insert(inter1);
         }
-        if (inter1_in_arc) {
-            return std::pair { inter1, inter1 };
+        if (angle_in_range(inter2_angle, arc_from_angle, arc_to_angle)) {
+            inters.insert(inter2);
         }
-        if (inter2_in_arc) {
-            return std::pair { inter2, inter2 };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -4385,17 +4370,13 @@ public:
      */
     [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
     {
-        std::array<Vector2<Real>, 2> points;
-        int count = 0;
-        for (int i = 0; i < 3 && count < 2; ++i) {
+        Intersections2<Real> points;
+        for (int i = 0; i < 3; ++i) {
             if (std::optional<Vector2<Real>> point = edge(i).intersection(line)) {
-                points[count++] = *point;
+                points.insert(*point);
             }
         }
-        if (count < 2) {
-            return {};
-        }
-        return { points[0], points[1] };
+        return points;
     }
 
     /**
@@ -4421,22 +4402,15 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
-        std::array<Vector2<Real>, 2> points;
-        int count = 0;
-        for (int i = 0; i < 3 && count < 2; ++i) {
+        Intersections2<Real> points;
+        for (int i = 0; i < 3; ++i) {
             if (std::optional<Vector2<Real>> point = edge(i).intersection(ray)) {
-                points[count++] = *point;
+                points.insert(*point);
             }
         }
-        if (count == 0) {
-            return std::nullopt;
-        }
-        if (count == 1) {
-            points[1] = points[0];
-        }
-        return std::pair { points[0], points[1] };
+        return points;
     }
 
     /**
@@ -4462,23 +4436,15 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
-        std::array<Vector2<Real>, 2> points;
-        int count = 0;
-        for (int i = 0; i < 3 && count < 2; ++i) {
+        Intersections2<Real> points;
+        for (int i = 0; i < 3; ++i) {
             if (std::optional<Vector2<Real>> point = edge(i).intersection(segment)) {
-                points[count++] = *point;
+                points.insert(*point);
             }
         }
-        if (count == 0) {
-            return std::nullopt;
-        }
-        if (count == 1) {
-            points[1] = points[0];
-        }
-        return std::pair { points[0], points[1] };
+        return points;
     }
 
     /**
@@ -5294,26 +5260,16 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(line); intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -5332,26 +5288,16 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(ray); intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -5370,28 +5316,17 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(segment);
                 intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -6263,26 +6198,16 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Line2<Real>& line) const
+    [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(line); intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -6301,26 +6226,16 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(const Ray2<Real>& ray) const
+    [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(ray); intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -6339,28 +6254,17 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<std::pair<Vector2<Real>, Vector2<Real>>> intersections(
-        const Segment2<Real>& segment) const
+    [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
-        std::array<Vector2<Real>, 2> inters;
-        int inter_count = 0;
+        Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
             if (const std::optional<Vector2<Real>> intersection = edge.intersection(segment);
                 intersection.has_value()) {
-                inters[inter_count++] = intersection.value();
-            }
-            if (inter_count >= 2) {
-                break;
+                inters.insert(*intersection);
             }
         }
-        if (inter_count >= 2) {
-            return std::pair { inters[0], inters[1] };
-        }
-        if (inter_count == 1) {
-            return std::pair { inters[0], inters[0] };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -6817,8 +6721,7 @@ bool Line2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Line2<Real>::edge_intersections(
-    const Rectangle2<Real>& rectangle) const
+Intersections2<Real> Line2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
     return rectangle.intersections(*this);
 }
@@ -6944,7 +6847,7 @@ bool Ray2<Real>::intersects(const Arc2<Real>& arc) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Ray2<Real>::intersections(const Arc2<Real>& arc) const
+Intersections2<Real> Ray2<Real>::intersections(const Arc2<Real>& arc) const
 {
     return arc.intersections(*this);
 }
@@ -6956,14 +6859,13 @@ bool Ray2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Ray2<Real>::edge_intersections(const Circle2<Real>& circle) const
+Intersections2<Real> Ray2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Ray2<Real>::edge_intersections(
-    const Triangle2<Real>& triangle) const
+Intersections2<Real> Ray2<Real>::edge_intersections(const Triangle2<Real>& triangle) const
 {
     return triangle.intersections(*this);
 }
@@ -6975,8 +6877,7 @@ bool Ray2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Ray2<Real>::edge_intersections(
-    const Rectangle2<Real>& rectangle) const
+Intersections2<Real> Ray2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
     return rectangle.intersections(*this);
 }
@@ -6988,8 +6889,7 @@ bool Ray2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Ray2<Real>::edge_intersections(
-    const AlignedRectangle2<Real>& rectangle) const
+Intersections2<Real> Ray2<Real>::edge_intersections(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.intersections(*this);
 }
@@ -7037,7 +6937,7 @@ bool Segment2<Real>::intersects(const Arc2<Real>& arc) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Segment2<Real>::intersections(const Arc2<Real>& arc) const
+Intersections2<Real> Segment2<Real>::intersections(const Arc2<Real>& arc) const
 {
     return arc.intersections(*this);
 }
@@ -7049,15 +6949,13 @@ bool Segment2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Segment2<Real>::edge_intersections(
-    const Circle2<Real>& circle) const
+Intersections2<Real> Segment2<Real>::edge_intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Segment2<Real>::edge_intersections(
-    const Triangle2<Real>& triangle) const
+Intersections2<Real> Segment2<Real>::edge_intersections(const Triangle2<Real>& triangle) const
 {
     return triangle.intersections(*this);
 }
@@ -7069,8 +6967,7 @@ bool Segment2<Real>::intersects(const Rectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Segment2<Real>::edge_intersections(
-    const Rectangle2<Real>& rectangle) const
+Intersections2<Real> Segment2<Real>::edge_intersections(const Rectangle2<Real>& rectangle) const
 {
     return rectangle.intersections(*this);
 }
@@ -7082,8 +6979,7 @@ bool Segment2<Real>::intersects(const AlignedRectangle2<Real>& rectangle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Segment2<Real>::edge_intersections(
-    const AlignedRectangle2<Real>& rectangle) const
+Intersections2<Real> Segment2<Real>::edge_intersections(const AlignedRectangle2<Real>& rectangle) const
 {
     return rectangle.intersections(*this);
 }
@@ -7125,7 +7021,7 @@ bool Arc2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-std::optional<std::pair<Vector2<Real>, Vector2<Real>>> Arc2<Real>::intersections(const Circle2<Real>& circle) const
+Intersections2<Real> Arc2<Real>::intersections(const Circle2<Real>& circle) const
 {
     return circle.intersections(*this);
 }
