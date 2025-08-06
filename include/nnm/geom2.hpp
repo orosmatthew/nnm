@@ -2458,6 +2458,7 @@ public:
     /**
      * Initialize will zero pivot, zero start, and zero angle.
      */
+    // tested
     constexpr Arc2()
         : pivot { Vector2<Real>::zero() }
         , start { Vector2<Real>::zero() }
@@ -2468,13 +2469,28 @@ public:
     /**
      * Initialize with pivot, start, and angle.
      * @param pivot Pivot.
-     * @param from Start.
+     * @param start Start.
      * @param angle Angle.
      */
-    constexpr Arc2(const Vector2<Real>& pivot, const Vector2<Real>& from, const Real angle)
+    // tested
+    constexpr Arc2(const Vector2<Real>& pivot, const Vector2<Real>& start, const Real angle)
         : pivot { pivot }
-        , start { from }
+        , start { start }
         , angle { angle }
+    {
+    }
+
+    /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other arc.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Arc2(const Arc2<Other>& other)
+        : pivot { other.pivot }
+        , start { other.start }
+        , angle { static_cast<Real>(other.angle) }
     {
     }
 
@@ -2486,6 +2502,7 @@ public:
      * @param angle_end End angle.
      * @return Result.
      */
+    // tested
     static Arc2 from_pivot_radius_angle_to_angle(
         const Vector2<Real>& pivot, const Real radius, const Real angle_start, const Real angle_end)
     {
@@ -2502,6 +2519,7 @@ public:
      * @param end End point.
      * @return Result.
      */
+    // tested
     static Arc2 from_points_unchecked(
         const Vector2<Real>& start, const Vector2<Real>& through, const Vector2<Real>& end)
     {
@@ -2533,6 +2551,7 @@ public:
      * @param end End point.
      * @return Result.
      */
+    // tested
     static std::optional<Arc2> from_points(
         const Vector2<Real>& start, const Vector2<Real>& through, const Vector2<Real>& end)
     {
@@ -2564,6 +2583,7 @@ public:
      * Normalize angle between -pi and pi.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Arc2 normalize_angle() const
     {
         return { pivot, start, nnm::normalize_angle(angle) };
@@ -2573,6 +2593,7 @@ public:
      * Radius.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real radius() const
     {
         return pivot.distance(start);
@@ -2582,6 +2603,7 @@ public:
      * Squared radius.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real radius_sqrd() const
     {
         return pivot.distance_sqrd(start);
@@ -2591,6 +2613,7 @@ public:
      * Angle of start point in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real angle_start() const
     {
         return nnm::normalize_angle(pivot.angle_to(start));
@@ -2600,6 +2623,7 @@ public:
      * Angle of end point in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real angle_end() const
     {
         return angle_start() + angle;
@@ -2610,6 +2634,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         if (!nnm::approx_equal(point.distance_sqrd(pivot), sqrd(radius()))) {
@@ -2625,6 +2650,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> unchecked_point_at(const Real angle_) const
     {
         const Real r = radius();
@@ -2636,6 +2662,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> point_at(const Real angle_) const
     {
         const Real r = radius();
@@ -2649,6 +2676,7 @@ public:
      * End point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> end() const
     {
         return unchecked_point_at(angle_end());
@@ -2658,6 +2686,7 @@ public:
      * Arc-length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real length() const
     {
         return abs(radius() * angle);
@@ -2667,6 +2696,7 @@ public:
      * Squared arc-length.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real length_sqrd() const
     {
         return radius_sqrd() * sqrd(angle);
@@ -2676,6 +2706,7 @@ public:
      * Midpoint.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> midpoint() const
     {
         return Arc2 { pivot, start, angle / static_cast<Real>(2) }.end();
@@ -2686,7 +2717,8 @@ public:
      * @param point Point to project.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> project_point(const Vector2<Real>& point) const
+    // tested
+    [[nodiscard]] Vector2<Real> project(const Vector2<Real>& point) const
     {
         const Vector2<Real> dir = pivot.direction(point);
         const Vector2<Real> proj = pivot + dir * radius();
@@ -2706,6 +2738,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         if (point == pivot) {
@@ -2728,6 +2761,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const Real dist = distance(point);
@@ -2745,6 +2779,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         if (intersects(line)) {
@@ -2766,6 +2801,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -2789,6 +2825,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -2814,6 +2851,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2& other) const
     {
         if (intersects(other)) {
@@ -2843,6 +2881,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const;
 
     /**
@@ -2850,6 +2889,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const;
 
     /**
@@ -2857,6 +2897,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -2864,6 +2905,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -2871,6 +2913,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -2900,6 +2943,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Line2<Real>& line) const
     {
         const Real r = radius();
@@ -2937,6 +2981,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         const Real r = radius();
@@ -2968,6 +3013,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Ray2<Real>& ray) const
     {
         const Real r = radius();
@@ -3009,6 +3055,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         const Real r = radius();
@@ -3045,6 +3092,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Segment2<Real>& segment) const
     {
         const Real r = radius();
@@ -3086,6 +3134,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2& other) const
     {
         if (const Vector2<Real> other_to = other.end();
@@ -3133,6 +3182,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> intersections(const Arc2& other) const
     {
         if (const Vector2<Real> other_to = other.end();
@@ -3187,6 +3237,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const;
 
     /**
@@ -3194,6 +3245,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Circle2<Real>& circle) const;
 
     /**
@@ -3201,6 +3253,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const;
 
     /**
@@ -3208,6 +3261,7 @@ public:
      * @param rectangle Rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const;
 
     /**
@@ -3215,6 +3269,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -3222,6 +3277,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Line2<Real>& line) const
     {
         const Vector2<Real> dir = line.origin - pivot;
@@ -3240,6 +3296,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Ray2<Real>& ray) const
     {
         const Vector2<Real> dir = ray.origin - pivot;
@@ -3261,6 +3318,7 @@ public:
      * @param segment Segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Segment2<Real>& segment) const
     {
         const Vector2<Real> dir = segment.start - pivot;
@@ -3284,6 +3342,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Arc2& other) const
     {
         if (pivot == other.pivot) {
@@ -3307,6 +3366,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool tangent(const Circle2<Real>& circle) const;
 
     /**
@@ -3314,7 +3374,8 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Arc2 translate(const Vector2<Real>& offset) const
+    // tested
+    [[nodiscard]] constexpr Arc2 translate(const Vector2<Real>& offset) const
     {
         return Arc2 { pivot.translate(offset), start.translate(offset), angle };
     }
@@ -3325,7 +3386,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Arc2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
         return Arc2 { pivot.scale_at(scale_origin, factor), start.scale_at(scale_origin, factor), angle };
     }
@@ -3335,7 +3397,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Arc2 scale(const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Arc2 scale(const Vector2<Real>& factor) const
     {
         return Arc2 { pivot.scale(factor), start.scale(factor), angle };
     }
@@ -3346,6 +3409,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Arc2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle_) const
     {
         return Arc2 { pivot.rotate_at(rotate_origin, angle_), start.rotate_at(rotate_origin, angle_), angle };
@@ -3356,6 +3420,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Arc2 rotate(const Real angle_) const
     {
         return Arc2 { pivot.rotate(angle_), start.rotate(angle_), angle };
@@ -3366,6 +3431,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coincident(const Arc2& other) const
     {
         if (!pivot.approx_equal(other.pivot)) {
@@ -3382,6 +3448,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Arc2& other) const
     {
         return start.approx_equal(other.start) && pivot.approx_equal(other.pivot)
@@ -3393,6 +3460,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Arc2& other) const
     {
         return pivot == other.pivot && start == other.start && angle == other.angle;
@@ -3403,6 +3471,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Arc2& other) const
     {
         return pivot != other.pivot || start != other.start || angle != other.angle;
@@ -3413,6 +3482,7 @@ public:
      * @param other Other arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator<(const Arc2& other) const
     {
         if (pivot != other.pivot) {

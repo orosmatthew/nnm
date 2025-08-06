@@ -2239,6 +2239,15 @@ static void arc2_tests()
         ASSERT(a.angle == 5.0f);
     }
 
+    test_section("Arc2(const Arc2<Other>&)");
+    {
+        constexpr nnm::Arc2d a1 { { -3.0, 4.0 }, { 1.0, -2.0 }, 5.0 };
+        constexpr nnm::Arc2f a2 { a1 };
+        ASSERT(a2.pivot.approx_equal({ -3.0f, 4.0f }));
+        ASSERT(a2.start.approx_equal({ 1.0f, -2.0f }));
+        ASSERT(nnm::approx_equal(a2.angle, 5.0f));
+    }
+
     test_section("from_pivot_radius_angle_to_angle");
     {
         ASSERT(
@@ -2317,7 +2326,7 @@ static void arc2_tests()
         ASSERT(nnm::approx_equal(arc2.radius_sqrd(), nnm::sqrd(7.21110255f)));
     }
 
-    test_section("angle_from");
+    test_section("angle_start");
     {
         ASSERT(nnm::approx_equal(arc1.angle_start(), -0.9827937232473f));
         ASSERT(nnm::approx_equal(arc2.angle_start(), 0.5880026035f));
@@ -2331,7 +2340,7 @@ static void arc2_tests()
         ASSERT(nnm::approx_equal(arc6.angle_start(), -0.339292614454f));
     }
 
-    test_section("angle_to");
+    test_section("angle_end");
     {
         ASSERT(nnm::approx_equal(arc1.angle_end(), 0.5880026035f));
         ASSERT(nnm::approx_equal(arc2.angle_end(), -0.9827937232473f));
@@ -2379,7 +2388,7 @@ static void arc2_tests()
         ASSERT_FALSE(p6.has_value());
     }
 
-    test_section("to");
+    test_section("end");
     {
         ASSERT(arc1.end().approx_equal({ 3.0f, 8.0f }));
         ASSERT(arc2.end().approx_equal({ 1.0f, -2.0f }));
@@ -2425,23 +2434,23 @@ static void arc2_tests()
         ASSERT(arc2.midpoint().approx_equal({ 4.07106781f, 2.5857864f }));
     }
 
-    test_section("project_point");
+    test_section("project");
     {
-        ASSERT(arc1.project_point({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
-        ASSERT(arc2.project_point({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
-        ASSERT(arc1.project_point({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
-        ASSERT(arc2.project_point({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
-        ASSERT(arc1.project_point({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
-        ASSERT(arc2.project_point({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
-        ASSERT(arc1.project_point({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
-        ASSERT(arc2.project_point({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
-        ASSERT(arc1.project_point({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
-        ASSERT(arc2.project_point({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
-        ASSERT(arc1.project_point({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
-        ASSERT(arc2.project_point({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(arc1.project({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
+        ASSERT(arc2.project({ 3.0f, 5.0f }).approx_equal({ 4.11298774f, 5.185497957f }));
+        ASSERT(arc1.project({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
+        ASSERT(arc2.project({ 5.0f, 7.0f }).approx_equal({ 3.75196572f, 6.53198715f }));
+        ASSERT(arc1.project({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
+        ASSERT(arc2.project({ 2.0f, 8.0f }).approx_equal({ 3.0f, 8.0f }));
+        ASSERT(arc1.project({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
+        ASSERT(arc2.project({ 3.0f, 9.0f }).approx_equal({ 3.0f, 8.0f }));
+        ASSERT(arc1.project({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(arc2.project({ 0.0f, -2.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(arc1.project({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
+        ASSERT(arc2.project({ 1.0f, -3.0f }).approx_equal({ 1.0f, -2.0f }));
     }
 
-    test_section("distance");
+    test_section("distance(const Vector2&)");
     {
         ASSERT(nnm::approx_zero(arc1.distance({ 4.006296f, 2.2935955f })));
         ASSERT(nnm::approx_zero(arc2.distance({ 4.006296f, 2.2935955f })));
@@ -3117,23 +3126,24 @@ static void arc2_tests()
 
     test_section("translate");
     {
-        ASSERT(
-            arc1.translate({ -1.0f, 2.0f }).approx_equal({ { -4.0f, 6.0f }, { 0.0f, 0.0f }, nnm::pi<float>() / 2.0f }));
+        constexpr auto result = arc1.translate({ -1.0f, 2.0f });
+        ASSERT(result.approx_equal({ { -4.0f, 6.0f }, { 0.0f, 0.0f }, nnm::pi<float>() / 2.0f }));
         ASSERT(arc2.translate({ -1.0f, 2.0f })
                    .approx_equal({ { -4.0f, 6.0f }, { 2.0f, 10.0f }, -nnm::pi<float>() / 2.0f }));
     }
 
     test_section("scale_at");
     {
-        ASSERT(arc1.scale_at({ -1.0f, 2.0f }, { 2.0f, -1.5f })
-                   .approx_equal({ { -5.0f, -1.0f }, { 3.0f, 8.0f }, nnm::pi<float>() / 2.0f }));
+        constexpr auto result = arc1.scale_at({ -1.0f, 2.0f }, { 2.0f, -1.5f });
+        ASSERT(result.approx_equal({ { -5.0f, -1.0f }, { 3.0f, 8.0f }, nnm::pi<float>() / 2.0f }));
         ASSERT(arc2.scale_at({ -1.0f, 2.0f }, { 2.0f, -1.5f })
                    .approx_equal({ { -5.0f, -1.0f }, { 7.0f, -7.0f }, -nnm::pi<float>() / 2.0f }));
     }
 
     test_section("scale");
     {
-        ASSERT(arc1.scale({ -2.0f, 1.5f }).approx_equal({ { 6.0f, 6.0f }, { -2.0f, -3.0f }, nnm::pi<float>() / 2.0f }));
+        constexpr auto result = arc1.scale({ -2.0f, 1.5f });
+        ASSERT(result.approx_equal({ { 6.0f, 6.0f }, { -2.0f, -3.0f }, nnm::pi<float>() / 2.0f }));
         ASSERT(
             arc2.scale({ -2.0f, 1.5f }).approx_equal({ { 6.0f, 6.0f }, { -6.0f, 12.0f }, -nnm::pi<float>() / 2.0f }));
     }
@@ -3191,7 +3201,9 @@ static void arc2_tests()
 
     test_section("operator==");
     {
-        ASSERT(arc1 == arc1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = arc1 == arc1;
+        ASSERT(result);
         ASSERT(arc2 == arc2);
         ASSERT_FALSE(arc1 == arc2);
         ASSERT_FALSE(arc2 == arc1);
@@ -3199,7 +3211,9 @@ static void arc2_tests()
 
     test_section("operator!=");
     {
-        ASSERT_FALSE(arc1 != arc1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = arc1 != arc1;
+        ASSERT_FALSE(result);
         ASSERT_FALSE(arc2 != arc2);
         ASSERT(arc1 != arc2);
         ASSERT(arc2 != arc1);
@@ -3207,7 +3221,8 @@ static void arc2_tests()
 
     test_section("operator<");
     {
-        ASSERT(arc1 < arc2);
+        constexpr auto result = arc1 < arc2;
+        ASSERT(result);
         ASSERT_FALSE(arc2 < arc1);
         ASSERT_FALSE(arc1 < arc1);
         ASSERT_FALSE(arc2 < arc2);
