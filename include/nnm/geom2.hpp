@@ -4645,7 +4645,7 @@ public:
      * @return Result.
      */
     // tested
-    constexpr bool collinear() const
+    [[nodiscard]] constexpr bool collinear() const
     {
         return edge(0).collinear(edge(1));
     }
@@ -6284,7 +6284,6 @@ public:
     /**
      * Minimum corner.
      */
-
     Vector2<Real> min;
     /**
      * Maximum corner.
@@ -6294,6 +6293,7 @@ public:
     /**
      * Default initialize to zero minimum and zero maximum.
      */
+    // tested
     constexpr AlignedRectangle2()
         : min { Vector2<Real>::zero() }
         , max { Vector2<Real>::zero() }
@@ -6305,9 +6305,23 @@ public:
      * @param min Minimum corner.
      * @param max Maximum corner.
      */
+    // tested
     constexpr AlignedRectangle2(const Vector2<Real>& min, const Vector2<Real>& max)
         : min { min }
         , max { max }
+    {
+    }
+
+    /**
+     * Cast from another type.
+     * @tparam Other Other type.
+     * @param other Other rectangle.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr AlignedRectangle2(const AlignedRectangle2<Other>& other)
+        : min { other.min }
+        , max { other.max }
     {
     }
 
@@ -6317,6 +6331,7 @@ public:
      * @param point2 Second point.
      * @return Result.
      */
+    // tested
     static constexpr AlignedRectangle2 from_bounding_points(const Vector2<Real>& point1, const Vector2<Real>& point2)
     {
         const Vector2<Real> min = { nnm::min(point1.x, point2.x), nnm::min(point1.y, point2.y) };
@@ -6329,6 +6344,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment)
     {
         return from_bounding_points(segment.start, segment.end);
@@ -6339,6 +6355,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     static AlignedRectangle2 from_bounding_arc(const Arc2<Real>& arc)
     {
         const Real half_pi = pi<float>() / static_cast<Real>(2);
@@ -6369,7 +6386,8 @@ public:
      * @param circle Circle.
      * @return Result.
      */
-    static AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle)
+    // tested
+    static constexpr AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle)
     {
         const Vector2<Real> min = circle.center - Vector2<Real>::all(circle.radius);
         const Vector2<Real> max = circle.center + Vector2<Real>::all(circle.radius);
@@ -6381,7 +6399,8 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
-    static AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle)
+    // tested
+    static constexpr AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle)
     {
         Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
         Vector2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
@@ -6399,6 +6418,7 @@ public:
      * @param rectangle Non-aligned rectangle.
      * @return Result.
      */
+    // tested
     static AlignedRectangle2 from_bounding_rectangle(const Rectangle2<Real>& rectangle)
     {
         Vector2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
@@ -6419,7 +6439,8 @@ public:
      * Vertex in the negative x and negative y corner.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> vertex_nx_ny() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> vertex_nx_ny() const
     {
         return min;
     }
@@ -6428,7 +6449,8 @@ public:
      * Vertex in the negative x and positive y corner.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> vertex_nx_py() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> vertex_nx_py() const
     {
         return { min.x, max.y };
     }
@@ -6437,7 +6459,8 @@ public:
      * Vertex in the positive x and negative y corner.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> vertex_px_ny() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> vertex_px_ny() const
     {
         return { max.x, min.y };
     }
@@ -6446,7 +6469,8 @@ public:
      * Vertex in the positive x and positive y corner.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> vertex_px_py() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> vertex_px_py() const
     {
         return max;
     }
@@ -6455,7 +6479,8 @@ public:
      * Edge in the negative x direction.
      * @return Result.
      */
-    [[nodiscard]] Segment2<Real> edge_nx() const
+    // tested
+    [[nodiscard]] constexpr Segment2<Real> edge_nx() const
     {
         return { vertex_nx_ny(), vertex_nx_py() };
     }
@@ -6464,7 +6489,8 @@ public:
      * Edge in the negative y direction.
      * @return Result.
      */
-    [[nodiscard]] Segment2<Real> edge_ny() const
+    // tested
+    [[nodiscard]] constexpr Segment2<Real> edge_ny() const
     {
         return { vertex_nx_ny(), vertex_px_ny() };
     }
@@ -6473,7 +6499,8 @@ public:
      * Edge in the positive x direction.
      * @return Result.
      */
-    [[nodiscard]] Segment2<Real> edge_px() const
+    // tested
+    [[nodiscard]] constexpr Segment2<Real> edge_px() const
     {
         return { vertex_px_ny(), vertex_px_py() };
     }
@@ -6482,7 +6509,8 @@ public:
      * Edge in the positive y direction.
      * @return Result.
      */
-    [[nodiscard]] Segment2<Real> edge_py() const
+    // tested
+    [[nodiscard]] constexpr Segment2<Real> edge_py() const
     {
         return { vertex_nx_py(), vertex_px_py() };
     }
@@ -6491,7 +6519,8 @@ public:
      * Normal of the edge in the negative x direction.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> normal_nx() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> normal_nx() const
     {
         return -Vector2<Real>::axis_x();
     }
@@ -6500,7 +6529,8 @@ public:
      * Normal of the edge in the negative y direction.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> normal_ny() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> normal_ny() const
     {
         return -Vector2<Real>::axis_y();
     }
@@ -6509,7 +6539,8 @@ public:
      * Normal of the edge in the positive x direction.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> normal_px() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> normal_px() const
     {
         return Vector2<Real>::axis_x();
     }
@@ -6518,7 +6549,8 @@ public:
      * Normal of the edge in the positive y direction.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> normal_py() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> normal_py() const
     {
         return Vector2<Real>::axis_y();
     }
@@ -6527,7 +6559,8 @@ public:
      * Size.
      * @return Result.
      */
-    [[nodiscard]] Vector2<Real> size() const
+    // tested
+    [[nodiscard]] constexpr Vector2<Real> size() const
     {
         return max - min;
     }
@@ -6536,7 +6569,8 @@ public:
      * Area.
      * @return Result.
      */
-    [[nodiscard]] Real area() const
+    // tested
+    [[nodiscard]] constexpr Real area() const
     {
         const Vector2<Real> s = size();
         return s.x * s.y;
@@ -6546,7 +6580,8 @@ public:
      * Perimeter which is the combined length of all edges.
      * @return Result.
      */
-    [[nodiscard]] Real perimeter() const
+    // tested
+    [[nodiscard]] constexpr Real perimeter() const
     {
         const Vector2<Real> s = size();
         return static_cast<Real>(2) * s.x + static_cast<Real>(2) * s.y;
@@ -6557,7 +6592,8 @@ public:
      * @param point Point.
      * @return Result.
      */
-    [[nodiscard]] bool contains(const Vector2<Real>& point) const
+    // tested
+    [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }
@@ -6567,6 +6603,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6585,6 +6622,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> closest = point.clamp(min, max);
@@ -6596,6 +6634,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6617,6 +6656,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6638,6 +6678,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.start)) {
@@ -6662,6 +6703,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.start)) {
@@ -6686,6 +6728,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -6710,6 +6753,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
@@ -6734,6 +6778,7 @@ public:
      * @param rectangle Non-aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2<Real>& rectangle) const
     {
         if (intersects(rectangle)) {
@@ -6758,6 +6803,7 @@ public:
      * @param other Other aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2& other) const
     {
         if (intersects(other)) {
@@ -6782,7 +6828,8 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Line2<Real>& line) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
             || edge_py().intersects(line);
@@ -6793,7 +6840,8 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
+    // tested
+    [[nodiscard]] constexpr Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6810,7 +6858,8 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Ray2<Real>& ray) const
     {
         return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
             || edge_py().intersects(ray);
@@ -6821,7 +6870,8 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
+    // tested
+    [[nodiscard]] constexpr Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6838,7 +6888,8 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Segment2<Real>& segment) const
     {
         return contains(segment.start) || contains(segment.end) || edge_nx().intersects(segment)
             || edge_ny().intersects(segment) || edge_px().intersects(segment) || edge_py().intersects(segment);
@@ -6849,7 +6900,8 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
+    // tested
+    [[nodiscard]] constexpr Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -6867,6 +6919,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         return contains(arc.start) || contains(arc.end()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
@@ -6878,7 +6931,8 @@ public:
      * @param circle Circle.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
             return true;
@@ -6893,7 +6947,8 @@ public:
      * @param circle Circle.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Vector2<Real> closest = circle.center.clamp(min, max);
         const Real dist_sqrd = circle.center.distance_sqrd(closest);
@@ -6916,7 +6971,8 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
             if (contains(triangle.vertices[i])) {
@@ -6937,6 +6993,7 @@ public:
      * @param triangle Triangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Triangle2<Real>& triangle) const
     {
         const auto depth_on_normal
@@ -6988,6 +7045,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2<Real>& rectangle) const
     {
         const std::array<Vector2<Real>, 4> vertices_rect = {
@@ -7012,6 +7070,7 @@ public:
      * @param rectangle Non-aligned rectangle.
      * @return Result, null if no intersection.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2<Real>& rectangle) const
     {
         const auto depth_on_normal
@@ -7069,7 +7128,8 @@ public:
      * @param other Other aligned rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const AlignedRectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const AlignedRectangle2& other) const
     {
         const std::array<Vector2<Real>, 4> vertices_other
             = { other.vertex_nx_ny(), other.vertex_nx_py(), other.vertex_px_ny(), other.vertex_px_py() };
@@ -7092,7 +7152,8 @@ public:
      * @param other Other aligned rectangle.
      * @return Result, null if no intersection.
      */
-    [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2& other) const
     {
         const auto depth_on_normal
             = [](const std::array<Vector2<Real>, 4>& verts,
@@ -7144,7 +7205,8 @@ public:
      * @param rectangle Other aligned rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool approx_equal(const AlignedRectangle2& rectangle) const
+    // tested
+    [[nodiscard]] constexpr bool approx_equal(const AlignedRectangle2& rectangle) const
     {
         return min.approx_equal(rectangle.min) && max.approx_equal(rectangle.max);
     }
@@ -7154,7 +7216,8 @@ public:
      * @param other Other aligned rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool operator==(const AlignedRectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator==(const AlignedRectangle2& other) const
     {
         return min == other.min && max == other.max;
     }
@@ -7164,7 +7227,8 @@ public:
      * @param other Other aligned rectangle.
      * @return
      */
-    [[nodiscard]] bool operator!=(const AlignedRectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator!=(const AlignedRectangle2& other) const
     {
         return min != other.min || max != other.max;
     }
@@ -7174,7 +7238,8 @@ public:
      * @param other Other aligned rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool operator<(const AlignedRectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator<(const AlignedRectangle2& other) const
     {
         if (min == other.min) {
             return max < other.max;

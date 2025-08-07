@@ -5236,6 +5236,14 @@ static void aligned_rectangle2_tests()
         ASSERT(a1.max.approx_equal({ 1.0f, 3.0f }));
     }
 
+    test_section("AlignedRectangle2(const AlignedRectangle<Other>&)");
+    {
+        constexpr nnm::AlignedRectangle2d a1 { { -2.0, -2.0 }, { 1.0, 3.0 } };
+        constexpr nnm::AlignedRectangle2f a2 { a1 };
+        ASSERT(a2.min.approx_equal({ -2.0f, -2.0f }));
+        ASSERT(a2.max.approx_equal({ 1.0f, 3.0f }));
+    }
+
     test_section("from_bounding_points");
     {
         constexpr auto a = nnm::AlignedRectangle2f::from_bounding_points({ -1.0f, 2.0f }, { 2.0f, -1.0f });
@@ -5260,13 +5268,13 @@ static void aligned_rectangle2_tests()
 
     test_section("from_bounding_circle");
     {
-        const auto a = nnm::AlignedRectangle2f::from_bounding_circle({ { 2.0f, 1.0f }, 2.0f });
+        constexpr auto a = nnm::AlignedRectangle2f::from_bounding_circle({ { 2.0f, 1.0f }, 2.0f });
         ASSERT(a.approx_equal({ { 0.0f, -1.0f }, { 4.0f, 3.0f } }));
     }
 
     test_section("from_bounding_triangle");
     {
-        const auto a
+        constexpr auto a
             = nnm::AlignedRectangle2f::from_bounding_triangle({ { 0.0f, -1.0f }, { -3.0f, 1.0f }, { 2.0f, 2.0f } });
         ASSERT(a.approx_equal({ { -3.0f, -1.0f }, { 2.0f, 2.0f } }));
     }
@@ -5282,82 +5290,98 @@ static void aligned_rectangle2_tests()
 
     test_section("vertex_nx_ny");
     {
-        ASSERT(a1.vertex_nx_ny().approx_equal({ -2.0f, -2.0f }));
+        constexpr auto result = a1.vertex_nx_ny();
+        ASSERT(result.approx_equal({ -2.0f, -2.0f }));
     }
 
     test_section("vertex_nx_py");
     {
-        ASSERT(a1.vertex_nx_py().approx_equal({ -2.0f, 3.0f }));
+        constexpr auto result = a1.vertex_nx_py();
+        ASSERT(result.approx_equal({ -2.0f, 3.0f }));
     }
 
     test_section("vertex_px_ny");
     {
-        ASSERT(a1.vertex_px_ny().approx_equal({ 1.0f, -2.0f }));
+        constexpr auto result = a1.vertex_px_ny();
+        ASSERT(result.approx_equal({ 1.0f, -2.0f }));
     }
 
     test_section("vertex_px_py");
     {
-        ASSERT(a1.vertex_px_py().approx_equal({ 1.0f, 3.0f }));
+        constexpr auto result = a1.vertex_px_py();
+        ASSERT(result.approx_equal({ 1.0f, 3.0f }));
     }
 
     test_section("edge_nx");
     {
-        ASSERT(a1.edge_nx().coincident(nnm::Segment2f({ -2.0f, 3.0f }, { -2.0f, -2.0f })));
+        constexpr auto result = a1.edge_nx();
+        ASSERT(result.coincident(nnm::Segment2f({ -2.0f, 3.0f }, { -2.0f, -2.0f })));
     }
 
     test_section("edge_ny");
     {
-        ASSERT(a1.edge_ny().coincident(nnm::Segment2f({ -2.0f, -2.0f }, { 1.0f, -2.0f })));
+        constexpr auto result = a1.edge_ny();
+        ASSERT(result.coincident(nnm::Segment2f({ -2.0f, -2.0f }, { 1.0f, -2.0f })));
     }
 
     test_section("edge_px");
     {
-        ASSERT(a1.edge_px().coincident(nnm::Segment2f({ 1.0f, 3.0f }, { 1.0f, -2.0f })));
+        constexpr auto result = a1.edge_px();
+        ASSERT(result.coincident(nnm::Segment2f({ 1.0f, 3.0f }, { 1.0f, -2.0f })));
     }
 
     test_section("edge_py");
     {
-        ASSERT(a1.edge_py().coincident(nnm::Segment2f({ -2.0f, 3.0f }, { 1.0f, 3.0f })));
+        constexpr auto result = a1.edge_py();
+        ASSERT(result.coincident(nnm::Segment2f({ -2.0f, 3.0f }, { 1.0f, 3.0f })));
     }
 
     test_section("normal_nx");
     {
-        ASSERT(a1.normal_nx().approx_equal({ -1.0f, 0.0f }));
+        constexpr auto result = a1.normal_nx();
+        ASSERT(result.approx_equal({ -1.0f, 0.0f }));
     }
 
     test_section("normal_ny");
     {
-        ASSERT(a1.normal_ny().approx_equal({ 0.0f, -1.0f }));
+        constexpr auto result = a1.normal_ny();
+        ASSERT(result.approx_equal({ 0.0f, -1.0f }));
     }
 
     test_section("normal_px");
     {
-        ASSERT(a1.normal_px().approx_equal({ 1.0f, 0.0f }));
+        constexpr auto result = a1.normal_px();
+        ASSERT(result.approx_equal({ 1.0f, 0.0f }));
     }
 
     test_section("normal_py");
     {
-        ASSERT(a1.normal_py().approx_equal({ 0.0f, 1.0f }));
+        constexpr auto result = a1.normal_py();
+        ASSERT(result.approx_equal({ 0.0f, 1.0f }));
     }
 
     test_section("size");
     {
-        ASSERT(a1.size().approx_equal({ 3.0f, 5.0f }));
+        constexpr auto result = a1.size();
+        ASSERT(result.approx_equal({ 3.0f, 5.0f }));
     }
 
     test_section("area");
     {
-        ASSERT(nnm::approx_equal(a1.area(), 15.0f));
+        constexpr auto result = a1.area();
+        ASSERT(nnm::approx_equal(result, 15.0f));
     }
 
     test_section("perimeter");
     {
-        ASSERT(nnm::approx_equal(a1.perimeter(), 16.0f));
+        constexpr auto result = a1.perimeter();
+        ASSERT(nnm::approx_equal(result, 16.0f));
     }
 
     test_section("contains");
     {
-        ASSERT_FALSE(a1.contains({ 2.0f, 4.0f }));
+        constexpr auto result = a1.contains({ 2.0f, 4.0f });
+        ASSERT_FALSE(result);
         ASSERT(a1.contains({ 0.0f, 2.0f }));
         ASSERT_FALSE(a1.contains({ -1.0f, -3.0f }));
         ASSERT(a1.contains({ -1.0f, -1.0f }));
@@ -5473,13 +5497,14 @@ static void aligned_rectangle2_tests()
 
     test_section("intersects(const Line2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::Line2f::from_points({ 2.0f, 1.0f }, { 2.0f, 2.0f })));
+        constexpr auto result = a1.intersects(nnm::Line2f({ 2.0f, 1.0f }, { 0.0f, 1.0f }));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::Line2f::from_points({ -3.0f, 2.0f }, { 2.0f, 1.0f })));
     }
 
     test_section("edge_intersections(const Line2&)");
     {
-        const auto i1 = a1.edge_intersections(nnm::Line2f::from_points({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+        constexpr auto i1 = a1.edge_intersections(nnm::Line2f({ 2.0f, 1.0f }, { 0.0f, 1.0f }));
         ASSERT(i1.empty());
         const auto i2 = a1.edge_intersections(nnm::Line2f::from_points({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
         ASSERT(i2.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
@@ -5487,14 +5512,15 @@ static void aligned_rectangle2_tests()
 
     test_section("intersects(const Ray2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::Ray2f::from_point_to_point({ 2.0f, 1.0f }, { 2.0f, 2.0f })));
+        constexpr auto result = a1.intersects(nnm::Ray2f({ 2.0f, 1.0f }, { 0.0f, 1.0f }));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::Ray2f::from_point_to_point({ -3.0f, 2.0f }, { 2.0f, 1.0f })));
         ASSERT(a1.intersects(nnm::Ray2f::from_point_to_point({ -1.0f, 1.0f }, { -1.0f, 2.0f })));
     }
 
     test_section("edge_intersections(const Ray2&)");
     {
-        const auto i1 = a1.edge_intersections(nnm::Ray2f::from_point_to_point({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+        constexpr auto i1 = a1.edge_intersections(nnm::Ray2f({ 2.0f, 1.0f }, { 0.0f, 1.0f }));
         ASSERT(i1.empty());
         const auto i2 = a1.edge_intersections(nnm::Ray2f::from_point_to_point({ -3.0f, 2.0f }, { 2.0f, 1.0f }));
         ASSERT(i2.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
@@ -5504,7 +5530,8 @@ static void aligned_rectangle2_tests()
 
     test_section("intersects(const Segment2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f })));
+        constexpr auto result = a1.intersects(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::Segment2f({ 0.0f, 2.0f }, { 2.0f, 1.0f })));
         ASSERT(a1.intersects(nnm::Segment2f({ 2.0f, 1.0f }, { -3.0f, 2.0f })));
         ASSERT(a1.intersects(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f })));
@@ -5512,13 +5539,13 @@ static void aligned_rectangle2_tests()
 
     test_section("edge_intersections(const Segment2&)");
     {
-        const auto i1 = a1.edge_intersections(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
+        constexpr auto i1 = a1.edge_intersections(nnm::Segment2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }));
         ASSERT(i1.empty());
         const auto i2 = a1.edge_intersections(nnm::Segment2f({ 0.0f, 2.0f }, { 2.0f, 1.0f }));
         ASSERT(i2.approx_equal({ { 1.0f, 1.5f } }));
         const auto i3 = a1.edge_intersections(nnm::Segment2f({ 2.0f, 1.0f }, { -3.0f, 2.0f }));
         ASSERT(i3.approx_equal({ { -2.0f, 1.8f }, { 1.0f, 1.2f } }));
-        const auto i4 = a1.edge_intersections(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f }));
+        constexpr auto i4 = a1.edge_intersections(nnm::Segment2f({ 0.0f, 1.0f }, { -1.0f, 2.0f }));
         ASSERT(i4.empty());
     }
 
@@ -5530,7 +5557,8 @@ static void aligned_rectangle2_tests()
 
     test_section("intersects(const Circle2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f)));
+        constexpr auto result = a1.intersects(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f)));
         ASSERT(a1.intersects(nnm::Circle2f({ -1.0f, 1.0f }, 0.5f)));
         ASSERT(a1.intersects(nnm::Circle2f({ 1.0f, 3.0f }, 1.0f)));
@@ -5538,19 +5566,20 @@ static void aligned_rectangle2_tests()
 
     test_section("intersect_depth(const Circle2&)");
     {
-        const auto i1 = a1.intersect_depth(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
+        constexpr auto i1 = a1.intersect_depth(nnm::Circle2f({ 3.0f, 1.0f }, 1.0f));
         ASSERT_FALSE(i1.has_value());
-        const auto i2 = a1.intersect_depth(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f));
+        constexpr auto i2 = a1.intersect_depth(nnm::Circle2f({ 2.0f, 1.0f }, 2.0f));
         ASSERT(i2.has_value() && i2.value().approx_equal({ 1.0f, 0.0f }));
-        const auto i3 = a1.intersect_depth(nnm::Circle2f({ -1.0f, 1.0f }, 0.5f));
+        constexpr auto i3 = a1.intersect_depth(nnm::Circle2f({ -1.0f, 1.0f }, 0.5f));
         ASSERT(i3.has_value() && i3.value().approx_equal({ -1.5f, 0.0f }));
-        const auto i4 = a1.intersect_depth(nnm::Circle2f({ 1.0f, 3.0f }, 1.0f));
+        constexpr auto i4 = a1.intersect_depth(nnm::Circle2f({ 1.0f, 3.0f }, 1.0f));
         ASSERT(i4.has_value() && (i4.value().approx_equal({ 1.0f, 0.0f }) || i4.value().approx_equal({ 0.0f, 1.0f })));
     }
 
     test_section("intersects(const Triangle2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::Triangle2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }, { 3.0f, 2.0f })));
+        constexpr auto result = a1.intersects(nnm::Triangle2f({ 2.0f, 1.0f }, { 2.0f, 2.0f }, { 3.0f, 2.0f }));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::Triangle2f({ 2.0f, 1.0f }, { 0.0f, 2.0f }, { 3.0f, 2.0f })));
         ASSERT(a1.intersects(nnm::Triangle2f({ -3.0f, 1.0f }, { 0.0f, 4.0f }, { -3.0f, 4.0f })));
         ASSERT(a1.intersects(nnm::Triangle2f({ -1.5f, -0.5f }, { -1.5f, -1.0f }, { -1.0f, -1.0f })));
@@ -5590,7 +5619,8 @@ static void aligned_rectangle2_tests()
 
     test_section("intersects(const AlignedRectangle2&)");
     {
-        ASSERT_FALSE(a1.intersects(nnm::AlignedRectangle2f({ 2.0f, 1.0f }, { 4.0f, 2.0f })));
+        constexpr auto result = a1.intersects(nnm::AlignedRectangle2f({ 2.0f, 1.0f }, { 4.0f, 2.0f }));
+        ASSERT_FALSE(result);
         ASSERT(a1.intersects(nnm::AlignedRectangle2f({ 0.0f, 1.0f }, { 2.0f, 2.0f })));
         ASSERT(a1.intersects(nnm::AlignedRectangle2f({ 0.0f, 2.5f }, { 2.0f, 3.5f })));
         ASSERT(a1.intersects(nnm::AlignedRectangle2f({ -2.0f, 0.0f }, { 0.0f, 1.0f })));
@@ -5598,37 +5628,44 @@ static void aligned_rectangle2_tests()
 
     test_section("intersect_depth(const AlignedRectangle2&)");
     {
-        const auto i1 = a1.intersect_depth(nnm::AlignedRectangle2f({ 2.0f, 1.0f }, { 4.0f, 2.0f }));
+        constexpr auto i1 = a1.intersect_depth(nnm::AlignedRectangle2f({ 2.0f, 1.0f }, { 4.0f, 2.0f }));
         ASSERT_FALSE(i1.has_value());
-        const auto i2 = a1.intersect_depth(nnm::AlignedRectangle2f({ 0.0f, 1.0f }, { 2.0f, 2.0f }));
+        constexpr auto i2 = a1.intersect_depth(nnm::AlignedRectangle2f({ 0.0f, 1.0f }, { 2.0f, 2.0f }));
         ASSERT(i2.has_value() && i2.value().approx_equal({ 1.0f, 0.0f }));
-        const auto i3 = a1.intersect_depth(nnm::AlignedRectangle2f({ 0.0f, 2.5f }, { 2.0f, 3.5f }));
+        constexpr auto i3 = a1.intersect_depth(nnm::AlignedRectangle2f({ 0.0f, 2.5f }, { 2.0f, 3.5f }));
         ASSERT(i3.has_value() && i3.value().approx_equal({ 0.0f, 0.5f }));
-        const auto i4 = a1.intersect_depth(nnm::AlignedRectangle2f({ -2.0f, 0.0f }, { 0.0f, 1.0f }));
+        constexpr auto i4 = a1.intersect_depth(nnm::AlignedRectangle2f({ -2.0f, 0.0f }, { 0.0f, 1.0f }));
         ASSERT(i4.has_value() && i4.value().approx_equal({ -2.0f, 0.0f }));
     }
 
     test_section("approx_equal");
     {
-        ASSERT(a1.approx_equal(a1));
+        constexpr auto result = a1.approx_equal(a1);
+        ASSERT(result);
         ASSERT_FALSE(a1.approx_equal({ { 1.0f, -2.0f }, { 3.0f, 6.0f } }));
     }
 
     test_section("operator==");
     {
-        ASSERT(a1 == a1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = a1 == a1;
+        ASSERT(result);
         ASSERT_FALSE(a1 == nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }));
     }
 
     test_section("operator!=");
     {
-        ASSERT_FALSE(a1 != a1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = a1 != a1;
+        ASSERT_FALSE(result);
         ASSERT(a1 != nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }))
     }
 
     test_section("operator<");
     {
-        ASSERT_FALSE(a1 < a1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = a1 < a1;
+        ASSERT_FALSE(result);
         ASSERT(a1 < nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }));
         ASSERT_FALSE(nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }) < a1);
     }
