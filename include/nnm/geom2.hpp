@@ -5343,7 +5343,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
-     // tested
+    // tested
     [[nodiscard]] constexpr bool operator==(const Triangle2& other) const
     {
         return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
@@ -5365,7 +5365,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
-     // tested
+    // tested
     [[nodiscard]] constexpr bool operator<(const Triangle2& other) const
     {
         if (vertices[0] == other.vertices[0]) {
@@ -5403,6 +5403,7 @@ public:
     /**
      * Default initialize centered at the origin with zero size and zero rotation.
      */
+    // tested
     constexpr Rectangle2()
         : center { Vector2<Real>::zero() }
         , size { Vector2<Real>::zero() }
@@ -5416,6 +5417,7 @@ public:
      * @param size Size.
      * @param angle Rotation angle in radians.
      */
+    // tested
     constexpr Rectangle2(const Vector2<Real>& center, const Vector2<Real>& size, const Real angle)
         : center { center }
         , size { size }
@@ -5424,9 +5426,24 @@ public:
     }
 
     /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other rectangle.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Rectangle2(const Rectangle2<Other>& other)
+        : center { other.center }
+        , size { other.size }
+        , angle { static_cast<Real>(other.angle) }
+    {
+    }
+
+    /**
      * Vertex in the negative x and negative y corner before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> vertex_nx_ny() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
@@ -5437,6 +5454,7 @@ public:
      * Vertex in the negative x and positive y corner before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> vertex_nx_py() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
@@ -5447,6 +5465,7 @@ public:
      * Vertex in the positive x and negative y corner before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> vertex_px_ny() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
@@ -5457,6 +5476,7 @@ public:
      * Vertex in the positive x and positive y corner before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> vertex_px_py() const
     {
         const Vector2<Real> half_size = size / static_cast<Real>(2);
@@ -5467,6 +5487,7 @@ public:
      * Edge in the negative x direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2<Real> edge_nx() const
     {
         return { vertex_nx_ny(), vertex_nx_py() };
@@ -5476,6 +5497,7 @@ public:
      * Edge in the negative y direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2<Real> edge_ny() const
     {
         return { vertex_nx_ny(), vertex_px_ny() };
@@ -5485,6 +5507,7 @@ public:
      * Edge in the positive x direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2<Real> edge_px() const
     {
         return { vertex_px_ny(), vertex_px_py() };
@@ -5494,6 +5517,7 @@ public:
      * Edge in the positive y direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Segment2<Real> edge_py() const
     {
         return { vertex_nx_py(), vertex_px_py() };
@@ -5503,6 +5527,7 @@ public:
      * Normal of the edge in the negative x direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal_nx() const
     {
         const Vector2<Real> dir = edge_nx().direction();
@@ -5513,6 +5538,7 @@ public:
      * Normal of the edge in the negative y direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal_ny() const
     {
         const Vector2<Real> dir = edge_ny().direction();
@@ -5523,6 +5549,7 @@ public:
      * Normal of the edge in the positive x direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal_px() const
     {
         const Vector2<Real> dir = edge_px().direction();
@@ -5533,6 +5560,7 @@ public:
      * Normal of the edge in the positive y direction before rotation.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Vector2<Real> normal_py() const
     {
         const Vector2<Real> dir = edge_py().direction();
@@ -5543,6 +5571,7 @@ public:
      * Area.
      * @return Area.
      */
+    // tested
     [[nodiscard]] constexpr Real area() const
     {
         return size.x * size.y;
@@ -5552,6 +5581,7 @@ public:
      * Perimeter which is the combined length of all edges.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real perimeter() const
     {
         return static_cast<Real>(2) * size.x + static_cast<Real>(2) * size.y;
@@ -5562,6 +5592,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool contains(const Vector2<Real>& point) const
     {
         const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
@@ -5574,6 +5605,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector2<Real>& point) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5592,6 +5624,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector2<Real>& point) const
     {
         const Vector2<Real> local_point = point.translate(-center).rotate(-angle);
@@ -5605,6 +5638,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line2<Real>& line) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5626,6 +5660,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray2<Real>& ray) const
     {
         const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
@@ -5647,6 +5682,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment2<Real>& segment) const
     {
         if (contains(segment.start)) {
@@ -5671,6 +5707,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Arc2<Real>& arc) const
     {
         if (contains(arc.start)) {
@@ -5695,6 +5732,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Circle2<Real>& circle) const
     {
         if (intersects(circle)) {
@@ -5719,6 +5757,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle2<Real>& triangle) const
     {
         if (contains(triangle.vertices[0])) {
@@ -5743,6 +5782,7 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Rectangle2& other) const
     {
         if (contains(other.vertex_nx_ny())) {
@@ -5772,6 +5812,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -5779,6 +5820,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Line2<Real>& line) const
     {
         return edge_nx().intersects(line) || edge_ny().intersects(line) || edge_px().intersects(line)
@@ -5790,6 +5832,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Line2<Real>& line) const
     {
         Intersections2<Real> inters;
@@ -5807,6 +5850,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray2<Real>& ray) const
     {
         return edge_nx().intersects(ray) || edge_ny().intersects(ray) || edge_px().intersects(ray)
@@ -5818,6 +5862,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Ray2<Real>& ray) const
     {
         Intersections2<Real> inters;
@@ -5835,6 +5880,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Segment2<Real>& segment) const
     {
         return contains(segment.start) || contains(segment.end) || edge_nx().intersects(segment)
@@ -5846,6 +5892,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Intersections2<Real> edge_intersections(const Segment2<Real>& segment) const
     {
         Intersections2<Real> inters;
@@ -5864,6 +5911,7 @@ public:
      * @param arc Arc.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Arc2<Real>& arc) const
     {
         return contains(arc.start) || contains(arc.end()) || edge_nx().intersects(arc) || edge_ny().intersects(arc)
@@ -5875,6 +5923,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Circle2<Real>& circle) const
     {
         if (contains(circle.center)) {
@@ -5892,6 +5941,7 @@ public:
      * @param circle Circle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Circle2<Real>& circle) const
     {
         const Circle2<Real> circle_local = circle.translate(-center).rotate(-angle);
@@ -5917,6 +5967,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Triangle2<Real>& triangle) const
     {
         for (int i = 0; i < 3; ++i) {
@@ -5989,6 +6040,7 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle2& other) const
     {
         const std::array<Vector2<Real>, 4> vertices_other
@@ -6012,6 +6064,7 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const Rectangle2& other) const
     {
         const auto depth_on_normal
@@ -6062,6 +6115,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -6069,6 +6123,7 @@ public:
      * @param rectangle Aligned rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector2<Real>> intersect_depth(const AlignedRectangle2<Real>& rectangle) const;
 
     /**
@@ -6076,7 +6131,8 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Rectangle2 translate(const Vector2<Real>& offset) const
+    // tested
+    [[nodiscard]] constexpr Rectangle2 translate(const Vector2<Real>& offset) const
     {
         return { center.translate(offset), size, angle };
     }
@@ -6087,6 +6143,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Rectangle2 rotate_at(const Vector2<Real>& rotate_origin, const Real angle_) const
     {
         return { center.rotate_at(rotate_origin, angle_), size, normalize_angle(angle + angle_) };
@@ -6097,6 +6154,7 @@ public:
      * @param angle_ Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Rectangle2 rotate(const Real angle_) const
     {
         return { center.rotate(angle_), size, normalize_angle(angle + angle_) };
@@ -6108,7 +6166,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Rectangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Rectangle2 scale_at(const Vector2<Real>& scale_origin, const Vector2<Real>& factor) const
     {
         return { center.scale_at(scale_origin, factor), size.scale(factor), angle };
     }
@@ -6118,7 +6177,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Rectangle2 scale(const Vector2<Real>& factor) const
+    // tested
+    [[nodiscard]] constexpr Rectangle2 scale(const Vector2<Real>& factor) const
     {
         return { center.scale(factor), size.scale(factor), angle };
     }
@@ -6128,6 +6188,7 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coincident(const Rectangle2& other) const
     {
         const Vector2<Real> v1 = vertex_nx_ny();
@@ -6166,7 +6227,8 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool approx_equal(const Rectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool approx_equal(const Rectangle2& other) const
     {
         return center.approx_equal(other.center) && size.approx_equal(other.size)
             && nnm::approx_equal(angle, other.angle);
@@ -6177,7 +6239,8 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool operator==(const Rectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator==(const Rectangle2& other) const
     {
         return center == other.center && size == other.size && angle == other.angle;
     }
@@ -6187,7 +6250,8 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool operator!=(const Rectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator!=(const Rectangle2& other) const
     {
         return center != other.center || size != other.size || angle != other.angle;
     }
@@ -6197,7 +6261,8 @@ public:
      * @param other Other rectangle.
      * @return Result.
      */
-    [[nodiscard]] bool operator<(const Rectangle2& other) const
+    // tested
+    [[nodiscard]] constexpr bool operator<(const Rectangle2& other) const
     {
         if (center == other.center) {
             if (size == other.size) {

@@ -4695,7 +4695,7 @@ static void triangle2_tests()
 
 static void rectangle2_tests()
 {
-    test_case("Rectangl2");
+    test_case("Rectangle2");
 
     test_section("Rectangle2()");
     {
@@ -4711,6 +4711,15 @@ static void rectangle2_tests()
         ASSERT(r.center == nnm::Vector2f(1.0f, -2.0f));
         ASSERT(r.size == nnm::Vector2f(3.0f, 4.0f));
         ASSERT(r.angle == nnm::pi<float>() / 3.0f);
+    }
+
+    test_section("Rectangle(const Rectangle<Other>&)");
+    {
+        constexpr nnm::Rectangle2d r1 { { 1.0, -2.0 }, { 3.0, 4.0 }, nnm::pi<double>() / 3.0 };
+        constexpr nnm::Rectangle2f r2 { r1 };
+        ASSERT(r2.center.approx_equal({ 1.0f, -2.0f }));
+        ASSERT(r2.size.approx_equal({ 3.0f, 4.0f }));
+        ASSERT(nnm::approx_equal(r2.angle, nnm::pi<float>() / 3.0f));
     }
 
     constexpr nnm::Rectangle2f r1 { { 1.0f, -2.0f }, { 3.0f, 4.0f }, nnm::pi<float>() / 3.0f };
@@ -4943,7 +4952,7 @@ static void rectangle2_tests()
         ASSERT(r3.intersects(nnm::Line2f::from_points({ 1.0f, 0.5f }, { 3.0f, -1.0f })));
     }
 
-    test_section("intersections(const Line2&)");
+    test_section("edge_intersections(const Line2&)");
     {
         const auto i1 = r1.edge_intersections(nnm::Line2f::axis_x());
         ASSERT(i1.approx_equal({ { -0.154700637f, 0.0f }, { 0.535898447f, 0.0f } }));
@@ -5080,7 +5089,7 @@ static void rectangle2_tests()
         ASSERT_FALSE(d6.has_value());
     }
 
-    test_section("intersects");
+    test_section("intersects(const Rectangle2&)");
     {
         ASSERT(r1.intersects(r2));
         ASSERT(r2.intersects(r1));
@@ -5092,7 +5101,7 @@ static void rectangle2_tests()
         ASSERT(nnm::Rectangle2f({ -0.5f, -0.5f }, { 5.0f, 11.0f }, 0.0f).intersects(r2));
     }
 
-    test_section("intersect_depth");
+    test_section("intersect_depth(const Rectangle2&)");
     {
         const auto d1 = r1.intersect_depth(r2);
         ASSERT(d1.has_value() && d1->approx_equal({ 0.0f, 0.299038172f }));
@@ -5136,7 +5145,7 @@ static void rectangle2_tests()
 
     test_section("translate");
     {
-        const auto t1 = r1.translate({ 1.0f, -2.0f });
+        constexpr auto t1 = r1.translate({ 1.0f, -2.0f });
         ASSERT(t1.approx_equal({ { 2.0f, -4.0f }, { 3.0f, 4.0f }, nnm::pi<float>() / 3.0f }));
     }
 
@@ -5154,13 +5163,13 @@ static void rectangle2_tests()
 
     test_section("scale_at");
     {
-        const auto t1 = r1.scale_at({ 1.0f, -1.0f }, { -1.5f, 2.0f });
+        constexpr auto t1 = r1.scale_at({ 1.0f, -1.0f }, { -1.5f, 2.0f });
         ASSERT(t1.approx_equal({ { 1.0f, -3.0f }, { -4.5f, 8.0f }, nnm::pi<float>() / 3.0f }));
     }
 
     test_section("scale");
     {
-        const auto t1 = r1.scale({ 2.0f, -0.5f });
+        constexpr auto t1 = r1.scale({ 2.0f, -0.5f });
         ASSERT(t1.approx_equal({ { 2.0f, 1.0f }, { 6.0f, -2.0f }, nnm::pi<float>() / 3.0f }));
     }
 
@@ -5178,26 +5187,31 @@ static void rectangle2_tests()
 
     test_section("approx_equal");
     {
-        ASSERT(r1.approx_equal(r1));
+        constexpr auto result = r1.approx_equal(r1);
+        ASSERT(result);
         ASSERT_FALSE(r1.approx_equal(r2));
         ASSERT_FALSE(r2.approx_equal(r3));
     }
 
     test_section("operator==");
     {
-        ASSERT(r1 == r1);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = r1 == r1;
+        ASSERT(result);
         ASSERT_FALSE(r1 == r2);
     }
 
     test_section("operator!=");
     {
-        ASSERT(r1 != r2);
+        constexpr auto result = r1 != r2;
+        ASSERT(result);
         ASSERT_FALSE(r2 != r2);
     }
 
     test_section("operator<");
     {
-        ASSERT(r2 < r1);
+        constexpr auto result = r2 < r1;
+        ASSERT(result);
         ASSERT_FALSE(r1 < r2);
         ASSERT_FALSE(r1 < r1);
         ASSERT_FALSE(r2 < r2);
