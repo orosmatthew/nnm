@@ -24,6 +24,14 @@ inline void line3_tests()
         ASSERT(l.direction == nnm::Vector3f(5.0f, 6.0f, -7.0f));
     }
 
+    test_section("Line3(const Line3<Other>&)");
+    {
+        constexpr nnm::Line3f l1 { { -1.0, 2.0, 3.0 }, { 5.0, 6.0, -7.0 } };
+        constexpr nnm::Line3d l2 { l1 };
+        ASSERT(l2.origin.approx_equal({ -1.0f, 2.0f, 3.0f }));
+        ASSERT(l2.direction.approx_equal({ 5.0f, 6.0f, -7.0f }));
+    }
+
     test_section("from_points");
     {
         const auto l = nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { 4.0f, -5.0f, 7.0f });
@@ -41,7 +49,7 @@ inline void line3_tests()
     test_section("from_ray");
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 6.0f, -7.0f } };
-        const auto l1 = nnm::Line3f::from_ray(r1);
+        constexpr auto l1 = nnm::Line3f::from_ray(r1);
         ASSERT(l1.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
         ASSERT(l1.direction.approx_equal({ -5.0f, 6.0f, -7.0f }));
     }
@@ -104,6 +112,13 @@ inline void line3_tests()
         ASSERT(l.direction.perpendicular(l1.direction));
     }
 
+    test_section("perpendicular_plane_parallel");
+    {
+        nnm::PlaneF p { { 1.0f, 1.0f, 1.0f }, nnm::Vector3f(1.0f, -2.0f, 3.0f).normalize() };
+        const auto result = l1.perpendicular_plane_parallel(p);
+        ASSERT(result.perpendicular(l1) && p.parallel(result));
+    }
+
     test_section("normalize");
     {
         const auto l = nnm::Line3f { { 1.0f, -2.0f, 3.0f }, { 1.0f, -1.0f, 1.0f } }.normalize();
@@ -115,12 +130,71 @@ inline void line3_tests()
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
         ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -5.0f, 6.0f, -7.0f }).collinear(r1));
-        ASSERT_FALSE(nnm::Line3f::axis_x().collinear(r1));
+        constexpr auto result = nnm::Line3f::axis_x().collinear(r1);
+        ASSERT_FALSE(result);
+    }
+
+    test_section("collinear(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        const auto result = nnm::Line3f::axis_x().collinear(s1);
+        ASSERT_FALSE(result);
+        ASSERT_FALSE(nnm::Line3f::from_points({ 2.0f, -1.0f, 4.0f }, { -3.0f, 6.0f, -5.0f }).collinear(s1));
+        ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }).collinear(s1));
+        ASSERT(nnm::Line3f::from_points({ -4.0f, 5.0f, -6.0f }, { 1.0f, -2.0f, 3.0f }).collinear(s1));
+    }
+
+    test_section("coplanar(const Line3&)");
+    {
+        constexpr auto result = l1.coplanar(l1);
+        ASSERT(result);
+        ASSERT_FALSE(l1.coplanar(nnm::Line3f::axis_x()));
+        auto l2 = nnm::Line3f::from_points(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(l1.coplanar(l2));
+    }
+
+    test_section("coplanar(const Ray3&)");
+    {
+        constexpr auto result = l1.coplanar(nnm::Ray3f(l1.origin, l1.direction));
+        ASSERT(result);
+        ASSERT_FALSE(l1.coplanar(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x())));
+        auto r1 = nnm::Ray3f::from_point_to_point(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(l1.coplanar(r1));
+    }
+
+    test_section("coplanar(const Segment3&)");
+    {
+        ASSERT(l1.coplanar(nnm::Segment3f(l1.origin, l1.origin + l1.direction)));
+        ASSERT_FALSE(l1.coplanar(nnm::Segment3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x())));
+        auto s1 = nnm::Segment3f(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(l1.coplanar(s1));
+    }
+
+    test_section("coplanar(const Plane&)");
+    {
+        constexpr auto result = l1.coplanar(nnm::PlaneF::xy());
+        ASSERT_FALSE(result);
+        nnm::PlaneF plane { { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { 0.154303f, 0.771517f, 0.617213f } };
+        ASSERT(l1.coplanar(plane));
+    }
+
+    test_section("coplanar(const Triangle3&)");
+    {
+        ASSERT_FALSE(l1.coplanar(nnm::Triangle3f({ 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })));
+        ASSERT(l1.coplanar(
+            nnm::Triangle3f(
+                { -4.7984678398f, -1.8092603063f, 4.2111923428f },
+                { -0.003134965f, -3.0097031925f, 4.5129127318f },
+                { -4.5435928528f, -3.1536294284f, 5.8279349987f })));
     }
 
     test_section("contains");
     {
-        ASSERT_FALSE(l1.contains({ 0.0f, 0.0f, 0.0f }));
+        constexpr auto result = l1.contains({ 0.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(result);
         ASSERT(l1.contains({ -2.0f, 1.0f, 0.0f }));
         ASSERT(l1.contains({ -0.8f, -0.2f, 1.2f }));
         ASSERT_FALSE(nnm::Line3f::axis_x_offset(1.0f, -2.0f).contains({ 0.0f, 0.0f, 0.0f }));
@@ -159,7 +233,8 @@ inline void line3_tests()
 
     test_section("parallel(const Line3&)");
     {
-        ASSERT(l1.parallel(l1));
+        constexpr auto result = l1.parallel(l1);
+        ASSERT(result);
         ASSERT_FALSE(l1.parallel(nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f })));
         ASSERT(nnm::Line3f::axis_x().parallel(nnm::Line3f::axis_x_offset(2.0f, -3.0f)));
     }
@@ -167,13 +242,15 @@ inline void line3_tests()
     test_section("parallel(const Ray3&)");
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
-        ASSERT_FALSE(nnm::Line3f::axis_x().parallel(r1));
+        constexpr auto result = nnm::Line3f::axis_x().parallel(r1);
+        ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::from_points({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f }).parallel(r1));
     }
 
     test_section("perpendicular(const Line3&)");
     {
-        ASSERT_FALSE(l1.perpendicular(l1));
+        constexpr auto result = l1.perpendicular(l1);
+        ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::axis_x().perpendicular(nnm::Line3f::axis_y_offset(2.0f, -3.0f)));
         ASSERT(nnm::Line3f::axis_z_offset(10.0f, -20.0f).perpendicular(nnm::Line3f::axis_y()));
         ASSERT(
@@ -184,13 +261,15 @@ inline void line3_tests()
     test_section("perpendicular(const Ray3&)");
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
-        ASSERT_FALSE(nnm::Line3f::axis_x().perpendicular(r1));
+        constexpr auto result = nnm::Line3f::axis_x().perpendicular(r1);
+        ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::from_points({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f }).perpendicular(r1));
     }
 
     test_section("intersects(const Line3&)");
     {
-        ASSERT(l1.intersects(l1));
+        constexpr auto result = l1.intersects(l1);
+        ASSERT(result);
         ASSERT(l1.intersects(nnm::Line3f::from_points({ 0.0f, 0.0f, 1.0f }, { -2.0f, 0.0f, 1.0f })));
         ASSERT_FALSE(l1.intersects(nnm::Line3f::axis_z()));
         ASSERT_FALSE(nnm::Line3f::axis_x_offset(1.0f, -2.0f).intersects(nnm::Line3f::axis_x()));
@@ -200,15 +279,15 @@ inline void line3_tests()
 
     test_section("intersection(const Line3&)");
     {
-        const auto i1 = l1.intersection(l1);
+        constexpr auto i1 = l1.intersection(l1);
         ASSERT_FALSE(i1.has_value());
         const auto i2 = l1.intersection(nnm::Line3f::from_points({ 0.0f, 0.0f, 1.0f }, { -2.0f, 0.0f, 1.0f }));
         ASSERT(i2.has_value() && i2.value().approx_equal({ -1.0f, 0.0f, 1.0f }));
-        const auto i3 = l1.intersection(nnm::Line3f::axis_z());
+        constexpr auto i3 = l1.intersection(nnm::Line3f::axis_z());
         ASSERT_FALSE(i3.has_value());
-        const auto i4 = nnm::Line3f::axis_x_offset(1.0f, -2.0f).intersection(nnm::Line3f::axis_x());
+        constexpr auto i4 = nnm::Line3f::axis_x_offset(1.0f, -2.0f).intersection(nnm::Line3f::axis_x());
         ASSERT_FALSE(i4.has_value());
-        const auto i5 = l1.intersection(nnm::Line3f::axis_x_offset(1.0f, -2.0f));
+        constexpr auto i5 = l1.intersection(nnm::Line3f::axis_x_offset(1.0f, -2.0f));
         ASSERT_FALSE(i5.has_value());
         const auto i6
             = nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }).intersection(nnm::Line3f::axis_x());
@@ -218,7 +297,8 @@ inline void line3_tests()
     test_section("intersects(const Ray3&)");
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
-        ASSERT_FALSE(nnm::Line3f::axis_x().intersects(r1));
+        constexpr auto result = nnm::Line3f::axis_x().intersects(r1);
+        ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f }).intersects(r1));
         ASSERT(nnm::Line3f::from_points({ -2.0f, 2.0f, -2.0f }, { -0.2f, -0.4f, 1.0f }).intersects(r1));
         ASSERT_FALSE(nnm::Line3f::from_points({ 1.54f, -2.72f, 3.9f }, { -2.0f, -4.0f, 5.0f }).intersects(r1));
@@ -227,7 +307,7 @@ inline void line3_tests()
     test_section("intersection(const Ray3&)");
     {
         constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
-        const auto i1 = nnm::Line3f::axis_x().intersection(r1);
+        constexpr auto i1 = nnm::Line3f::axis_x().intersection(r1);
         ASSERT_FALSE(i1.has_value());
         const auto i2 = nnm::Line3f::from_points({ -0.2f, -0.4f, 1.0f }, { 2.0f, 0.0f, 0.0f }).intersection(r1);
         ASSERT(i2.has_value() && i2.value().approx_equal({ -0.2f, -0.4f, 1.0f }));
@@ -239,9 +319,9 @@ inline void line3_tests()
 
     test_section("project_point");
     {
-        const auto p1 = l1.project_point({ 0.0f, 0.0f, 0.0f });
+        constexpr auto p1 = l1.project({ 0.0f, 0.0f, 0.0f });
         ASSERT(p1.approx_equal({ -1.0f, 0.0f, 1.0f }));
-        const auto p2 = l1.project_point({ 0.0f, -1.0f, 2.0f });
+        constexpr auto p2 = l1.project({ 0.0f, -1.0f, 2.0f });
         ASSERT(p2.approx_equal({ 0.0f, -1.0f, 2.0f }));
     }
 
@@ -257,7 +337,7 @@ inline void line3_tests()
 
     test_section("translate");
     {
-        const auto t1 = l1.translate({ 5.0f, 6.0f, -7.0f });
+        constexpr auto t1 = l1.translate({ 5.0f, 6.0f, -7.0f });
         ASSERT(t1.approx_equal({ { 6.0f, 4.0f, -4.0f }, l1.direction }));
     }
 

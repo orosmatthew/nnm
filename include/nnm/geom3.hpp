@@ -173,7 +173,7 @@ public:
 };
 
 /**
- * 3D infinite line.
+ * Infinite line.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -216,6 +216,7 @@ public:
      * @tparam Other Other type.
      * @param other Other line.
      */
+    // tested
     template <typename Other>
     explicit constexpr Line3(const Line3<Other>& other)
         : origin { other.origin }
@@ -249,7 +250,7 @@ public:
      * @return Result.
      */
     // tested
-    static Line3 from_ray(const Ray3<Real>& ray);
+    static constexpr Line3 from_ray(const Ray3<Real>& ray);
 
     /**
      * Line that intersects the origin and is in the direction of the x-axis.
@@ -346,6 +347,7 @@ public:
      * @param plane Plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Line3 perpendicular_plane_parallel(const Plane<Real>& plane) const;
 
     /**
@@ -365,26 +367,62 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr bool collinear(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if collinear with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
     [[nodiscard]] bool collinear(const Segment3<Real>& segment) const;
 
-    [[nodiscard]] bool coplanar(const Line3& other) const
+    /**
+     * Determine if coplanar with another line.
+     * @param other Other line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Line3& other) const
     {
         if (parallel(other)) {
             return true;
         }
         const Vector3<Real> diff = origin - other.origin;
         const Vector3<Real> dir_cross = direction.cross(other.direction);
+        auto thing = diff.dot(dir_cross);
         return approx_zero(diff.dot(dir_cross));
     }
 
-    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const;
+    /**
+     * Determine if coplanar with ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const;
 
+    /**
+     * Determine if coplanar with line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const;
 
-    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+    /**
+     * Determine if coplanar with plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const;
 
+    /**
+     * Determine if coplanar with triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
@@ -442,7 +480,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool parallel(const Line3& other) const
+    [[nodiscard]] constexpr bool parallel(const Line3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
@@ -453,7 +491,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool parallel(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const;
 
     /**
      * Determine if perpendicular to another line.
@@ -461,7 +499,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool perpendicular(const Line3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Line3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
@@ -472,7 +510,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool perpendicular(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const;
 
     /**
      * Determine if intersects another line.
@@ -480,7 +518,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Line3& other) const
+    [[nodiscard]] constexpr bool intersects(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -501,7 +539,7 @@ public:
      * @return Result, null if no intersection.
      */
     // tested
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3& other) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -524,7 +562,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const;
 
     /**
      * Intersection point with a ray.
@@ -532,7 +570,7 @@ public:
      * @return Result, null if no intersection.
      */
     // tested
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
 
     /**
      * Project point on the line.
@@ -540,7 +578,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
         const Real t = dir.dot(direction);
@@ -553,7 +591,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coincident(const Line3& other) const
+    [[nodiscard]] constexpr bool coincident(const Line3& other) const
     {
         if (!parallel(other)) {
             return false;
@@ -568,7 +606,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 translate(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Line3 translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), direction };
     }
@@ -863,7 +901,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool collinear(const Line3<Real>& line) const
     {
         return Line3<Real>::from_ray(*this).coincident(line);
     }
@@ -879,7 +917,7 @@ public:
         return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
     }
 
-    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
         return Line3<Real>::from_ray(*this).coplanar(line);
     }
@@ -984,7 +1022,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool parallel(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
         return direction.cross(line.direction).approx_zero();
     }
@@ -1006,7 +1044,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool perpendicular(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
         return nnm::approx_zero(direction.dot(line.direction));
     }
@@ -1028,7 +1066,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -1052,7 +1090,7 @@ public:
      * @return Result, null if no intersection.
      */
     // tested
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Vector3<Real> dir_cross = direction.cross(line.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -2262,7 +2300,7 @@ public:
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
         return contains(line.origin) && normal.perpendicular(line.direction);
     }
@@ -4337,7 +4375,7 @@ Line3<Real> Line3<Real>::from_segment(const Segment3<Real>& segment)
 }
 
 template <typename Real>
-Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
+constexpr Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
 {
     return { ray.origin, ray.direction };
 }
@@ -4350,7 +4388,7 @@ Line3<Real> Line3<Real>::perpendicular_plane_parallel(const Plane<Real>& plane) 
 }
 
 template <typename Real>
-bool Line3<Real>::collinear(const Ray3<Real>& ray) const
+constexpr bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 {
     return ray.collinear(*this);
 }
@@ -4362,7 +4400,7 @@ bool Line3<Real>::collinear(const Segment3<Real>& segment) const
 }
 
 template <typename Real>
-bool Line3<Real>::coplanar(const Ray3<Real>& ray) const
+constexpr bool Line3<Real>::coplanar(const Ray3<Real>& ray) const
 {
     return ray.coplanar(*this);
 }
@@ -4374,7 +4412,7 @@ bool Line3<Real>::coplanar(const Segment3<Real>& segment) const
 }
 
 template <typename Real>
-bool Line3<Real>::coplanar(const Plane<Real>& plane) const
+constexpr bool Line3<Real>::coplanar(const Plane<Real>& plane) const
 {
     return plane.coplanar(*this);
 }
@@ -4392,25 +4430,25 @@ Real Line3<Real>::distance(const Ray3<Real>& ray) const
 }
 
 template <typename Real>
-bool Line3<Real>::parallel(const Ray3<Real>& ray) const
+constexpr bool Line3<Real>::parallel(const Ray3<Real>& ray) const
 {
     return ray.parallel(*this);
 }
 
 template <typename Real>
-bool Line3<Real>::perpendicular(const Ray3<Real>& ray) const
+constexpr bool Line3<Real>::perpendicular(const Ray3<Real>& ray) const
 {
     return ray.perpendicular(*this);
 }
 
 template <typename Real>
-bool Line3<Real>::intersects(const Ray3<Real>& ray) const
+constexpr bool Line3<Real>::intersects(const Ray3<Real>& ray) const
 {
     return ray.intersects(*this);
 }
 
 template <typename Real>
-std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real>& ray) const
+constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real>& ray) const
 {
     return ray.intersection(*this);
 }
