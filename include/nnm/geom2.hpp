@@ -280,7 +280,7 @@ private:
 };
 
 /**
- * 2D infinite line.
+ * Infinite line.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -982,7 +982,7 @@ public:
 };
 
 /**
- * 2D Ray.
+ * Ray.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -1623,7 +1623,7 @@ public:
 };
 
 /**
- * 2D segment.
+ * Line segment.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -2440,7 +2440,7 @@ public:
 };
 
 /**
- * 2D arc.
+ * Circular arc.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -3502,7 +3502,7 @@ public:
 };
 
 /**
- * 2D circle.
+ * Solid circle.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -4321,7 +4321,7 @@ public:
 };
 
 /**
- * 2D triangle.
+ * Solid triangle.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -5379,7 +5379,7 @@ public:
 };
 
 /**
- * 2D rectangle.
+ * Solid rectangle with rotation.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -6275,7 +6275,7 @@ public:
 };
 
 /**
- * 2D axis-aligned rectangle.
+ * Solid axis-aligned rectangle.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
