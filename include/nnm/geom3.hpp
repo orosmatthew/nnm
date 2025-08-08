@@ -2276,6 +2276,19 @@ public:
     }
 
     /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other plane.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Plane(const Plane<Other>& other)
+        : origin { other.origin }
+        , normal { other.normal }
+    {
+    }
+
+    /**
      * Plane that intersects all given points. Does not check for collinearity.
      * @param point1 First point.
      * @param point2 Second point.
@@ -2317,6 +2330,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     static Plane from_triangle_unchecked(const Triangle3<Real>& triangle);
 
     /**
@@ -2324,33 +2338,67 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     static std::optional<Plane> from_triangle(const Triangle3<Real>& triangle);
 
+    /**
+     * Plane that spans the x and y axes.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane xy()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_z() };
     }
 
+    /**
+     * Plane that spans the x and y axes and is offset along the z-axis.
+     * @param z_offset Z-Axis offset.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane xy_offset(const float z_offset)
     {
         return xy().translate({ static_cast<Real>(0), static_cast<Real>(0), z_offset });
     }
 
+    /**
+     * Plane that spans the x and z axes.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane xz()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_y() };
     }
 
+    /**
+     * Plane that spans the x and z axes and is offset along the y-axis.
+     * @param y_offset Y-Axis offset.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane xz_offset(const float y_offset)
     {
         return xz().translate({ static_cast<Real>(0), y_offset, static_cast<Real>(0) });
     }
 
+    /**
+     * Plane that spans the y and z axes.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane yz()
     {
         return { Vector3<Real>::zero(), Vector3<Real>::axis_x() };
     }
 
+    /**
+     * Plane that spans the y and z axes and is offset from the x-axis.
+     * @param x_offset X-Axis offset.
+     * @return Result.
+     */
+    // tested
     static constexpr Plane yz_offset(const float x_offset)
     {
         return yz().translate({ x_offset, static_cast<Real>(0), static_cast<Real>(0) });
@@ -2371,6 +2419,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
         return contains(line.origin) && normal.perpendicular(line.direction);
@@ -2381,6 +2430,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const
     {
         return contains(ray.origin) && normal.perpendicular(ray.direction);
@@ -2391,6 +2441,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Segment3<Real>& segment) const
     {
         return contains(segment.start) && contains(segment.end);
@@ -2407,6 +2458,12 @@ public:
         return contains(other.origin) && normal.parallel(other.normal);
     }
 
+    /**
+     * Determine if coplanar with triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
@@ -2811,25 +2868,25 @@ public:
     }
 
     // tested
-    [[nodiscard]] bool approx_equal(const Plane& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Plane& other) const
     {
         return origin.approx_equal(other.origin) && normal.approx_equal(other.normal);
     }
 
     // tested
-    [[nodiscard]] bool operator==(const Plane& other) const
+    [[nodiscard]] constexpr bool operator==(const Plane& other) const
     {
         return origin == other.origin && normal == other.normal;
     }
 
     // tested
-    [[nodiscard]] bool operator!=(const Plane& other) const
+    [[nodiscard]] constexpr bool operator!=(const Plane& other) const
     {
         return origin != other.origin || normal != other.normal;
     }
 
     // tested
-    [[nodiscard]] bool operator<(const Plane& other) const
+    [[nodiscard]] constexpr bool operator<(const Plane& other) const
     {
         if (origin != other.origin) {
             return origin < other.origin;

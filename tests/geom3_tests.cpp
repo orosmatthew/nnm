@@ -1479,6 +1479,13 @@ inline void plane_tests()
         ASSERT(p.normal.approx_equal({ -4.0f, 5.0f, -6.0f }));
     }
 
+    test_section("Plane(const Plane<Other>&)");
+    {
+        constexpr nnm::PlaneD p1 { { 1.0, -2.0, 3.0 }, { -4.0, 5.0, -6.0 } };
+        constexpr nnm::PlaneF p2 { p1 };
+        ASSERT(p2.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+    }
+
     test_section("from_points_unchecked");
     {
         const auto p
@@ -1504,12 +1511,115 @@ inline void plane_tests()
         ASSERT_FALSE(p3.has_value());
     }
 
+    test_section("from_triangle_unchecked");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -2.0f, -3.0f, 4.0f } };
+        const auto p = nnm::PlaneF::from_triangle_unchecked(t1);
+        constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
+        ASSERT(p.normal.approx_equal(n) || p.normal.approx_equal(-n));
+        ASSERT(p.contains({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(p.contains({ -4.0f, 5.0f, -6.0f }));
+        ASSERT(p.contains({ -2.0f, -3.0f, 4.0f }));
+    }
+
+    test_section("from_triangle");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -2.0f, -3.0f, 4.0f } };
+        const auto p1 = nnm::PlaneF::from_triangle(t1);
+        constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
+        ASSERT(p1.has_value() && (p1->normal.approx_equal(n) || p1->normal.approx_equal(-n)))
+        ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(p1.has_value() && p1->contains({ -4.0f, 5.0f, -6.0f }));
+        ASSERT(p1.has_value() && p1->contains({ -2.0f, -3.0f, 4.0f }));
+        constexpr nnm::Triangle3f t2 { nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero() };
+        const auto p2 = nnm::PlaneF::from_triangle(t2);
+        ASSERT_FALSE(p2.has_value());
+        constexpr nnm::Triangle3f t3 { { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } };
+        const auto p3 = nnm::PlaneF::from_triangle(t3);
+        ASSERT_FALSE(p3.has_value());
+    }
+
+    test_section("xy");
+    {
+        constexpr auto p = nnm::PlaneF::xy();
+        ASSERT(p.origin.approx_zero());
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_z()));
+    }
+
+    test_section("xy_offset");
+    {
+        constexpr auto p = nnm::PlaneF::xy_offset(3.0f);
+        ASSERT(p.origin.approx_equal({ 0.0f, 0.0f, 3.0f }));
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_z()));
+    }
+
+    test_section("xz");
+    {
+        constexpr auto p = nnm::PlaneF::xz();
+        ASSERT(p.origin.approx_zero());
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_y()));
+    }
+
+    test_section("xz_offset");
+    {
+        constexpr auto p = nnm::PlaneF::xz_offset(3.0f);
+        ASSERT(p.origin.approx_equal({ 0.0f, 3.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_y()));
+    }
+
+    test_section("yz");
+    {
+        constexpr auto p = nnm::PlaneF::yz();
+        ASSERT(p.origin.approx_zero());
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_x()));
+    }
+
+    test_section("yz_offset");
+    {
+        constexpr auto p = nnm::PlaneF::yz_offset(3.0f);
+        ASSERT(p.origin.approx_equal({ 3.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(p.normal.length(), 1.0f));
+        ASSERT(p.normal.parallel(nnm::Vector3f::axis_x()));
+    }
+
     test_section("normalize");
     {
         constexpr nnm::PlaneF p { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
         const auto norm = p.normalize();
         ASSERT(norm.origin.approx_equal(p.origin));
         ASSERT(norm.normal.approx_equal({ -0.455844f, 0.569805f, -0.683766f }));
+    }
+
+    test_section("coplanar(const Line3&)");
+    {
+        constexpr nnm::Line3f l1 { { 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f } };
+        constexpr auto result = nnm::PlaneF::xy().coplanar(l1);
+        ASSERT_FALSE(result);
+        nnm::PlaneF plane { { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { 0.154303f, 0.771517f, 0.617213f } };
+        ASSERT(plane.coplanar(l1));
+    }
+
+    test_section("coplanar(const Ray3&)");
+    {
+        constexpr nnm::Ray3f r2 { { 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f } };
+        constexpr auto result = nnm::PlaneF::xy().coplanar(r2);
+        ASSERT_FALSE(result);
+        nnm::PlaneF plane { { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { 0.154303f, 0.771517f, 0.617213f } };
+        ASSERT(plane.coplanar(r2));
+    }
+
+    test_section("coplanar(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s4 { { 1.0f, -2.0f, 3.0f }, { 2.0f, -3.0f, 4.0f } };
+        constexpr auto result = nnm::PlaneF::xy().coplanar(s4);
+        ASSERT_FALSE(result);
+        nnm::PlaneF plane { { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { 0.154303f, 0.771517f, 0.617213f } };
+        ASSERT(plane.coplanar(s4));
     }
 
     constexpr nnm::PlaneF p1 { { 1.0f, -2.0f, 3.0f }, { -0.455844f, 0.569805f, -0.683766f } };
@@ -1524,6 +1634,24 @@ inline void plane_tests()
         ASSERT(p3.coplanar(p4));
         ASSERT(p4.coplanar(p3));
         ASSERT_FALSE(p1.coplanar(p4));
+    }
+
+    test_section("coplanar(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr nnm::Triangle3f t2 { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        const bool r1 = nnm::PlaneF::from_triangle_unchecked(t1).coplanar(t1);
+        ASSERT(r1);
+        const bool r2 = nnm::PlaneF::xy().coplanar(t1);
+        ASSERT_FALSE(r2);
+        const bool r3 = nnm::PlaneF::xy().coplanar(t2);
+        ASSERT(r3);
+        const bool r4 = nnm::PlaneF::xz().coplanar(t2);
+        ASSERT(r4);
+        const bool r5 = nnm::PlaneF::yz().coplanar(t2);
+        ASSERT_FALSE(r5);
+        const bool r6 = nnm::PlaneF::xz_offset(100.0f).coplanar(t2);
+        ASSERT_FALSE(r6);
     }
 
     constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
@@ -2016,25 +2144,30 @@ inline void plane_tests()
 
     test_section("approx_equal");
     {
-        ASSERT(p2.approx_equal(p2));
+        constexpr auto result = p2.approx_equal(p2);
+        ASSERT(result);
         ASSERT_FALSE(p2.approx_equal(p1));
     }
 
     test_section("operator==");
     {
-        ASSERT(p2 == p2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result = p2 == p2;
+        ASSERT(result);
         ASSERT_FALSE(p1 == p2);
     }
 
     test_section("operator!=");
     {
-        ASSERT(p1 != p2);
+        constexpr auto result = p1 != p2;
+        ASSERT(result);
         ASSERT_FALSE(p2 != p2);
     }
 
     test_section("operator<");
     {
-        ASSERT(p2 < p1);
+        constexpr auto result = p2 < p1;
+        ASSERT(result);
         ASSERT_FALSE(p1 < p2);
     }
 }
