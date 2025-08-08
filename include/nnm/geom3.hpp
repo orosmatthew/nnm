@@ -2929,6 +2929,20 @@ public:
     }
 
     /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other triangle.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Triangle3(const Triangle3<Other>& other)
+        : vertices { Vector3<Real> { other.vertices[0] },
+                     Vector3<Real> { other.vertices[1] },
+                     Vector3<Real> { other.vertices[2] } }
+    {
+    }
+
+    /**
      * Edge in the order of vertex 0 to 1, 1 to 2, then 2 to 0.
      * @param index Edge index.
      * @return Result.
@@ -2983,6 +2997,7 @@ public:
      * Incenter which is the intersection between the interior angles' bisectors.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> incenter() const
     {
         return angle_bisector(0).intersection(angle_bisector(1));
@@ -3566,7 +3581,7 @@ public:
         if (!point.has_value()) {
             return false;
         }
-        return contains_projected(point);
+        return contains_projected(*point);
     }
 
     /**

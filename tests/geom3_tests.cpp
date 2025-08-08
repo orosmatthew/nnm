@@ -2184,14 +2184,24 @@ inline void triangle3_tests()
         ASSERT(t1.vertices[2].approx_equal(nnm::Vector3f::zero()));
     }
 
-    constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
-
     test_section("Triangle3(const Vector3&, const Vector3&, const Vector3&)");
     {
-        ASSERT(t1.vertices[0].approx_equal({ 1.0f, -2.0f, 3.0f }));
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
         ASSERT(t1.vertices[1].approx_equal({ -2.0f, 3.0f, -4.0f }));
+        ASSERT(t1.vertices[0].approx_equal({ 1.0f, -2.0f, 3.0f }));
         ASSERT(t1.vertices[2].approx_equal({ 4.0f, 0.0f, 2.0f }));
     }
+
+    test_section("Triangle3(const Triangle3<Other>&)");
+    {
+        constexpr nnm::Triangle3d t1 { { 1.0, -2.0, 3.0 }, { -2.0, 3.0, -4.0 }, { 4.0, 0.0, 2.0 } };
+        constexpr nnm::Triangle3f t2 { t1 };
+        ASSERT(t2.vertices[1].approx_equal({ -2.0f, 3.0f, -4.0f }));
+        ASSERT(t2.vertices[0].approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(t2.vertices[2].approx_equal({ 4.0f, 0.0f, 2.0f }));
+    }
+
+    constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
 
     test_section("edge");
     {
@@ -2226,6 +2236,13 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_equal(p1, 21.85209097f));
         const float p2 = t2.perimeter();
         ASSERT(nnm::approx_equal(p2, 4.0f));
+    }
+
+    test_section("incenter");
+    {
+        const auto result = t1.incenter();
+        ASSERT(result.has_value() && result->approx_equal({ 1.7370612086f, -0.3100402543f, 1.3845008086f }));
+        ASSERT_FALSE(t2.incenter().has_value());
     }
 
     test_section("orthocenter");
@@ -2535,6 +2552,12 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_equal(d3, 10.0f));
         const auto d4 = t2.distance(nnm::Line3f::axis_z_offset(5.0f, 0.0f));
         ASSERT(nnm::approx_equal(d4, 4.0f));
+    }
+
+    test_section("distance(const Ray3&)");
+    {
+        const auto d1 = t1.distance(nnm::Ray3f({ -1.0f, 2.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d1, 1.5391076827f));
     }
 }
 
