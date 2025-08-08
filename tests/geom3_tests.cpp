@@ -832,6 +832,14 @@ inline void segment3_tests()
         ASSERT(s.end == nnm::Vector3f(-4.0f, 5.0f, -6.0f));
     }
 
+    test_section("Segment3(const Segment3<Other>&)");
+    {
+        constexpr nnm::Segment3d s1 { { 1.0, -2.0, 3.0 }, { -4.0, 5.0, -6.0 } };
+        constexpr nnm::Segment3f s2 { s1 };
+        ASSERT(s2.start.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(s2.end.approx_equal({ -4.0f, 5.0f, -6.0f }));
+    }
+
     constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
 
     test_section("collinear(const Vector3&)");
@@ -880,7 +888,59 @@ inline void segment3_tests()
         ASSERT_FALSE(s1.collinear(nnm::Segment3f({ 0.0f, -3.0f, 2.0f }, { -5.0f, 4.0f, -7.0f })))
     }
 
-    test_section("contains(const Vector3&)");
+    constexpr nnm::Segment3f s4 { { 1.0f, -2.0f, 3.0f }, { 2.0f, -3.0f, 4.0f } };
+
+    test_section("coplanar(const Line3&)");
+    {
+        constexpr nnm::Line3f l1 { { 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f } };
+        const auto result = s4.coplanar(l1);
+        ASSERT(result);
+        ASSERT_FALSE(s4.coplanar(nnm::Line3f::axis_x()));
+        auto l2 = nnm::Line3f::from_points(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(s4.coplanar(l2));
+    }
+
+    test_section("coplanar(const Ray3&)");
+    {
+        const auto result
+            = s4.coplanar(nnm::Ray3f({ 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f }));
+        ASSERT(result);
+        ASSERT_FALSE(s4.coplanar(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x())));
+        auto r1 = nnm::Ray3f::from_point_to_point(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(s4.coplanar(r1));
+    }
+
+    test_section("coplanar(const Segment3&)");
+    {
+        const auto result = s4.coplanar(s4);
+        ASSERT(result);
+        ASSERT_FALSE(s4.coplanar(nnm::Segment3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x())));
+        auto s5 = nnm::Segment3f(
+            { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { -0.003134965f, -3.0097031925f, 4.5129127318f });
+        ASSERT(s4.coplanar(s5));
+    }
+
+    test_section("coplanar(const Plane&)");
+    {
+        constexpr auto result = s4.coplanar(nnm::PlaneF::xy());
+        ASSERT_FALSE(result);
+        nnm::PlaneF plane { { -4.7984678398f, -1.8092603063f, 4.2111923428f }, { 0.154303f, 0.771517f, 0.617213f } };
+        ASSERT(s4.coplanar(plane));
+    }
+
+    test_section("coplanar(const Triangle3&)");
+    {
+        ASSERT_FALSE(s4.coplanar(nnm::Triangle3f({ 1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f })));
+        ASSERT(s4.coplanar(
+            nnm::Triangle3f(
+                { -4.7984678398f, -1.8092603063f, 4.2111923428f },
+                { -0.003134965f, -3.0097031925f, 4.5129127318f },
+                { -4.5435928528f, -3.1536294284f, 5.8279349987f })));
+    }
+
+    test_section("contains");
     {
         constexpr auto result = s1.contains({ 0.0f, 0.0f, 0.0f });
         ASSERT_FALSE(result);

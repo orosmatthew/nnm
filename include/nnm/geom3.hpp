@@ -389,7 +389,6 @@ public:
         }
         const Vector3<Real> diff = origin - other.origin;
         const Vector3<Real> dir_cross = direction.cross(other.direction);
-        auto thing = diff.dot(dir_cross);
         return approx_zero(diff.dot(dir_cross));
     }
 
@@ -1460,6 +1459,19 @@ public:
     }
 
     /**
+     * Cast from other type.
+     * @tparam Other Other type.
+     * @param other Other line segment.
+     */
+    // tested
+    template <typename Other>
+    explicit constexpr Segment3(const Segment3<Other>& other)
+        : start { other.start }
+        , end { other.end }
+    {
+    }
+
+    /**
      * Determine if collinear with a point.
      * @param point Point.
      * @return Result.
@@ -1503,23 +1515,53 @@ public:
         return Line3<Real>::from_segment(*this).coincident(Line3<Real>::from_segment(other));
     }
 
+    /**
+     * Determine if coplanar with line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Line3<Real>& line) const
     {
         return Line3<Real>::from_segment(*this).coplanar(line);
     }
 
+    /**
+     * Determine if coplanar with ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
     {
         return Line3<Real>::from_segment(*this).coplanar(ray);
     }
 
+    /**
+     * Determine if coplanar with another line segment.
+     * @param other Other line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Segment3& other) const
     {
         return Line3<Real>::from_segment(*this).coplanar(Line3<Real>::from_segment(other));
     }
 
-    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+    /**
+     * Determine if coplanar with plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const;
 
+    /**
+     * Determine if coplanar with triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
@@ -4495,7 +4537,7 @@ bool Ray3<Real>::coplanar(const Triangle3<Real>& triangle) const
 }
 
 template <typename Real>
-bool Segment3<Real>::coplanar(const Plane<Real>& plane) const
+constexpr bool Segment3<Real>::coplanar(const Plane<Real>& plane) const
 {
     return plane.coplanar(*this);
 }
