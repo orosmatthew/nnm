@@ -855,6 +855,7 @@ public:
      * @tparam Other Other type.
      * @param other Other ray.
      */
+    // tested
     template <typename Other>
     explicit constexpr Ray3(const Ray3<Other>& other)
         : origin { other.origin }
@@ -890,7 +891,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool collinear(const Vector3<Real>& point) const
     {
         return Line3<Real>::from_ray(*this).contains(point);
     }
@@ -912,28 +913,56 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Ray3& other) const
+    [[nodiscard]] constexpr bool collinear(const Ray3& other) const
     {
         return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
     }
 
+    /**
+     * Determine if coplanar with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
         return Line3<Real>::from_ray(*this).coplanar(line);
     }
 
-    [[nodiscard]] bool coplanar(const Ray3& ray) const
+    /**
+     * Determine if coplanar with another ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool coplanar(const Ray3& ray) const
     {
         return Line3<Real>::from_ray(*this).coplanar(Line3<Real>::from_ray(ray));
     }
 
+    /**
+     * Determine if coplanar with line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
     {
         return Line3<Real>::from_ray(*this).coplanar(segment);
     }
 
-    [[nodiscard]] bool coplanar(const Plane<Real>& plane) const;
+    /**
+     * Determine if coplanar with plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const;
 
+    /**
+     * Determine if coplanar with triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
@@ -942,9 +971,9 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool contains(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
-        const Vector3<Real> proj = project_point(point);
+        const Vector3<Real> proj = project(point);
         return proj.approx_equal(point);
     }
 
@@ -1033,7 +1062,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool parallel(const Ray3& other) const
+    [[nodiscard]] constexpr bool parallel(const Ray3& other) const
     {
         return direction.cross(other.direction).approx_zero();
     }
@@ -1055,7 +1084,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool perpendicular(const Ray3& other) const
+    [[nodiscard]] constexpr bool perpendicular(const Ray3& other) const
     {
         return nnm::approx_zero(direction.dot(other.direction));
     }
@@ -1116,7 +1145,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Ray3& other) const
+    [[nodiscard]] constexpr bool intersects(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -1143,7 +1172,7 @@ public:
      * @return Result, null if no intersection.
      */
     // tested
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3& other) const
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3& other) const
     {
         const Vector3<Real> dir_cross = direction.cross(other.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -1172,7 +1201,7 @@ public:
      * @return Resulting projected point.
      */
     // tested
-    [[nodiscard]] Vector3<Real> project_point(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> dir = point - origin;
         const Real t = max(static_cast<Real>(0), dir.dot(direction));
@@ -1185,7 +1214,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Ray3 translate(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Ray3 translate(const Vector3<Real>& offset) const
     {
         return { origin.translate(offset), direction };
     }
@@ -1349,7 +1378,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool approx_equal(const Ray3& other) const
+    [[nodiscard]] constexpr bool approx_equal(const Ray3& other) const
     {
         return origin.approx_equal(other.origin) && direction.approx_equal(other.direction);
     }
@@ -1360,7 +1389,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool operator==(const Ray3& other) const
+    [[nodiscard]] constexpr bool operator==(const Ray3& other) const
     {
         return origin == other.origin && direction == other.direction;
     }
@@ -1371,7 +1400,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool operator!=(const Ray3& other) const
+    [[nodiscard]] constexpr bool operator!=(const Ray3& other) const
     {
         return origin != other.origin || direction != other.direction;
     }
@@ -1382,7 +1411,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool operator<(const Ray3& other) const
+    [[nodiscard]] constexpr bool operator<(const Ray3& other) const
     {
         if (origin == other.origin) {
             return direction < other.direction;
@@ -2310,9 +2339,9 @@ public:
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const
     {
-        return approx_contains(ray.origin) && normal.approx_perpendicular(ray.direction);
+        return contains(ray.origin) && normal.perpendicular(ray.direction);
     }
 
     /**
@@ -4454,7 +4483,7 @@ constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Ray3<Real
 }
 
 template <typename Real>
-bool Ray3<Real>::coplanar(const Plane<Real>& plane) const
+constexpr bool Ray3<Real>::coplanar(const Plane<Real>& plane) const
 {
     return plane.coplanar(*this);
 }
