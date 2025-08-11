@@ -2556,8 +2556,49 @@ inline void triangle3_tests()
 
     test_section("distance(const Ray3&)");
     {
-        const auto d1 = t1.distance(nnm::Ray3f({ -1.0f, 2.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }));
+        const auto d1 = t1.distance(nnm::Ray3f({ -1.0f, 2.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
         ASSERT(nnm::approx_equal(d1, 1.5391076827f));
+        const auto d2 = t1.distance(nnm::Ray3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(d2));
+        const auto d3 = t1.distance(nnm::Ray3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d3, 0.5432144763f));
+    }
+
+    test_section("distance(const Segment3&)");
+    {
+        const auto d1 = t1.distance(nnm::Segment3f({ -1.0f, 2.0f, 0.0f }, { -1.0f, 3.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d1, 1.5391076827f));
+        const auto d2 = t1.distance(nnm::Segment3f({ -1.0f, 3.0f, 0.0f }, { -1.0f, 2.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d2, 1.5391076827f));
+        const auto d3 = t1.distance(nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(d3));
+        const auto d4 = t1.distance(nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(d4));
+        const auto d5 = t1.distance(nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d5, 0.5432144763f));
+        const auto d6 = t1.distance(nnm::Segment3f({ 0.0f, 10.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d6, 0.5432144763f));
+    }
+
+    test_section("distance(const Plane&)");
+    {
+        constexpr auto d1 = t1.distance(nnm::PlaneF::xy());
+        ASSERT(nnm::approx_zero(d1));
+        constexpr auto d2 = t1.distance(nnm::PlaneF::xy_offset(5.0f));
+        ASSERT(nnm::approx_equal(d2, 2.0f));
+        constexpr auto d3 = t1.distance(nnm::PlaneF::yz_offset(5.0f));
+        ASSERT(nnm::approx_equal(d3, 1.0f));
+    }
+
+    test_section("distance(const Triangle3&)");
+    {
+        const auto d1 = t1.distance(nnm::Triangle3f({ 0.0f, -2.0f, 0.0f }, { 0.0, 3.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(d1));
+        const auto d2
+            = t1.distance(nnm::Triangle3f({ 0.0f, -2.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }, { -2.0f, 2.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(d2, 0.701334476f));
+        const auto d3 = t1.distance(t1.translate(nnm::PlaneF::from_triangle_unchecked(t1).normal * 3.0f));
+        ASSERT(nnm::approx_equal(d3, 3.0f));
     }
 }
 

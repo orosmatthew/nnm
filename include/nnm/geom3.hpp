@@ -3365,6 +3365,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -3378,6 +3379,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -3396,7 +3398,8 @@ public:
      * @param plane Plane.
      * @return Result.
      */
-    [[nodiscard]] Real distance(const Plane<Real>& plane) const
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
     {
         if (intersects(plane)) {
             return static_cast<Real>(0);
@@ -3409,6 +3412,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle3& other) const
     {
         if (intersects(other)) {
