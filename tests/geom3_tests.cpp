@@ -2600,6 +2600,110 @@ inline void triangle3_tests()
         const auto d3 = t1.distance(t1.translate(nnm::PlaneF::from_triangle_unchecked(t1).normal * 3.0f));
         ASSERT(nnm::approx_equal(d3, 3.0f));
     }
+
+    test_section("intersects(const Line3&)");
+    {
+        const auto r1 = t1.intersects(nnm::Line3f::from_segment(t1.edge(0)));
+        ASSERT(r1);
+        const auto r2 = t1.intersects(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r2);
+        const auto r3 = t1.intersects(nnm::Line3f::axis_y());
+        ASSERT(r3);
+        const auto r4 = t2.intersects(nnm::Line3f::axis_y());
+        ASSERT(r4);
+        const auto r5 = t2.intersects(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
+        ASSERT_FALSE(r5);
+    }
+
+    test_section("intersection(const Line3&)");
+    {
+        const auto i1 = t1.intersection(nnm::Line3f::from_segment(t1.edge(0)));
+        ASSERT_FALSE(i1.has_value());
+        const auto i2 = t1.intersection(nnm::Line3f::axis_x());
+        ASSERT_FALSE(i2.has_value());
+        const auto i3 = t1.intersection(nnm::Line3f::axis_y());
+        ASSERT(i3.has_value() && i3->approx_equal({ 0.0f, 0.25f, 0.0f }));
+        const auto r4 = t2.intersection(nnm::Line3f::axis_y());
+        ASSERT(r4.has_value() && r4->approx_equal({ 0.0f, 0.0f, 0.0f }));
+        const auto r5 = t2.intersection(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
+        ASSERT_FALSE(r5.has_value());
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        const auto r1 = t1.intersects(nnm::Ray3f::from_point_to_point(t1.edge(0).start, t1.edge(1).end));
+        ASSERT(r1);
+        const auto r2 = t1.intersects(nnm::Ray3f({ -2.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r2);
+        const auto r3 = t1.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(r3);
+        const auto r4 = t1.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        ASSERT(r4);
+        const auto r5 = t2.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(r5)
+        const auto r6 = t2.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        ASSERT(r6)
+        const auto r7 = t2.intersects(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(r7);
+    }
+
+    test_section("intersection(const Ray3&)");
+    {
+        const auto i1 = t1.intersection(nnm::Ray3f::from_point_to_point(t1.edge(0).start, t1.edge(1).end));
+        ASSERT_FALSE(i1.has_value());
+        const auto i2 = t1.intersection(nnm::Ray3f({ -2.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(i2.has_value());
+        const auto i3 = t1.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(i3.has_value());
+        const auto i4 = t1.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        ASSERT(i4.has_value() && i4->approx_equal({ 0.0f, 0.25f, 0.0f }));
+        const auto i5 = t2.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(i5.has_value());
+        const auto i6 = t2.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        ASSERT(i6.has_value() && i6->approx_zero());
+        const auto i7 = t2.intersection(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(i7.has_value());
+    }
+
+    test_section("intersects(const Segment3&)");
+    {
+        const auto r1 = t1.intersects(t1.edge(0));
+        ASSERT(r1);
+        const auto r2 = t1.intersects(nnm::Segment3f({ -2.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r2);
+        const auto r3 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        ASSERT_FALSE(r3);
+        const auto r4 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(r4);
+        const auto r5 = t1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
+        ASSERT_FALSE(r5);
+        const auto r6 = t2.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        ASSERT_FALSE(r6);
+        const auto r7 = t2.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(r7);
+        const auto r8 = t2.intersects(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
+        ASSERT_FALSE(r8);
+    }
+
+    test_section("intersection(const Segment3&)");
+    {
+        const auto i1 = t1.intersection(t1.edge(0));
+        ASSERT_FALSE(i1.has_value());
+        const auto i2 = t1.intersection(nnm::Segment3f({ -2.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(i2.has_value());
+        const auto i3 = t1.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        ASSERT_FALSE(i3.has_value());
+        const auto i4 = t1.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(i4.has_value() && i4->approx_equal({ 0.0f, 0.25f, 0.0f }));
+        const auto i5 = t1.intersection(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
+        ASSERT_FALSE(i5.has_value());
+        const auto i6 = t2.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        ASSERT_FALSE(i6.has_value());
+        const auto i7 = t2.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(i7.has_value() && i7->approx_zero());
+        const auto i8 = t2.intersection(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
+        ASSERT_FALSE(i8.has_value());
+    }
 }
 
 void geom3_tests()
