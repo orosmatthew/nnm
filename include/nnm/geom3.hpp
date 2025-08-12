@@ -9,6 +9,8 @@
 
 #include <nnm/nnm.hpp>
 
+#include <array>
+
 namespace nnm {
 
 template <typename Real>
@@ -3639,7 +3641,31 @@ public:
         return Segment3<Real> { inters[0], inters[1] };
     }
 
-    // TODO: Add coincident method.
+    /**
+     * Determine if coincident with another triangle.
+     * This is done by checking if the vertices are approximately equal order independently.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool coincident(const Triangle3& other) const
+    {
+        constexpr std::array<std::array<uint8_t, 3>, 6> permutations {
+            { { 0, 1, 2 }, { 0, 2, 1 }, { 1, 0, 2 }, { 2, 0, 1 }, { 1, 2, 0 }, { 2, 1, 0 } }
+        };
+        for (const std::array<uint8_t, 3> permutation : permutations) {
+            bool match = true;
+            for (uint8_t i = 0; i < 3; ++i) {
+                if (!vertices[i].approx_equal(other.vertices[permutation[i]])) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Translate by an offset.

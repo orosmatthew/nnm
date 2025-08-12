@@ -2779,6 +2779,26 @@ inline void triangle3_tests()
             && i5->coincident({ { 1.7037037037f, 0.8888888889f, 0.0f }, { 0.4864864865f, 0.4324324324f, 0.0f } }));
     }
 
+    test_section("coincident");
+    {
+        constexpr auto r1 = t1.coincident(t1);
+        ASSERT(r1);
+        constexpr auto r2 = t1.coincident(t2);
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = t2.coincident(t1);
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = t2.coincident(t2);
+        ASSERT(r4);
+        constexpr auto r5 = t1.coincident({ { -2.0f, 3.0f, -4.0f }, { 1.0f, -2.0f, 3.0f }, { 4.0f, 0.0f, 2.0f } });
+        ASSERT(r5);
+        constexpr auto r6 = t1.coincident({ { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f }, { 1.0f, -2.0f, 3.0f } });
+        ASSERT(r6);
+        constexpr auto r7 = t1.coincident({ { -2.0f, 3.0f, -4.0f }, { 4.0f, 1.0f, 2.0f }, { 1.0f, -2.0f, 3.0f } });
+        ASSERT_FALSE(r7);
+        constexpr auto r8 = t1.coincident({ { -2.0f, 3.0f, -4.1f }, { 1.0f, -2.0f, 3.0f }, { 4.0f, 0.0f, 2.0f } });
+        ASSERT_FALSE(r8);
+    }
+
     test_section("translate");
     {
         constexpr auto r1 = t1.translate({ 1.0f, -2.0f, 3.0f });
