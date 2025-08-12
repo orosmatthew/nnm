@@ -2704,6 +2704,80 @@ inline void triangle3_tests()
         const auto i8 = t2.intersection(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
         ASSERT_FALSE(i8.has_value());
     }
+
+    test_section("intersects(const Plane&)");
+    {
+        constexpr auto p1 = nnm::PlaneF({ 1.0f, -2.0f, 3.0f }, { 0.27160725f, -0.724286019f, -0.633750259f });
+        constexpr auto r1 = t1.intersects(p1);
+        ASSERT(r1);
+        constexpr auto r2 = t1.intersects(p1.translate(p1.normal * 3.0f));
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = t1.intersects(nnm::PlaneF::xy());
+        ASSERT(r3);
+        constexpr auto r4 = t1.intersects(nnm::PlaneF::yz_offset(4.0f));
+        ASSERT(r4);
+        constexpr auto r5 = t2.intersects(nnm::PlaneF::yz());
+        ASSERT(r5);
+        constexpr auto r6 = t2.intersects(nnm::PlaneF::xy_offset(1.0f));
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("intersection(const Plane&)");
+    {
+        constexpr auto p1 = nnm::PlaneF({ 1.0f, -2.0f, 3.0f }, { 0.27160725f, -0.724286019f, -0.633750259f });
+        constexpr auto i1 = t1.intersection(p1);
+        ASSERT_FALSE(i1.has_value());
+        constexpr auto i2 = t1.intersection(p1.translate(p1.normal * 3.0f));
+        ASSERT_FALSE(i2);
+        constexpr auto i3 = t1.intersection(nnm::PlaneF::xy());
+        ASSERT(i3.has_value() && i3->coincident({ { 2.0f, 1.0f, 0.0f }, { -0.2857142857f, 0.1428571429f, 0.0f } }));
+        constexpr auto i4 = t1.intersection(nnm::PlaneF::yz_offset(4.0f));
+        ASSERT(i4.has_value() && i4->coincident({ { 4.0f, 0.0f, 2.0f }, { 4.0f, 0.0f, 2.0f } }));
+        constexpr auto i5 = t2.intersection(nnm::PlaneF::yz());
+        ASSERT(i5.has_value() && i5->coincident({ nnm::Vector3f::zero(), nnm::Vector3f::zero() }))
+        constexpr auto i6 = t2.intersection(nnm::PlaneF::xy_offset(1.0f));
+        ASSERT_FALSE(i6.has_value());
+    }
+
+    test_section("intersects(const Triangle3&)");
+    {
+        const auto r1 = t1.intersects(t1);
+        ASSERT(r1);
+        const auto r2
+            = t1.intersects(nnm::Triangle3f({ 0.0f, -2.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }, { -2.0f, 2.0f, 0.0f }));
+        ASSERT_FALSE(r2);
+        const auto r3
+            = t1.intersects(nnm::Triangle3f({ 2.0f, 2.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(r3);
+        const auto r4
+            = t1.intersects(nnm::Triangle3f({ -3.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }, { 3.0f, 2.0f, 0.0f }));
+        ASSERT(r4);
+        const auto r5
+            = t1.intersects(nnm::Triangle3f({ 1.0f, 3.0f, 0.0f }, { 0.0f, 2.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
+        ASSERT(r5);
+    }
+
+    test_section("intersection(const Triangle3&)");
+    {
+        const auto i1 = t1.intersection(t1);
+        ASSERT_FALSE(i1.has_value());
+        const auto i2
+            = t1.intersection(nnm::Triangle3f({ 0.0f, -2.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }, { -2.0f, 2.0f, 0.0f }));
+        ASSERT_FALSE(i2.has_value());
+        const auto i3
+            = t1.intersection(nnm::Triangle3f({ 2.0f, 2.0f, 0.0f }, { -3.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(
+            i3.has_value()
+            && i3->coincident({ { -0.2857142857f, 0.1428571429f, 0.0f }, { 1.3846153846f, 0.7692307692f, 0.0f } }));
+        const auto i4
+            = t1.intersection(nnm::Triangle3f({ -3.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }, { 3.0f, 2.0f, 0.0f }));
+        ASSERT(i4.has_value() && i4->coincident({ { 2.0f, 1.0f, 0.0f }, { -0.2857142857f, 0.1428571429f, 0.0f } }));
+        const auto i5
+            = t1.intersection(nnm::Triangle3f({ 1.0f, 3.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
+        ASSERT(
+            i5.has_value()
+            && i5->coincident({ { 1.7037037037f, 0.8888888889f, 0.0f }, { 0.4864864865f, 0.4324324324f, 0.0f } }));
+    }
 }
 
 void geom3_tests()

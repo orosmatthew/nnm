@@ -42,7 +42,7 @@ public:
     Vector3<Real> points[2];
     uint8_t size;
 
-    Intersections3()
+    constexpr Intersections3()
         : points { Vector3<Real>::zero(), Vector3<Real>::zero() }
         , size { 0 }
     {
@@ -61,7 +61,7 @@ public:
     {
     }
 
-    void insert(const Vector3<Real>& point)
+    constexpr void insert(const Vector3<Real>& point)
     {
         if (approx_contains(point)) {
             return;
@@ -116,7 +116,7 @@ public:
             || (points[0].approx_equal(other.points[1]) && points[1].approx_equal(other.points[0]));
     }
 
-    [[nodiscard]] bool approx_contains(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
     {
         for (uint8_t i = 0; i < size; ++i) {
             if (points[i].approx_equal(point)) {
@@ -131,12 +131,12 @@ public:
         return size == 0;
     }
 
-    Vector3<Real>& operator[](uint8_t index)
+    constexpr Vector3<Real>& operator[](uint8_t index)
     {
         return points[index];
     }
 
-    const Vector3<Real>& operator[](uint8_t index) const
+    constexpr const Vector3<Real>& operator[](uint8_t index) const
     {
         return points[index];
     }
@@ -3565,6 +3565,7 @@ public:
      * @param plane Plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
     {
         return plane.intersects(edge(0)) || plane.intersects(edge(1)) || plane.intersects(edge(2));
@@ -3575,7 +3576,8 @@ public:
      * @param plane Plane.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Plane<Real>& plane) const
+    // tested
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> intersection(const Plane<Real>& plane) const
     {
         Intersections3<Real> inters;
         for (uint8_t i = 0; i < 3; ++i) {
@@ -3598,9 +3600,11 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Triangle3& other) const
     {
-        return intersects(other.edge(0)) || intersects(other.edge(1)) || intersects(other.edge(2));
+        return intersects(other.edge(0)) || intersects(other.edge(1)) || intersects(other.edge(2))
+            || other.intersects(edge(0)) || other.intersects(edge(1)) || other.intersects(edge(2));
     }
 
     /**
@@ -3609,13 +3613,21 @@ public:
      * @param other Other triangle
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Segment3<Real>> intersection(const Triangle3& other) const
     {
         Intersections3<Real> inters;
         for (uint8_t i = 0; i < 3; ++i) {
-            const std::optional<Vector3<Real>> point = intersection(other.edge(i));
-            if (point.has_value()) {
-                inters.insert(*point);
+            const std::optional<Vector3<Real>> point1 = intersection(other.edge(i));
+            if (point1.has_value()) {
+                inters.insert(*point1);
+            }
+            const std::optional<Vector3<Real>> point2 = other.intersection(edge(i));
+            if (point2.has_value()) {
+                inters.insert(*point2);
+            }
+            if (inters.size >= 2) {
+                return Segment3<Real> { inters[0], inters[1] };
             }
         }
         if (inters.size == 0) {
