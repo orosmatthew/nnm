@@ -2778,6 +2778,189 @@ inline void triangle3_tests()
             i5.has_value()
             && i5->coincident({ { 1.7037037037f, 0.8888888889f, 0.0f }, { 0.4864864865f, 0.4324324324f, 0.0f } }));
     }
+
+    test_section("translate");
+    {
+        constexpr auto r1 = t1.translate({ 1.0f, -2.0f, 3.0f });
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].translate({ 1.0f, -2.0f, 3.0f }),
+              t1.vertices[1].translate({ 1.0f, -2.0f, 3.0f }),
+              t1.vertices[2].translate({ 1.0f, -2.0f, 3.0f }) }));
+    }
+
+    test_section("scale_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr auto r1 = t1.scale_at(origin, { 1.0f, -2.0f, 3.0f });
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].scale_at(origin, { 1.0f, -2.0f, 3.0f }),
+              t1.vertices[1].scale_at(origin, { 1.0f, -2.0f, 3.0f }),
+              t1.vertices[2].scale_at(origin, { 1.0f, -2.0f, 3.0f }) }));
+    }
+
+    test_section("scale");
+    {
+        constexpr auto r1 = t1.scale({ 2.0f, -10.0f, 0.5f });
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].scale({ 2.0f, -10.0f, 0.5f }),
+              t1.vertices[1].scale({ 2.0f, -10.0f, 0.5f }),
+              t1.vertices[2].scale({ 2.0f, -10.0f, 0.5f }) }));
+    }
+
+    test_section("rotate_axis_angle_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1 = t1.rotate_axis_angle_at(origin, axis, angle);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].rotate_axis_angle_at(origin, axis, angle),
+              t1.vertices[1].rotate_axis_angle_at(origin, axis, angle),
+              t1.vertices[2].rotate_axis_angle_at(origin, axis, angle) }));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1 = t1.rotate_axis_angle(axis, angle);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].rotate_axis_angle(axis, angle),
+              t1.vertices[1].rotate_axis_angle(axis, angle),
+              t1.vertices[2].rotate_axis_angle(axis, angle) }));
+    }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
+        constexpr auto r1 = t1.rotate_quaternion_at(origin, quat);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].rotate_quaternion_at(origin, quat),
+              t1.vertices[1].rotate_quaternion_at(origin, quat),
+              t1.vertices[2].rotate_quaternion_at(origin, quat) }));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
+        constexpr auto r1 = t1.rotate_quaternion(quat);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].rotate_quaternion(quat),
+              t1.vertices[1].rotate_quaternion(quat),
+              t1.vertices[2].rotate_quaternion(quat) }));
+    }
+
+    test_section("shear_x_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr auto r1 = t1.shear_x_at(origin, -1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_x_at(origin, -1.3f, 0.2f),
+              t1.vertices[1].shear_x_at(origin, -1.3f, 0.2f),
+              t1.vertices[2].shear_x_at(origin, -1.3f, 0.2f) }));
+    }
+
+    test_section("shear_x");
+    {
+        constexpr auto r1 = t1.shear_x(-1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_x(-1.3f, 0.2f),
+              t1.vertices[1].shear_x(-1.3f, 0.2f),
+              t1.vertices[2].shear_x(-1.3f, 0.2f) }));
+    }
+
+    test_section("shear_y_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr auto r1 = t1.shear_y_at(origin, -1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_y_at(origin, -1.3f, 0.2f),
+              t1.vertices[1].shear_y_at(origin, -1.3f, 0.2f),
+              t1.vertices[2].shear_y_at(origin, -1.3f, 0.2f) }));
+    }
+
+    test_section("shear_y");
+    {
+        constexpr auto r1 = t1.shear_y(-1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_y(-1.3f, 0.2f),
+              t1.vertices[1].shear_y(-1.3f, 0.2f),
+              t1.vertices[2].shear_y(-1.3f, 0.2f) }));
+    }
+
+    test_section("shear_z_at");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr auto r1 = t1.shear_z_at(origin, -1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_z_at(origin, -1.3f, 0.2f),
+              t1.vertices[1].shear_z_at(origin, -1.3f, 0.2f),
+              t1.vertices[2].shear_z_at(origin, -1.3f, 0.2f) }));
+    }
+
+    test_section("shear_z");
+    {
+        constexpr auto r1 = t1.shear_z(-1.3f, 0.2f);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].shear_z(-1.3f, 0.2f),
+              t1.vertices[1].shear_z(-1.3f, 0.2f),
+              t1.vertices[2].shear_z(-1.3f, 0.2f) }));
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr auto r1 = t1.approx_equal(t1);
+        ASSERT(r1);
+        constexpr auto r2 = t1.approx_equal(t2);
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = t2.approx_equal(t1);
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = t2.approx_equal(t2);
+        ASSERT(r4);
+    }
+
+    test_section("operator==");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r1 = t1 == t1;
+        ASSERT(r1);
+        constexpr auto r2 = t1 == t2;
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = t2 == t1;
+        ASSERT_FALSE(r3);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r4 = t2 == t2;
+        ASSERT(r4);
+    }
+
+    test_section("operator!=");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r1 = t1 != t1;
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = t1 != t2;
+        ASSERT(r2);
+        constexpr auto r3 = t2 != t1;
+        ASSERT(r3);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r4 = t2 != t2;
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("operator<");
+    {
+        constexpr auto r1 = t1 < t2;
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = t2 < t1;
+        ASSERT(r2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r3 = t1 < t1;
+        ASSERT_FALSE(r3);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r4 = t2 < t2;
+        ASSERT_FALSE(r4);
+    }
 }
 
 void geom3_tests()

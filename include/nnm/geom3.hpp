@@ -3639,11 +3639,14 @@ public:
         return Segment3<Real> { inters[0], inters[1] };
     }
 
+    // TODO: Add coincident method.
+
     /**
      * Translate by an offset.
      * @param offset Offset.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 translate(const Vector3<Real>& offset) const
     {
         return { vertices[0].translate(offset), vertices[1].translate(offset), vertices[2].translate(offset) };
@@ -3655,6 +3658,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { vertices[0].scale_at(scale_origin, factor),
@@ -3667,6 +3671,7 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 scale(const Vector3<Real>& factor) const
     {
         return { vertices[0].scale(factor), vertices[1].scale(factor), vertices[2].scale(factor) };
@@ -3679,6 +3684,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     Triangle3 rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -3706,6 +3712,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
@@ -3719,6 +3726,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { vertices[0].rotate_quaternion(quaternion),
@@ -3733,6 +3741,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { vertices[0].shear_x_at(shear_origin, factor_y, factor_z),
@@ -3746,6 +3755,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 shear_x(const Real factor_y, const Real factor_z) const
     {
         return { vertices[0].shear_x(factor_y, factor_z),
@@ -3760,6 +3770,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return
      */
+    // tested
     constexpr Triangle3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { vertices[0].shear_y_at(shear_origin, factor_x, factor_z),
@@ -3773,6 +3784,7 @@ public:
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 shear_y(const Real factor_x, const Real factor_z) const
     {
         return { vertices[0].shear_y(factor_x, factor_z),
@@ -3787,6 +3799,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { vertices[0].shear_z_at(shear_origin, factor_x, factor_y),
@@ -3800,6 +3813,7 @@ public:
      * @param factor_y Y-Axis factor.
      * @return Result.
      */
+    // tested
     constexpr Triangle3 shear_z(const Real factor_x, const Real factor_y) const
     {
         return { vertices[0].shear_z(factor_x, factor_y),
@@ -3812,6 +3826,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     constexpr bool approx_equal(const Triangle3& other) const
     {
         return vertices[0].approx_equal(other.vertices[0]) && vertices[1].approx_equal(other.vertices[1])
@@ -3823,6 +3838,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     constexpr bool operator==(const Triangle3& other) const
     {
         return vertices[0] == other.vertices[0] && vertices[1] == other.vertices[1] && vertices[2] == other.vertices[2];
@@ -3833,6 +3849,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     constexpr bool operator!=(const Triangle3& other) const
     {
         return vertices[0] != other.vertices[0] || vertices[1] != other.vertices[1] || vertices[2] != other.vertices[2];
@@ -3843,6 +3860,7 @@ public:
      * @param other Other triangle.
      * @return Result.
      */
+    // tested
     constexpr bool operator<(const Triangle3& other) const
     {
         if (vertices[0] != other.vertices[0]) {
