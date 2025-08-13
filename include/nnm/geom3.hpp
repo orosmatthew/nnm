@@ -3668,6 +3668,57 @@ public:
     }
 
     /**
+     * Transform vertices about an origin by a basis.
+     * @param origin Transform origin.
+     * @param by Basis.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Triangle3 transform_at(const Vector3<Real> origin, const Basis3<Real>& by) const
+    {
+        return { vertices[0].transform_at(origin, by),
+                 vertices[1].transform_at(origin, by),
+                 vertices[2].transform_at(origin, by) };
+    }
+
+    /**
+     * Transform vertices about the global origin by a basis.
+     * @param by Basis.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Triangle3 transform(const Basis3<Real>& by) const
+    {
+        return { vertices[0].transform(by), vertices[1].transform(by), vertices[2].transform(by) };
+    }
+
+    /**
+     * Transform vertices about an origin by a transformation matrix.
+     * @param origin Transform origin.
+     * @param by Transformation matrix.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Triangle3 transform_at(const Vector3<Real> origin, const Transform3<Real>& by) const
+    {
+        return { vertices[0].transform_at(origin, by, static_cast<Real>(1)),
+                 vertices[1].transform_at(origin, by, static_cast<Real>(1)),
+                 vertices[2].transform_at(origin, by, static_cast<Real>(1)) };
+    }
+
+    /**
+     * Transform vertices about the global origin by a transformation matrix.
+     * @param by Transformation matrix.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr Triangle3 transform(const Transform3<Real>& by) const
+    {
+        return { vertices[0].transform(by, static_cast<Real>(1)),
+                 vertices[1].transform(by, static_cast<Real>(1)),
+                 vertices[2].transform(by, static_cast<Real>(1)) };
+    }
+
+    /**
      * Translate by an offset.
      * @param offset Offset.
      * @return Result.

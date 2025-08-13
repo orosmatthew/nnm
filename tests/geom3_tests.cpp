@@ -2799,6 +2799,52 @@ inline void triangle3_tests()
         ASSERT_FALSE(r8);
     }
 
+    test_section("transform_at(const Vector3&, const Basis3&)");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Basis3f basis { { { 1.0f, -2.0f, 3.0f }, { 4.0f, 1.5f, 0.0f }, { -2.0f, 0.2f, 10.0f } } };
+        constexpr auto r1 = t1.transform_at(origin, basis);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].transform_at(origin, basis),
+              t1.vertices[1].transform_at(origin, basis),
+              t1.vertices[2].transform_at(origin, basis) }));
+    }
+
+    test_section("transform(const Basis3&)");
+    {
+        constexpr nnm::Basis3f basis { { { 1.0f, -2.0f, 3.0f }, { 4.0f, 1.5f, 0.0f }, { -2.0f, 0.2f, 10.0f } } };
+        constexpr auto r1 = t1.transform(basis);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].transform(basis), t1.vertices[1].transform(basis), t1.vertices[2].transform(basis) }));
+    }
+
+    test_section("transform_at(const Vector3&, const Transform3&");
+    {
+        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Transform3f transform { { { 1.0f, -2.0f, 3.0f, -0.2f },
+                                                 { 4.0f, 1.5f, 0.0f, 5.0f },
+                                                 { -2.0f, 0.2f, 10.0f, 1.0f },
+                                                 { 0.0f, 0.0f, 0.0f, 1.0f } } };
+        constexpr auto r1 = t1.transform_at(origin, transform);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].transform_at(origin, transform),
+              t1.vertices[1].transform_at(origin, transform),
+              t1.vertices[2].transform_at(origin, transform) }));
+    }
+
+    test_section("transform(const Transform3&)");
+    {
+        constexpr nnm::Transform3f transform { { { 1.0f, -2.0f, 3.0f, -0.2f },
+                                                 { 4.0f, 1.5f, 0.0f, 5.0f },
+                                                 { -2.0f, 0.2f, 10.0f, 1.0f },
+                                                 { 0.0f, 0.0f, 0.0f, 1.0f } } };
+        constexpr auto r1 = t1.transform(transform);
+        ASSERT(r1.approx_equal(
+            { t1.vertices[0].transform(transform),
+              t1.vertices[1].transform(transform),
+              t1.vertices[2].transform(transform) }));
+    }
+
     test_section("translate");
     {
         constexpr auto r1 = t1.translate({ 1.0f, -2.0f, 3.0f });
