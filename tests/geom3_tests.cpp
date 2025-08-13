@@ -3230,6 +3230,18 @@ void sphere_tests()
         const auto r3 = s1.distance(s1.translate({ 1.5f, 0.0f, 0.0f }));
         ASSERT(nnm::approx_zero(r3));
     }
+
+    test_section("point_at");
+    {
+        constexpr auto r1 = s1.point_at(nnm::Vector3f::axis_x());
+        ASSERT(r1.approx_equal({ 2.5f, -2.0f, 3.0f }))
+    }
+
+    test_section("normal_at");
+    {
+        constexpr auto r1 = s1.normal_at(nnm::Vector3f::axis_x());
+        ASSERT(r1.approx_equal(nnm::Vector3f::axis_x()));
+    }
 }
 
 void geom3_tests()

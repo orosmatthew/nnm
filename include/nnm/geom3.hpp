@@ -4151,7 +4151,8 @@ public:
      * @param dir Normalized direction from the sphere's center. No normalization is done.
      * @return Result.
      */
-    [[nodiscard]] Real point_at(const Vector3<Real>& dir) const
+    // tested
+    [[nodiscard]] constexpr Vector3<Real> point_at(const Vector3<Real>& dir) const
     {
         return center.translate(dir * radius);
     }
@@ -4161,8 +4162,9 @@ public:
      * @param dir Normalized direction from the sphere's center. No normalization is done.
      * @return Result.
      */
+    // tested
     // ReSharper disable once CppMemberFunctionMayBeStatic
-    [[nodiscard]] Vector3<Real> normal_at(const Vector3<Real>& dir) const
+    [[nodiscard]] constexpr Vector3<Real> normal_at(const Vector3<Real>& dir) const
     {
         return dir;
     }
