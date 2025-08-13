@@ -6,6 +6,155 @@
 
 // ReSharper disable once CppDFATimeOver
 
+inline void intersections3_tests()
+{
+    test_case("Intersections3");
+
+    test_section("Intersections3()");
+    {
+        constexpr nnm::Intersections3f i;
+        ASSERT(i.empty());
+    }
+
+    test_section("Intersections3(const Vector3&)");
+    {
+        constexpr nnm::Intersections3f i { { 1.0f, -2.0f, 3.0f } };
+        ASSERT(i.size() == 1);
+        ASSERT(i.contains({ 1.0f, -2.0f, 3.0f }));
+    }
+
+    test_section("Intersections3(const Vector3&, const Vector3&)");
+    {
+        constexpr nnm::Intersections3f i { { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -5.0f } };
+        ASSERT(i.size() == 2);
+        ASSERT(i.contains({ 1.0f, -2.0f, 3.0f }) && i.contains({ -3.0, 4.0f, -5.0f }));
+    }
+
+    constexpr nnm::Intersections3f i1;
+    constexpr nnm::Intersections3f i2 { { 1.0f, -2.0f, 3.0f } };
+    constexpr nnm::Intersections3f i3 { { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -5.0f } };
+
+    test_section("insert");
+    {
+        auto i1_copy = i1;
+        i1_copy.insert({ 1.5f, -2.5f, 3.5f });
+        ASSERT(i1_copy.approx_equal({ { 1.5f, -2.5f, 3.5f } }));
+        auto i2_copy = i2;
+        i2_copy.insert({ 1.5f, -2.5f, 3.5f });
+        ASSERT(i2_copy.approx_equal({ { 1.0f, -2.0f, 3.0f }, { 1.5f, -2.5f, 3.5f } }));
+        i2_copy = i2;
+        i2_copy.insert({ 1.0f, -2.0f, 3.0f });
+        ASSERT(i2_copy.approx_equal(i2));
+        auto i3_copy = i3;
+        i3_copy.insert({ 1.0f, -2.0f, 3.0f });
+        ASSERT(i3_copy.approx_equal(i3));
+        i3_copy = i3;
+        i3_copy.insert({ -3.0f, 4.0f, -5.0f });
+        ASSERT(i3_copy.approx_equal(i3));
+    }
+
+    test_section("clear");
+    {
+        auto i1_copy = i1;
+        i1_copy.clear();
+        ASSERT(i1.approx_equal(i1));
+        auto i2_copy = i2;
+        i2_copy.clear();
+        ASSERT(i1.approx_equal(i1));
+        auto i3_copy = i3;
+        i3_copy.clear();
+        ASSERT(i3_copy.approx_equal(i1));
+    }
+
+    test_section("size");
+    {
+        constexpr auto result = i1.size(); // NOLINT(*-container-size-empty)
+        ASSERT(result == 0);
+        ASSERT(i2.size() == 1);
+        ASSERT(i3.size() == 2);
+    }
+
+    test_section("capacity");
+    {
+        ASSERT(nnm::Intersections3f::capacity() == 2);
+    }
+
+    test_section("begin");
+    {
+        ASSERT(i1.begin() == i1.data());
+        ASSERT(i2.begin() == i2.data());
+        ASSERT(i3.begin() == i3.data());
+    }
+
+    test_section("end");
+    {
+        ASSERT(i1.end() == i1.data() + 1);
+        ASSERT(i2.end() == i2.data() + 2);
+        ASSERT(i3.end() == i3.data() + 3);
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr auto result = i1.approx_equal({});
+        ASSERT(result);
+        ASSERT_FALSE(i1.approx_equal(i2));
+        ASSERT(i2.approx_equal({ { 1.0f, -2.0f, 3.0f } }));
+        ASSERT_FALSE(i2.approx_equal(i1));
+        ASSERT_FALSE(i2.approx_equal(i3));
+        ASSERT(i3.approx_equal({ { 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -5.0f } }));
+        ASSERT(i3.approx_equal({ { -3.0f, 4.0f, -5.0f }, { 1.0f, -2.0f, 3.0f } }));
+        ASSERT_FALSE(i3.approx_equal(i1));
+        ASSERT_FALSE(i3.approx_equal(i2));
+    }
+
+    test_section("contains");
+    {
+        constexpr auto result = i1.contains({ 1.0f, -2.0f, 3.0f });
+        ASSERT_FALSE(result);
+        ASSERT(i2.contains({ 1.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(i2.contains({ -3.0f, 4.0f, -5.0f }));
+        ASSERT(i3.contains({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(i3.contains({ -3.0f, 4.0f, -5.0f }));
+        ASSERT_FALSE(i3.contains({ 1.5f, -2.5f, 3.5f }));
+    }
+
+    test_section("empty");
+    {
+        constexpr auto result = i1.empty();
+        ASSERT(result);
+        ASSERT_FALSE(i2.empty());
+        ASSERT_FALSE(i3.empty());
+    }
+
+    test_section("operator==");
+    {
+        constexpr auto result = i1 == nnm::Intersections3f(); // NOLINT(*-container-size-empty)
+        ASSERT(result);
+        ASSERT_FALSE(i1 == i2);
+        ASSERT(i2 == nnm::Intersections3f({ 1.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(i2 == i1);
+        ASSERT_FALSE(i2 == i3);
+        ASSERT(i3 == nnm::Intersections3f({ 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -5.0f }));
+        ASSERT(i3 == nnm::Intersections3f({ -3.0f, 4.0f, -5.0f }, { 1.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(i3 == i1);
+        ASSERT_FALSE(i3 == i2);
+    }
+
+    test_section("operator!=");
+    {
+        constexpr auto result = i1 != nnm::Intersections3f(); // NOLINT(*-container-size-empty)
+        ASSERT_FALSE(result);
+        ASSERT(i1 != i2);
+        ASSERT_FALSE(i2 != nnm::Intersections3f({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(i2 != i1);
+        ASSERT(i2 != i3);
+        ASSERT_FALSE(i3 != nnm::Intersections3f({ 1.0f, -2.0f, 3.0f }, { -3.0f, 4.0f, -5.0f }));
+        ASSERT_FALSE(i3 != nnm::Intersections3f({ -3.0f, 4.0f, -5.0f }, { 1.0f, -2.0f, 3.0f }));
+        ASSERT(i3 != i1);
+        ASSERT(i3 != i2);
+    }
+}
+
 inline void line3_tests()
 {
     test_case("Line3");
@@ -3246,6 +3395,7 @@ void sphere_tests()
 
 void geom3_tests()
 {
+    intersections3_tests();
     line3_tests();
     ray3_tests();
     segment3_tests();

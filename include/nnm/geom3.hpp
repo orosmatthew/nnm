@@ -14,6 +14,10 @@
 namespace nnm {
 
 template <typename Real>
+class Intersections3;
+using Intersections3f = Intersections3<float>;
+using Intersections3d = Intersections3<double>;
+template <typename Real>
 class Line3;
 using Line3f = Line3<float>;
 using Line3d = Line3<double>;
@@ -38,140 +42,230 @@ class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
 
+/**
+ * Fixed capacity, stack allocated set of Vector3 points.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Intersections3 {
 public:
-    Vector3<Real> points[2];
-    uint8_t size;
-
+    /**
+     * Default initialize to zero intersections.
+     */
+    // tested
     constexpr Intersections3()
-        : points { Vector3<Real>::zero(), Vector3<Real>::zero() }
-        , size { 0 }
+        : m_points { Vector3<Real>::zero(), Vector3<Real>::zero() }
+        , m_size { 0 }
     {
     }
 
+    /**
+     * Initialize with single intersection point.
+     * @param point Intersection point.
+     */
     // ReSharper disable once CppNonExplicitConvertingConstructor
-    Intersections3(const Vector3<Real>& point) // NOLINT(*-explicit-constructor)
-        : points { point, Vector3<Real>::zero() }
-        , size { 1 }
+    // tested
+    constexpr Intersections3(const Vector3<Real>& point) // NOLINT(*-explicit-constructor)
+        : m_points { point, Vector3<Real>::zero() }
+        , m_size { 1 }
     {
     }
 
-    Intersections3(const Vector3<Real>& point1, const Vector3<Real>& point2)
-        : points { point1, point2 }
-        , size { 2 }
+    /**
+     * Initialize with two intersection points.
+     * @param point1 First intersection.
+     * @param point2 Second intersection.
+     */
+    // tested
+    constexpr Intersections3(const Vector3<Real>& point1, const Vector3<Real>& point2)
+        : m_points { point1, point2 }
+        , m_size { 2 }
     {
     }
 
-    constexpr void insert(const Vector3<Real>& point)
-    {
-        if (approx_contains(point)) {
-            return;
-        }
-        NNM_BOUNDS_CHECK_ASSERT("Intersections3", size < 2);
-        points[size++] = point;
-    }
-
-    void clear()
-    {
-        points = { Vector3<Real>::zero(), Vector3<Real>::zero() };
-        size = 0;
-    }
-
-    [[nodiscard]] static uint8_t capacity()
+    /**
+     * Fixed capacity.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] static constexpr uint8_t capacity()
     {
         return 2;
     }
 
-    Vector3<Real>* begin()
+    /**
+     * Insert intersection with approximate duplicate checking.
+     * @param point Point.
+     */
+    // tested
+    constexpr void insert(const Vector3<Real>& point)
     {
-        return &points[0];
+        if (contains(point)) {
+            return;
+        }
+        NNM_BOUNDS_CHECK_ASSERT("Intersections3", size < 2);
+        m_points[m_size++] = point;
     }
 
-    Vector3<Real>* end()
+    /**
+     * Clear intersections.
+     */
+    // tested
+    constexpr void clear()
     {
-        return &points[size];
+        m_points[0] = Vector3<Real>::zero();
+        m_points[1] = Vector3<Real>::zero();
+        m_size = 0;
     }
 
-    const Vector3<Real>* begin() const
+    /**
+     * Number of intersections.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr uint8_t size() const
     {
-        return &points[0];
+        return m_size;
     }
 
-    const Vector3<Real>* end() const
+    /**
+     * Start iterator.
+     * @return Iterator.
+     */
+    // tested
+    constexpr Vector3<Real>* begin()
     {
-        return &points[size];
+        return &m_points[0];
     }
 
-    [[nodiscard]] bool approx_equal(const Intersections3& other) const
+    /**
+     * End iterator.
+     * @return Iterator.
+     */
+    // tested
+    constexpr Vector3<Real>* end()
     {
-        if (size != other.size) {
+        return &m_points[m_size + 1];
+    }
+
+    /**
+     * Start const iterator.
+     * @return Iterator.
+     */
+    // tested
+    constexpr const Vector3<Real>* begin() const
+    {
+        return &m_points[0];
+    }
+
+    /**
+     * End const iterator.
+     * @return Iterator.
+     */
+    // tested
+    constexpr const Vector3<Real>* end() const
+    {
+        return &m_points[m_size + 1];
+    }
+
+    /**
+     * Data pointer.
+     * @return Result.
+     */
+    constexpr const Vector3<Real>* data() const
+    {
+        return m_points;
+    }
+
+    /**
+     * Data pointer.
+     * @return Result.
+     */
+    constexpr Vector3<Real>* data()
+    {
+        return m_points;
+    }
+
+    /**
+     * Unordered approximate equality.
+     * @param other Other intersections.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool approx_equal(const Intersections3& other) const
+    {
+        if (m_size != other.size()) {
             return false;
         }
-        if (size == 0) {
+        if (m_size == 0) {
             return true;
         }
-        if (size == 1) {
-            return points[0].approx_equal(other.points[0]);
+        if (m_size == 1) {
+            return m_points[0].approx_equal(other.m_points[0]);
         }
-        return (points[0].approx_equal(other.points[0]) && points[1].approx_equal(other.points[1]))
-            || (points[0].approx_equal(other.points[1]) && points[1].approx_equal(other.points[0]));
+        return (m_points[0].approx_equal(other.m_points[0]) && m_points[1].approx_equal(other.m_points[1]))
+            || (m_points[0].approx_equal(other.m_points[1]) && m_points[1].approx_equal(other.m_points[0]));
     }
 
-    [[nodiscard]] constexpr bool approx_contains(const Vector3<Real>& point) const
+    /**
+     * Determine if approximately contains point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
-        for (uint8_t i = 0; i < size; ++i) {
-            if (points[i].approx_equal(point)) {
+        for (uint8_t i = 0; i < m_size; ++i) {
+            if (m_points[i].approx_equal(point)) {
                 return true;
             }
         }
         return false;
     }
 
-    [[nodiscard]] bool empty() const
+    /**
+     * Determine if there are no intersections.
+     */
+    // tested
+    [[nodiscard]] constexpr bool empty() const
     {
-        return size == 0;
+        return m_size == 0;
     }
 
-    constexpr Vector3<Real>& operator[](uint8_t index)
+    /**
+     * Exact unordered equality.
+     * @param other Other intersections.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator==(const Intersections3& other) const
     {
-        return points[index];
-    }
-
-    constexpr const Vector3<Real>& operator[](uint8_t index) const
-    {
-        return points[index];
-    }
-
-    Vector3<Real>& at(uint8_t index)
-    {
-        return points[index];
-    }
-
-    const Vector3<Real>& at(uint8_t index) const
-    {
-        return points[index];
-    }
-
-    bool operator==(const Intersections3& other) const
-    {
-        if (size != other.size) {
+        if (m_size != other.size()) {
             return false;
         }
-        if (size == 0) {
+        if (m_size == 0) {
             return true;
         }
-        if (size == 1) {
-            return points[0] == other.points[0];
+        if (m_size == 1) {
+            return m_points[0] == other.m_points[0];
         }
-        return (points[0] == other.points[0] && points[1] == other.points[1])
-            || (points[0] == other.points[1] && points[1] == other.points[0]);
+        return (m_points[0] == other.m_points[0] && m_points[1] == other.m_points[1])
+            || (m_points[0] == other.m_points[1] && m_points[1] == other.m_points[0]);
     }
 
-    bool operator!=(const Intersections3& other) const
+    /**
+     * Exact unordered inequality.
+     * @param other Other intersections.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr bool operator!=(const Intersections3& other) const
     {
         return !(*this == other);
     }
+
+private:
+    Vector3<Real> m_points[2];
+    uint8_t m_size;
 };
 
 /**
@@ -3588,13 +3682,13 @@ public:
                 inters.insert(*point);
             }
         }
-        if (inters.size == 0) {
+        if (inters.size() == 0) {
             return std::nullopt;
         }
-        if (inters.size == 1) {
-            return Segment3<Real> { inters[0], inters[0] };
+        if (inters.size() == 1) {
+            return Segment3<Real> { inters.data()[0], inters.data()[0] };
         }
-        return Segment3<Real> { inters[0], inters[1] };
+        return Segment3<Real> { inters.data()[0], inters.data()[1] };
     }
 
     /**
@@ -3628,17 +3722,17 @@ public:
             if (point2.has_value()) {
                 inters.insert(*point2);
             }
-            if (inters.size >= 2) {
-                return Segment3<Real> { inters[0], inters[1] };
+            if (inters.size() >= 2) {
+                return Segment3<Real> { inters.data()[0], inters.data()[1] };
             }
         }
-        if (inters.size == 0) {
+        if (inters.size() == 0) {
             return std::nullopt;
         }
-        if (inters.size == 1) {
-            return Segment3<Real> { inters[0], inters[0] };
+        if (inters.size() == 1) {
+            return Segment3<Real> { inters.data()[0], inters.data()[0] };
         }
-        return Segment3<Real> { inters[0], inters[1] };
+        return Segment3<Real> { inters.data()[0], inters.data()[1] };
     }
 
     /**

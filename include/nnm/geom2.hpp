@@ -99,7 +99,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] static uint8_t capacity()
+    [[nodiscard]] static constexpr uint8_t capacity()
     {
         return 2;
     }
@@ -109,7 +109,7 @@ public:
      * @param point Point.
      */
     // tested
-    void insert(const Vector2<Real>& point)
+    constexpr void insert(const Vector2<Real>& point)
     {
         if (contains(point)) {
             return;
@@ -122,7 +122,7 @@ public:
      * Clear intersections.
      */
     // tested
-    void clear()
+    constexpr void clear()
     {
         m_points[0] = Vector2<Real>::zero();
         m_points[1] = Vector2<Real>::zero();
@@ -144,7 +144,7 @@ public:
      * @return Iterator.
      */
     // tested
-    Vector2<Real>* begin()
+    constexpr Vector2<Real>* begin()
     {
         return &m_points[0];
     }
@@ -154,7 +154,7 @@ public:
      * @return Iterator.
      */
     // tested
-    Vector2<Real>* end()
+    constexpr Vector2<Real>* end()
     {
         return &m_points[m_size + 1];
     }
@@ -164,7 +164,7 @@ public:
      * @return Iterator.
      */
     // tested
-    const Vector2<Real>* begin() const
+    constexpr const Vector2<Real>* begin() const
     {
         return &m_points[0];
     }
@@ -174,7 +174,7 @@ public:
      * @return Iterator.
      */
     // tested
-    const Vector2<Real>* end() const
+    constexpr const Vector2<Real>* end() const
     {
         return &m_points[m_size + 1];
     }
@@ -183,7 +183,7 @@ public:
      * Data pointer.
      * @return Result.
      */
-    const Vector2<Real>* data() const
+    constexpr const Vector2<Real>* data() const
     {
         return m_points;
     }
@@ -192,7 +192,7 @@ public:
      * Data pointer.
      * @return Result.
      */
-    Vector2<Real>* data()
+    constexpr Vector2<Real>* data()
     {
         return m_points;
     }
