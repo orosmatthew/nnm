@@ -3195,6 +3195,41 @@ void sphere_tests()
         constexpr auto r5 = s_degen.distance(nnm::PlaneF::xz());
         ASSERT(nnm::approx_zero(r5));
     }
+
+    test_section("distance(const Triangle3&)");
+    {
+        const auto r1 = s1.distance(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r1, 1.5822070015f));
+        const auto r2 = s1.distance(nnm::Triangle3f({ 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 4.0f }));
+        ASSERT(nnm::approx_zero(r2));
+        const auto r3
+            = s1.distance(nnm::Triangle3f({ 0.0f, -5.0f, 0.0f }, { 0.0f, -2.0f, 4.0f }, { 0.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(r3));
+        const auto r4
+            = s1.distance(nnm::Triangle3f({ -0.5f, -5.0f, 0.0f }, { -0.5f, -2.0f, 4.0f }, { -0.5f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(r4));
+        const auto r5 = s1.distance(nnm::Triangle3f({ 0.0, 0.0, 6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -5.0f, 3.0f }));
+        ASSERT(nnm::approx_zero(r5));
+        const auto r6 = s1.distance(
+            nnm::Triangle3f(
+                { 1.4913057739f, -1.194313814f, 3.7420624503f },
+                { 1.2924884416f, -2.7911804169f, 3.0f },
+                { 1.0f, -1.5f, 3.0f }));
+        ASSERT(nnm::approx_zero(r6));
+        const auto r7
+            = s1.distance(nnm::Triangle3f({ -2.0f, -5.0f, 0.0f }, { -2.0f, -2.0f, 4.0f }, { -2.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r7, 1.5f));
+    }
+
+    test_section("distance(const Sphere&)");
+    {
+        const auto r1 = s1.distance(s1);
+        ASSERT(nnm::approx_zero(r1));
+        const auto r2 = s1.distance(nnm::SphereF(nnm::Vector3f::zero(), 1.0f));
+        ASSERT(nnm::approx_equal(r2, 1.2416573868f));
+        const auto r3 = s1.distance(s1.translate({ 1.5f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(r3));
+    }
 }
 
 void geom3_tests()

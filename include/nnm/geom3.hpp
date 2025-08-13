@@ -4127,6 +4127,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
     {
         return max(static_cast<Real>(0), triangle.distance(center) - radius);
@@ -4137,6 +4138,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Sphere& other) const
     {
         const Real dist = center.distance(other.center);
