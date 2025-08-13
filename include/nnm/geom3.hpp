@@ -3970,6 +3970,7 @@ public:
     /**
      * Default initialize at the global origin and a radius of 1.
      */
+    // tested
     constexpr Sphere()
         : center { Vector3<Real>::zero() }
         , radius { static_cast<Real>(1) }
@@ -3981,6 +3982,7 @@ public:
      * @param center Center.
      * @param radius Radius.
      */
+    // tested
     constexpr Sphere(const Vector3<Real>& center, const Real radius)
         : center { center }
         , radius { radius }
@@ -4005,7 +4007,8 @@ public:
      * @param point Point that lies on the surface of the sphere.
      * @return Result.
      */
-    static constexpr Sphere from_center_point(const Vector3<Real>& center, const Vector3<Real>& point)
+    // tested
+    static Sphere from_center_surface_point(const Vector3<Real>& center, const Vector3<Real>& point)
     {
         return Sphere(center, center.distance(point));
     }
@@ -4014,6 +4017,7 @@ public:
      * Surface area.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real surface_area() const
     {
         return static_cast<Real>(4) * pi<Real>() * sqrd(radius);
@@ -4023,6 +4027,7 @@ public:
      * Volume.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real volume() const
     {
         const Real radius_cubed = radius * radius * radius;
@@ -4033,6 +4038,7 @@ public:
      * Diameter.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real diameter() const
     {
         return static_cast<Real>(2) * radius;
@@ -4043,6 +4049,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         return approx_less_equal(center.distance_sqrd(point), sqrd(radius));
@@ -4054,6 +4061,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
     {
         return center.distance(point) - radius;
@@ -4064,6 +4072,7 @@ public:
      * @param point Point.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return max(static_cast<Real>(0), signed_distance(point));
@@ -4074,6 +4083,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         return max(static_cast<Real>(0), line.distance(center) - radius);
@@ -4084,6 +4094,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         return max(static_cast<Real>(0), ray.distance(center) - radius);
@@ -4094,6 +4105,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         return max(static_cast<Real>(0), segment.distance(center) - radius);
@@ -4104,6 +4116,7 @@ public:
      * @param plane Plane.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
     {
         return max(static_cast<Real>(0), plane.distance(center) - radius);
