@@ -3480,7 +3480,7 @@ void sphere_tests()
         ASSERT(r8);
     }
 
-    test_section("surface_intersections()");
+    test_section("surface_intersections(const Segment3&)");
     {
         const auto r1 = s1.surface_intersections(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
         ASSERT(r1.approx_equal({ { -0.5f, -2.0f, 3.0f }, { 2.5f, -2.0f, 3.0f } }));
@@ -3522,6 +3522,157 @@ void sphere_tests()
         ASSERT(r3.has_value() && r3->approx_equal({ 1.5f, 0.0f, 0.0f }));
         const auto r4 = s1.intersect_depth(s1.translate({ 3.0f, 0.0f, 0.0f }));
         ASSERT_FALSE(r4.has_value());
+    }
+
+    test_section("tangent(const Line3&)");
+    {
+        constexpr auto r1 = s1.tangent(nnm::Line3f::axis_x_offset(-2.0f, 3.0f));
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = s1.tangent(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1.tangent(nnm::Line3f::axis_y_offset(2.5f, 3.0f));
+        ASSERT(r3);
+        constexpr auto r4 = s_degen.tangent(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = s_degen.tangent(nnm::Line3f::axis_z());
+        ASSERT(r5);
+    }
+
+    test_section("tangent(const Ray3&)");
+    {
+        constexpr auto r1 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1.tangent(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = s1.tangent(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = s_degen.tangent(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r5);
+        constexpr auto r6 = s_degen.tangent(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT(r6);
+        constexpr auto r7 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, nnm::Vector3f::axis_x()));
+        ASSERT(r7);
+        constexpr auto r8 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r8);
+        constexpr auto r9 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r9);
+    }
+
+    test_section("tangent(const Segment3&)");
+    {
+        const auto r1 = s1.tangent(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(r1);
+        const auto r2 = s1.tangent(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { -10.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(r2);
+        const auto r3 = s1.tangent(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(r3);
+        const auto r4 = s1.tangent(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r4);
+        const auto r5 = s1.tangent(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r5);
+        const auto r6 = s_degen.tangent(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r6);
+        const auto r7 = s_degen.tangent(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+        ASSERT(r7);
+        const auto r8 = s1.tangent(nnm::Segment3f({ -2.0f, -2.0f, 1.5f }, { 5.0f, -2.0f, 1.5f }));
+        ASSERT(r8);
+        const auto r9 = s1.tangent(nnm::Segment3f({ -20.0f, -2.0f, 1.5f }, { -50.0f, -2.0f, 1.5f }));
+        ASSERT_FALSE(r9);
+    }
+
+    test_section("translate");
+    {
+        constexpr auto r1 = s1.translate({ -3.0f, 4.5f, -5.0f });
+        ASSERT(r1.approx_equal({ s1.center.translate({ -3.0f, 4.5f, -5.0f }), s1.radius }));
+    }
+
+    test_section("rotate_axis_angle_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = -2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1 = s1.rotate_axis_angle_at(origin, axis, angle);
+        ASSERT(r1.approx_equal({ s1.center.rotate_axis_angle_at(origin, axis, angle), s1.radius }));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = -2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1 = s1.rotate_axis_angle(axis, angle);
+        ASSERT(r1.approx_equal({ s1.center.rotate_axis_angle(axis, angle), s1.radius }));
+    }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr nnm::QuaternionF quat { 0.0f, -0.866025447f, 0.0f, 0.5f };
+        constexpr auto r1 = s1.rotate_quaternion_at(origin, quat);
+        ASSERT(r1.approx_equal({ s1.center.rotate_quaternion_at(origin, quat), s1.radius }));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::QuaternionF quat { 0.0f, -0.866025447f, 0.0f, 0.5f };
+        constexpr auto r1 = s1.rotate_quaternion(quat);
+        ASSERT(r1.approx_equal({ s1.center.rotate_quaternion(quat), s1.radius }));
+    }
+
+    test_section("scale_at");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr float factor = 1.25f;
+        constexpr auto r1 = s1.scale_at(origin, factor);
+        ASSERT(r1.approx_equal({ s1.center.scale_at(origin, nnm::Vector3f::all(factor)), s1.radius * factor }));
+    }
+
+    test_section("scale");
+    {
+        constexpr float factor = 1.25f;
+        constexpr auto r1 = s1.scale(factor);
+        ASSERT(r1.approx_equal({ s1.center.scale(nnm::Vector3f::all(factor)), s1.radius * factor }));
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr auto r1 = s1.approx_equal(s1);
+        ASSERT(r1);
+        constexpr auto r2 = s1.approx_equal(s_degen);
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1.approx_equal({ { 1.0f, -2.0f, 3.0f }, 1.5f });
+        ASSERT(r3);
+    }
+
+    test_section("operator==");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r1 = s1 == s1;
+        ASSERT(r1);
+        constexpr auto r2 = s1 == s_degen;
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1 == nnm::SphereF({ 1.0f, -2.0f, 3.0f }, 1.5f);
+        ASSERT(r3);
+    }
+
+    test_section("operator!=");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto r1 = s1 != s1;
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = s1 != s_degen;
+        ASSERT(r2);
+        constexpr auto r3 = s1 != nnm::SphereF({ 1.0f, -2.0f, 3.0f }, 1.5f);
+        ASSERT_FALSE(r3);
+    }
+
+    test_section("operator<");
+    {
+        constexpr auto r1 = s1 < s_degen;
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = s_degen < s1;
+        ASSERT(r2);
     }
 }
 

@@ -4456,6 +4456,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
@@ -4471,6 +4472,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = ray.origin - center;
@@ -4489,6 +4491,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool tangent(const Segment3<Real>& segment) const
     {
         const Vector3<Real> seg_dir = segment.direction();
@@ -4508,6 +4511,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr Sphere translate(const Vector3<Real>& offset) const
     {
         return { center.translate(offset), radius };
@@ -4520,6 +4524,7 @@ public:
      * @param angle Angle in radians.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Sphere rotate_axis_angle_at(
         const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -4543,7 +4548,8 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Sphere rotate_quaternion_at(
+    // tested
+    [[nodiscard]] constexpr Sphere rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
         return { center.rotate_quaternion_at(rotate_origin, quaternion), radius };
@@ -4554,7 +4560,7 @@ public:
      * @param quaternion Quaternion.
      * @return Result.
      */
-    [[nodiscard]] Sphere rotate_quaternion(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Sphere rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { center.rotate_quaternion(quaternion), radius };
     }
@@ -4565,7 +4571,8 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Sphere scale_at(const Vector3<Real>& scale_origin, const Real factor) const
+    // tested
+    [[nodiscard]] constexpr Sphere scale_at(const Vector3<Real>& scale_origin, const Real factor) const
     {
         return { center.scale_at(scale_origin, Vector3<Real>::all(factor)), abs(radius * factor) };
     }
@@ -4575,20 +4582,10 @@ public:
      * @param factor Scale factor.
      * @return Result.
      */
-    [[nodiscard]] Sphere scale(const Real factor)
+    // tested
+    [[nodiscard]] constexpr Sphere scale(const Real factor) const
     {
         return { center.scale(Vector3<Real>::all(factor)), abs(radius * factor) };
-    }
-
-    /**
-     * Determine if approximately coincident to another sphere which means
-     * if both the center and radius are approximately equal to the other sphere.
-     * @param other Other sphere.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr bool approx_coincident(const Sphere& other) const
-    {
-        return approx_equal(other);
     }
 
     /**
@@ -4596,6 +4593,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Sphere& other) const
     {
         return center.approx_equal(other.center) && nnm::approx_equal(radius, other.radius);
@@ -4606,6 +4604,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Sphere& other) const
     {
         return center == other.center && radius == other.radius;
@@ -4616,6 +4615,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Sphere& other) const
     {
         return center != other.center || radius != other.radius;
@@ -4626,6 +4626,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool operator<(const Sphere& other) const
     {
         if (center != other.center) {
