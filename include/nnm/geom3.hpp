@@ -66,9 +66,10 @@ public:
     // ReSharper disable once CppNonExplicitConvertingConstructor
     // tested
     constexpr Intersections3(const Vector3<Real>& point) // NOLINT(*-explicit-constructor)
-        : m_points { point, Vector3<Real>::zero() }
-        , m_size { 1 }
+        : m_points { Vector3<Real>::zero(), Vector3<Real>::zero() }
+        , m_size { 0 }
     {
+        insert(point);
     }
 
     /**
@@ -78,9 +79,11 @@ public:
      */
     // tested
     constexpr Intersections3(const Vector3<Real>& point1, const Vector3<Real>& point2)
-        : m_points { point1, point2 }
-        , m_size { 2 }
+        : m_points { Vector3<Real>::zero(), Vector3<Real>::zero() }
+        , m_size { 0 }
     {
+        insert(point1);
+        insert(point2);
     }
 
     /**
@@ -3682,7 +3685,7 @@ public:
                 inters.insert(*point);
             }
         }
-        if (inters.size() == 0) {
+        if (inters.empty()) {
             return std::nullopt;
         }
         if (inters.size() == 1) {
@@ -3726,7 +3729,7 @@ public:
                 return Segment3<Real> { inters.data()[0], inters.data()[1] };
             }
         }
-        if (inters.size() == 0) {
+        if (inters.empty()) {
             return std::nullopt;
         }
         if (inters.size() == 1) {
@@ -4268,6 +4271,7 @@ public:
      * @param line Line.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
@@ -4279,11 +4283,12 @@ public:
     }
 
     /**
-     * Intersection points with a line. If only single intersection, both returned points are equal.
+     * Intersection points with a line.
      * @param line Line.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Line3<Real>& line) const
+    // tested
+    [[nodiscard]] Intersections3<Real> surface_intersections(const Line3<Real>& line) const
     {
         const Vector3<Real> dir = line.origin - center;
         const Real a = line.direction.dot(line.direction);
@@ -4291,19 +4296,19 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return std::nullopt;
+            return {};
         }
         if (approx_zero(discriminant)) {
             const Real t = -b / (static_cast<Real>(2) * a);
             const Vector3<Real> p = line.origin + line.direction * t;
-            return { p, p };
+            return { p };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Vector3<Real> p1 = line.origin + line.direction * t1;
         const Vector3<Real> p2 = line.origin + line.direction * t2;
-        return Segment3<Real> { p1, p2 };
+        return { p1, p2 };
     }
 
     /**
@@ -4311,6 +4316,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = ray.origin - center;
@@ -4328,11 +4334,12 @@ public:
     }
 
     /**
-     * Intersection points with a ray. If only single intersection, both returned points are equal.
+     * Intersection points with a ray.
      * @param ray Ray.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Ray3<Real>& ray) const
+    // tested
+    [[nodiscard]] Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
     {
         const Vector3<Real> dir = ray.origin - center;
         const Real a = ray.direction.dot(ray.direction);
@@ -4340,25 +4347,19 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return std::nullopt;
+            return {};
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
-        const std::optional<Vector3<Real>> p1
-            = approx_greater_equal_zero(t1) ? ray.origin + ray.direction * t1 : std::nullopt;
-        const std::optional<Vector3<Real>> p2
-            = approx_greater_equal_zero(t2) ? ray.origin + ray.direction * t2 : std::nullopt;
-        if (p1.has_value() && p2.has_value()) {
-            return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
+        Intersections3<Real> inters;
+        if (approx_greater_equal_zero(t1)) {
+            inters.insert(ray.origin + ray.direction * t1);
         }
-        if (p1.has_value()) {
-            return std::array { *p1, *p1 };
+        if (approx_greater_equal_zero(t2)) {
+            inters.insert(ray.origin + ray.direction * t2);
         }
-        if (p2.has_value()) {
-            return std::array { *p2, *p2 };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -4366,9 +4367,10 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
     {
-        const Vector3<Real> seg_dir = segment.direction();
+        const Vector3<Real> seg_dir = segment.direction_unnormalized();
         const Vector3<Real> dir = segment.start - center;
         const Real a = seg_dir.dot(seg_dir);
         const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
@@ -4381,46 +4383,39 @@ public:
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Real seg_length = segment.length();
-        return (approx_greater_equal_zero(t1) && approx_less_equal(t1, seg_length))
-            || (approx_greater_equal_zero(t2) && approx_less_equal(t2, seg_length));
+        return (approx_greater_equal_zero(t1) && approx_less_equal(t1, static_cast<Real>(1)))
+            || (approx_greater_equal_zero(t2) && approx_less_equal(t2, static_cast<Real>(1)));
     }
 
     /**
-     * Intersection points with a line segment. If only single intersection, both returned points are equal.
+     * Intersection points with a line segment.
      * @param segment Line segment.
      * @return Result.
      */
-    [[nodiscard]] std::optional<Segment3<Real>> intersections(const Segment3<Real>& segment) const
+    // tested
+    [[nodiscard]] Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
     {
-        const Vector3<Real> seg_dir;
+        const Vector3<Real> seg_dir = segment.direction_unnormalized();
         const Vector3<Real> dir = segment.start - center;
         const Real a = seg_dir.dot(seg_dir);
         const Real b = static_cast<Real>(2) * dir.dot(seg_dir);
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return std::nullopt;
+            return {};
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
         const Real seg_length = segment.length();
-        const std::optional<Vector3<Real>> p1 = approx_greater_equal_zero(t1) && approx_less_equal(t1, seg_length)
-            ? segment.start + seg_dir * t1
-            : std::nullopt;
-        const std::optional<Vector3<Real>> p2 = approx_greater_equal_zero(t2) && approx_less_equal(t2, seg_length)
-            ? segment.start + seg_dir * t2
-            : std::nullopt;
-        if (p1.has_value() && p2.has_value()) {
-            return *p2 < *p1 ? std::array { *p2, *p1 } : std::array { *p1, *p2 };
+        Intersections3<Real> inters;
+        if (approx_greater_equal_zero(t1) && approx_less_equal(t1, static_cast<Real>(1))) {
+            inters.insert(segment.start + seg_dir * t1);
         }
-        if (p1.has_value()) {
-            return std::array { *p1, *p1 };
+        if (approx_greater_equal_zero(t2) && approx_less_equal(t2, static_cast<Real>(1))) {
+            inters.insert(segment.start + seg_dir * t2);
         }
-        if (p2.has_value()) {
-            return std::array { *p2, *p2 };
-        }
-        return std::nullopt;
+        return inters;
     }
 
     /**
@@ -4428,9 +4423,10 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
-    [[nodiscard]] bool intersects(const Sphere& other) const
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Sphere& other) const
     {
-        return approx_less_equal(center.distance_sqrd(other.center), sqrd(radius + other.radius));
+        return approx_less(center.distance_sqrd(other.center), sqrd(radius + other.radius));
     }
 
     /**
@@ -4438,6 +4434,7 @@ public:
      * @param other Other sphere.
      * @return Result.
      */
+    // tested
     [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Sphere& other) const
     {
         const Vector3<Real> diff = other.center - center;
@@ -4448,7 +4445,7 @@ public:
         const Real dist_sqrd = diff.length_sqrd();
         const Real dist = sqrt(dist_sqrd);
         const Real depth = radius_sum - dist;
-        if (approx_less_zero(depth)) {
+        if (approx_less_equal_zero(depth)) {
             return std::nullopt;
         }
         return diff.normalize() * depth;
@@ -4511,7 +4508,7 @@ public:
      * @param offset Offset.
      * @return Result.
      */
-    [[nodiscard]] Sphere translate(const Vector3<Real>& offset) const
+    [[nodiscard]] constexpr Sphere translate(const Vector3<Real>& offset) const
     {
         return { center.translate(offset), radius };
     }

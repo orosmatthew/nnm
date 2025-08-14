@@ -3391,6 +3391,138 @@ void sphere_tests()
         constexpr auto r1 = s1.normal_at(nnm::Vector3f::axis_x());
         ASSERT(r1.approx_equal(nnm::Vector3f::axis_x()));
     }
+
+    test_section("intersects(const Line3&)");
+    {
+        constexpr auto r1 = s1.intersects(nnm::Line3f::axis_x_offset(-2.0f, 3.0f));
+        ASSERT(r1);
+        constexpr auto r2 = s1.intersects(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1.intersects(nnm::Line3f::axis_y_offset(2.5f, 3.0f));
+        ASSERT(r3);
+        constexpr auto r4 = s_degen.intersects(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = s_degen.intersects(nnm::Line3f::axis_z());
+        ASSERT(r5);
+    }
+
+    test_section("surface_intersections(const Line3&)");
+    {
+        const auto r1 = s1.surface_intersections(nnm::Line3f::axis_x_offset(-2.0f, 3.0f));
+        ASSERT(r1.approx_equal({ { -0.5f, -2.0f, 3.0f }, { 2.5f, -2.0f, 3.0f } }));
+        const auto r2 = s1.surface_intersections(nnm::Line3f::axis_x());
+        ASSERT(r2.empty());
+        const auto r3 = s1.surface_intersections(nnm::Line3f::axis_y_offset(2.5f, 3.0f));
+        ASSERT(r3.approx_equal({ { 2.5f, -2.0f, 3.0f } }));
+        const auto r4 = s_degen.surface_intersections(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
+        ASSERT(r4.empty());
+        const auto r5 = s_degen.surface_intersections(nnm::Line3f::axis_z());
+        ASSERT(r5.approx_equal({ nnm::Vector3f::zero() }));
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        const auto r1 = s1.intersects(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r1);
+        const auto r2 = s1.intersects(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r2);
+        const auto r3 = s1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r3);
+        const auto r4 = s1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r4);
+        const auto r5 = s_degen.intersects(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r5);
+        const auto r6 = s_degen.intersects(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT(r6);
+        const auto r7 = s1.intersects(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, nnm::Vector3f::axis_x()));
+        ASSERT(r7);
+        const auto r8 = s1.intersects(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, -nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r8);
+    }
+
+    test_section("surface_intersections(const Ray3&)");
+    {
+        const auto r1 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r1.approx_equal({ { -0.5f, -2.0f, 3.0f }, { 2.5f, -2.0f, 3.0f } }));
+        const auto r2 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT(r2.empty());
+        const auto r3 = s1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT(r3.empty());
+        const auto r4 = s1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        ASSERT(r4.empty());
+        const auto r5 = s_degen.surface_intersections(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r5.empty());
+        const auto r6 = s_degen.surface_intersections(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, -nnm::Vector3f::axis_x()));
+        ASSERT(r6.approx_equal({ nnm::Vector3f::zero() }));
+        const auto r7 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, nnm::Vector3f::axis_x()));
+        ASSERT(r7.approx_equal({ { 1.0f, -2.0f, 1.5f } }));
+        const auto r8 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, -nnm::Vector3f::axis_x()));
+        ASSERT(r8.empty());
+    }
+
+    test_section("intersects(const Segment3&)");
+    {
+        const auto r1 = s1.intersects(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
+        ASSERT(r1);
+        const auto r2 = s1.intersects(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { -10.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(r2);
+        const auto r3 = s1.intersects(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
+        ASSERT_FALSE(r3);
+        const auto r4 = s1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r4);
+        const auto r5 = s1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r5);
+        const auto r6 = s_degen.intersects(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r6);
+        const auto r7 = s_degen.intersects(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+        ASSERT(r7);
+        const auto r8 = s1.intersects(nnm::Segment3f({ -2.0f, -2.0f, 1.5f }, { 5.0f, -2.0f, 1.5f }));
+        ASSERT(r8);
+    }
+
+    test_section("surface_intersections()");
+    {
+        const auto r1 = s1.surface_intersections(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
+        ASSERT(r1.approx_equal({ { -0.5f, -2.0f, 3.0f }, { 2.5f, -2.0f, 3.0f } }));
+        const auto r2 = s1.surface_intersections(nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { -10.0f, -2.0f, 3.0f }));
+        ASSERT(r2.empty());
+        const auto r3 = s1.surface_intersections(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
+        ASSERT(r3.empty());
+        const auto r4 = s1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        ASSERT(r4.empty());
+        const auto r5 = s1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        ASSERT(r5.empty());
+        const auto r6 = s_degen.surface_intersections(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
+        ASSERT(r6.empty());
+        const auto r7 = s_degen.surface_intersections(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
+        ASSERT(r7.approx_equal({ nnm::Vector3f::zero() }));
+        const auto r8 = s1.surface_intersections(nnm::Segment3f({ -2.0f, -2.0f, 1.5f }, { 5.0f, -2.0f, 1.5f }));
+        ASSERT(r8.approx_equal({ { 1.0f, -2.0f, 1.5f } }));
+    }
+
+    test_section("intersects(const Sphere&)");
+    {
+        constexpr auto r1 = s1.intersects(s1);
+        ASSERT(r1);
+        constexpr auto r2 = s1.intersects(nnm::SphereF(nnm::Vector3f::zero(), 1.0f));
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = s1.intersects(s1.translate({ 1.5f, 0.0f, 0.0f }));
+        ASSERT(r3);
+        constexpr auto r4 = s1.intersects(s1.translate({ 3.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("intersect_depth(const Sphere&)");
+    {
+        const auto r1 = s1.intersect_depth(s1);
+        ASSERT(r1.has_value() && nnm::approx_equal(r1->length(), s1.radius * 2.0f));
+        const auto r2 = s1.intersect_depth(nnm::SphereF(nnm::Vector3f::zero(), 1.0f));
+        ASSERT_FALSE(r2.has_value());
+        const auto r3 = s1.intersect_depth(s1.translate({ 1.5f, 0.0f, 0.0f }));
+        ASSERT(r3.has_value() && r3->approx_equal({ 1.5f, 0.0f, 0.0f }));
+        const auto r4 = s1.intersect_depth(s1.translate({ 3.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r4.has_value());
+    }
 }
 
 void geom3_tests()
