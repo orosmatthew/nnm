@@ -41,6 +41,10 @@ template <typename Real>
 class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
+template <typename Real>
+class AlignedBox;
+using AlignedBoxF = AlignedBox<float>;
+using AlignedBoxD = AlignedBox<double>;
 
 /**
  * Fixed capacity, stack allocated set of Vector3 points.
@@ -4634,6 +4638,192 @@ public:
         }
         return radius < other.radius;
     }
+};
+
+template <typename Real>
+class AlignedBox {
+public:
+    Vector3<Real> min;
+    Vector3<Real> max;
+
+    constexpr AlignedBox()
+        : min { Vector3<Real>::zero() }
+        , max { Vector3<Real>::zero() }
+    {
+    }
+
+    constexpr AlignedBox(const Vector3<Real>& min, const Vector3<Real>& max)
+        : min { min }
+        , max { max }
+    {
+    }
+
+    static constexpr AlignedBox from_bounding_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
+    {
+        const Vector3<Real> min {
+            nnm::min(point1.x, point2.x), nnm::min(point1.y, point2.y), nnm::min(point1.z, point2.z)
+        };
+        const Vector3<Real> max {
+            nnm::max(point1.x, point2.x), nnm::max(point1.y, point2.y), nnm::max(point1.z, point2.z)
+        };
+        return { min, max };
+    }
+
+    static constexpr AlignedBox from_bounding_segment(const Segment3<Real>& segment)
+    {
+        return from_bounding_points(segment.start, segment.end);
+    }
+
+    static constexpr AlignedBox from_bounding_triangle(const Triangle3<Real>& triangle)
+    {
+        auto min = Vector3<Real>::all(std::numeric_limits<Real>::max());
+        auto max = Vector3<Real>::all(std::numeric_limits<Real>::lowest());
+        for (const Vector2<Real>& v : triangle.vertices) {
+            min.x = nnm::min(min.x, v.x);
+            min.y = nnm::min(min.y, v.y);
+            min.z = nnm::min(min.z, v.z);
+            max.x = nnm::max(max.x, v.x);
+            max.y = nnm::max(max.y, v.y);
+            max.z = nnm::max(max.z, v.z);
+        }
+        return { min, max };
+    }
+
+    static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere)
+    {
+        const Vector3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
+        const Vector3<Real> max = sphere.center + Vector3<Real>::all(sphere.radius);
+        return { min, max };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_nx_ny_nz() const
+    {
+        return min;
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_nx_ny_pz() const
+    {
+        return { min.x, min.y, max.z };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_nx_py_nz() const
+    {
+        return { min.x, max.y, min.z };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_nx_py_pz() const
+    {
+        return { min.x, max.y, max.z };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_px_ny_nz() const
+    {
+        return { max.x, min.y, min.z };
+    }
+
+    constexpr Vector3<Real> vertex_px_ny_pz() const
+    {
+        return { max.x, min.y, max.z };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_px_py_nz() const
+    {
+        return { max.x, max.y, min.z };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex_px_py_pz() const
+    {
+        return max;
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_nx_ny() const
+    {
+        return { vertex_nx_ny_nz(), vertex_nx_ny_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_nx_py() const
+    {
+        return { vertex_nx_py_nz(), vertex_nx_py_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_px_ny() const
+    {
+        return { vertex_px_ny_nz(), vertex_px_ny_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_px_py() const
+    {
+        return { vertex_px_py_nz(), vertex_px_py_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_nx_nz() const
+    {
+        return { vertex_nx_ny_nz(), vertex_nx_py_nz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_nx_pz() const
+    {
+        return { vertex_nx_ny_pz(), vertex_nx_py_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_px_nz() const
+    {
+        return { vertex_px_ny_nz(), vertex_px_py_nz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_px_pz() const
+    {
+        return { vertex_px_ny_pz(), vertex_px_py_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_ny_nz() const
+    {
+        return { vertex_nx_ny_nz(), vertex_px_ny_nz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_ny_pz() const
+    {
+        return { vertex_nx_ny_pz(), vertex_px_ny_pz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_py_nz() const
+    {
+        return { vertex_nx_py_nz(), vertex_px_py_nz() };
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge_py_pz() const
+    {
+        return { vertex_nx_py_pz(), vertex_px_py_pz() };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> size() const
+    {
+        return max - min;
+    }
+
+    [[nodiscard]] constexpr Real volume() const
+    {
+        const Vector3<Real> s = size();
+        return s.x * s.y * s.z;
+    }
+
+    [[nodiscard]] constexpr Real surface_area() const
+    {
+        const Vector3<Real> s = size();
+        return static_cast<Real>(2) * (s.x * s.y + s.x * s.z + s.y * s.z);
+    }
+
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        return approx_greater_equal(point.x, min.x) && approx_less_equal(point.x, max.x)
+            && approx_greater_equal(point.y, min.y) && approx_less_equal(point.y, max.y)
+            && approx_greater_equal(point.z, min.z) && approx_less_equal(point.z, max.z);
+    }
+
+    // [[nodiscard]] constexpr bool signed_distance(const Vector3<Real>& point) const
+    // {
+
+    // }
 };
 
 template <typename Real>

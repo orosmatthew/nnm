@@ -6595,6 +6595,7 @@ public:
     // tested
     [[nodiscard]] constexpr bool contains(const Vector2<Real>& point) const
     {
+        // TODO: use approx
         return point.x >= min.x && point.x <= max.x && point.y >= min.y && point.y <= max.y;
     }
 
