@@ -42,6 +42,10 @@ class Sphere;
 using SphereF = Sphere<float>;
 using SphereD = Sphere<double>;
 template <typename Real>
+class Rectangle3;
+using Rectangle3f = Rectangle3<float>;
+using Rectangle3d = Rectangle3<double>;
+template <typename Real>
 class AlignedBox;
 using AlignedBoxF = AlignedBox<float>;
 using AlignedBoxD = AlignedBox<double>;
@@ -4638,6 +4642,99 @@ public:
         }
         return radius < other.radius;
     }
+};
+
+template <typename Real>
+class Rectangle3 {
+public:
+    Vector3<Real> center;
+    Vector3<Real> half_span_u;
+    Vector3<Real> half_span_v;
+
+    constexpr Rectangle3()
+        : center { Vector3<Real>::zero() }
+        , half_span_u { Vector3<Real>::axis_x() }
+        , half_span_v { Vector3<Real>::axis_y() }
+    {
+    }
+
+    constexpr static Rectangle3 from_xy_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_y)
+    {
+        return { offset,
+                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
+                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y() };
+    }
+
+    constexpr static Rectangle3 from_xz_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_z)
+    {
+        return { offset,
+                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
+                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    constexpr static Rectangle3 from_yz_offset_size(const Vector3<Real>& offset, const Real size_y, const Real size_z)
+    {
+        return { offset,
+                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y(),
+                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    [[nodiscard]] bool valid() const
+    {
+        return approx_zero(half_span_u.dot(half_span_v));
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
+        switch (index) {
+        case 1:
+            return center - half_span_u + half_span_v;
+        case 2:
+            return center + half_span_u - half_span_v;
+        case 3:
+            return center + half_span_u + half_span_v;
+        default:
+            return center - half_span_u - half_span_v;
+        }
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
+        switch (index) {
+        case 1:
+            return { vertex(1), vertex(2) };
+        case 2:
+            return { vertex(2), vertex(3) };
+        case 3:
+            return { vertex(3), vertex(0) };
+        default:
+            return { vertex(0), vertex(1) };
+        }
+    }
+
+    [[nodiscard]] Real size_u() const
+    {
+        return half_span_u.length() * static_cast<Real>(2);
+    }
+
+    [[nodiscard]] Real size_v() const
+    {
+        return half_span_v.length() * static_cast<Real>(2);
+    }
+
+    [[nodiscard]] Real area() const
+    {
+        return size_u() * size_v();
+    }
+
+    [[nodiscard]] Real perimeter() const
+    {
+        return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
+    }
+
+
 };
 
 template <typename Real>
