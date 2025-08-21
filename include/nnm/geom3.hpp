@@ -38,13 +38,13 @@ class Triangle3;
 using Triangle3f = Triangle3<float>;
 using Triangle3d = Triangle3<double>;
 template <typename Real>
-class Sphere;
-using SphereF = Sphere<float>;
-using SphereD = Sphere<double>;
-template <typename Real>
 class Rectangle3;
 using Rectangle3f = Rectangle3<float>;
 using Rectangle3d = Rectangle3<double>;
+template <typename Real>
+class Sphere;
+using SphereF = Sphere<float>;
+using SphereD = Sphere<double>;
 template <typename Real>
 class AlignedBox;
 using AlignedBoxF = AlignedBox<float>;
@@ -4055,6 +4055,239 @@ public:
     }
 };
 
+template <typename Real>
+class Rectangle3 {
+public:
+    Vector3<Real> center;
+    Vector3<Real> half_span_u;
+    Vector3<Real> half_span_v;
+
+    constexpr Rectangle3()
+        : center { Vector3<Real>::zero() }
+        , half_span_u { Vector3<Real>::axis_x() }
+        , half_span_v { Vector3<Real>::axis_y() }
+    {
+    }
+
+    constexpr static Rectangle3 from_xy_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_y)
+    {
+        return { offset,
+                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
+                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y() };
+    }
+
+    constexpr static Rectangle3 from_xz_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_z)
+    {
+        return { offset,
+                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
+                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    constexpr static Rectangle3 from_yz_offset_size(const Vector3<Real>& offset, const Real size_y, const Real size_z)
+    {
+        return { offset,
+                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y(),
+                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    [[nodiscard]] bool valid() const
+    {
+        return approx_zero(half_span_u.dot(half_span_v));
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
+        switch (index) {
+        case 1:
+            return center - half_span_u + half_span_v;
+        case 2:
+            return center + half_span_u - half_span_v;
+        case 3:
+            return center + half_span_u + half_span_v;
+        default:
+            return center - half_span_u - half_span_v;
+        }
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
+        switch (index) {
+        case 1:
+            return { vertex(1), vertex(2) };
+        case 2:
+            return { vertex(2), vertex(3) };
+        case 3:
+            return { vertex(3), vertex(0) };
+        default:
+            return { vertex(0), vertex(1) };
+        }
+    }
+
+    [[nodiscard]] Real size_u() const
+    {
+        return half_span_u.length() * static_cast<Real>(2);
+    }
+
+    [[nodiscard]] Real size_v() const
+    {
+        return half_span_v.length() * static_cast<Real>(2);
+    }
+
+    [[nodiscard]] Real area() const
+    {
+        return size_u() * size_v();
+    }
+
+    [[nodiscard]] Real perimeter() const
+    {
+        return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
+    }
+
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        const Vector3<Real> diff = point - center;
+        if (!approx_zero(diff.dot(normal))) {
+            return false;
+        }
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return point.approx_equal(center);
+        }
+        if (approx_zero(u_dot)) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v }.contains(point);
+        }
+        if (approx_zero(v_dot)) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u }.contains(point);
+        }
+        const Vector3<Real> local { diff.dot(half_span_u) / half_span_u.dot(half_span_u),
+                                    diff.dot(half_span_v) / half_span_v.dot(half_span_v) };
+        return approx_greater_equal(local.x, static_cast<Real>(-1)) && approx_less_equal(local.x, static_cast<Real>(1))
+            && approx_greater_equal(local.y, static_cast<Real>(-1)) && approx_less_equal(local.y, static_cast<Real>(1));
+    }
+
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) || approx_zero(v_dot)) {
+            return center.distance_sqrd(point);
+        }
+        const Vector3<Real> diff = point - center;
+        const Vector2<Real> local = { diff.dot(half_span_u) / u_dot, diff.dot(half_span_v) / v_dot };
+        const Vector2<Real> local_clamped
+            = local.clamp(Vector2<Real>::all(static_cast<Real>(-1)), Vector2<Real>::all(static_cast<Real>(1)));
+        const Vector3<Real> closest = center + local_clamped.x * half_span_u + local_clamped.y * half_span_v;
+        return point.distance_sqrd(closest);
+    }
+
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        return sqrt(distance_sqrd(point));
+    }
+
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance(line);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        if (intersects(ray)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = distance(ray.origin);
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance(ray);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    {
+        if (intersects(segment)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = min(distance(segment.start), distance(segment.end));
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance(segment);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Plane<Real>& plane) const
+    {
+        if (intersects(plane)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance(plane);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
+    {
+        if (intersects(triangle)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 3; ++i) {
+            const Real dist = distance(triangle.edge(i));
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Rectangle3& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = distance(other.edge(i));
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    // TODO
+    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const;
+
+    // TODO
+    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+
+
+};
+
 /**
  * Sphere.
  * @tparam Real Floating-point type.
@@ -4642,99 +4875,6 @@ public:
         }
         return radius < other.radius;
     }
-};
-
-template <typename Real>
-class Rectangle3 {
-public:
-    Vector3<Real> center;
-    Vector3<Real> half_span_u;
-    Vector3<Real> half_span_v;
-
-    constexpr Rectangle3()
-        : center { Vector3<Real>::zero() }
-        , half_span_u { Vector3<Real>::axis_x() }
-        , half_span_v { Vector3<Real>::axis_y() }
-    {
-    }
-
-    constexpr static Rectangle3 from_xy_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_y)
-    {
-        return { offset,
-                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
-                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y() };
-    }
-
-    constexpr static Rectangle3 from_xz_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_z)
-    {
-        return { offset,
-                 size_x / static_cast<Real>(2) * Vector3<Real>::axis_x(),
-                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
-    }
-
-    constexpr static Rectangle3 from_yz_offset_size(const Vector3<Real>& offset, const Real size_y, const Real size_z)
-    {
-        return { offset,
-                 size_y / static_cast<Real>(2) * Vector3<Real>::axis_y(),
-                 size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
-    }
-
-    [[nodiscard]] bool valid() const
-    {
-        return approx_zero(half_span_u.dot(half_span_v));
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
-        switch (index) {
-        case 1:
-            return center - half_span_u + half_span_v;
-        case 2:
-            return center + half_span_u - half_span_v;
-        case 3:
-            return center + half_span_u + half_span_v;
-        default:
-            return center - half_span_u - half_span_v;
-        }
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
-        switch (index) {
-        case 1:
-            return { vertex(1), vertex(2) };
-        case 2:
-            return { vertex(2), vertex(3) };
-        case 3:
-            return { vertex(3), vertex(0) };
-        default:
-            return { vertex(0), vertex(1) };
-        }
-    }
-
-    [[nodiscard]] Real size_u() const
-    {
-        return half_span_u.length() * static_cast<Real>(2);
-    }
-
-    [[nodiscard]] Real size_v() const
-    {
-        return half_span_v.length() * static_cast<Real>(2);
-    }
-
-    [[nodiscard]] Real area() const
-    {
-        return size_u() * size_v();
-    }
-
-    [[nodiscard]] Real perimeter() const
-    {
-        return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
-    }
-
-
 };
 
 template <typename Real>
