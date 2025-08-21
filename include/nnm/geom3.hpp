@@ -4285,7 +4285,123 @@ public:
     // TODO
     [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
 
+    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return line.contains(center);
+        }
+        if (approx_zero(u_dot)) {
+            return line.intersects(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return line.intersects(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (line.direction.perpendicular(normal)) {
+            for (uint8_t i = 0; i < 4; ++i) {
+                if (edge(i).intersects(line)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        const Vector3<Real> diff = center - line.origin;
+        const Real dir_dot_normal = line.direction.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        const Vector3<Real> plane_inter = line.origin + line.direction * t;
+        return contains(plane_inter);
+    }
 
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return line.intersection(center);
+        }
+        if (approx_zero(u_dot)) {
+            return line.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return line.intersection(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (line.direction.perpendicular(normal)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = center - line.origin;
+        const Real dir_dot_normal = line.direction.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        const Vector3<Real> plane_inter = line.origin + line.direction * t;
+        if (!contains(plane_inter)) {
+            return std::nullopt;
+        }
+        return plane_inter;
+    }
+
+    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return ray.contains(center);
+        }
+        if (approx_zero(u_dot)) {
+            return ray.intersects(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return ray.intersects(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (ray.direction.perpendicular(normal)) {
+            for (uint8_t i = 0; i < 4; ++i) {
+                if (edge(i).intersects(ray)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        const Vector3<Real> diff = center - ray.origin;
+        const Real dir_dot_normal = ray.direction.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        if (approx_less_zero(t)) {
+            return false;
+        }
+        const Vector3<Real> plane_inter = ray.origin + ray.direction * t;
+        return contains(plane_inter);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray)
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return ray.intersection(center);
+        }
+        if (approx_zero(u_dot)) {
+            return ray.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return ray.intersection(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (ray.direction.perpendicular(normal)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = center - ray.origin;
+        const Real dir_dot_normal = ray.direction.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        if (approx_less_zero(t)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> plane_inter = ray.origin + ray.direction * t;
+        if (!contains(plane_inter)) {
+            return std::nullopt;
+        }
+        return plane_inter;
+    }
 };
 
 /**
