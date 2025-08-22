@@ -11,6 +11,8 @@
 
 #include <array>
 
+// ReSharper disable CppDFATimeOver
+
 namespace nnm {
 
 template <typename Real>
@@ -4402,6 +4404,180 @@ public:
         }
         return plane_inter;
     }
+
+    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    {
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return segment.contains(center);
+        }
+        if (approx_zero(u_dot)) {
+            return segment.intersects(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return segment.intersects(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (segment.direction_unnormalized().perpendicular(normal)) {
+            for (uint8_t i = 0; i < 4; ++i) {
+                if (edge(i).intersects(segment)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        const Vector3<Real> diff = center - segment.start;
+        const Vector3<Real> segment_dir = segment.direction();
+        const Real dir_dot_normal = segment_dir.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
+            return false;
+        }
+        const Vector3<Real> plane_inter = segment.start + segment_dir * t;
+        return contains(plane_inter);
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real> segment) const
+    {
+        if (segment.start.approx_equal(segment.end)) {
+            if (!contains(segment.start)) {
+                return std::nullopt;
+            }
+            return segment.start;
+        }
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return segment.intersection(center);
+        }
+        if (approx_zero(u_dot)) {
+            return segment.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
+        }
+        if (approx_zero(v_dot)) {
+            return segment.intersection(Segment3<Real> { center - half_span_u, center + half_span_u });
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (segment.direction_unnormalized().perpendicular(normal)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> diff = center - segment.start;
+        const Vector3<Real> segment_dir = segment.direction();
+        const Real dir_dot_normal = segment_dir.dot(normal);
+        const Real t = diff.dot(normal) / dir_dot_normal;
+        if (approx_less_zero(t)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> plane_inter = segment.start + segment_dir * t;
+        if (!contains(plane_inter)) {
+            return std::nullopt;
+        }
+        return plane_inter;
+    }
+
+    [[nodiscard]] bool intersects(const Plane<Real>& plane) const
+    {
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (edge(i).intersects(plane)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] Intersections3<Real> edge_intersection(const Plane<Real>& plane) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const std::optional<Vector3<Real>> inter = edge(i).intersection(plane); inter.has_value()) {
+                inters.insert(inter);
+                if (inters.size() >= 2) {
+                    return inters;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
+    {
+        for (uint8_t i = 0; i < 3; ++i) {
+            if (intersects(triangle.edge(i))) {
+                return true;
+            }
+        }
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (triangle.intersects(edge(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] Intersections3<Real> edge_intersections(const Triangle3<Real>& triangle) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 3; ++i) {
+            if (const std::optional<Vector3<Real>> inter = intersection(triangle.edge(i)); inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    return inters;
+                }
+            }
+        }
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const std::optional<Vector3<Real>> inter = triangle.intersection(edge(i)); inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    return inters;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] bool intersects(const Rectangle3& other) const
+    {
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (intersects(other.edge(i))) {
+                return true;
+            }
+        }
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (other.intersects(edge(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] Intersections3<Real> edge_intersections(const Rectangle3& other) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const std::optional<Vector3<Real>> inter = intersection(other.edge(i)); inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    return inters;
+                }
+            }
+        }
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const std::optional<Vector3<Real>> inter = other.intersection(edge(i)); inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    return inters;
+                }
+            }
+        }
+        return inters;
+    }
+
+    // TODO
+    [[nodiscard]] bool intersects(const Sphere<Real>& sphere) const;
+
+    // TODO
+    [[nodiscard]] bool intersects(const AlignedBox<Real>& box) const;
 };
 
 /**
