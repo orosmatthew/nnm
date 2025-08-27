@@ -4061,17 +4061,55 @@ public:
 template <typename Real>
 class Rectangle3 {
 public:
+    /**
+     * Center.
+     */
     Vector3<Real> center;
+    /**
+     * Vector spanning from the center towards one of the rectangle's dimensions edge.
+     * Must be orthogonal to half_span_v.
+     */
     Vector3<Real> half_span_u;
+    /**
+     * Vector spanning from the center towards one of the rectangle's dimensions edge.
+     * Must be orthogonal to half_span_u.
+     */
     Vector3<Real> half_span_v;
 
+    /**
+     * Default initialize with center at global origin size zero.
+     */
+    // tested
     constexpr Rectangle3()
         : center { Vector3<Real>::zero() }
-        , half_span_u { Vector3<Real>::axis_x() }
-        , half_span_v { Vector3<Real>::axis_y() }
+        , half_span_u { Vector3<Real>::zero() }
+        , half_span_v { Vector3<Real>::zero() }
     {
     }
 
+    /**
+     * Initialize with center, half span u, and half span v.
+     * @param center Center.
+     * @param half_span_u First half span vector u.
+     * @param half_span_v Second half span vector v.
+     */
+    // tested
+    constexpr Rectangle3(
+        const Vector3<Real>& center, const Vector3<Real>& half_span_u, const Vector3<Real>& half_span_v)
+        : center { center }
+        , half_span_u { half_span_u }
+        , half_span_v { half_span_v }
+    {
+    }
+
+    /**
+     * Initialize spanning the x and y axes with given x/y-axis sizes.
+     * @param offset Offset from origin.
+     * @param size_x Size along the x-axis.
+     * @param size_y Size along the y-axis.
+     * @return Result.
+     */
+    // tested
     constexpr static Rectangle3 from_xy_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_y)
     {
         return { offset,
@@ -4079,6 +4117,14 @@ public:
                  size_y / static_cast<Real>(2) * Vector3<Real>::axis_y() };
     }
 
+    /**
+     * Initialize spanning the x and z axes with given x/z-axis sizes.
+     * @param offset Offset from origin.
+     * @param size_x Size along the x-axis.
+     * @param size_z Size along the z-axis.
+     * @return Result.
+     */
+    // tested
     constexpr static Rectangle3 from_xz_offset_size(const Vector3<Real>& offset, const Real size_x, const Real size_z)
     {
         return { offset,
@@ -4086,6 +4132,14 @@ public:
                  size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
     }
 
+    /**
+     * Initialize spanning the y and z axes with given y/z-axis sizes.
+     * @param offset Offset from origin.
+     * @param size_y Size along the y-axis.
+     * @param size_z Size along the z-axis.
+     * @return Result.
+     */
+    // tested
     constexpr static Rectangle3 from_yz_offset_size(const Vector3<Real>& offset, const Real size_y, const Real size_z)
     {
         return { offset,
@@ -4093,12 +4147,23 @@ public:
                  size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
     }
 
-    [[nodiscard]] bool valid() const
+    /**
+     * Determine if valid. Validility is determined if half_span_u and half_span_v are orthogonal.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool valid() const
     {
         return approx_zero(half_span_u.dot(half_span_v));
     }
 
-    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index)
+    /**
+     * Vertex from index.
+     * @param index Index.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
         switch (index) {
@@ -4113,26 +4178,42 @@ public:
         }
     }
 
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
+    /**
+     * Edge from index.
+     * @param index Index.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Rectangle3", index < 4);
         switch (index) {
         case 1:
-            return { vertex(1), vertex(2) };
+            return { vertex(1), vertex(3) };
         case 2:
-            return { vertex(2), vertex(3) };
+            return { vertex(3), vertex(2) };
         case 3:
-            return { vertex(3), vertex(0) };
+            return { vertex(2), vertex(0) };
         default:
             return { vertex(0), vertex(1) };
         }
     }
 
+    /**
+     * Size of the first dimension which is defined by the direction of half_span_u.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real size_u() const
     {
         return half_span_u.length() * static_cast<Real>(2);
     }
 
+    /**
+     * Size of the second dimension which is defined by the direction of half_span_v.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real size_v() const
     {
         return half_span_v.length() * static_cast<Real>(2);

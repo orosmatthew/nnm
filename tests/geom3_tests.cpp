@@ -3178,6 +3178,130 @@ inline void triangle3_tests()
     }
 }
 
+inline void rectangle3_tests()
+{
+    test_case("Rectangle3");
+
+    test_section("Rectangle3()");
+    {
+        constexpr nnm::Rectangle3f r1;
+        ASSERT(r1.center.approx_zero());
+        ASSERT(r1.half_span_u.approx_zero());
+        ASSERT(r1.half_span_v.approx_zero());
+    }
+
+    test_section("Rectangle3(const Vector3&, const Vector3&, const Vector3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { 1.0, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 7.0f, -8.0f, 0.0f } };
+        ASSERT(r1.center.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(r1.half_span_u.approx_equal({ -4.0f, 5.0f, -6.0f }));
+        ASSERT(r1.half_span_v.approx_equal({ 7.0f, -8.0f, 0.0f }));
+    }
+
+    test_section("from_xy_offset_size");
+    {
+        constexpr auto r1 = nnm::Rectangle3f::from_xy_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
+        ASSERT(r1.center.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(r1.half_span_u.approx_equal({ 1.0f, 0.0f, 0.0f }));
+        ASSERT(r1.half_span_v.approx_equal({ 0.0f, 1.75f, 0.0f }));
+    }
+
+    test_section("from_xz_offset_size");
+    {
+        constexpr auto r1 = nnm::Rectangle3f::from_xz_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
+        ASSERT(r1.center.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(r1.half_span_u.approx_equal({ 1.0f, 0.0f, 0.0f }));
+        ASSERT(r1.half_span_v.approx_equal({ 0.0f, 0.0f, 1.75f }));
+    }
+
+    test_section("from_yz_offset_size");
+    {
+        constexpr auto r1 = nnm::Rectangle3f::from_yz_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
+        ASSERT(r1.center.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(r1.half_span_u.approx_equal({ 0.0f, 1.0f, 0.0f }));
+        ASSERT(r1.half_span_v.approx_equal({ 0.0f, 0.0f, 1.75f }));
+    }
+
+    test_section("valid");
+    {
+        constexpr nnm::Rectangle3f r1 { { 1.0, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 7.0f, -8.0f, 0.0f } };
+        constexpr auto result1 = r1.valid();
+        ASSERT_FALSE(result1);
+        constexpr auto r2 = nnm::Rectangle3f::from_yz_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
+        constexpr auto result2 = r2.valid();
+        ASSERT(result2);
+    }
+
+    constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+    constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+    constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+
+    test_section("vertex");
+    {
+        constexpr nnm::Vector3f v0 = r1.vertex(0);
+        ASSERT(v0.approx_equal({ -1.0f, 0.0f, 0.0f }));
+        constexpr nnm::Vector3f v1 = r1.vertex(1);
+        ASSERT(v1.approx_equal({ -1.0f, 2.0f, 2.0f }));
+        constexpr nnm::Vector3f v2 = r1.vertex(2);
+        ASSERT(v2.approx_equal({ -4.0f, 0.0f, 0.0f }));
+        constexpr nnm::Vector3f v3 = r1.vertex(3);
+        ASSERT(v3.approx_equal({ -4.0f, 2.0f, 2.0f }));
+
+        ASSERT(r_degen_line.vertex(0).approx_equal({ -1.0f, 0.0f, 0.0f }));
+        ASSERT(r_degen_line.vertex(1).approx_equal({ -1.0f, 0.0f, 0.0f }));
+        ASSERT(r_degen_line.vertex(2).approx_equal({ -4.0f, 0.0f, 0.0f }));
+        ASSERT(r_degen_line.vertex(3).approx_equal({ -4.0f, 0.0f, 0.0f }));
+
+        ASSERT(r_degen_point.vertex(0).approx_equal({ -2.5f, 1.0f, 1.0f }));
+        ASSERT(r_degen_point.vertex(1).approx_equal({ -2.5f, 1.0f, 1.0f }));
+        ASSERT(r_degen_point.vertex(2).approx_equal({ -2.5f, 1.0f, 1.0f }));
+        ASSERT(r_degen_point.vertex(3).approx_equal({ -2.5f, 1.0f, 1.0f }));
+    }
+
+    test_section("edge");
+    {
+        constexpr nnm::Segment3f e0 = r1.edge(0);
+        ASSERT(e0.coincident({ { -1.0f, 0.0f, 0.0f }, { -1.0f, 2.0f, 2.0f } }));
+        constexpr nnm::Segment3f e1 = r1.edge(1);
+        ASSERT(e1.coincident({ { -1.0f, 2.0f, 2.0f }, { -4.0f, 2.0f, 2.0f } }));
+        constexpr nnm::Segment3f e2 = r1.edge(2);
+        ASSERT(e2.coincident({ { -4.0f, 2.0f, 2.0f }, { -4.0f, 0.0f, 0.0f } }));
+        constexpr nnm::Segment3f e3 = r1.edge(3);
+        ASSERT(e3.coincident({ { -4.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } }));
+
+        ASSERT(r_degen_line.edge(0).coincident({ { -1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } }));
+        ASSERT(r_degen_line.edge(1).coincident({ { -1.0f, 0.0f, 0.0f }, { -4.0f, 0.0f, 0.0f } }));
+        ASSERT(r_degen_line.edge(2).coincident({ { -4.0f, 0.0f, 0.0f }, { -4.0f, 0.0f, 0.0f } }));
+        ASSERT(r_degen_line.edge(3).coincident({ { -4.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } }));
+
+        ASSERT(r_degen_point.edge(0).coincident({ { -2.5f, 1.0f, 1.0f }, { -2.5f, 1.0f, 1.0f } }));
+        ASSERT(r_degen_point.edge(1).coincident({ { -2.5f, 1.0f, 1.0f }, { -2.5f, 1.0f, 1.0f } }));
+        ASSERT(r_degen_point.edge(2).coincident({ { -2.5f, 1.0f, 1.0f }, { -2.5f, 1.0f, 1.0f } }));
+        ASSERT(r_degen_point.edge(3).coincident({ { -2.5f, 1.0f, 1.0f }, { -2.5f, 1.0f, 1.0f } }));
+    }
+
+    test_section("size_u");
+    {
+        ASSERT(nnm::approx_equal(r1.size_u(), 3.0f));
+        ASSERT(nnm::approx_equal(r_degen_line.size_u(), 3.0f));
+        ASSERT(nnm::approx_zero(r_degen_point.size_u()));
+    }
+
+    test_section("size_v");
+    {
+        ASSERT(nnm::approx_equal(r1.size_v(), 2.8284271247f));
+        ASSERT(nnm::approx_zero(r_degen_line.size_v()));
+        ASSERT(nnm::approx_zero(r_degen_point.size_v()));
+    }
+
+    test_section("area");
+    {
+        ASSERT(nnm::approx_equal(r1.area(), 8.4852813742f));
+        ASSERT(nnm::approx_equal(r_degen_line.area(), 8.4852813742f));
+        ASSERT(nnm::approx_equal(r_de.area(), 8.4852813742f));
+    }
+}
+
 void sphere_tests()
 {
     test_case("sphere");
@@ -3684,5 +3808,6 @@ void geom3_tests()
     segment3_tests();
     plane_tests();
     triangle3_tests();
+    rectangle3_tests();
     sphere_tests();
 }
