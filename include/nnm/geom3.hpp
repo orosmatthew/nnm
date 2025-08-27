@@ -9,6 +9,7 @@
 
 #include <nnm/nnm.hpp>
 
+#include <algorithm>
 #include <array>
 
 // ReSharper disable CppDFATimeOver
@@ -4578,6 +4579,92 @@ public:
 
     // TODO
     [[nodiscard]] bool intersects(const AlignedBox<Real>& box) const;
+
+    [[nodiscard]] constexpr Rectangle3 translate(const Vector3<Real>& offset) const
+    {
+        return { center.translate(offset), half_span_u, half_span_v };
+    }
+
+    [[nodiscard]] Rectangle3 rotate_axis_angle_at(
+        const Vector3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { center.rotate_axis_angle_at(origin, axis, angle),
+                 half_span_u.rotate_axis_angle(axis, angle),
+                 half_span_v.rotate_axis_angle(axis, angle) };
+    }
+
+    [[nodiscard]] Rectangle3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { center.rotate_axis_angle(axis, angle),
+                 half_span_u.rotate_axis_angle(axis, angle),
+                 half_span_v.rotate_axis_angle(axis, angle) };
+    }
+
+    [[nodiscard]] constexpr Rectangle3 rotate_quaternion_at(
+        const Vector3<Real>& origin, const Quaternion<Real>& quaternion) const
+    {
+        return { center.rotate_quaternion_at(origin, quaternion),
+                 half_span_u.rotate_quaternion(quaternion),
+                 half_span_v.rotate_quaternion(quaternion) };
+    }
+
+    [[nodiscard]] constexpr Rectangle3 rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { center.rotate_quaternion(quaternion),
+                 half_span_u.rotate_quaternion(quaternion),
+                 half_span_v.rotate_quaternion(quaternion) };
+    }
+
+    [[nodiscard]] constexpr Rectangle3 scale_at(const Vector3<Real>& origin, const Vector3<Real>& factor) const
+    {
+        return { center.scale_at(origin, factor), half_span_u.scale(factor), half_span_v.scale(factor) };
+    }
+
+    [[nodiscard]] constexpr Rectangle3 scale(const Vector3<Real>& factor) const
+    {
+        return { center.scale(factor), half_span_u.scale(factor), half_span_v.scale(factor) };
+    }
+
+    [[nodiscard]] bool coincident(const Rectangle3& other) const
+    {
+        std::array<Vector3<Real>, 4> verts { vertex(0), vertex(1), vertex(2), vertex(3) };
+        std::array<Vector3<Real>, 4> verts_other { other.vertex(0), other.vertex(1), other.vertex(2), other.vertex(3) };
+        std::sort(verts.begin(), verts.end());
+        std::sort(verts_other.begin(), verts_other.end());
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (!verts[i].approx_equal(verts_other[i])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    [[nodiscard]] bool approx_equal(const Rectangle3& other) const
+    {
+        return center.approx_equal(other.center) && half_span_u.approx_equal(other.half_span_u)
+            && half_span_v.approx_equal(other.half_span_v);
+    }
+
+    [[nodiscard]] bool operator==(const Rectangle3& other) const
+    {
+        return center == other.center && half_span_u == other.half_span_u && half_span_v == other.half_span_v;
+    }
+
+    [[nodiscard]] bool operator!=(const Rectangle3& other) const
+    {
+        return center != other.center || half_span_u != other.half_span_u || half_span_v != other.half_span_v;
+    }
+
+    [[nodiscard]] bool operator<(const Rectangle3& other) const
+    {
+        if (center != other.center) {
+            return center < other.center;
+        }
+        if (half_span_u != other.half_span_u) {
+            return half_span_u < other.half_span_u;
+        }
+        return half_span_v < other.half_span_v;
+    }
 };
 
 /**
