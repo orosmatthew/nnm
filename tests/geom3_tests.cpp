@@ -3297,8 +3297,107 @@ inline void rectangle3_tests()
     test_section("area");
     {
         ASSERT(nnm::approx_equal(r1.area(), 8.4852813742f));
-        ASSERT(nnm::approx_equal(r_degen_line.area(), 8.4852813742f));
-        ASSERT(nnm::approx_equal(r_de.area(), 8.4852813742f));
+        ASSERT(nnm::approx_zero(r_degen_line.area()));
+        ASSERT(nnm::approx_zero(r_degen_point.area()));
+    }
+
+    test_section("perimeter");
+    {
+        ASSERT(nnm::approx_equal(r1.perimeter(), 11.6568542494f));
+        ASSERT(nnm::approx_equal(r_degen_line.perimeter(), 6.0f));
+        ASSERT(nnm::approx_zero(r_degen_point.perimeter()));
+    }
+
+    test_section("contains");
+    {
+        constexpr auto result1 = r1.contains(r1.vertex(0));
+        ASSERT(result1);
+        constexpr auto result2 = r1.contains({ -2.0f, 1.0f, 1.0f });
+        ASSERT(result2);
+        constexpr auto result3 = r1.contains({ -2.0f, 0.0f, -2.0f });
+        ASSERT_FALSE(result3);
+        constexpr auto result4 = r1.contains({ 0.0f, 1.0f, 1.0f });
+        ASSERT_FALSE(result4);
+        constexpr auto result5 = r_degen_line.contains({ -2.0f, 1.0f, 1.0f });
+        ASSERT_FALSE(result5);
+        constexpr auto result6 = r_degen_line.contains({ -2.0f, 0.0f, 0.0f });
+        ASSERT(result6);
+        constexpr auto result7 = r_degen_line.contains({ 0.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(result7);
+        constexpr auto result8 = r_degen_point.contains({ 0.0f, 0.0f, 0.0f });
+        ASSERT_FALSE(result8);
+        constexpr auto result9 = r_degen_point.contains({ -2.5f, 1.0f, 1.0f });
+        ASSERT(result9);
+    }
+
+    test_section("distance_sqrd");
+    {
+        constexpr auto result1 = r1.distance_sqrd(r1.vertex(0));
+        ASSERT(nnm::approx_zero(result1));
+        constexpr auto result2 = r1.distance_sqrd({ -2.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(result2));
+        constexpr auto result3 = r1.distance_sqrd({ -2.0f, 0.0f, 2.0f });
+        ASSERT(nnm::approx_equal(result3, 2.0f));
+        constexpr auto result4 = r1.distance_sqrd({ 0.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_equal(result4, 1.0f));
+        constexpr auto result5 = r_degen_line.distance_sqrd({ -2.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_equal(result5, 2.0f));
+        constexpr auto result6 = r_degen_line.distance_sqrd({ -2.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_zero(result6));
+        constexpr auto result7 = r_degen_line.distance_sqrd({ 0.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_equal(result7, 1.0f));
+        constexpr auto result8 = r_degen_point.distance_sqrd({ 0.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_equal(result8, 8.25f));
+        constexpr auto result9 = r_degen_point.distance_sqrd({ -2.5f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(result9));
+    }
+
+    test_section("distance(const Vector3&)");
+    {
+        const auto result1 = r1.distance(r1.vertex(0));
+        ASSERT(nnm::approx_zero(result1));
+        const auto result2 = r1.distance({ -2.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(result2));
+        const auto result3 = r1.distance({ -2.0f, 0.0f, 2.0f });
+        ASSERT(nnm::approx_equal(result3, 1.4142135624f));
+        const auto result4 = r1.distance({ 0.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_equal(result4, 1.0f));
+        const auto result5 = r_degen_line.distance({ -2.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_equal(result5, 1.4142135624f));
+        const auto result6 = r_degen_line.distance({ -2.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_zero(result6));
+        const auto result7 = r_degen_line.distance({ 0.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_equal(result7, 1.0f));
+        const auto result8 = r_degen_point.distance({ 0.0f, 0.0f, 0.0f });
+        ASSERT(nnm::approx_equal(result8, 2.8722813233f));
+        const auto result9 = r_degen_point.distance({ -2.5f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(result9));
+    }
+
+    test_section("distance(const Line3&)");
+    {
+        const auto result1 = r1.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_zero(result1));
+        const auto result2 = r1.distance(nnm::Line3f::axis_y());
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        const auto result3
+            = r1.distance(nnm::Line3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4 = r1.distance(nnm::Line3f { { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
+        ASSERT(nnm::approx_equal(result4, 1.0f));
+        const auto result5 = r1.distance(nnm::Line3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        const auto result6 = r_degen_line.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_zero(result6));
+        const auto result7 = r_degen_line.distance(nnm::Line3f::axis_y());
+        ASSERT(nnm::approx_equal(result7, 1.0f));
+        const auto result8
+            = r_degen_line.distance(nnm::Line3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
+        ASSERT(nnm::approx_equal(result8, 1.4142135624f));
+        const auto result9 = r_degen_point.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_equal(result9, 1.4142135624f));
+        const auto result10 = r_degen_point.distance(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
+        ASSERT(nnm::approx_zero(result10));
     }
 }
 

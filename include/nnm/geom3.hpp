@@ -681,6 +681,12 @@ public:
     // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
 
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const;
+
     /**
      * Project point on the line.
      * @param point Point.
@@ -4219,16 +4225,32 @@ public:
         return half_span_v.length() * static_cast<Real>(2);
     }
 
+    /**
+     * Area of one side of the rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real area() const
     {
         return size_u() * size_v();
     }
 
+    /**
+     * Combined length of all edges.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real perimeter() const
     {
         return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
     }
 
+    /**
+     * Determine if contains a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         const Vector3<Real> normal = half_span_u.cross(half_span_v);
@@ -4247,27 +4269,36 @@ public:
         if (approx_zero(v_dot)) {
             return Segment3<Real> { center - half_span_u, center + half_span_u }.contains(point);
         }
-        const Vector3<Real> local { diff.dot(half_span_u) / half_span_u.dot(half_span_u),
-                                    diff.dot(half_span_v) / half_span_v.dot(half_span_v) };
+        const Vector2<Real> local { diff.dot(half_span_u) / u_dot, diff.dot(half_span_v) / v_dot };
         return approx_greater_equal(local.x, static_cast<Real>(-1)) && approx_less_equal(local.x, static_cast<Real>(1))
             && approx_greater_equal(local.y, static_cast<Real>(-1)) && approx_less_equal(local.y, static_cast<Real>(1));
     }
 
+    /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
     {
+        const Vector3<Real> diff = point - center;
+        const Vector2<Real> local = { diff.dot(half_span_u), diff.dot(half_span_v) };
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
-        if (approx_zero(u_dot) || approx_zero(v_dot)) {
-            return center.distance_sqrd(point);
-        }
-        const Vector3<Real> diff = point - center;
-        const Vector2<Real> local = { diff.dot(half_span_u) / u_dot, diff.dot(half_span_v) / v_dot };
-        const Vector2<Real> local_clamped
-            = local.clamp(Vector2<Real>::all(static_cast<Real>(-1)), Vector2<Real>::all(static_cast<Real>(1)));
-        const Vector3<Real> closest = center + local_clamped.x * half_span_u + local_clamped.y * half_span_v;
+        const Vector2<Real> local_clamped = local.clamp({ -u_dot, -v_dot }, { u_dot, v_dot });
+        const Vector3<Real> closest = center
+            + (approx_zero(u_dot) ? static_cast<Real>(0) : local_clamped.x / u_dot) * half_span_u
+            + (approx_zero(v_dot) ? static_cast<Real>(0) : local_clamped.y / v_dot) * half_span_v;
         return point.distance_sqrd(closest);
     }
 
+    /**
+     * Closest distance to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return sqrt(distance_sqrd(point));
@@ -5582,6 +5613,18 @@ template <typename Real>
 Real Line3<Real>::distance(const Ray3<Real>& ray) const
 {
     return ray.distance(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Segment3<Real>& segment) const
+{
+    return segment.intersects(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Segment3<Real>& segment) const
+{
+    return segment.intersection(*this);
 }
 
 template <typename Real>
