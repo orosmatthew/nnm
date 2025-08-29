@@ -3399,6 +3399,63 @@ inline void rectangle3_tests()
         const auto result10 = r_degen_point.distance(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
         ASSERT(nnm::approx_zero(result10));
     }
+
+    test_section("distance(const Ray3&)");
+    {
+        const auto result1 = r1.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(result1, 1.0f));
+        const auto result2 = r1.distance(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_zero(result2));
+        const auto result3 = r1.distance(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4 = r1.distance(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, -0.7071067812f, 0.7071067812f } });
+        ASSERT(nnm::approx_equal(result4, 1.4142135624f))
+        const auto result5 = r1.distance(nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        const auto result6 = r_degen_line.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(result6, 1.0f));
+        const auto result7 = r_degen_line.distance(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_zero(result7));
+        const auto result8 = r_degen_line.distance(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_zero(result8));
+        const auto result9 = r_degen_line.distance(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(result9, 2.0f));
+        const auto result10 = r_degen_line.distance(nnm::Ray3f { { -3.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(result10, 3.0f));
+        const auto result11 = r_degen_point.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(result11, 2.6925824036f));
+        const auto result12 = r_degen_point.distance(nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() });
+        ASSERT(nnm::approx_zero(result12));
+    }
+
+    test_section("distance(const Segment3&)");
+    {
+        const auto result1 = r1.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(result1, 1.0f));
+        const auto result2 = r1.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_zero(result2));
+        const auto result3 = r1.distance(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } });
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4 = r1.distance(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, -10.0f, 12.0f } });
+        ASSERT(nnm::approx_equal(result4, 1.4142135624f))
+        const auto result5 = r1.distance(nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } });
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        const auto result6 = r_degen_line.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(result6, 1.0f));
+        const auto result7 = r_degen_line.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_zero(result7));
+        const auto result8 = r_degen_line.distance(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } });
+        ASSERT(nnm::approx_zero(result8));
+        const auto result9 = r_degen_line.distance(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, -12.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(result9, 2.0f));
+        const auto result10 = r_degen_line.distance(nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } });
+        ASSERT(nnm::approx_equal(result10, 3.0f));
+        const auto result11 = r_degen_point.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(result11, 2.6925824036f));
+        const auto result12
+            = r_degen_point.distance(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
+        ASSERT(nnm::approx_zero(result12));
+    }
 }
 
 void sphere_tests()

@@ -1281,6 +1281,12 @@ public:
         return p.approx_equal(p_other);
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const;
+
     /**
      * Intersection point with another ray.
      * @param other Other ray.
@@ -1757,6 +1763,10 @@ public:
     // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
+        // TODO: do this for other methods
+        if (start.approx_equal(end)) {
+            return ray.distance(start);
+        }
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(ray.direction);
         const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
@@ -1791,6 +1801,9 @@ public:
     // tested
     [[nodiscard]] Real distance(const Segment3& other) const
     {
+        if (start.approx_equal(end)) {
+            return other.distance(start);
+        }
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(dir_other);
@@ -4304,6 +4317,12 @@ public:
         return sqrt(distance_sqrd(point));
     }
 
+    /**
+     * Closest distance to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
         if (intersects(line)) {
@@ -4319,6 +4338,12 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -4334,6 +4359,12 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -4541,7 +4572,7 @@ public:
             return false;
         }
         const Vector3<Real> diff = center - segment.start;
-        const Vector3<Real> segment_dir = segment.direction();
+        const Vector3<Real> segment_dir = segment.direction_unnormalized();
         const Real dir_dot_normal = segment_dir.dot(normal);
         const Real t = diff.dot(normal) / dir_dot_normal;
         if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
@@ -5655,6 +5686,18 @@ template <typename Real>
 constexpr bool Ray3<Real>::coplanar(const Plane<Real>& plane) const
 {
     return plane.coplanar(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::intersects(const Segment3<Real>& segment) const
+{
+    return segment.intersects(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Ray3<Real>::intersection(const Segment3<Real>& segment) const
+{
+    return segment.intersection(*this);
 }
 
 template <typename Real>
