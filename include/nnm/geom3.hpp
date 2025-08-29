@@ -1835,6 +1835,9 @@ public:
         return p1.distance(p2);
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const;
+
     /**
      * Non-normalized direction from the start position to the end position.
      * @return Result.
@@ -2096,6 +2099,12 @@ public:
         }
         return p;
     }
+
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Plane<Real>& plane) const;
 
     /**
      * Project a point on the line segment.
@@ -4380,7 +4389,13 @@ public:
         return min_dist;
     }
 
-    [[nodiscard]] Real distance(const Plane<Real>& plane) const
+    /**
+     * Closest distance to plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
     {
         if (intersects(plane)) {
             return static_cast<Real>(0);
@@ -4395,6 +4410,11 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
     [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
     {
         if (intersects(triangle)) {
@@ -4619,7 +4639,7 @@ public:
         return plane_inter;
     }
 
-    [[nodiscard]] bool intersects(const Plane<Real>& plane) const
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (edge(i).intersects(plane)) {
@@ -5713,9 +5733,27 @@ constexpr bool Segment3<Real>::coplanar(const Plane<Real>& plane) const
 }
 
 template <typename Real>
+constexpr Real Segment3<Real>::distance(const Plane<Real>& plane) const
+{
+    return plane.distance(*this);
+}
+
+template <typename Real>
 bool Segment3<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Segment3<Real>::intersection(const Plane<Real>& plane) const
+{
+    return plane.intersection(*this);
+}
+
+template <typename Real>
+constexpr bool Segment3<Real>::intersects(const Plane<Real>& plane) const
+{
+    return plane.intersects(*this);
 }
 
 template <typename Real>

@@ -3456,6 +3456,53 @@ inline void rectangle3_tests()
             = r_degen_point.distance(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
         ASSERT(nnm::approx_zero(result12));
     }
+
+    test_section("distance(const Plane&)");
+    {
+        constexpr auto result1 = r1.distance(nnm::PlaneF::xy());
+        ASSERT(nnm::approx_zero(result1));
+        constexpr auto result2 = r1.distance(nnm::PlaneF::yz());
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        constexpr auto result3 = r1.distance(nnm::PlaneF::xy_offset(1.0f));
+        ASSERT(nnm::approx_zero(result3));
+        constexpr auto result4 = r_degen_line.distance(nnm::PlaneF::xy());
+        ASSERT(nnm::approx_zero(result4));
+        constexpr auto result5 = r_degen_line.distance(nnm::PlaneF::yz());
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        constexpr auto result6 = r_degen_line.distance(nnm::PlaneF::xy_offset(1.0f));
+        ASSERT(nnm::approx_equal(result6, 1.0f));
+        constexpr auto result7 = r_degen_line.distance(nnm::PlaneF::yz_offset(-3.0f));
+        ASSERT(nnm::approx_zero(result7));
+        constexpr auto result8 = r_degen_point.distance(nnm::PlaneF::xy());
+        ASSERT(nnm::approx_equal(result8, 1.0f));
+        constexpr auto result9 = r_degen_point.distance(nnm::PlaneF::yz_offset(-2.5f));
+        ASSERT(nnm::approx_zero(result9));
+    }
+
+    test_section("distance(const Triangle3&)");
+    {
+        const auto result1
+            = r1.distance(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(nnm::approx_equal(result1, 1.0f));
+        const auto result2
+            = r1.distance(nnm::Triangle3f({ -3.0f, -2.0f, -1.0f }, { -3.0f, 1.0f, -1.0f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(nnm::approx_zero(result2));
+        const auto result3
+            = r1.distance(nnm::Triangle3f({ -3.0f, -2.0f, 0.5f }, { -3.0f, 1.0f, 0.5f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4
+            = r_degen_line.distance(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(nnm::approx_equal(result4, 1.0f));
+        const auto result5 = r_degen_line.distance(
+            nnm::Triangle3f({ -3.0f, -2.0f, -1.0f }, { -3.0f, 1.0f, -1.0f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(nnm::approx_zero(result5));
+        const auto result6
+            = r_degen_point.distance(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(nnm::approx_equal(result6, 2.5980762114f));
+        const auto result8 = r_degen_point.distance(
+            nnm::Triangle3f({ -2.5f, 0.0f, 0.0f }, { -2.5f, 2.0f, 0.0f }, { -2.5f, 2.0f, 3.0f }));
+        ASSERT(nnm::approx_zero(result8));
+    }
 }
 
 void sphere_tests()
