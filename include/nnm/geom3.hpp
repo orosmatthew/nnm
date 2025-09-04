@@ -2048,6 +2048,9 @@ public:
     // tested
     [[nodiscard]] constexpr bool intersects(const Segment3& other) const
     {
+        if (other.start.approx_equal(other.end)) {
+            return contains(other.start);
+        }
         const Vector3<Real> dir = direction_unnormalized();
         const Vector3<Real> dir_other = other.direction_unnormalized();
         const Vector3<Real> dir_cross = dir.cross(dir_other);
@@ -4415,6 +4418,7 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
     {
         if (intersects(triangle)) {
@@ -4430,6 +4434,12 @@ public:
         return min_dist;
     }
 
+    /**
+     * Closest distance to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Rectangle3& other) const
     {
         if (intersects(other)) {
@@ -4451,7 +4461,13 @@ public:
     // TODO
     [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
 
-    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
@@ -4480,12 +4496,21 @@ public:
         return contains(plane_inter);
     }
 
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
+    /**
+     * Intersection point with line. Returns null if coplanar.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Line3<Real>& line) const
     {
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
         if (approx_zero(u_dot) && approx_zero(v_dot)) {
-            return line.intersection(center);
+            if (!line.contains(center)) {
+                return std::nullopt;
+            }
+            return center;
         }
         if (approx_zero(u_dot)) {
             return line.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
@@ -4507,7 +4532,13 @@ public:
         return plane_inter;
     }
 
-    [[nodiscard]] bool intersects(const Ray3<Real>& ray) const
+    /**
+     * Determine if intersects with ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
@@ -4539,12 +4570,20 @@ public:
         return contains(plane_inter);
     }
 
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray)
+    /**
+     * Intersection point with ray. Returns null if coplanar.
+     * @param ray Ray.
+     * @return Result.
+     */
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const
     {
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
         if (approx_zero(u_dot) && approx_zero(v_dot)) {
-            return ray.intersection(center);
+            if (!ray.contains(center)) {
+                return std::nullopt;
+            }
+            return center;
         }
         if (approx_zero(u_dot)) {
             return ray.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
@@ -4569,8 +4608,17 @@ public:
         return plane_inter;
     }
 
+    /**
+     * Determine if intersects line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
     {
+        if (segment.start.approx_equal(segment.end)) {
+            return contains(segment.start);
+        }
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
         if (approx_zero(u_dot) && approx_zero(v_dot)) {
