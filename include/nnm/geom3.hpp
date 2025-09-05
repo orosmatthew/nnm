@@ -2865,6 +2865,12 @@ public:
     // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const
     {
+        if (segment.start.approx_equal(segment.end)) {
+            if (!contains(segment.start)) {
+                return std::nullopt;
+            }
+            return segment.start;
+        }
         const Vector3<Real> seg_dir = segment.direction_unnormalized();
         const Real proj = normal.dot(seg_dir);
         if (approx_zero(proj)) {
@@ -4614,7 +4620,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
         if (segment.start.approx_equal(segment.end)) {
             return contains(segment.start);
@@ -4650,7 +4656,13 @@ public:
         return contains(plane_inter);
     }
 
-    [[nodiscard]] std::optional<Vector3<Real>> intersection(const Segment3<Real> segment) const
+    /**
+     * Intersection point with line segment. Returns null if coplanar.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real> segment) const
     {
         if (segment.start.approx_equal(segment.end)) {
             if (!contains(segment.start)) {
@@ -4661,7 +4673,10 @@ public:
         const Real u_dot = half_span_u.dot(half_span_u);
         const Real v_dot = half_span_v.dot(half_span_v);
         if (approx_zero(u_dot) && approx_zero(v_dot)) {
-            return segment.intersection(center);
+            if (!segment.contains(center)) {
+                return std::nullopt;
+            }
+            return center;
         }
         if (approx_zero(u_dot)) {
             return segment.intersection(Segment3<Real> { center - half_span_v, center + half_span_v });
@@ -4670,14 +4685,14 @@ public:
             return segment.intersection(Segment3<Real> { center - half_span_u, center + half_span_u });
         }
         const Vector3<Real> normal = half_span_u.cross(half_span_v);
-        if (segment.direction_unnormalized().perpendicular(normal)) {
+        const Vector3<Real> segment_dir = segment.direction_unnormalized();
+        if (segment_dir.perpendicular(normal)) {
             return std::nullopt;
         }
         const Vector3<Real> diff = center - segment.start;
-        const Vector3<Real> segment_dir = segment.direction();
         const Real dir_dot_normal = segment_dir.dot(normal);
         const Real t = diff.dot(normal) / dir_dot_normal;
-        if (approx_less_zero(t)) {
+        if (approx_less_zero(t) || approx_greater(t, static_cast<Real>(1))) {
             return std::nullopt;
         }
         const Vector3<Real> plane_inter = segment.start + segment_dir * t;
@@ -4687,6 +4702,12 @@ public:
         return plane_inter;
     }
 
+    /**
+     * Determine if intersects plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -4697,12 +4718,23 @@ public:
         return false;
     }
 
-    [[nodiscard]] Intersections3<Real> edge_intersection(const Plane<Real>& plane) const
+    /**
+     * Intersection points between edges.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Intersections3<Real> edge_intersections(const Plane<Real>& plane) const
     {
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const Segment3<Real> e = edge(i); !e.start.approx_equal(e.end) && plane.coplanar(e)) {
+                return {};
+            }
+        }
         Intersections3<Real> inters;
         for (uint8_t i = 0; i < 4; ++i) {
             if (const std::optional<Vector3<Real>> inter = edge(i).intersection(plane); inter.has_value()) {
-                inters.insert(inter);
+                inters.insert(*inter);
                 if (inters.size() >= 2) {
                     return inters;
                 }
@@ -4711,6 +4743,12 @@ public:
         return inters;
     }
 
+    /**
+     * Determine if intersects triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
