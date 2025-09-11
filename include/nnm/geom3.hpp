@@ -4847,11 +4847,25 @@ public:
     // TODO
     [[nodiscard]] bool intersects(const AlignedBox<Real>& box) const;
 
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3 translate(const Vector3<Real>& offset) const
     {
         return { center.translate(offset), half_span_u, half_span_v };
     }
 
+    /**
+     * Rotate about an origin by an axis and an angle.
+     * @param origin Rotation origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Rectangle3 rotate_axis_angle_at(
         const Vector3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
     {
@@ -4860,6 +4874,13 @@ public:
                  half_span_v.rotate_axis_angle(axis, angle) };
     }
 
+    /**
+     * Rotate about the global origin by an axis and angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Rectangle3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
     {
         return { center.rotate_axis_angle(axis, angle),
@@ -4867,6 +4888,13 @@ public:
                  half_span_v.rotate_axis_angle(axis, angle) };
     }
 
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param origin Rotation origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3 rotate_quaternion_at(
         const Vector3<Real>& origin, const Quaternion<Real>& quaternion) const
     {
@@ -4875,6 +4903,12 @@ public:
                  half_span_v.rotate_quaternion(quaternion) };
     }
 
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3 rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
         return { center.rotate_quaternion(quaternion),
@@ -4882,11 +4916,24 @@ public:
                  half_span_v.rotate_quaternion(quaternion) };
     }
 
+    /**
+     * Scale about an origin by a factor.
+     * @param origin Scale origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3 scale_at(const Vector3<Real>& origin, const Vector3<Real>& factor) const
     {
         return { center.scale_at(origin, factor), half_span_u.scale(factor), half_span_v.scale(factor) };
     }
 
+    /**
+     * Scale about the global origin by a factor.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3 scale(const Vector3<Real>& factor) const
     {
         return { center.scale(factor), half_span_u.scale(factor), half_span_v.scale(factor) };

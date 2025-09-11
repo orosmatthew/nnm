@@ -3871,6 +3871,74 @@ inline void rectangle3_tests()
         const auto result9 = r_degen_point.edge_intersections(r6);
         ASSERT(result9.approx_equal({ { -2.5f, 1.0f, 1.0f } }));
     }
+
+    test_section("translate");
+    {
+        constexpr nnm::Vector3f offset { 2.0f, -10.0f, 0.5f };
+        constexpr auto r1_t = r1.translate(offset);
+        ASSERT(r1_t.approx_equal({ r1.center.translate(offset), r1.half_span_u, r1.half_span_v }));
+    }
+
+    test_section("rotate_axis_angle_at");
+    {
+        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1_r = r1.rotate_axis_angle_at(origin, axis, angle);
+        ASSERT(r1_r.approx_equal(
+            { r1.center.rotate_axis_angle_at(origin, axis, angle),
+              r1.half_span_u.rotate_axis_angle(axis, angle),
+              r1.half_span_v.rotate_axis_angle(axis, angle) }));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const auto r1_r = r1.rotate_axis_angle(axis, angle);
+        ASSERT(r1_r.approx_equal(
+            { r1.center.rotate_axis_angle(axis, angle),
+              r1.half_span_u.rotate_axis_angle(axis, angle),
+              r1.half_span_v.rotate_axis_angle(axis, angle) }));
+    }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr nnm::QuaternionF quat { 0.0f, -0.8660254f, 0.0f, 0.5f };
+        constexpr auto r1_r = r1.rotate_quaternion_at(origin, quat);
+        ASSERT(r1_r.approx_equal(
+            { r1.center.rotate_quaternion_at(origin, quat),
+              r1.half_span_u.rotate_quaternion(quat),
+              r1.half_span_v.rotate_quaternion(quat) }));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::QuaternionF quat { 0.0f, -0.8660254f, 0.0f, 0.5f };
+        constexpr auto r1_r = r1.rotate_quaternion(quat);
+        ASSERT(r1_r.approx_equal(
+            { r1.center.rotate_quaternion(quat),
+              r1.half_span_u.rotate_quaternion(quat),
+              r1.half_span_v.rotate_quaternion(quat) }));
+    }
+
+    test_section("scale_at");
+    {
+        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr nnm::Vector3f factor { 3.0f, 0.5f, 2.0f };
+        constexpr auto r1_s = r1.scale_at(origin, factor);
+        ASSERT(r1_s.approx_equal(
+            { r1.center.scale_at(origin, factor), r1.half_span_u.scale(factor), r1.half_span_v.scale(factor) }));
+    }
+
+    test_section("scale");
+    {
+        constexpr nnm::Vector3f factor { 3.0f, 0.5f, 2.0f };
+        constexpr auto r1_s = r1.scale(factor);
+        ASSERT(
+            r1_s.approx_equal({ r1.center.scale(factor), r1.half_span_u.scale(factor), r1.half_span_v.scale(factor) }));
+    }
 }
 
 void sphere_tests()
