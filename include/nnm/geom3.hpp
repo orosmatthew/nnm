@@ -4764,6 +4764,12 @@ public:
         return false;
     }
 
+    /**
+     *Intersection points between the edges between this rectangle and a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Intersections3<Real> edge_intersections(const Triangle3<Real>& triangle) const
     {
         Intersections3<Real> inters;
@@ -4786,6 +4792,12 @@ public:
         return inters;
     }
 
+    /**
+     * Determine if intersects another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool intersects(const Rectangle3& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -4801,6 +4813,12 @@ public:
         return false;
     }
 
+    /**
+     * Intersection points between the edges of this rectangle and another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Intersections3<Real> edge_intersections(const Rectangle3& other) const
     {
         Intersections3<Real> inters;

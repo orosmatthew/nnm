@@ -3508,7 +3508,7 @@ inline void rectangle3_tests()
     constexpr nnm::Rectangle3f r3 { { -2.5f, -2.0f, 1.0f }, { -0.5f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f } };
     constexpr nnm::Rectangle3f r4 { { -2.5f, 0.5f, 1.0f }, { -0.5f, 0.0f, 0.0f }, { 0.0f, 1.5f, 0.0f } };
     constexpr nnm::Rectangle3f r5 { { -1.0f, 0.5f, 1.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f } };
-    constexpr nnm::Rectangle3f r6 { { -2.0f, 0.5f, 1.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 3.0f, 0.0f } };
+    constexpr nnm::Rectangle3f r6 { { -2.0f, 0.5f, 1.0f }, { 3.0f, 0.0f, 0.0f }, { 0.0f, 3.0f, 0.0f } };
     constexpr nnm::Rectangle3f r7 { { -2.0f, 0.5f, 0.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 3.0f, 0.0f } };
 
     test_section("distance(const Rectangle3&)");
@@ -3801,6 +3801,75 @@ inline void rectangle3_tests()
         const auto result8 = r_degen_point.intersects(
             nnm::Triangle3f({ -2.5f, 0.0f, 0.0f }, { -2.5f, 2.0f, 0.0f }, { -2.5f, 2.0f, 3.0f }));
         ASSERT(result8);
+    }
+
+    test_section("edge_intersections");
+    {
+        const auto result1
+            = r1.edge_intersections(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(result1.empty());
+        const auto result2 = r1.edge_intersections(
+            nnm::Triangle3f({ -3.0f, -2.0f, -1.0f }, { -3.0f, 1.0f, -1.0f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(result2.approx_equal({ { -3.0f, 1.0f, 1.0f }, { -3.0f, 0.0f, 0.0f } }));
+        const auto result3 = r1.edge_intersections(
+            nnm::Triangle3f({ -3.0f, -2.0f, 0.5f }, { -3.0f, 1.0f, 0.5f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(result3.approx_equal({ { -3.0f, 1.0f, 1.0f }, { -3.0f, 0.5f, 0.5f } }));
+        const auto result4 = r_degen_line.edge_intersections(
+            nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(result4.empty());
+        const auto result5 = r_degen_line.edge_intersections(
+            nnm::Triangle3f({ -3.0f, -2.0f, -1.0f }, { -3.0f, 1.0f, -1.0f }, { -3.0f, 1.0f, 3.0f }));
+        ASSERT(result5.approx_equal({ { -3.0f, 0.0f, 0.0f } }));
+        const auto result6 = r_degen_point.edge_intersections(
+            nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(result6.empty());
+        const auto result8 = r_degen_point.edge_intersections(
+            nnm::Triangle3f({ -2.5f, 0.0f, 0.0f }, { -2.5f, 2.0f, 0.0f }, { -2.5f, 2.0f, 3.0f }));
+        ASSERT(result8.approx_equal({ { -2.5f, 1.0f, 1.0f } }));
+    }
+
+    test_section("intersects(const Rectangle3&)");
+    {
+        const auto result1 = r1.intersects(r2);
+        ASSERT_FALSE(result1);
+        const auto result2 = r1.intersects(r3);
+        ASSERT_FALSE(result2);
+        const auto result3 = r1.intersects(r4);
+        ASSERT(result3);
+        const auto result4 = r1.intersects(r5);
+        ASSERT(result4);
+        const auto result5 = r1.intersects(r6);
+        ASSERT(result5);
+        const auto result6 = r_degen_line.intersects(r2);
+        ASSERT_FALSE(result6);
+        const auto result7 = r_degen_line.intersects(r7);
+        ASSERT(result7);
+        const auto result8 = r_degen_point.intersects(r2);
+        ASSERT_FALSE(result8);
+        const auto result9 = r_degen_point.intersects(r6);
+        ASSERT(result9);
+    }
+
+    test_section("edge_intersections");
+    {
+        const auto result1 = r1.edge_intersections(r2);
+        ASSERT(result1.empty());
+        const auto result2 = r1.edge_intersections(r3);
+        ASSERT(result2.empty());
+        const auto result3 = r1.edge_intersections(r4);
+        ASSERT(result3.approx_equal({ { -3.0f, 1.0f, 1.0f }, { -2.0f, 1.0f, 1.0f } }));
+        const auto result4 = r1.edge_intersections(r5);
+        ASSERT(result4.approx_equal({ { -2.5f, 1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f } }));
+        const auto result5 = r1.edge_intersections(r6);
+        ASSERT(result5.approx_equal({ { -4.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, 1.0f } }));
+        const auto result6 = r_degen_line.edge_intersections(r2);
+        ASSERT(result6.empty());
+        const auto result7 = r_degen_line.edge_intersections(r7);
+        ASSERT(result7.approx_equal({ { -3.5f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } }));
+        const auto result8 = r_degen_point.edge_intersections(r2);
+        ASSERT(result8.empty());
+        const auto result9 = r_degen_point.edge_intersections(r6);
+        ASSERT(result9.approx_equal({ { -2.5f, 1.0f, 1.0f } }));
     }
 }
 
