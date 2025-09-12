@@ -4499,6 +4499,105 @@ void sphere_tests()
     }
 }
 
+void aligned_box_tests()
+{
+    test_case("AlignedBox");
+
+    test_section("AlignedBox()");
+    {
+        constexpr nnm::AlignedBoxF b1 {};
+        ASSERT(b1.min.approx_zero());
+        ASSERT(b1.max.approx_zero());
+    }
+
+    test_section("AlignedBox(const Vector3&, const Vector3&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        ASSERT(b1.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b1.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+    }
+
+    test_section("from_bounding_points");
+    {
+        constexpr auto b1 = nnm::AlignedBoxF::from_bounding_points({ 1.0f, -2.0f, 3.0f }, { 1.0f, -2.0f, 3.0f });
+        ASSERT(b1.min.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(b1.max.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        constexpr auto b2 = nnm::AlignedBoxF::from_bounding_points({ -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f });
+        ASSERT(b2.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b2.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+        constexpr auto b3 = nnm::AlignedBoxF::from_bounding_points({ -1.0f, 2.0f, 0.5f }, { 2.0f, -3.0f, 4.0f });
+        ASSERT(b3.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b3.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+        constexpr auto b4 = nnm::AlignedBoxF::from_bounding_points({ 2.0f, 2.0f, 4.0f }, { -1.0f, -3.0f, 0.5f });
+        ASSERT(b4.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b4.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+    }
+
+    test_section("from_bounding_segment");
+    {
+        constexpr auto b1 = nnm::AlignedBoxF::from_bounding_segment({ { 1.0f, -2.0f, 3.0f }, { 1.0f, -2.0f, 3.0f } });
+        ASSERT(b1.min.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(b1.max.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        constexpr auto b2 = nnm::AlignedBoxF::from_bounding_segment({ { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } });
+        ASSERT(b2.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b2.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+        constexpr auto b3 = nnm::AlignedBoxF::from_bounding_segment({ { -1.0f, 2.0f, 0.5f }, { 2.0f, -3.0f, 4.0f } });
+        ASSERT(b3.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b3.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+        constexpr auto b4 = nnm::AlignedBoxF::from_bounding_segment({ { 2.0f, 2.0f, 4.0f }, { -1.0f, -3.0f, 0.5f } });
+        ASSERT(b4.min.approx_equal({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(b4.max.approx_equal({ 2.0f, 2.0f, 4.0f }));
+    }
+
+    test_section("from_bounding_triangle");
+    {
+        constexpr auto b1 = nnm::AlignedBoxF::from_bounding_triangle({});
+        ASSERT(b1.min.approx_zero());
+        ASSERT(b1.max.approx_zero());
+        constexpr auto b2 = nnm::AlignedBoxF::from_bounding_triangle(
+            { { -1.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } });
+        ASSERT(b2.min.approx_equal({ -1.0f, 0.0f, 0.0f }));
+        ASSERT(b2.max.approx_equal({ 1.0f, 0.0f, 0.0f }));
+        constexpr auto b3 = nnm::AlignedBoxF::from_bounding_triangle(
+            { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f } });
+        ASSERT(b3.min.approx_equal({ 0.0f, 0.0f, 0.0f }));
+        ASSERT(b3.max.approx_equal({ 0.0f, 1.0f, 1.0f }));
+        constexpr auto b4 = nnm::AlignedBoxF::from_bounding_triangle(
+            { { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f }, { -1.0f, -1.0f, 1.0f } });
+        ASSERT(b4.min.approx_equal({ -1.0f, -1.0f, 0.0f }));
+        ASSERT(b4.max.approx_equal({ 1.0f, 1.0f, 1.0f }));
+    }
+
+    test_section("from_bounding_rectangle");
+    {
+        constexpr auto b1 = nnm::AlignedBoxF::from_bounding_rectangle({});
+        ASSERT(b1.min.approx_zero());
+        ASSERT(b1.max.approx_zero());
+        constexpr auto b2 = nnm::AlignedBoxF::from_bounding_rectangle(
+            { { -2.5f, 0.0f, 0.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } });
+        ASSERT(b2.min.approx_equal({ -4.0f, 0.0f, 0.0f }));
+        ASSERT(b2.max.approx_equal({ -1.0f, 0.0f, 0.0f }));
+        constexpr auto b3 = nnm::AlignedBoxF::from_bounding_rectangle(
+            { { 1.0f, 1.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.5f, 0.0f } });
+        ASSERT(b3.min.approx_equal({ 0.0f, 0.5f, 1.0f }));
+        ASSERT(b3.max.approx_equal({ 2.0f, 1.5f, 1.0f }));
+        constexpr auto b4 = nnm::AlignedBoxF::from_bounding_rectangle(
+            { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } });
+        ASSERT(b4.min.approx_equal({ -4.0f, 0.0f, 0.0f }));
+        ASSERT(b4.max.approx_equal({ -1.0f, 2.0f, 2.0f }));
+    }
+
+    test_section("from_bounding_sphere");
+    {
+        constexpr auto b1 = nnm::AlignedBoxF::from_bounding_sphere({});
+        ASSERT(b1.min.approx_equal({ -1.0f, -1.0f, -1.0f }));
+        ASSERT(b1.max.approx_equal({ 1.0f, 1.0f, 1.0f }));
+        constexpr auto b2 = nnm::AlignedBoxF::from_bounding_sphere({ { 1.0f, -2.0f, 3.0f }, 0.0f });
+        ASSERT(b2.min.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(b2.max.approx_equal({ 1.0f, -2.0f, 3.0f }));
+    }
+}
+
 void geom3_tests()
 {
     intersections3_tests();
@@ -4509,4 +4608,5 @@ void geom3_tests()
     triangle3_tests();
     rectangle3_tests();
     sphere_tests();
+    aligned_box_tests();
 }

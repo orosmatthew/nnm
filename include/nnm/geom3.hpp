@@ -5603,21 +5603,46 @@ public:
 template <typename Real>
 class AlignedBox {
 public:
+    /**
+     * Minimum corner point.
+     */
     Vector3<Real> min;
+
+    /**
+     * Maximum corner point.
+     */
     Vector3<Real> max;
 
+    /**
+     * Default initialize with zero min and max.
+     */
+    // tested
     constexpr AlignedBox()
         : min { Vector3<Real>::zero() }
         , max { Vector3<Real>::zero() }
     {
     }
 
+    /**
+     * Initialize with min and max. No validation to ensure min/max is done.
+     * Use from_bounding_points if validation is desired.
+     * @param min Minimum corner point.
+     * @param max Maximum corner point.
+     */
+    // tested
     constexpr AlignedBox(const Vector3<Real>& min, const Vector3<Real>& max)
         : min { min }
         , max { max }
     {
     }
 
+    /**
+     * The smallest bounding box containing two points.
+     * @param point1 First point.
+     * @param point2 Second point.
+     * @return Result.
+     */
+    // tested
     static constexpr AlignedBox from_bounding_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
     {
         AlignedBox box { point1, point1 };
@@ -5625,11 +5650,23 @@ public:
         return box;
     }
 
+    /**
+     * The smallest bounding box containing a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     static constexpr AlignedBox from_bounding_segment(const Segment3<Real>& segment)
     {
         return from_bounding_points(segment.start, segment.end);
     }
 
+    /**
+     * The smallest bounding box containing a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     static constexpr AlignedBox from_bounding_triangle(const Triangle3<Real>& triangle)
     {
         AlignedBox box { triangle.vertices[0], triangle.vertices[0] };
@@ -5638,6 +5675,12 @@ public:
         return box;
     }
 
+    /**
+     * The smallest bounding box containing a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
     static constexpr AlignedBox from_bounding_rectangle(const Rectangle3<Real>& rectangle)
     {
         std::array<Vector3<Real>, 4> vertices {
