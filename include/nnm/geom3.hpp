@@ -5620,13 +5620,9 @@ public:
 
     static constexpr AlignedBox from_bounding_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
     {
-        const Vector3<Real> min {
-            nnm::min(point1.x, point2.x), nnm::min(point1.y, point2.y), nnm::min(point1.z, point2.z)
-        };
-        const Vector3<Real> max {
-            nnm::max(point1.x, point2.x), nnm::max(point1.y, point2.y), nnm::max(point1.z, point2.z)
-        };
-        return { min, max };
+        AlignedBox box { point1, point1 };
+        box = box.extend_bounding(point2);
+        return box;
     }
 
     static constexpr AlignedBox from_bounding_segment(const Segment3<Real>& segment)
@@ -5636,17 +5632,22 @@ public:
 
     static constexpr AlignedBox from_bounding_triangle(const Triangle3<Real>& triangle)
     {
-        auto min = Vector3<Real>::all(std::numeric_limits<Real>::max());
-        auto max = Vector3<Real>::all(std::numeric_limits<Real>::lowest());
-        for (const Vector2<Real>& v : triangle.vertices) {
-            min.x = nnm::min(min.x, v.x);
-            min.y = nnm::min(min.y, v.y);
-            min.z = nnm::min(min.z, v.z);
-            max.x = nnm::max(max.x, v.x);
-            max.y = nnm::max(max.y, v.y);
-            max.z = nnm::max(max.z, v.z);
-        }
-        return { min, max };
+        AlignedBox box { triangle.vertices[0], triangle.vertices[0] };
+        box = box.extend_bounding(triangle.vertices[1]);
+        box = box.extend_bounding(triangle.vertices[2]);
+        return box;
+    }
+
+    static constexpr AlignedBox from_bounding_rectangle(const Rectangle3<Real>& rectangle)
+    {
+        std::array<Vector3<Real>, 4> vertices {
+            rectangle.vertex(0), rectangle.vertex(1), rectangle.vertex(2), rectangle.vertex(3)
+        };
+        AlignedBox box { vertices[0], vertices[0] };
+        box = box.extend_bounding(vertices[1]);
+        box = box.extend_bounding(vertices[2]);
+        box = box.extend_bounding(vertices[3]);
+        return box;
     }
 
     static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere)
@@ -5656,104 +5657,90 @@ public:
         return { min, max };
     }
 
-    [[nodiscard]] constexpr Vector3<Real> vertex_nx_ny_nz() const
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
     {
-        return min;
+        NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 8);
+        switch (index) {
+        case 0: // -x -y -z
+            return min;
+        case 1: // -x -y +z
+            return { min.x, min.y, max.z };
+        case 2: // -x +y -z
+            return { min.x, max.y, min.z };
+        case 3: // -x +y +z
+            return { min.x, max.y, max.z };
+        case 4: // +x -y -z
+            return { max.x, min.y, min.z };
+        case 5: // +x -y +z
+            return { max.x, min.y, max.z };
+        case 6: // +x +y -z
+            return { max.x, max.y, min.z };
+        default: // +x +y +z
+            return max;
+        }
     }
 
-    [[nodiscard]] constexpr Vector3<Real> vertex_nx_ny_pz() const
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
-        return { min.x, min.y, max.z };
+        NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 12);
+        switch (index) {
+        case 0: // -x -y
+            return { vertex(0), vertex(1) };
+        case 1: // -x +y
+            return { vertex(2), vertex(3) };
+        case 2: // +x -y
+            return { vertex(4), vertex(5) };
+        case 3: // +x +y
+            return { vertex(6), vertex(7) };
+        case 4: // -x -z
+            return { vertex(0), vertex(2) };
+        case 5: // -x +z
+            return { vertex(1), vertex(3) };
+        case 6: // +x -z
+            return { vertex(4), vertex(6) };
+        case 7: // +x +z
+            return { vertex(5), vertex(7) };
+        case 8: // -y -z
+            return { vertex(0), vertex(4) };
+        case 9: // -y +z
+            return { vertex(1), vertex(5) };
+        case 10: // +y -z
+            return { vertex(2), vertex(6) };
+        default: // +y +z
+            return { vertex(3), vertex(7) };
+        }
     }
 
-    [[nodiscard]] constexpr Vector3<Real> vertex_nx_py_nz() const
+    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
     {
-        return { min.x, max.y, min.z };
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> vertex_nx_py_pz() const
-    {
-        return { min.x, max.y, max.z };
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> vertex_px_ny_nz() const
-    {
-        return { max.x, min.y, min.z };
-    }
-
-    constexpr Vector3<Real> vertex_px_ny_pz() const
-    {
-        return { max.x, min.y, max.z };
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> vertex_px_py_nz() const
-    {
-        return { max.x, max.y, min.z };
-    }
-
-    [[nodiscard]] constexpr Vector3<Real> vertex_px_py_pz() const
-    {
-        return max;
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_nx_ny() const
-    {
-        return { vertex_nx_ny_nz(), vertex_nx_ny_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_nx_py() const
-    {
-        return { vertex_nx_py_nz(), vertex_nx_py_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_px_ny() const
-    {
-        return { vertex_px_ny_nz(), vertex_px_ny_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_px_py() const
-    {
-        return { vertex_px_py_nz(), vertex_px_py_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_nx_nz() const
-    {
-        return { vertex_nx_ny_nz(), vertex_nx_py_nz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_nx_pz() const
-    {
-        return { vertex_nx_ny_pz(), vertex_nx_py_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_px_nz() const
-    {
-        return { vertex_px_ny_nz(), vertex_px_py_nz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_px_pz() const
-    {
-        return { vertex_px_ny_pz(), vertex_px_py_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_ny_nz() const
-    {
-        return { vertex_nx_ny_nz(), vertex_px_ny_nz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_ny_pz() const
-    {
-        return { vertex_nx_ny_pz(), vertex_px_ny_pz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_py_nz() const
-    {
-        return { vertex_nx_py_nz(), vertex_px_py_nz() };
-    }
-
-    [[nodiscard]] constexpr Segment3<Real> edge_py_pz() const
-    {
-        return { vertex_nx_py_pz(), vertex_px_py_pz() };
+        NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 6);
+        constexpr Vector3<Real> half_size = size() / static_cast<Real>(2);
+        switch (index) {
+        case 0: // -x
+            return { Segment3<Real> { vertex(0), vertex(3) }.midpoint(),
+                     Vector3<Real>::axis_y() * half_size.y,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 1: // +x
+            return { Segment3<Real> { vertex(4), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_y() * half_size.y,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 2: // -y
+            return { Segment3<Real> { vertex(0), vertex(5) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 3: // +y
+            return { Segment3<Real> { vertex(2), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 4: // -z
+            return { Segment3<Real> { vertex(0), vertex(6) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_y() * half_size.y };
+        default: // +z
+            return { Segment3<Real> { vertex(1), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_y() * half_size.y };
+        }
     }
 
     [[nodiscard]] constexpr Vector3<Real> size() const
@@ -5771,6 +5758,12 @@ public:
     {
         const Vector3<Real> s = size();
         return static_cast<Real>(2) * (s.x * s.y + s.x * s.z + s.y * s.z);
+    }
+
+    [[nodiscard]] constexpr AlignedBox extend_bounding(const Vector3<Real>& point) const
+    {
+        return { { nnm::min(min.x, point.x), nnm::min(min.y, point.y), nnm::min(min.z, point.z) },
+                 { nnm::max(max.x, point.x), nnm::max(max.y, point.y), nnm::max(max.z, point.z) } };
     }
 
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
