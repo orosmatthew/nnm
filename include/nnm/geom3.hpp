@@ -4939,6 +4939,12 @@ public:
         return { center.scale(factor), half_span_u.scale(factor), half_span_v.scale(factor) };
     }
 
+    /**
+     * Determine if this rectangle's vertices match another rectangle's vertices order independent.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool coincident(const Rectangle3& other) const
     {
         std::array<Vector3<Real>, 4> verts { vertex(0), vertex(1), vertex(2), vertex(3) };
@@ -4953,23 +4959,47 @@ public:
         return true;
     }
 
-    [[nodiscard]] bool approx_equal(const Rectangle3& other) const
+    /**
+     * Determine if all members are approximately equal to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool approx_equal(const Rectangle3& other) const
     {
         return center.approx_equal(other.center) && half_span_u.approx_equal(other.half_span_u)
             && half_span_v.approx_equal(other.half_span_v);
     }
 
-    [[nodiscard]] bool operator==(const Rectangle3& other) const
+    /**
+     * Determine if all members are exactly equal to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator==(const Rectangle3& other) const
     {
         return center == other.center && half_span_u == other.half_span_u && half_span_v == other.half_span_v;
     }
 
-    [[nodiscard]] bool operator!=(const Rectangle3& other) const
+    /**
+     * Determine if any members are not exactly equal to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator!=(const Rectangle3& other) const
     {
         return center != other.center || half_span_u != other.half_span_u || half_span_v != other.half_span_v;
     }
 
-    [[nodiscard]] bool operator<(const Rectangle3& other) const
+    /**
+     * Lexicographical comparison in the order of center, half_span_u, then half_span_v.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator<(const Rectangle3& other) const
     {
         if (center != other.center) {
             return center < other.center;

@@ -3939,6 +3939,66 @@ inline void rectangle3_tests()
         ASSERT(
             r1_s.approx_equal({ r1.center.scale(factor), r1.half_span_u.scale(factor), r1.half_span_v.scale(factor) }));
     }
+
+    test_section("coincident");
+    {
+        const auto result1 = r1.coincident(r1);
+        ASSERT(result1);
+        const auto result2 = r1.coincident(r2);
+        ASSERT_FALSE(result2);
+        const auto result3 = r1.coincident({ { -2.5f, 1.0f, 1.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } });
+        ASSERT(result3);
+        const auto result4 = r1.coincident({ { -2.5f, 1.0f, 1.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, -1.0f, -1.0f } });
+        ASSERT(result4);
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr auto result1 = r1.approx_equal(r1);
+        ASSERT(result1);
+        constexpr auto result2 = r1.approx_equal(r2);
+        ASSERT_FALSE(result2);
+        constexpr auto result3 = r2.approx_equal(r2);
+        ASSERT(result3);
+    }
+
+    test_section("operator==");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result1 = r1 == r1;
+        ASSERT(result1);
+        constexpr auto result2 = r1 == r2;
+        ASSERT_FALSE(result2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result3 = r2 == r2;
+        ASSERT(result3);
+    }
+
+    test_section("operator!=");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result1 = r1 != r1;
+        ASSERT_FALSE(result1);
+        constexpr auto result2 = r1 != r2;
+        ASSERT(result2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result3 = r2 != r2;
+        ASSERT_FALSE(result3);
+    }
+
+    test_section("operator<");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result1 = r1 < r1;
+        ASSERT_FALSE(result1);
+        constexpr auto result2 = r1 < r2;
+        ASSERT(result2);
+        constexpr auto result3 = r2 < r1;
+        ASSERT_FALSE(result3);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr auto result4 = r2 < r2;
+        ASSERT_FALSE(result4);
+    }
 }
 
 void sphere_tests()
