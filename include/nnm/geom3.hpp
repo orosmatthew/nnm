@@ -5693,6 +5693,12 @@ public:
         return box;
     }
 
+    /**
+     * The smallest bounding box containing a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
     static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere)
     {
         const Vector3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
@@ -5700,6 +5706,12 @@ public:
         return { min, max };
     }
 
+    /**
+     * Vertex at an index.
+     * @param index Index from 0-7.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 8);
@@ -5723,6 +5735,11 @@ public:
         }
     }
 
+    /**
+     * Edge at an index.
+     * @param index Index from 0-11.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 12);
@@ -5754,10 +5771,16 @@ public:
         }
     }
 
+    /**
+     * Face at an index.
+     * @param index Index from 0-5.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("AlignedBox", index < 6);
-        constexpr Vector3<Real> half_size = size() / static_cast<Real>(2);
+        const Vector3<Real> half_size = size() / static_cast<Real>(2);
         switch (index) {
         case 0: // -x
             return { Segment3<Real> { vertex(0), vertex(3) }.midpoint(),
@@ -5786,6 +5809,11 @@ public:
         }
     }
 
+    /**
+     * Size.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> size() const
     {
         return max - min;

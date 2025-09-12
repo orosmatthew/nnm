@@ -4,6 +4,9 @@
 
 #include "test.hpp"
 
+#include <algorithm>
+#include <vector>
+
 // ReSharper disable once CppDFATimeOver
 
 inline void intersections3_tests()
@@ -4595,6 +4598,145 @@ void aligned_box_tests()
         constexpr auto b2 = nnm::AlignedBoxF::from_bounding_sphere({ { 1.0f, -2.0f, 3.0f }, 0.0f });
         ASSERT(b2.min.approx_equal({ 1.0f, -2.0f, 3.0f }));
         ASSERT(b2.max.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        constexpr auto b3 = nnm::AlignedBoxF::from_bounding_sphere({ { 1.0f, -2.0f, 3.0f }, 1.5f });
+        ASSERT(b3.min.approx_equal({ -0.5f, -3.5f, 1.5f }));
+        ASSERT(b3.max.approx_equal({ 2.5f, -0.5f, 4.5f }));
+    }
+
+    constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+
+    test_section("vertex");
+    {
+        std::vector<nnm::Vector3f> vertices;
+        constexpr nnm::Vector3f v0 = b1.vertex(0);
+        vertices.push_back(v0);
+        constexpr nnm::Vector3f v1 = b1.vertex(1);
+        vertices.push_back(v1);
+        constexpr nnm::Vector3f v2 = b1.vertex(2);
+        vertices.push_back(v2);
+        constexpr nnm::Vector3f v3 = b1.vertex(3);
+        vertices.push_back(v3);
+        constexpr nnm::Vector3f v4 = b1.vertex(4);
+        vertices.push_back(v4);
+        constexpr nnm::Vector3f v5 = b1.vertex(5);
+        vertices.push_back(v5);
+        constexpr nnm::Vector3f v6 = b1.vertex(6);
+        vertices.push_back(v6);
+        constexpr nnm::Vector3f v7 = b1.vertex(7);
+        vertices.push_back(v7);
+
+        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+            return std::find_if(
+                       vertices.begin(),
+                       vertices.end(),
+                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                != vertices.end();
+        };
+
+        ASSERT(vertices_contains_approx({ -1.0f, -3.0f, 4.0f }));
+        ASSERT(vertices_contains_approx({ 2.0f, -3.0f, 4.0f }));
+        ASSERT(vertices_contains_approx({ -1.0f, -3.0f, 0.5f }));
+        ASSERT(vertices_contains_approx({ 2.0f, -3.0f, 0.5f }));
+        ASSERT(vertices_contains_approx({ -1.0f, 2.0f, 4.0f }));
+        ASSERT(vertices_contains_approx({ 2.0f, 2.0f, 4.0f }));
+        ASSERT(vertices_contains_approx({ -1.0f, 2.0f, 0.5f }));
+        ASSERT(vertices_contains_approx({ 2.0f, 2.0f, 0.5f }));
+    }
+
+    test_section("edge");
+    {
+        std::vector<nnm::Segment3f> edges;
+        constexpr nnm::Segment3f e0 = b1.edge(0);
+        edges.push_back(e0);
+        constexpr nnm::Segment3f e1 = b1.edge(1);
+        edges.push_back(e1);
+        constexpr nnm::Segment3f e2 = b1.edge(2);
+        edges.push_back(e2);
+        constexpr nnm::Segment3f e3 = b1.edge(3);
+        edges.push_back(e3);
+        constexpr nnm::Segment3f e4 = b1.edge(4);
+        edges.push_back(e4);
+        constexpr nnm::Segment3f e5 = b1.edge(5);
+        edges.push_back(e5);
+        constexpr nnm::Segment3f e6 = b1.edge(6);
+        edges.push_back(e6);
+        constexpr nnm::Segment3f e7 = b1.edge(7);
+        edges.push_back(e7);
+        constexpr nnm::Segment3f e8 = b1.edge(8);
+        edges.push_back(e8);
+        constexpr nnm::Segment3f e9 = b1.edge(9);
+        edges.push_back(e9);
+        constexpr nnm::Segment3f e10 = b1.edge(10);
+        edges.push_back(e10);
+        constexpr nnm::Segment3f e11 = b1.edge(11);
+        edges.push_back(e11);
+
+        auto edges_contains_coincident = [&edges](const nnm::Segment3f& edge) {
+            return std::find_if(
+                       edges.begin(), edges.end(), [&edge](const nnm::Segment3f& e) { return e.coincident(edge); })
+                != edges.end();
+        };
+
+        ASSERT(edges_contains_coincident({ { -1.0f, -3.0f, 4.0f }, { -1.0f, -3.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { -1.0f, -3.0f, 4.0f }, { 2.0f, -3.0f, 4.0f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, -3.0f, 4.0f }, { 2.0f, -3.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, -3.0f, 0.5f }, { -1.0f, -3.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { -1.0f, 2.0f, 4.0f }, { -1.0f, -3.0f, 4.0f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, 2.0f, 4.0f }, { 2.0f, -3.0f, 4.0f } }));
+        ASSERT(edges_contains_coincident({ { -1.0f, 2.0f, 0.5f }, { -1.0f, -3.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, 2.0f, 0.5f }, { 2.0f, -3.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, 2.0f, 4.0f }, { 2.0f, 2.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, 2.0f, 4.0f }, { -1.0f, 2.0f, 4.0f } }));
+        ASSERT(edges_contains_coincident({ { -1.0f, 2.0f, 4.0f }, { -1.0f, 2.0f, 0.5f } }));
+        ASSERT(edges_contains_coincident({ { 2.0f, 2.0f, 0.5f }, { -1.0f, 2.0f, 0.5f } }));
+    }
+
+    test_section("face");
+    {
+        std::vector<nnm::Rectangle3f> faces;
+        constexpr nnm::Rectangle3f f0 = b1.face(0);
+        faces.push_back(f0);
+        constexpr nnm::Rectangle3f f1 = b1.face(1);
+        faces.push_back(f1);
+        constexpr nnm::Rectangle3f f2 = b1.face(2);
+        faces.push_back(f2);
+        constexpr nnm::Rectangle3f f3 = b1.face(3);
+        faces.push_back(f3);
+        constexpr nnm::Rectangle3f f4 = b1.face(4);
+        faces.push_back(f4);
+        constexpr nnm::Rectangle3f f5 = b1.face(5);
+        faces.push_back(f5);
+
+        auto faces_contains_coincident = [&faces](const nnm::Rectangle3f& face) {
+            return std::find_if(
+                       faces.begin(), faces.end(), [&face](const nnm::Rectangle3f& f) { return f.coincident(face); })
+                != faces.end();
+        };
+
+        ASSERT(faces_contains_coincident({ { 0.5f, 2.0f, 2.25f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.75f } }));
+        ASSERT(faces_contains_coincident({ { -1.0f, -0.5f, 2.25f }, { 0.0f, 2.5f, 0.0f }, { 0.0f, 0.0f, 1.75f } }));
+        ASSERT(faces_contains_coincident({ { 0.5f, -3.0f, 2.25f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.75f } }));
+        ASSERT(faces_contains_coincident({ { 2.0f, -0.5f, 2.25f }, { 0.0f, 2.5f, 0.0f }, { 0.0f, 0.0f, 1.75f } }));
+        ASSERT(faces_contains_coincident({ { 0.5f, -0.5f, 4.0f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 2.5f, 0.0f } }));
+        ASSERT(faces_contains_coincident({ { 0.5f, -0.5f, 0.5f }, { 1.5f, 0.0f, 0.0f }, { 0.0f, 2.5f, 0.0f } }));
+    }
+
+    test_section("size");
+    {
+        constexpr auto s = b1.size();
+        ASSERT(s.approx_equal({ 3.0f, 5.0f, 3.5f }));
+    }
+
+    test_section("volume");
+    {
+        constexpr auto v = b1.volume();
+        ASSERT(nnm::approx_equal(v, 52.5f));
+    }
+
+    test_section("surface_area");
+    {
+        constexpr auto s = b1.surface_area();
+        ASSERT(nnm::approx_equal(s, 86.0f));
     }
 }
 
