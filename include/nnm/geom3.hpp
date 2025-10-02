@@ -5819,24 +5819,46 @@ public:
         return max - min;
     }
 
+    /**
+     * Volume.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real volume() const
     {
         const Vector3<Real> s = size();
         return s.x * s.y * s.z;
     }
 
+    /**
+     * Surface area.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real surface_area() const
     {
         const Vector3<Real> s = size();
         return static_cast<Real>(2) * (s.x * s.y + s.x * s.z + s.y * s.z);
     }
 
+    /**
+     * Extend box to fit a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr AlignedBox extend_bounding(const Vector3<Real>& point) const
     {
         return { { nnm::min(min.x, point.x), nnm::min(min.y, point.y), nnm::min(min.z, point.z) },
                  { nnm::max(max.x, point.x), nnm::max(max.y, point.y), nnm::max(max.z, point.z) } };
     }
 
+    /**
+     * Determine if contains point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         return approx_greater_equal(point.x, min.x) && approx_less_equal(point.x, max.x)
@@ -5844,10 +5866,16 @@ public:
             && approx_greater_equal(point.z, min.z) && approx_less_equal(point.z, max.z);
     }
 
-    // [[nodiscard]] constexpr bool signed_distance(const Vector3<Real>& point) const
-    // {
-
-    // }
+    /**
+     * Determine min and max are approximately equal to another aligned box.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool approx_equal(const AlignedBox& other) const
+    {
+        return min.approx_equal(other.min) && max.approx_equal(other.max);
+    }
 };
 
 template <typename Real>

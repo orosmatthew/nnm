@@ -4738,6 +4738,42 @@ void aligned_box_tests()
         constexpr auto s = b1.surface_area();
         ASSERT(nnm::approx_equal(s, 86.0f));
     }
+
+    test_section("extend_bounding");
+    {
+        constexpr auto r1 = b1.extend_bounding(nnm::Vector3f::zero());
+        ASSERT(r1.approx_equal({ { -1.0f, -3.0f, 0.0f }, { 2.0f, 2.0f, 4.0f } }));
+        constexpr auto r2 = b1.extend_bounding({ 1.0f, 1.0f, 1.0f });
+        ASSERT(r2.approx_equal(b1));
+        constexpr auto r3 = b1.extend_bounding({ 100.0f, 200.0f, 300.0f });
+        ASSERT(r3.approx_equal({ b1.min, { 100.0f, 200.0f, 300.0f } }));
+        constexpr auto r4 = b1.extend_bounding({ -100.0f, -200.0f, -300.0f });
+        ASSERT(r4.approx_equal({ { -100.0f, -200.0f, -300.0f }, b1.max }));
+    }
+
+    test_section("contains");
+    {
+        constexpr auto r1 = b1.contains(nnm::Vector3f::zero());
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = b1.contains(b1.min);
+        ASSERT(r2);
+        constexpr auto r3 = b1.contains({ 1.0f, 1.0f, 1.0f });
+        ASSERT(r3);
+        constexpr auto r4 = b1.contains({ 100.0f, 200.0f, 300.0f });
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr auto r1 = b1.approx_equal(b1);
+        ASSERT(r1);
+        constexpr auto r2 = b1.approx_equal({ { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } });
+        ASSERT(r2);
+        constexpr auto r3 = b1.approx_equal({ { -1.0f, -3.0f, 0.5f }, { 2.0f, 1.0f, 4.0f } });
+        ASSERT_FALSE(r3);
+        constexpr auto r4 = b1.approx_equal({ { 1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } });
+        ASSERT_FALSE(r4);
+    }
 }
 
 void geom3_tests()
