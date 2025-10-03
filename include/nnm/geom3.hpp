@@ -5773,7 +5773,7 @@ public:
 
     /**
      * Face at an index.
-     * @param index Index from 0-5.
+     * @param index Index from [0-5].
      * @return Result.
      */
     // tested
@@ -5865,6 +5865,263 @@ public:
             && approx_greater_equal(point.y, min.y) && approx_less_equal(point.y, max.y)
             && approx_greater_equal(point.z, min.z) && approx_less_equal(point.z, max.z);
     }
+
+    [[nodiscard]] constexpr Vector3<Real> center() const
+    {
+        return min.lerp(max, static_cast<Real>(0.5));
+    }
+
+    [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
+    {
+        Real min_dist_sqrd = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist_sqrd = face(i).distance_sqrd(i);
+            min_dist_sqrd = nnm::min(min_dist_sqrd, dist_sqrd);
+        }
+        const Real dist = sqrt(min_dist_sqrd);
+        return contains(point) ? -dist : dist;
+    }
+
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        if (contains(point)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist_sqrd = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist_sqrd = face(i).distance_sqrd(i);
+            min_dist_sqrd = nnm::min(min_dist_sqrd, dist_sqrd);
+        }
+        return min_dist_sqrd;
+    }
+
+    [[nodiscard]] Real distance(const Vector3<Real>& point) const
+    {
+        return sqrt(distance_sqrd(point));
+    }
+
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(line);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(ray);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
+    {
+        if (contains(segment.start) || contains(segment.end)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(segment);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(plane);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
+    {
+        for (uint8_t i = 0; i < 3; ++i) {
+            if (contains(triangle.vertices[i])) {
+                return static_cast<Real>(0);
+            }
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(triangle);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const
+    {
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (contains(rectangle.vertex(i))) {
+                return static_cast<Real>(0);
+            }
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(rectangle);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const
+    {
+        if (contains(sphere.center)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(sphere);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] Real distance(const AlignedBox& other) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = distance(other.face(i));
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
+    {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Line3<Real>& line) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 6; ++i) {
+            const std::optional<Vector3<Real>> inter = face(i).intersection(line);
+            if (inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
+    {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(ray)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 6; ++i) {
+            const std::optional<Vector3<Real>> inter = face(i).intersection(ray);
+            if (inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
+    {
+        if (contains(segment.start) || contains(segment.end)) {
+            return true;
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 6; ++i) {
+            const std::optional<Vector3<Real>> inter = face(i).intersection(segment);
+            if (inter.has_value()) {
+                inters.insert(*inter);
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
+    {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(plane)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Plane<Real>& plane) const
+    {
+        Real max_pos_dist = std::numeric_limits<Real>::lowest();
+        Real max_neg_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 8; ++i) {
+            const Vector3<Real> diff = vertex(i) - plane.origin;
+            const Real signed_dist = diff.dot(plane.normal);
+            max_pos_dist = nnm::max(max_pos_dist, signed_dist);
+            max_neg_dist = nnm::min(max_neg_dist, signed_dist);
+        }
+        if (approx_less_zero(max_pos_dist) || approx_greater_zero(max_neg_dist)) {
+            return std::nullopt;
+        }
+        if (nnm::abs(max_neg_dist) > nnm::abs(max_pos_dist)) {
+            return plane.normal * max_pos_dist;
+        }
+        return -plane.normal * max_neg_dist;
+    }
+
+    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
+    {
+        for (uint8_t i = 0; i < 3; ++i) {
+            if (contains(triangle.vertices[i])) {
+                return true;
+            }
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(triangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Triangle3<Real>& triangle) const
+    // {
+    //
+    // }
 
     /**
      * Determine min and max are approximately equal to another aligned box.
