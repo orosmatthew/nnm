@@ -3700,6 +3700,8 @@ inline void rectangle3_tests()
         constexpr auto result12
             = r_degen_point.intersects(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
         ASSERT(result12);
+        constexpr auto result13 = r1.intersects(nnm::Segment3f { { -3.5f, 1.5f, 1.5f }, { -1.5f, 0.5f, 0.5f } });
+        ASSERT(result13);
     }
 
     test_section("intersection(const Segment3&)");
@@ -3833,23 +3835,23 @@ inline void rectangle3_tests()
 
     test_section("intersects(const Rectangle3&)");
     {
-        const auto result1 = r1.intersects(r2);
+        constexpr auto result1 = r1.intersects(r2);
         ASSERT_FALSE(result1);
-        const auto result2 = r1.intersects(r3);
+        constexpr auto result2 = r1.intersects(r3);
         ASSERT_FALSE(result2);
-        const auto result3 = r1.intersects(r4);
+        constexpr auto result3 = r1.intersects(r4);
         ASSERT(result3);
-        const auto result4 = r1.intersects(r5);
+        constexpr auto result4 = r1.intersects(r5);
         ASSERT(result4);
-        const auto result5 = r1.intersects(r6);
+        constexpr auto result5 = r1.intersects(r6);
         ASSERT(result5);
-        const auto result6 = r_degen_line.intersects(r2);
+        constexpr auto result6 = r_degen_line.intersects(r2);
         ASSERT_FALSE(result6);
-        const auto result7 = r_degen_line.intersects(r7);
+        constexpr auto result7 = r_degen_line.intersects(r7);
         ASSERT(result7);
-        const auto result8 = r_degen_point.intersects(r2);
+        constexpr auto result8 = r_degen_point.intersects(r2);
         ASSERT_FALSE(result8);
-        const auto result9 = r_degen_point.intersects(r6);
+        constexpr auto result9 = r_degen_point.intersects(r6);
         ASSERT(result9);
     }
 
@@ -4763,6 +4765,12 @@ void aligned_box_tests()
         ASSERT_FALSE(r4);
     }
 
+    test_section("center");
+    {
+        constexpr auto r1 = b1.center();
+        ASSERT(r1.approx_equal({ 0.5f, -0.5f, 2.25f }));
+    }
+
     test_section("approx_equal");
     {
         constexpr auto r1 = b1.approx_equal(b1);
@@ -4773,6 +4781,48 @@ void aligned_box_tests()
         ASSERT_FALSE(r3);
         constexpr auto r4 = b1.approx_equal({ { 1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } });
         ASSERT_FALSE(r4);
+    }
+
+    test_section("distance_sqrd");
+    {
+        constexpr float r1 = b1.distance_sqrd(nnm::Vector3f::zero());
+        ASSERT(nnm::approx_equal(r1, 0.25f));
+        constexpr float r2 = b1.distance_sqrd({ 1.0f, 1.0f, 0.5f });
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3 = b1.distance_sqrd({ 1.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(r3));
+        constexpr float r4 = b1.distance_sqrd({ 10.0f, 10.0f, 10.0f });
+        ASSERT(nnm::approx_equal(r4, 164.0f));
+    }
+
+    test_section("distance");
+    {
+        const float r1 = b1.distance(nnm::Vector3f::zero());
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2 = b1.distance({ 1.0f, 1.0f, 0.5f });
+        ASSERT(nnm::approx_zero(r2));
+        const float r3 = b1.distance({ 1.0f, 1.0f, 1.0f });
+        ASSERT(nnm::approx_zero(r3));
+        const float r4 = b1.distance({ 10.0f, 10.0f, 10.0f });
+        ASSERT(nnm::approx_equal(r4, 12.8062484749f));
+    }
+
+    test_section("intersects(const Line3&)");
+    {
+        constexpr auto r1 = b1.intersects(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = b1.intersects(nnm::Line3f::axis_z());
+        ASSERT(r2);
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        constexpr auto r1 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        ASSERT(r2);
+        constexpr auto r3 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        ASSERT_FALSE(r3);
     }
 }
 

@@ -4643,7 +4643,7 @@ public:
                     return true;
                 }
             }
-            return false;
+            return contains(segment.start) && contains(segment.end);
         }
         const Vector3<Real> diff = center - segment.start;
         const Vector3<Real> segment_dir = segment.direction_unnormalized();
@@ -4798,7 +4798,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Rectangle3& other) const
+    [[nodiscard]] constexpr bool intersects(const Rectangle3& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (intersects(other.edge(i))) {
@@ -5866,140 +5866,65 @@ public:
             && approx_greater_equal(point.z, min.z) && approx_less_equal(point.z, max.z);
     }
 
+    /**
+     * Center by volume.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> center() const
     {
-        return min.lerp(max, static_cast<Real>(0.5));
+        return (min + max) / static_cast<Real>(2);
     }
 
-    [[nodiscard]] Real signed_distance(const Vector3<Real>& point) const
-    {
-        Real min_dist_sqrd = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist_sqrd = face(i).distance_sqrd(i);
-            min_dist_sqrd = nnm::min(min_dist_sqrd, dist_sqrd);
-        }
-        const Real dist = sqrt(min_dist_sqrd);
-        return contains(point) ? -dist : dist;
-    }
-
+    /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
     {
-        if (contains(point)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist_sqrd = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist_sqrd = face(i).distance_sqrd(i);
-            min_dist_sqrd = nnm::min(min_dist_sqrd, dist_sqrd);
-        }
-        return min_dist_sqrd;
+        const Vector3<Real> closest = point.clamp(min, max);
+        return closest.distance_sqrd(point);
     }
 
+    /**
+     * Closest distance to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return sqrt(distance_sqrd(point));
     }
 
-    [[nodiscard]] Real distance(const Line3<Real>& line) const
-    {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(line);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
-    {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(ray);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const Segment3<Real>& segment) const
-    {
-        if (contains(segment.start) || contains(segment.end)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(segment);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
-    {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(plane);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
-    {
-        for (uint8_t i = 0; i < 3; ++i) {
-            if (contains(triangle.vertices[i])) {
-                return static_cast<Real>(0);
-            }
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(triangle);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const
-    {
-        for (uint8_t i = 0; i < 4; ++i) {
-            if (contains(rectangle.vertex(i))) {
-                return static_cast<Real>(0);
-            }
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(rectangle);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const
-    {
-        if (contains(sphere.center)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(sphere);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
-    [[nodiscard]] Real distance(const AlignedBox& other) const
-    {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = distance(other.face(i));
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
-    }
-
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         for (uint8_t i = 0; i < 6; ++i) {
             if (face(i).intersects(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
+    {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(ray)) {
                 return true;
             }
         }
@@ -6019,16 +5944,6 @@ public:
             }
         }
         return inters;
-    }
-
-    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
-    {
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (face(i).intersects(ray)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
@@ -6105,10 +6020,8 @@ public:
 
     [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
     {
-        for (uint8_t i = 0; i < 3; ++i) {
-            if (contains(triangle.vertices[i])) {
-                return true;
-            }
+        if (contains(triangle.centroid())) {
+            return true;
         }
         for (uint8_t i = 0; i < 6; ++i) {
             if (face(i).intersects(triangle)) {
@@ -6118,10 +6031,32 @@ public:
         return false;
     }
 
-    // [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Triangle3<Real>& triangle) const
-    // {
-    //
-    // }
+    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
+    {
+        if (contains(rectangle.center)) {
+            return true;
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] bool intersects(const Sphere<Real>& sphere) const
+    {
+        Vector3<Real> closest = sphere.center.clamp(min, max);
+        const Real center_dist_sqrd = (closest - sphere.center).length_sqrd();
+        return approx_less_equal(center_dist_sqrd, sqrd(sphere.radius));
+    }
+
+    [[nodiscard]] bool intersects(const AlignedBox& other) const
+    {
+        return approx_less_equal(min.x, other.max.x) && approx_less_equal(other.min.x, max.x)
+            && approx_less_equal(min.y, other.max.y) && approx_less_equal(other.min.y, max.y)
+            && approx_less_equal(min.z, other.max.z) && approx_less_equal(other.min.z, max.z);
+    }
 
     /**
      * Determine min and max are approximately equal to another aligned box.
