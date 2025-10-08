@@ -52,6 +52,10 @@ template <typename Real>
 class AlignedBox;
 using AlignedBoxF = AlignedBox<float>;
 using AlignedBoxD = AlignedBox<double>;
+template <typename Real>
+class Box;
+using BoxF = Box<float>;
+using BoxD = Box<double>;
 
 /**
  * Fixed capacity, stack allocated set of Vector3 points.
@@ -6251,6 +6255,149 @@ public:
             return min < other.min;
         }
         return max < other.max;
+    }
+};
+
+/**
+ * Oriented rectangle prism (cuboid) defined by a center and orthogonal half-spans.
+ * @tparam Real Floating-point type.
+ */
+template <typename Real>
+class Box {
+public:
+    /**
+     * Geometric center (centroid).
+     */
+    Vector3<Real> center;
+
+    /**
+     * Vector spanning from the center towards one of the box's dimensions face.
+     * Must be orthogonal to half_span_v and half_span_w.
+     */
+    Vector3<Real> half_span_u;
+
+    /**
+     * Vector spanning from the center towards one of the box's dimensions face.
+     * Must be orthogonal to half_span_u and half_span_w.
+     */
+    Vector3<Real> half_span_v;
+
+    /**
+     * Vector spanning from the center towards one of the box's dimensions face.
+     * Must be orthogonal to half_span_u and half_span_v.
+     */
+    Vector3<Real> half_span_w;
+
+    constexpr Box()
+        : center { Vector3<Real>::zero() }
+        , half_span_u { Vector3<Real>::zero() }
+        , half_span_w { Vector3<Real>::zero }
+    {
+    }
+
+    constexpr Box(
+        const Vector3<Real>& center,
+        const Vector3<Real>& half_span_u,
+        const Vector3<Real>& half_span_v,
+        const Vector3<Real>& half_span_w)
+        : center { center }
+        , half_span_u { half_span_u }
+        , half_span_v { half_span_v }
+        , half_span_w { half_span_w }
+    {
+    }
+
+    template <typename Other>
+    constexpr explicit Box(const Box<Other>& other)
+        : center { Vector3<Real>(other.center) }
+        , half_span_u { Vector3<Real>(other.half_span_u) }
+        , half_span_v { Vector3<Real>(other.half_span_v) }
+        , half_span_w { Vector3<Real>(other.half_span_w) }
+    {
+    }
+
+    constexpr static Box from_center_size(const Vector3<Real>& center, const Vector3<Real>& size)
+    {
+        return { center,
+                 Vector3<Real>::axis_x() * size.x / static_cast<Real>(2),
+                 Vector3<Real>::axis_y() * size.y / static_cast<Real>(2),
+                 Vector3<Real>::axis_z() * size.z / static_cast<Real>(2) };
+    }
+
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Box", index < 8);
+        switch (index) {
+        case 0:
+            return center - half_span_u - half_span_v - half_span_w;
+        case 1:
+            return center - half_span_u - half_span_v + half_span_w;
+        case 2:
+            return center - half_span_u + half_span_v - half_span_w;
+        case 3:
+            return center - half_span_u + half_span_v + half_span_w;
+        case 4:
+            return center + half_span_u - half_span_v - half_span_w;
+        case 5:
+            return center + half_span_u - half_span_v + half_span_w;
+        case 6:
+            return center + half_span_u + half_span_v - half_span_w;
+        case 7:
+        default:
+            return center + half_span_u + half_span_v + half_span_w;
+        }
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Box", index < 12);
+        switch (index) {
+        case 0: // -u -v
+            return { vertex(0), vertex(1) };
+        case 1: // -u +v
+            return { vertex(2), vertex(3) };
+        case 2: // +u -v
+            return { vertex(4), vertex(5) };
+        case 3: // +u +v
+            return { vertex(6), vertex(7) };
+        case 4: // -u -w
+            return { vertex(0), vertex(2) };
+        case 5: // -u +w
+            return { vertex(1), vertex(3) };
+        case 6: // +u -w
+            return { vertex(4), vertex(6) };
+        case 7: // +u +w
+            return { vertex(5), vertex(7) };
+        case 8: // -v -w
+            return { vertex(0), vertex(4) };
+        case 9: // -v +w
+            return { vertex(1), vertex(5) };
+        case 10: // +v -w
+            return { vertex(2), vertex(6) };
+        case 11: // +v +w
+        default:
+            return { vertex(3), vertex(7) };
+        }
+    }
+
+    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Box", index < 6);
+        switch (index) {
+        case 0: // -u
+            return { Segment3<Real>(vertex(0), vertex(3)).midpoint(), half_span_v, half_span_w };
+        case 1: // +u
+            return { Segment3<Real>(vertex(4), vertex(7)).midpoint(), half_span_v, half_span_w };
+        case 2: // -v
+            return { Segment3<Real>(vertex(0), vertex(5)).midpoint(), half_span_u, half_span_w };
+        case 3: // +v
+            return { Segment3<Real>(vertex(2), vertex(7)).midpoint(), half_span_u, half_span_w };
+        case 4: // -w
+            return { Segment3<Real>(vertex(0), vertex(6)).midpoint(), half_span_u, half_span_v };
+        case 5: // +w
+        default:
+            return { Segment3<Real>(vertex(1), vertex(7)).midpoint(), half_span_u, half_span_v };
+        }
     }
 };
 
