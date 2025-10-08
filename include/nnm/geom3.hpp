@@ -6216,6 +6216,42 @@ public:
     {
         return min.approx_equal(other.min) && max.approx_equal(other.max);
     }
+
+    /**
+     * Determine if min and max are exactly equal to another aligned box.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator==(const AlignedBox& other) const
+    {
+        return min == other.min && max == other.max;
+    }
+
+    /**
+     * Determine if min and max are not exactly equal to another aligned box.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator!=(const AlignedBox& other) const
+    {
+        return min != other.min || max != other.max;
+    }
+
+    /**
+     * Lexicographical comparison in the order of min then max.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool operator<(const AlignedBox& other) const
+    {
+        if (min != other.min) {
+            return min < other.min;
+        }
+        return max < other.max;
+    }
 };
 
 template <typename Real>

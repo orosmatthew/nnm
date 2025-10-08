@@ -5021,6 +5021,37 @@ void aligned_box_tests()
         constexpr nnm::AlignedBoxF r1 = b1.scale(factor);
         ASSERT(r1.approx_equal({ b1.min.scale(factor), b1.max.scale(factor) }));
     }
+
+    constexpr nnm::AlignedBoxF b2 { { -3.0f, -0.5f, 1.0f }, { 10.0f, 0.0f, 5.0f } };
+
+    test_section("operator==");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr bool r1 = b1 == b1;
+        ASSERT(r1);
+        constexpr bool r2 = b1 == b2;
+        ASSERT_FALSE(r2);
+    }
+
+    test_section("operator!=");
+    {
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr bool r1 = b1 != b1;
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1 != b2;
+        ASSERT(r2);
+    }
+
+    test_section("operator<");
+    {
+        constexpr bool r1 = b1 < b2;
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b2 < b1;
+        ASSERT(r2);
+        // ReSharper disable once CppIdenticalOperandsInBinaryExpression
+        constexpr bool r3 = b1 < b1;
+        ASSERT_FALSE(r3);
+    }
 }
 
 void geom3_tests()
