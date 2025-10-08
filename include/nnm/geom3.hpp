@@ -6030,6 +6030,12 @@ public:
             && approx_less_equal(min.z, other.max.z) && approx_less_equal(other.min.z, max.z);
     }
 
+    /**
+     * Surface intersection points with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Line3<Real>& line) const
     {
         Intersections3<Real> inters;
@@ -6045,6 +6051,12 @@ public:
         return inters;
     }
 
+    /**
+     * Surface intersection points with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
     {
         Intersections3<Real> inters;
@@ -6060,6 +6072,12 @@ public:
         return inters;
     }
 
+    /**
+     * Surface intersection points with a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
     {
         Intersections3<Real> inters;
@@ -6075,23 +6093,27 @@ public:
         return inters;
     }
 
-    [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Plane<Real>& plane) const
+    /**
+     * Aligned box formed by the intersection with another aligned box. Null if no intersection.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<AlignedBox> intersection(const AlignedBox& other) const
     {
-        Real max_pos_dist = std::numeric_limits<Real>::lowest();
-        Real max_neg_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 8; ++i) {
-            const Vector3<Real> diff = vertex(i) - plane.origin;
-            const Real signed_dist = diff.dot(plane.normal);
-            max_pos_dist = nnm::max(max_pos_dist, signed_dist);
-            max_neg_dist = nnm::min(max_neg_dist, signed_dist);
-        }
-        if (approx_less_zero(max_pos_dist) || approx_greater_zero(max_neg_dist)) {
+        const AlignedBox inter {
+            { nnm::max(min.x, other.min.x), nnm::max(min.y, other.min.y), nnm::max(min.z, other.min.z) },
+            { nnm::min(max.x, other.max.x), nnm::min(max.y, other.max.y), nnm::min(max.z, other.max.z) }
+        };
+        if (!inter.valid()) {
             return std::nullopt;
         }
-        if (nnm::abs(max_neg_dist) > nnm::abs(max_pos_dist)) {
-            return plane.normal * max_pos_dist;
-        }
-        return -plane.normal * max_neg_dist;
+        return inter;
+    }
+
+    [[nodiscard]] constexpr bool valid() const
+    {
+        return approx_less_equal(min.x, max.x) && approx_less_equal(min.y, max.y) && approx_less_equal(min.z, max.z);
     }
 
     /**

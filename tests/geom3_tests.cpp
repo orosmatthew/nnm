@@ -4900,6 +4900,71 @@ void aligned_box_tests()
         constexpr bool r4 = b1.intersects(nnm::AlignedBoxF({ -100.0f, -100.0f, -100.0f }, { 100.0f, 100.0f, 100.0f }));
         ASSERT(r4);
     }
+
+    test_section("surface_intersections(const Line3&)");
+    {
+        constexpr nnm::Intersections3f r1 = b1.surface_intersections(nnm::Line3f::axis_x());
+        ASSERT(r1.empty())
+        constexpr nnm::Intersections3f r2 = b1.surface_intersections(nnm::Line3f::axis_z());
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 0.5f }, { 0.0f, 0.0f, 4.0f } }));
+    }
+
+    test_section("surface_intersections(const Ray3&)");
+    {
+        constexpr nnm::Intersections3f r1
+            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2
+            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 4.0f }, { 0.0f, 0.0f, 0.5f } }));
+        constexpr nnm::Intersections3f r3
+            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        ASSERT(r3.empty());
+    }
+
+    test_section("surface_intersections(const Segment3&)");
+    {
+        constexpr nnm::Intersections3f r1
+            = b1.surface_intersections(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } });
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2
+            = b1.surface_intersections(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 0.5f } }));
+        constexpr nnm::Intersections3f r3
+            = b1.surface_intersections(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+        ASSERT(r3.approx_equal({ { 0.0f, 0.0f, 0.5f }, { 0.0f, 0.0f, 4.0f } }));
+        constexpr nnm::Intersections3f r4
+            = b1.surface_intersections(nnm::Segment3f { { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.5f } });
+        ASSERT(r4.empty());
+    }
+
+    test_section("intersection(const AlignedBox&)");
+    {
+        constexpr std::optional<nnm::AlignedBoxF> r1
+            = b1.intersection(nnm::AlignedBoxF({ -1.0f, -1.0f, -2.0f }, { 1.0f, 1.0f, 0.0f }));
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::AlignedBoxF> r2
+            = b1.intersection(nnm::AlignedBoxF({ -1.0f, -1.0f, -10.0f }, { 1.0f, 1.0f, 2.0f }));
+        ASSERT(r2.has_value() && r2->approx_equal({ { -1.0f, -1.0f, 0.5f }, { 1.0f, 1.0f, 2.0f } }));
+        constexpr std::optional<nnm::AlignedBoxF> r3
+            = b1.intersection(nnm::AlignedBoxF({ -0.5f, -1.0f, 1.0f }, { 1.0f, 2.0f, 3.0f }));
+        ASSERT(r3.has_value() && r3->approx_equal({ { -0.5f, -1.0f, 1.0f }, { 1.0f, 2.0f, 3.0f } }));
+        constexpr std::optional<nnm::AlignedBoxF> r4
+            = b1.intersection(nnm::AlignedBoxF({ -100.0f, -100.0f, -100.0f }, { 100.0f, 100.0f, 100.0f }));
+        ASSERT(r4.has_value() && r4->approx_equal({ { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } }));
+    }
+
+    test_section("valid");
+    {
+        constexpr bool r1 = b1.valid();
+        ASSERT(r1);
+        constexpr bool r2 = nnm::AlignedBoxF({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }).valid();
+        ASSERT(r2);
+        constexpr bool r3 = nnm::AlignedBoxF({ 1.0f, 1.0f, 1.0f }, { 1.0f, -1.0f, 2.0f }).valid();
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = nnm::AlignedBoxF({ 2.0f, 2.0f, 4.0f }, { -1.0f, -3.0f, 0.5f }).valid();
+        ASSERT_FALSE(r4);
+    }
 }
 
 void geom3_tests()
