@@ -4824,6 +4824,82 @@ void aligned_box_tests()
         constexpr auto r3 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
         ASSERT_FALSE(r3);
     }
+
+    test_section("intersects(const Segment3&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } });
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f } });
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f } });
+        ASSERT(r3);
+        constexpr bool r4 = b1.intersects(nnm::Segment3f { { 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.5f } });
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Plane&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::PlaneF::xy());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::PlaneF::xz());
+        ASSERT(r2);
+    }
+
+    test_section("intersects(const Triangle3&)");
+    {
+        const bool r1
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        const bool r2
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f }));
+        ASSERT(r2);
+        const bool r3
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 1.0f }));
+        ASSERT(r3);
+        const bool r4
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 1000.0f }, { -1.0f, 0.0f, 1000.0f }));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Rectangle3&)");
+    {
+        constexpr bool r1
+            = b1.intersects(nnm::Rectangle3f({ 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2
+            = b1.intersects(nnm::Rectangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
+        ASSERT(r2);
+        constexpr bool r3
+            = b1.intersects(nnm::Rectangle3f({ 0.0f, 0.0f, 50.0f }, { 100.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }));
+        ASSERT(r3);
+        constexpr bool r4
+            = b1.intersects(nnm::Rectangle3f({ 0.0f, 0.0f, 2.0f }, { -0.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Sphere&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::SphereF({ 0.0f, 0.0f, 0.0f }, 0.1f));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::SphereF({ 0.0f, 0.0f, 0.0f }, 2.0f));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::SphereF({ 0.0f, 0.0f, 2.0f }, 0.5f));
+        ASSERT(r3);
+        constexpr bool r4 = b1.intersects(nnm::SphereF({ 0.0f, 0.0f, 10.0f }, 100.0f));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const AlignedBox&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::AlignedBoxF({ -1.0f, -1.0f, -2.0f }, { 1.0f, 1.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::AlignedBoxF({ -1.0f, -1.0f, -10.0f }, { 1.0f, 1.0f, 2.0f }));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::AlignedBoxF({ -0.5f, -1.0f, 1.0f }, { 1.0f, 2.0f, 3.0f }));
+        ASSERT(r3);
+        constexpr bool r4 = b1.intersects(nnm::AlignedBoxF({ -100.0f, -100.0f, -100.0f }, { 100.0f, 100.0f, 100.0f }));
+        ASSERT(r4);
+    }
 }
 
 void geom3_tests()

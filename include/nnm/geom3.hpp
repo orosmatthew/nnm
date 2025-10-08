@@ -5931,6 +5931,105 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
+    {
+        if (contains(segment.start) || contains(segment.end)) {
+            return true;
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if intersects a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
+    {
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(plane)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if intersects a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
+    {
+        if (contains(triangle.centroid())) {
+            return true;
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(triangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if intersects a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
+    {
+        if (contains(rectangle.center)) {
+            return true;
+        }
+        for (uint8_t i = 0; i < 6; ++i) {
+            if (face(i).intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Determine if intersects a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const
+    {
+        Vector3<Real> closest = sphere.center.clamp(min, max);
+        const Real center_dist_sqrd = (closest - sphere.center).length_sqrd();
+        return approx_less_equal(center_dist_sqrd, sqrd(sphere.radius));
+    }
+
+    /**
+     * Determine if intersects another aligned box.
+     * @param other Other aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const AlignedBox& other) const
+    {
+        return approx_less_equal(min.x, other.max.x) && approx_less_equal(other.min.x, max.x)
+            && approx_less_equal(min.y, other.max.y) && approx_less_equal(other.min.y, max.y)
+            && approx_less_equal(min.z, other.max.z) && approx_less_equal(other.min.z, max.z);
+    }
+
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Line3<Real>& line) const
     {
         Intersections3<Real> inters;
@@ -5961,19 +6060,6 @@ public:
         return inters;
     }
 
-    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
-    {
-        if (contains(segment.start) || contains(segment.end)) {
-            return true;
-        }
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (face(i).intersects(segment)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
     {
         Intersections3<Real> inters;
@@ -5987,16 +6073,6 @@ public:
             }
         }
         return inters;
-    }
-
-    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
-    {
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (face(i).intersects(plane)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     [[nodiscard]] std::optional<Vector3<Real>> intersect_depth(const Plane<Real>& plane) const
@@ -6016,46 +6092,6 @@ public:
             return plane.normal * max_pos_dist;
         }
         return -plane.normal * max_neg_dist;
-    }
-
-    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
-    {
-        if (contains(triangle.centroid())) {
-            return true;
-        }
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (face(i).intersects(triangle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
-    {
-        if (contains(rectangle.center)) {
-            return true;
-        }
-        for (uint8_t i = 0; i < 6; ++i) {
-            if (face(i).intersects(rectangle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    [[nodiscard]] bool intersects(const Sphere<Real>& sphere) const
-    {
-        Vector3<Real> closest = sphere.center.clamp(min, max);
-        const Real center_dist_sqrd = (closest - sphere.center).length_sqrd();
-        return approx_less_equal(center_dist_sqrd, sqrd(sphere.radius));
-    }
-
-    [[nodiscard]] bool intersects(const AlignedBox& other) const
-    {
-        return approx_less_equal(min.x, other.max.x) && approx_less_equal(other.min.x, max.x)
-            && approx_less_equal(min.y, other.max.y) && approx_less_equal(other.min.y, max.y)
-            && approx_less_equal(min.z, other.max.z) && approx_less_equal(other.min.z, max.z);
     }
 
     /**
