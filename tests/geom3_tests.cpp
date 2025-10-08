@@ -4965,6 +4965,62 @@ void aligned_box_tests()
         constexpr bool r4 = nnm::AlignedBoxF({ 2.0f, 2.0f, 4.0f }, { -1.0f, -3.0f, 0.5f }).valid();
         ASSERT_FALSE(r4);
     }
+
+    test_section("translate");
+    {
+        constexpr nnm::Vector3f offset { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::AlignedBoxF r1 = b1.translate(offset);
+        ASSERT(r1.approx_equal({ b1.min.translate(offset), b1.max.translate(offset) }));
+    }
+
+    test_section("rotate_axis_angle_at");
+    {
+        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const nnm::AlignedBoxF r1 = b1.rotate_axis_angle_at(origin, axis, angle);
+        ASSERT(r1.approx_equal(
+            { b1.min.rotate_axis_angle_at(origin, axis, angle), b1.max.rotate_axis_angle_at(origin, axis, angle) }));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr auto axis = nnm::Vector3f::axis_y();
+        constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
+        const nnm::AlignedBoxF r1 = b1.rotate_axis_angle(axis, angle);
+        ASSERT(r1.approx_equal({ b1.min.rotate_axis_angle(axis, angle), b1.max.rotate_axis_angle(axis, angle) }));
+    }
+
+    test_section("rotate_quaternion_at");
+    {
+        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
+        constexpr nnm::AlignedBoxF r1 = b1.rotate_quaternion_at(origin, quat);
+        ASSERT(
+            r1.approx_equal({ b1.min.rotate_quaternion_at(origin, quat), b1.max.rotate_quaternion_at(origin, quat) }));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
+        constexpr nnm::AlignedBoxF r1 = b1.rotate_quaternion(quat);
+        ASSERT(r1.approx_equal({ b1.min.rotate_quaternion(quat), b1.max.rotate_quaternion(quat) }));
+    }
+
+    test_section("scale_at");
+    {
+        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::Vector3f factor { 0.5f, -1.5f, 2.0f };
+        constexpr nnm::AlignedBoxF r1 = b1.scale_at(origin, factor);
+        ASSERT(r1.approx_equal({ b1.min.scale_at(origin, factor), b1.max.scale_at(origin, factor) }));
+    }
+
+    test_section("scale");
+    {
+        constexpr nnm::Vector3f factor { 0.5f, -1.5f, 2.0f };
+        constexpr nnm::AlignedBoxF r1 = b1.scale(factor);
+        ASSERT(r1.approx_equal({ b1.min.scale(factor), b1.max.scale(factor) }));
+    }
 }
 
 void geom3_tests()

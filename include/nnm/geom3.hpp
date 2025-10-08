@@ -6111,9 +6111,99 @@ public:
         return inter;
     }
 
+    /**
+     * Determine if valid. The aligned box is valid if each component of the 'min' is
+     * less than or equal to each corresponding component of 'max'.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool valid() const
     {
         return approx_less_equal(min.x, max.x) && approx_less_equal(min.y, max.y) && approx_less_equal(min.z, max.z);
+    }
+
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr AlignedBox translate(const Vector3<Real>& offset) const
+    {
+        return { min.translate(offset), max.translate(offset) };
+    }
+
+    /**
+     * Rotate about an origin by an axis and angle.
+     * @param origin Rotation origin.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] AlignedBox rotate_axis_angle_at(
+        const Vector3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
+    {
+        return { min.rotate_axis_angle_at(origin, axis, angle), max.rotate_axis_angle_at(origin, axis, angle) };
+    }
+
+    /**
+     * Rotate about the global origin by an axis and angle.
+     * @param axis Normalized rotation axis.
+     * @param angle Angle in radians.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] AlignedBox rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
+    {
+        return { min.rotate_axis_angle(axis, angle), max.rotate_axis_angle(axis, angle) };
+    }
+
+    /**
+     * Rotate about an origin by a quaternion.
+     * @param origin Rotation origin.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr AlignedBox rotate_quaternion_at(
+        const Vector3<Real>& origin, const Quaternion<Real>& quaternion) const
+    {
+        return { min.rotate_quaternion_at(origin, quaternion), max.rotate_quaternion_at(origin, quaternion) };
+    }
+
+    /**
+     * Rotate about the global origin by a quaternion.
+     * @param quaternion Quaternion.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr AlignedBox rotate_quaternion(const Quaternion<Real>& quaternion) const
+    {
+        return { min.rotate_quaternion(quaternion), max.rotate_quaternion(quaternion) };
+    }
+
+    /**
+     * Scale about an origin by a factor.
+     * @param origin Scaling origin.
+     * @param factor Scale factor.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr AlignedBox scale_at(const Vector3<Real>& origin, const Vector3<Real>& factor) const
+    {
+        return { min.scale_at(origin, factor), max.scale_at(origin, factor) };
+    }
+
+    /**
+     * Scale about the global origin by a factor.
+     * @param factor Scaling factor.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr AlignedBox scale(const Vector3<Real>& factor) const
+    {
+        return { min.scale(factor), max.scale(factor) };
     }
 
     /**
