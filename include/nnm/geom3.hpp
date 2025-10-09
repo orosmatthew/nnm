@@ -6288,13 +6288,27 @@ public:
      */
     Vector3<Real> half_span_w;
 
+    /**
+     * Initialize to centered box with all zero half-spans. This box is invalid.
+     */
+    // tested
     constexpr Box()
         : center { Vector3<Real>::zero() }
         , half_span_u { Vector3<Real>::zero() }
-        , half_span_w { Vector3<Real>::zero }
+        , half_span_v { Vector3<Real>::zero() }
+        , half_span_w { Vector3<Real>::zero() }
     {
     }
 
+    /**
+     * Initialize with center and 3 orthogonal half-spans. No validation is done.
+     * Each half-span represents a vector from the center to one of the faces.
+     * @param center Center.
+     * @param half_span_u First half-span.
+     * @param half_span_v Second half-span.
+     * @param half_span_w Third half-span.
+     */
+    // tested
     constexpr Box(
         const Vector3<Real>& center,
         const Vector3<Real>& half_span_u,
@@ -6307,6 +6321,12 @@ public:
     {
     }
 
+    /**
+     * Case from another type.
+     * @tparam Other Other floating-point type.
+     * @param other Other box.
+     */
+    // tested
     template <typename Other>
     constexpr explicit Box(const Box<Other>& other)
         : center { Vector3<Real>(other.center) }
@@ -6316,6 +6336,13 @@ public:
     {
     }
 
+    /**
+     * Create box at a center point and with a size.
+     * @param center Center.
+     * @param size Size.
+     * @return Result.
+     */
+    // tested
     constexpr static Box from_center_size(const Vector3<Real>& center, const Vector3<Real>& size)
     {
         return { center,
@@ -6324,6 +6351,12 @@ public:
                  Vector3<Real>::axis_z() * size.z / static_cast<Real>(2) };
     }
 
+    /**
+     * Vertex at an index,
+     * @param index Index [0-7] inclusive.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Box", index < 8);
@@ -6348,7 +6381,13 @@ public:
         }
     }
 
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index)
+    /**
+     * Edge at an index.
+     * @param index Index [0-11] inclusive.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Box", index < 12);
         switch (index) {
@@ -6380,6 +6419,12 @@ public:
         }
     }
 
+    /**
+     * Face at an index.
+     * @param index Index [0-5] inclusive.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Box", index < 6);
@@ -6400,6 +6445,11 @@ public:
         }
     }
 
+    /**
+     * Determine if box is valid. A box is valid if all three half-spans are orthogonal and none are length zero.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool valid() const
     {
         const bool non_zero = !approx_zero(half_span_u.length_sqrd()) && !approx_zero(half_span_v.length_sqrd())
@@ -6409,18 +6459,33 @@ public:
         return non_zero && orthogonal;
     }
 
+    /**
+     * Size. Length per axis.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Vector3<Real> size() const
     {
         const auto two = static_cast<Real>(2);
         return { half_span_u.length() * two, half_span_v.length() * two, half_span_w.length() * two };
     }
 
+    /**
+     * Volume.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real volume() const
     {
         return abs(static_cast<Real>(8) * half_span_u.cross(half_span_v).dot(half_span_w));
     }
 
-    [[nodiscard]] constexpr Real surface_area() const
+    /**
+     * Surface area.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real surface_area() const
     {
         Real total = 0;
         for (uint8_t i = 0; i < 6; ++i) {
@@ -6659,7 +6724,7 @@ public:
         const std::array<Vector3<Real>, 8> verts = sorted_vertices(*this);
         const std::array<Vector3<Real>, 8> verts_other = sorted_vertices(other);
         for (uint8_t i = 0; i < 8; ++i) {
-            if (!approx_equal(verts[i], verts_other[i])) {
+            if (!verts[i].approx_equal(verts_other[i])) {
                 return false;
             }
         }
@@ -6668,7 +6733,7 @@ public:
 
     [[nodiscard]] constexpr bool approx_equal(const Box& other) const
     {
-        return center.approx_equal(other) && half_span_u.approx_equal(other.half_span_u)
+        return center.approx_equal(other.center) && half_span_u.approx_equal(other.half_span_u)
             && half_span_v.approx_equal(other.half_span_v) && half_span_w.approx_equal(other.half_span_w);
     }
 

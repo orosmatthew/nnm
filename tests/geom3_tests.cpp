@@ -5054,6 +5054,222 @@ void aligned_box_tests()
     }
 }
 
+void box_tests()
+{
+    test_case("Box");
+
+    test_section("Box()");
+    {
+        constexpr nnm::BoxF b;
+        ASSERT(b.approx_equal(
+            { nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero() }));
+    }
+
+    test_section("Box(const Vector3&, const Vector3&, const Vector3&, const Vector3&)");
+    {
+        constexpr nnm::BoxF b { { 1.0f, -2.0f, 3.0f },
+                                { 0.707106769f, 0.0f, 0.707106769f },
+                                { 0.0f, 2.0f, 0.0f },
+                                { 1.06066012f, 0.0f, 1.06066012f } };
+        ASSERT(b.approx_equal(
+            { { 1.0f, -2.0f, 3.0f },
+              { 0.707106769f, 0.0f, 0.707106769f },
+              { 0.0f, 2.0f, 0.0f },
+              { 1.06066012f, 0.0f, 1.06066012f } }));
+    }
+
+    test_section("Box(const Box<Other>&");
+    {
+        constexpr nnm::BoxD bd {
+            { 1.0, -2.0, 3.0 }, { 0.707106769, 0.0, 0.707106769 }, { 0.0, 2.0, 0.0 }, { 1.06066012, 0.0, 1.06066012 }
+        };
+        constexpr nnm::BoxF bf { bd };
+        ASSERT(bf.approx_equal(
+            { { 1.0f, -2.0f, 3.0f },
+              { 0.707106769f, 0.0f, 0.707106769f },
+              { 0.0f, 2.0f, 0.0f },
+              { 1.06066012f, 0.0f, 1.06066012f } }));
+    }
+
+    test_section("from_center_size");
+    {
+        constexpr auto b = nnm::BoxF::from_center_size({ 1.0f, -2.0f, 3.0f }, { 2.0f, 4.0f, 3.0f });
+        ASSERT(b.approx_equal(
+            { { 1.0f, -2.0f, 3.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 2.0f, 0.0f }, { 0.0f, 0.0f, 1.5f } }));
+    }
+
+    // auto b1 = nnm::BoxF::from_center_size({ 1.0f, -2.0f, 3.0f }, { 2.0f, 4.0f, 3.0f });
+    // b1 = b1.rotate_axis_angle(nnm::Vector3f::axis_y(), nnm::pi<float>() / 4.0f, b1.center);
+    constexpr auto b1 = nnm::BoxF(
+        { 1.0f, -2.0f, 3.0f },
+        { 0.707106769f, 0.0f, -0.707106769f },
+        { 0.0f, 2.0f, 0.0f },
+        { 1.06066012f, 0.0f, 1.06066012f });
+
+    test_section("vertex");
+    {
+        std::vector<nnm::Vector3f> vertices;
+        constexpr nnm::Vector3f v0 = b1.vertex(0);
+        vertices.push_back(v0);
+        constexpr nnm::Vector3f v1 = b1.vertex(1);
+        vertices.push_back(v1);
+        constexpr nnm::Vector3f v2 = b1.vertex(2);
+        vertices.push_back(v2);
+        constexpr nnm::Vector3f v3 = b1.vertex(3);
+        vertices.push_back(v3);
+        constexpr nnm::Vector3f v4 = b1.vertex(4);
+        vertices.push_back(v4);
+        constexpr nnm::Vector3f v5 = b1.vertex(5);
+        vertices.push_back(v5);
+        constexpr nnm::Vector3f v6 = b1.vertex(6);
+        vertices.push_back(v6);
+        constexpr nnm::Vector3f v7 = b1.vertex(7);
+        vertices.push_back(v7);
+
+        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+            return std::find_if(
+                       vertices.begin(),
+                       vertices.end(),
+                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                != vertices.end();
+        };
+
+        ASSERT(vertices_contains_approx({ -0.767766892, -4.0f, 2.6464467f }));
+        ASSERT(vertices_contains_approx({ 1.3535533f, -4.0f, 4.76776695f }));
+        ASSERT(vertices_contains_approx({ -0.767766892, 0.0f, 2.6464467f }));
+        ASSERT(vertices_contains_approx({ 1.3535533f, 0.0f, 4.76776695f }));
+        ASSERT(vertices_contains_approx({ 0.646446704f, -4.0f, 1.23223305f }));
+        ASSERT(vertices_contains_approx({ 2.767766896f, -4.0f, 3.3535533f }));
+        ASSERT(vertices_contains_approx({ 2.767766896f, 0.0f, 3.3535533f }));
+        ASSERT(vertices_contains_approx({ 0.646446704f, 0.0f, 1.23223305f }));
+    }
+
+    test_section("edge");
+    {
+        std::vector<nnm::Segment3f> edges;
+        constexpr nnm::Segment3f e0 = b1.edge(0);
+        edges.push_back(e0);
+        constexpr nnm::Segment3f e1 = b1.edge(1);
+        edges.push_back(e1);
+        constexpr nnm::Segment3f e2 = b1.edge(2);
+        edges.push_back(e2);
+        constexpr nnm::Segment3f e3 = b1.edge(3);
+        edges.push_back(e3);
+        constexpr nnm::Segment3f e4 = b1.edge(4);
+        edges.push_back(e4);
+        constexpr nnm::Segment3f e5 = b1.edge(5);
+        edges.push_back(e5);
+        constexpr nnm::Segment3f e6 = b1.edge(6);
+        edges.push_back(e6);
+        constexpr nnm::Segment3f e7 = b1.edge(7);
+        edges.push_back(e7);
+        constexpr nnm::Segment3f e8 = b1.edge(8);
+        edges.push_back(e8);
+        constexpr nnm::Segment3f e9 = b1.edge(9);
+        edges.push_back(e9);
+        constexpr nnm::Segment3f e10 = b1.edge(10);
+        edges.push_back(e10);
+        constexpr nnm::Segment3f e11 = b1.edge(11);
+        edges.push_back(e11);
+
+        auto edges_contains_coincident = [&edges](const nnm::Segment3f& edge) {
+            return std::find_if(
+                       edges.begin(), edges.end(), [&edge](const nnm::Segment3f& e) { return e.coincident(edge); })
+                != edges.end();
+        };
+
+        ASSERT(edges_contains_coincident({ b1.vertex(0), b1.vertex(1) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(0), b1.vertex(2) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(2), b1.vertex(3) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(1), b1.vertex(3) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(0), b1.vertex(4) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(1), b1.vertex(5) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(2), b1.vertex(6) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(3), b1.vertex(7) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(4), b1.vertex(5) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(4), b1.vertex(6) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(6), b1.vertex(7) }));
+        ASSERT(edges_contains_coincident({ b1.vertex(5), b1.vertex(7) }));
+    }
+
+    test_section("face");
+    {
+        std::vector<nnm::Rectangle3f> faces;
+        constexpr nnm::Rectangle3f f0 = b1.face(0);
+        faces.push_back(f0);
+        constexpr nnm::Rectangle3f f1 = b1.face(1);
+        faces.push_back(f1);
+        constexpr nnm::Rectangle3f f2 = b1.face(2);
+        faces.push_back(f2);
+        constexpr nnm::Rectangle3f f3 = b1.face(3);
+        faces.push_back(f3);
+        constexpr nnm::Rectangle3f f4 = b1.face(4);
+        faces.push_back(f4);
+        constexpr nnm::Rectangle3f f5 = b1.face(5);
+        faces.push_back(f5);
+
+        auto faces_contains_coincident = [&faces](const nnm::Rectangle3f& face) {
+            return std::find_if(
+                       faces.begin(), faces.end(), [&face](const nnm::Rectangle3f& f) { return f.coincident(face); })
+                != faces.end();
+        };
+
+        ASSERT(faces_contains_coincident(
+            { { 0.292893204f, -2.0f, 3.707106825f },
+              nnm::Vector3f::axis_y() * 2.0f,
+              { 1.0606601718f, 0.0f, 1.0606601718f } }));
+        ASSERT(faces_contains_coincident(
+            { { 1.7071068f, -2.0f, 2.292893175f },
+              nnm::Vector3f::axis_y() * 2.0f,
+              { 1.0606601718f, 0.0f, 1.0606601718f } }));
+        ASSERT(faces_contains_coincident(
+            { { 1.0f, -4.0f, 3.0f },
+              { -0.7071067812f, 0.0f, 0.7071067812f },
+              { 1.0606601718f, 0.0f, 1.0606601718f } }));
+        ASSERT(faces_contains_coincident(
+            { { 1.0f, 0.0f, 3.0f }, { -0.7071067812f, 0.0f, 0.7071067812f }, { 1.0606601718f, 0.0f, 1.0606601718f } }));
+        ASSERT(faces_contains_coincident(
+            { { 2.060660098f, -2.0f, 4.060660125f },
+              -nnm::Vector3f::axis_y() * 2.0f,
+              { -0.7071067812f, 0.0f, 0.7071067812f } }));
+        ASSERT(faces_contains_coincident(
+            { { -0.060660094f, -2.0f, 1.939339875f },
+              -nnm::Vector3f::axis_y() * 2.0f,
+              { -0.7071067812f, 0.0f, 0.7071067812f } }));
+    }
+
+    test_section("valid");
+    {
+        constexpr bool r1 = b1.valid();
+        ASSERT(r1);
+        constexpr bool r2
+            = nnm::BoxF(
+                  { 1.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x(), nnm::Vector3f::axis_x(), nnm::Vector3f::axis_z())
+                  .valid();
+        ASSERT_FALSE(r2);
+        constexpr bool r3 = nnm::BoxF().valid();
+        ASSERT_FALSE(r3);
+    }
+
+    test_section("size");
+    {
+        const nnm::Vector3f r1 = b1.size();
+        ASSERT(r1.approx_equal({ 2.0f, 4.0f, 3.0f }));
+    }
+
+    test_section("volume");
+    {
+        constexpr float r1 = b1.volume();
+        ASSERT(nnm::approx_equal(r1, 24.0f));
+    }
+
+    test_section("surface_area");
+    {
+        const float r1 = b1.surface_area();
+        ASSERT(nnm::approx_equal(r1, 52.0f));
+    }
+}
+
 void geom3_tests()
 {
     intersections3_tests();
@@ -5065,4 +5281,5 @@ void geom3_tests()
     rectangle3_tests();
     sphere_tests();
     aligned_box_tests();
+    box_tests();
 }
