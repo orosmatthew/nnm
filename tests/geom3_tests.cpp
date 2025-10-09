@@ -4628,10 +4628,7 @@ void aligned_box_tests()
         vertices.push_back(v7);
 
         auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
-            return std::find_if(
-                       vertices.begin(),
-                       vertices.end(),
-                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+            return std::ranges::find_if(vertices, [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
                 != vertices.end();
         };
 
@@ -4674,8 +4671,7 @@ void aligned_box_tests()
         edges.push_back(e11);
 
         auto edges_contains_coincident = [&edges](const nnm::Segment3f& edge) {
-            return std::find_if(
-                       edges.begin(), edges.end(), [&edge](const nnm::Segment3f& e) { return e.coincident(edge); })
+            return std::ranges::find_if(edges, [&edge](const nnm::Segment3f& e) { return e.coincident(edge); })
                 != edges.end();
         };
 
@@ -4710,8 +4706,7 @@ void aligned_box_tests()
         faces.push_back(f5);
 
         auto faces_contains_coincident = [&faces](const nnm::Rectangle3f& face) {
-            return std::find_if(
-                       faces.begin(), faces.end(), [&face](const nnm::Rectangle3f& f) { return f.coincident(face); })
+            return std::ranges::find_if(faces, [&face](const nnm::Rectangle3f& f) { return f.coincident(face); })
                 != faces.end();
         };
 

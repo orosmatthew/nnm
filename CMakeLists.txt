@@ -4,7 +4,7 @@ project(nnm VERSION 0.5.0)
 
 option(NNM_BUILD_TESTS "NNM Build Tests" OFF)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 
 add_library(nnm INTERFACE)
 target_include_directories(nnm INTERFACE include)
