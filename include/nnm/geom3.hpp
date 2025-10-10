@@ -56,6 +56,10 @@ template <typename Real>
 class Box;
 using BoxF = Box<float>;
 using BoxD = Box<double>;
+template <typename Real>
+class Frustum;
+using FrustumF = Frustum<float>;
+using FrustumD = Frustum<double>;
 
 /**
  * Fixed capacity, stack allocated set of Vector3 points.
@@ -6770,6 +6774,81 @@ public:
             return half_span_v < other.half_span_v;
         }
         return half_span_w < other.half_span_w;
+    }
+};
+
+template <typename Real>
+class Frustum {
+public:
+    Plane<Real> near_plane;
+    Plane<Real> far_plane;
+    Plane<Real> left_plane;
+    Plane<Real> right_plane;
+    Plane<Real> bottom_plane;
+    Plane<Real> top_plane;
+
+    constexpr Frustum()
+        : near_plane { Plane<Real> {} }
+        , far_plane { Plane<Real> {} }
+        , left_plane { Plane<Real> {} }
+        , right_plane { Plane<Real> {} }
+        , bottom_plane { Plane<Real> {} }
+        , top_plane { Plane<Real> {} }
+    {
+    }
+
+    constexpr Frustum(
+        const Plane<Real> near_plane,
+        const Plane<Real> far_plane,
+        const Plane<Real> left_plane,
+        const Plane<Real> right_plane,
+        const Plane<Real> top_plane,
+        const Plane<Real> bottom_plane)
+        : near_plane { std::move(near_plane) }
+        , far_plane { std::move(far_plane) }
+        , left_plane { std::move(left_plane) }
+        , right_plane { std::move(right_plane) }
+        , bottom_plane { std::move(bottom_plane) }
+        , top_plane { std::move(top_plane) }
+    {
+    }
+
+    static Frustum from_camera_left_hand_pos_dir_up_fov_aspect_near_far(
+        const Vector3<Real>& position,
+        const Vector3<Real>& direction,
+        const Vector3<Real>& up,
+        const Real fov,
+        const Real aspect,
+        const Real near,
+        const Real far)
+    {
+        const Vector3<Real> right = direction.cross(up);
+        const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
+        const Real near_height = static_cast<Real>(2) * tan_fov_y * near;
+        const Real near_width = near_height * aspect;
+
+        const Plane<Real> near_plane { position + direction * near, direction };
+        const Plane<Real> far_plane { position + direction * far, direction };
+
+        const Vector3<Real> near_center = position + direction * near;
+
+        const Vector3<Real> left_edge = near_center - right * (near_width / static_cast<Real>(2));
+        const Vector3<Real> left_normal = up.cross(left_edge - position).normalize();
+        const Plane<Real> left_plane { left_edge, left_normal };
+
+        const Vector3<Real> right_edge = near_center + right * (near_width / static_cast<Real>(2));
+        const Vector3<Real> right_normal = (right_edge - position).cross(up).normalize();
+        const Plane<Real> right_plane { right_edge, right_normal };
+
+        const Vector3<Real> bottom_edge = near_center - up * (near_height / static_cast<Real>(2));
+        const Vector3<Real> bottom_normal = (bottom_edge - position).cross(right).normalize();
+        const Plane<Real> bottom_plane { bottom_edge, bottom_normal };
+
+        const Vector3<Real> top_edge = near_center + up * (near_height / static_cast<Real>(2));
+        const Vector3<Real> top_normal = right.cross(top_edge - position).normalize();
+        const Plane<Real> top_plane { top_edge, top_normal };
+
+        return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
     }
 };
 
