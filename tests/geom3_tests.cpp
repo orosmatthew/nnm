@@ -5134,9 +5134,9 @@ void box_tests()
                 != vertices.end();
         };
 
-        ASSERT(vertices_contains_approx({ -0.767766892, -4.0f, 2.6464467f }));
+        ASSERT(vertices_contains_approx({ -0.767766892f, -4.0f, 2.6464467f }));
         ASSERT(vertices_contains_approx({ 1.3535533f, -4.0f, 4.76776695f }));
-        ASSERT(vertices_contains_approx({ -0.767766892, 0.0f, 2.6464467f }));
+        ASSERT(vertices_contains_approx({ -0.767766892f, 0.0f, 2.6464467f }));
         ASSERT(vertices_contains_approx({ 1.3535533f, 0.0f, 4.76776695f }));
         ASSERT(vertices_contains_approx({ 0.646446704f, -4.0f, 1.23223305f }));
         ASSERT(vertices_contains_approx({ 2.767766896f, -4.0f, 3.3535533f }));
@@ -5267,6 +5267,389 @@ void box_tests()
     {
         const float r1 = b1.surface_area();
         ASSERT(nnm::approx_equal(r1, 52.0f));
+    }
+
+    test_section("contains");
+    {
+        constexpr bool r1 = b1.contains(nnm::Vector3f::zero());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.contains({ 0.0f, -2.0f, 3.0f });
+        ASSERT(r2);
+        constexpr bool r3 = b1.contains(b1.vertex(0));
+        ASSERT(r3);
+        constexpr bool r4 = b1.contains({ 0.0f, -2.0f, 5.0f });
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("distance_sqrd");
+    {
+        constexpr float r1 = b1.distance_sqrd(nnm::Vector3f::zero());
+        ASSERT(nnm::approx_equal(r1, 1.9362916306f));
+        constexpr float r2 = b1.distance_sqrd({ 0.0f, -2.0f, 3.0f });
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3 = b1.distance_sqrd(b1.vertex(0));
+        ASSERT(nnm::approx_zero(r3));
+        constexpr float r4 = b1.distance_sqrd({ 0.0f, -2.0f, 5.0f });
+        ASSERT(nnm::approx_equal(r4, 1.2573591981f));
+    }
+
+    test_section("distance");
+    {
+        const float r1 = b1.distance(nnm::Vector3f::zero());
+        ASSERT(nnm::approx_equal(r1, 1.3915069639f));
+        const float r2 = b1.distance({ 0.0f, -2.0f, 3.0f });
+        ASSERT(nnm::approx_zero(r2));
+        const float r3 = b1.distance(b1.vertex(0));
+        ASSERT(nnm::approx_zero(r3));
+        const float r4 = b1.distance({ 0.0f, -2.0f, 5.0f });
+        ASSERT(nnm::approx_equal(r4, 1.1213202924f));
+    }
+
+    test_section("intersects(const Line3&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::Line3f::axis_y());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::Line3f::axis_z());
+        ASSERT(r2);
+        constexpr bool r4 = b1.intersects(nnm::Line3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = b1.intersects(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
+        ASSERT(r4);
+        constexpr bool r5 = b1.intersects(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { -0.7071067812f, 0.0f, 0.7071067812f }));
+        ASSERT_FALSE(r5);
+        constexpr bool r6 = b1.intersects(nnm::Ray3f({ 0.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r6);
+    }
+
+    test_section("intersects(const Segment3&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, -3.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, 3.0f }));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -3.0f }));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = b1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { 10.0f, -2.0f, -5.0f }));
+        ASSERT(r4);
+        constexpr bool r5 = b1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { -10.0f, -2.0f, 15.0f }));
+        ASSERT_FALSE(r5);
+        constexpr bool r6 = b1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
+        ASSERT(r6);
+        constexpr bool r7 = b1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 3.0f }, { 0.0f, -3.0f, 3.0f }));
+        ASSERT(r7);
+    }
+
+    test_section("intersects(const Plane&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::PlaneF::xy());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::PlaneF::xz());
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::PlaneF::xz_offset(-2.0f));
+        ASSERT(r3);
+    }
+
+    test_section("intersects(const Triangle3&)");
+    {
+        const bool r1
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        const bool r2
+            = b1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 3.0f }));
+        ASSERT(r2);
+        const bool r3
+            = b1.intersects(nnm::Triangle3f({ 0.0f, -2.0f, 0.0f }, { 2.0f, -2.0f, 0.0f }, { 0.0f, -2.0f, 3.0f }));
+        ASSERT(r3);
+        const bool r4 = b1.intersects(
+            nnm::Triangle3f({ -100.0f, -2.0f, 0.0f }, { 100.0f, -2.0f, 0.0f }, { 0.0f, -2.0f, 100.0f }));
+        ASSERT(r4);
+        const bool r5
+            = b1.intersects(nnm::Triangle3f({ 0.0f, -2.0f, 3.0f }, { 0.0f, -3.0f, 3.0f }, { 1.0f, -2.0f, 3.0f }));
+        ASSERT(r5);
+    }
+
+    test_section("intersects(const Rectangle3&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::Rectangle3f::from_xy_offset_size({ 0.0f, -2.0f, 0.0f }, 1.0f, 1.0f));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::Rectangle3f::from_xz_offset_size({ 0.0f, -2.0f, 2.0f }, 1.0f, 1.0f));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::Rectangle3f::from_xz_offset_size({ 0.0f, -2.0f, 1.0f }, 100.0f, 100.0f));
+        ASSERT(r3);
+        constexpr bool r4 = b1.intersects(nnm::Rectangle3f::from_xz_offset_size({ 0.0f, -2.0f, 3.0f }, 0.01f, 0.01f));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Sphere&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::SphereF(nnm::Vector3f::zero(), 1.0f));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::SphereF({ 0.0f, -2.0f, 1.0f }, 3.0f));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(nnm::SphereF(nnm::Vector3f::zero(), 100.0f));
+        ASSERT(r3);
+        constexpr bool r4 = b1.intersects(nnm::SphereF({ 0.0f, -2.0f, 3.0f }, 0.01f));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const AlignedBox&)");
+    {
+        constexpr bool r1
+            = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, -1.0f, 1.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2
+            = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 3.0f }));
+        ASSERT(r2);
+        constexpr bool r3 = b1.intersects(
+            nnm::AlignedBoxF::from_bounding_points({ 0.0f, 2.0f, 0.0f }, { 1000.0f, -1000.0f, 1000.0f }));
+        ASSERT(r3);
+        constexpr bool r4
+            = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, -2.0f, 3.0f }, { 1.0f, -1.0f, 2.5f }));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Box&)");
+    {
+        constexpr bool r1 = b1.intersects(nnm::BoxF::from_center_size(nnm::Vector3f::zero(), nnm::Vector3f::all(1.0f)));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1.intersects(nnm::BoxF::from_center_size(nnm::Vector3f::zero(), nnm::Vector3f::all(5.0f)));
+        ASSERT(r2);
+        constexpr bool r3
+            = b1.intersects(nnm::BoxF::from_center_size(nnm::Vector3f::zero(), nnm::Vector3f::all(1000.0f)));
+        ASSERT(r3);
+        constexpr bool r4
+            = b1.intersects(nnm::BoxF::from_center_size({ 0.0f, -2.0f, 3.0f }, nnm::Vector3f::all(0.01f)));
+        ASSERT(r4);
+    }
+
+    test_section("surface_intersections(const Line3&)");
+    {
+        constexpr nnm::Intersections3f r1 = b1.surface_intersections(nnm::Line3f::axis_y());
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2 = b1.surface_intersections(nnm::Line3f::axis_z());
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 3.414213613f }, { 0.0f, 0.0f, 1.8786797787f } }));
+        constexpr nnm::Intersections3f r4
+            = b1.surface_intersections(nnm::Line3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
+        ASSERT(r4.approx_equal({ { 0.7928931935f, -2.0f, 4.2071068282f }, { 2.2071068358f, -2.0f, 2.7928932245f } }));
+    }
+
+    test_section("surface_intersections(const Ray3&)");
+    {
+        constexpr nnm::Intersections3f r1
+            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_y()));
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2
+            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 3.414213613f }, { 0.0f, 0.0f, 1.8786797787f } }));
+        constexpr nnm::Intersections3f r3
+            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        ASSERT(r3.empty());
+        constexpr nnm::Intersections3f r4
+            = b1.surface_intersections(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
+        ASSERT(r4.approx_equal({ { 0.7928931935f, -2.0f, 4.2071068282f }, { 2.2071068358f, -2.0f, 2.7928932245f } }));
+        constexpr nnm::Intersections3f r5
+            = b1.surface_intersections(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { -0.7071067812f, 0.0f, 0.7071067812f }));
+        ASSERT(r5.empty());
+        constexpr nnm::Intersections3f r6
+            = b1.surface_intersections(nnm::Ray3f({ 0.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r6.approx_equal({ { 2.4142136057f, -2.0f, 3.0f } }));
+    }
+
+    test_section("surface_intersections(const Segment3&)");
+    {
+        constexpr nnm::Intersections3f r1
+            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, -3.0f, 0.0f }));
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2
+            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, 3.0f }));
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 1.8786797787f } }));
+        constexpr nnm::Intersections3f r3
+            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -3.0f }));
+        ASSERT(r3.empty());
+        constexpr nnm::Intersections3f r4
+            = b1.surface_intersections(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { 10.0f, -2.0f, -5.0f }));
+        ASSERT(r4.approx_equal({ { 0.7928931935f, -2.0f, 4.2071068282f }, { 2.2071068358f, -2.0f, 2.7928932245f } }));
+        constexpr nnm::Intersections3f r5
+            = b1.surface_intersections(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { -10.0f, -2.0f, 15.0f }));
+        ASSERT(r5.empty());
+        constexpr nnm::Intersections3f r6
+            = b1.surface_intersections(nnm::Segment3f({ 0.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }));
+        ASSERT(r6.approx_equal({ { 2.4142136057f, -2.0f, 3.0f } }));
+        constexpr nnm::Intersections3f r7
+            = b1.surface_intersections(nnm::Segment3f({ 0.0f, -2.0f, 3.0f }, { 0.0f, -3.0f, 3.0f }));
+        ASSERT(r7.empty());
+    }
+
+    test_section("translate");
+    {
+        constexpr nnm::Vector3f offset { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::BoxF r1 = b1.translate(offset);
+        ASSERT(r1.approx_equal(r1));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr auto axis = nnm::Vector3f::axis_z();
+        constexpr float angle = -2.0f * nnm::pi<float>() / 3.0f;
+        const nnm::BoxF r1 = b1.rotate_axis_angle(axis, angle, origin);
+        ASSERT(r1.approx_equal(
+            { b1.center.rotate_axis_angle_at(origin, axis, angle),
+              b1.half_span_u.rotate_axis_angle(axis, angle),
+              b1.half_span_v.rotate_axis_angle(axis, angle),
+              b1.half_span_w.rotate_axis_angle(axis, angle) }));
+        const nnm::BoxF r2 = b1.rotate_axis_angle(axis, angle);
+        ASSERT(r2.approx_equal(
+            { b1.center.rotate_axis_angle(axis, angle),
+              b1.half_span_u.rotate_axis_angle(axis, angle),
+              b1.half_span_v.rotate_axis_angle(axis, angle),
+              b1.half_span_w.rotate_axis_angle(axis, angle) }));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::QuaternionF quat { 0.0f, 0.0f, 0.8660254f, 0.5f };
+        constexpr nnm::BoxF r1 = b1.rotate_quaternion(quat, origin);
+        ASSERT(r1.approx_equal(
+            { b1.center.rotate_quaternion_at(origin, quat),
+              b1.half_span_u.rotate_quaternion(quat),
+              b1.half_span_v.rotate_quaternion(quat),
+              b1.half_span_w.rotate_quaternion(quat) }));
+        constexpr nnm::BoxF r2 = b1.rotate_quaternion(quat);
+        ASSERT(r2.approx_equal(
+            { b1.center.rotate_quaternion(quat),
+              b1.half_span_u.rotate_quaternion(quat),
+              b1.half_span_v.rotate_quaternion(quat),
+              b1.half_span_w.rotate_quaternion(quat) }));
+    }
+
+    test_section("scale");
+    {
+        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::Vector3f factor { 0.5f, -1.5f, 2.0f };
+        constexpr nnm::BoxF r1 = b1.scale(factor, origin);
+        ASSERT(r1.approx_equal(
+            { b1.center.scale_at(origin, factor),
+              b1.half_span_u.scale(factor),
+              b1.half_span_v.scale(factor),
+              b1.half_span_w.scale(factor) }));
+        constexpr nnm::BoxF r2 = b1.scale(factor);
+        ASSERT(r2.approx_equal(
+            { b1.center.scale(factor),
+              b1.half_span_u.scale(factor),
+              b1.half_span_v.scale(factor),
+              b1.half_span_w.scale(factor) }));
+    }
+
+    test_section("coincident");
+    {
+        const bool r1 = b1.coincident(b1);
+        ASSERT(r1);
+        constexpr auto b2 = nnm::BoxF(
+            { 1.0f, -2.0f, 3.0f },
+            { 0.0f, 2.0f, 0.0f },
+            { 0.707106769f, 0.0f, -0.707106769f },
+            { 1.06066012f, 0.0f, 1.06066012f });
+        const bool r2 = b1.coincident(b2);
+        ASSERT(r2);
+        constexpr auto b3 = nnm::BoxF(
+            { 1.0f, -2.0f, 3.0f },
+            { 0.0f, -2.0f, 0.0f },
+            { 0.707106769f, 0.0f, -0.707106769f },
+            { 1.06066012f, 0.0f, 1.06066012f });
+        const bool r3 = b1.coincident(b3);
+        ASSERT(r3);
+        constexpr auto b4 = nnm::BoxF::from_center_size({ 1.0f, -2.0f, 3.0f }, { 1.0f, 2.0f, 3.0f });
+        const bool r4 = b1.coincident(b4);
+        ASSERT_FALSE(r4);
+        constexpr auto b5 = nnm::BoxF(
+            { 1.0f, 2.0f, 3.0f },
+            { 0.0f, -2.0f, 0.0f },
+            { 0.707106769f, 0.0f, -0.707106769f },
+            { 1.06066012f, 0.0f, 1.06066012f });
+        const bool r5 = b1.coincident(b5);
+        ASSERT_FALSE(r5);
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr bool r1 = b1.approx_equal(
+            { { 1.0f, -2.0f, 3.0f },
+              { 0.707106769f, 0.0f, -0.707106769f },
+              { 0.0f, 2.0f, 0.0f },
+              { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT(r1);
+        constexpr bool r2 = b1.approx_equal(
+            { { 1.0f, -3.0f, 2.0f },
+              { 0.707106769f, 0.0f, -0.707106769f },
+              { 0.0f, 2.0f, 0.0f },
+              { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT_FALSE(r2);
+    }
+
+    test_section("operator==");
+    {
+        constexpr bool r1 = b1
+            == nnm::BoxF({ { 1.0f, -2.0f, 3.0f },
+                           { 0.707106769f, 0.0f, -0.707106769f },
+                           { 0.0f, 2.0f, 0.0f },
+                           { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT(r1);
+        constexpr bool r2 = b1
+            == nnm::BoxF({ { 1.0f, -3.0f, 2.0f },
+                           { 0.707106769f, 0.0f, -0.707106769f },
+                           { 0.0f, 2.0f, 0.0f },
+                           { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT_FALSE(r2);
+    }
+
+    test_section("operator!=");
+    {
+        constexpr bool r1 = b1
+            != nnm::BoxF({ { 1.0f, -2.0f, 3.0f },
+                           { 0.707106769f, 0.0f, -0.707106769f },
+                           { 0.0f, 2.0f, 0.0f },
+                           { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1
+            != nnm::BoxF({ { 1.0f, -3.0f, 2.0f },
+                           { 0.707106769f, 0.0f, -0.707106769f },
+                           { 0.0f, 2.0f, 0.0f },
+                           { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT(r2);
+    }
+
+    test_section("operator<");
+    {
+        constexpr bool r1 = b1
+            < nnm::BoxF({ { 1.0f, -2.0f, 3.0f },
+                          { 0.707106769f, 0.0f, -0.707106769f },
+                          { 0.0f, 2.0f, 0.0f },
+                          { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = b1
+            < nnm::BoxF({ { 1.0f, -3.0f, 2.0f },
+                          { 0.707106769f, 0.0f, -0.707106769f },
+                          { 0.0f, 2.0f, 0.0f },
+                          { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT_FALSE(r2);
+        constexpr bool r3 = b1
+            < nnm::BoxF({ { 1.0f, -2.0f, 3.0f },
+                          { 10.0f, 0.0f, -10.0f },
+                          { 0.0f, 2.0f, 0.0f },
+                          { 1.06066012f, 0.0f, 1.06066012f } });
+        ASSERT(r3);
     }
 }
 

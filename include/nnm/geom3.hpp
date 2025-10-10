@@ -4845,11 +4845,14 @@ public:
         return inters;
     }
 
-    // TODO
-    [[nodiscard]] bool intersects(const Sphere<Real>& sphere) const;
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const;
 
-    // TODO
-    [[nodiscard]] bool intersects(const AlignedBox<Real>& box) const;
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const AlignedBox<Real>& box) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Box<Real>& box) const;
 
     /**
      * Translate by an offset.
@@ -5384,6 +5387,12 @@ public:
             inters.insert(segment.start + seg_dir * t2);
         }
         return inters;
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
+    {
+        return approx_less_equal(rectangle.distance_sqrd(center), sqrd(radius));
     }
 
     /**
@@ -6571,7 +6580,7 @@ public:
         return false;
     }
 
-    [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const
+    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
     {
         if (contains(triangle.centroid())) {
             return true;
@@ -6931,6 +6940,24 @@ template <typename Real>
 bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
+}
+
+template <typename Real>
+constexpr bool Rectangle3<Real>::intersects(const Sphere<Real>& sphere) const
+{
+    return sphere.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Rectangle3<Real>::intersects(const AlignedBox<Real>& box) const
+{
+    return box.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Rectangle3<Real>::intersects(const Box<Real>& box) const
+{
+    return box.intersects(*this);
 }
 }
 
