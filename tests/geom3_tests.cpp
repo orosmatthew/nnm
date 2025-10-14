@@ -5657,17 +5657,28 @@ void frustum_tests()
 {
     test_case("Frustum");
 
-    test_section("from_camera_left_hand_position_up_direction_fov_aspect_near_far");
+    test_section("from_camera_left_hand_pos_forward_up_fov_aspect_near_far");
     {
-        const auto f = nnm::FrustumF::from_camera_left_hand_pos_dir_up_fov_aspect_near_far(
+        const auto f = nnm::FrustumF::from_camera_left_hand_pos_forward_up_fov_aspect_near_far(
             { 1.0f, -2.0f, 3.0f },
             nnm::Vector3f::axis_y(),
             nnm::Vector3f::axis_z(),
-            nnm::pi<float>() / 2.0f,
+            1.02477892f,
             16.0f / 9.0f,
-            0.0001f,
-            1000.0f);
-        int x = 32;
+            1.0f,
+            10.0f);
+    }
+
+    test_section("from_camera_right_hand_pos_forward_up_fov_aspect_near_far");
+    {
+        const auto f1 = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+            { 1.0f, -2.0f, 3.0f },
+            nnm::Vector3f::axis_y(),
+            nnm::Vector3f::axis_z(),
+            1.02477892f,
+            16.0f / 9.0f,
+            1.0f,
+            10.0f);
     }
 }
 
