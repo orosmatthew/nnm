@@ -5663,22 +5663,34 @@ void frustum_tests()
             { 1.0f, -2.0f, 3.0f },
             nnm::Vector3f::axis_y(),
             nnm::Vector3f::axis_z(),
-            1.02477892f,
-            16.0f / 9.0f,
+            0.927295218f, // ~53 deg vertical which is ~90 deg horizontal for 2:1
+            2.0f,
             1.0f,
             10.0f);
+        ASSERT(f.near_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y())));
+        ASSERT(f.far_plane.approx_equal(nnm::PlaneF({ 1.0f, 8.0f, 3.0f }, -nnm::Vector3f::axis_y())));
+        ASSERT(f.left_plane.approx_equal(nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.right_plane.approx_equal(nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.bottom_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f })));
+        ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
     }
 
     test_section("from_camera_right_hand_pos_forward_up_fov_aspect_near_far");
     {
-        const auto f1 = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+        const auto f = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
             { 1.0f, -2.0f, 3.0f },
             nnm::Vector3f::axis_y(),
             nnm::Vector3f::axis_z(),
-            1.02477892f,
-            16.0f / 9.0f,
+            0.927295218f, // ~53 deg vertical which is ~90 deg horizontal for 2:1
+            2.0f,
             1.0f,
             10.0f);
+        ASSERT(f.near_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y())));
+        ASSERT(f.far_plane.approx_equal(nnm::PlaneF({ 1.0f, 8.0f, 3.0f }, -nnm::Vector3f::axis_y())));
+        ASSERT(f.left_plane.approx_equal(nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.right_plane.approx_equal(nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.bottom_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f })));
+        ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
     }
 }
 
