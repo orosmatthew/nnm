@@ -2628,6 +2628,12 @@ public:
         return nnm::approx_equal(d, proj);
     }
 
+    [[nodiscard]] constexpr Real signed_distance(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> diff = point - origin;
+        return diff.dot(normal);
+    }
+
     /**
      * Determine the closest distance to a point. Zero if intersects.
      * @param point Point.
@@ -2636,8 +2642,7 @@ public:
     // tested
     [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
     {
-        const Vector3<Real> diff = point - origin;
-        return abs(diff.dot(normal) / normal.dot(normal));
+        return abs(signed_distance(point));
     }
 
     /**
@@ -2930,6 +2935,22 @@ public:
                       static_cast<Real>(0) };
         }
         return Line3<Real> { point, dir.normalize() };
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Plane& other1, const Plane& other2) const
+    {
+        const Matrix3<Real> a { { normal.x, normal.y, normal.z },
+                                { other1.normal.x, other1.normal.y, other1.normal.z },
+                                { other2.normal.x, other2.normal.y, other2.normal.z } };
+        if (const Real det = a.determinant(); approx_zero(det)) {
+            return std::nullopt;
+        }
+        const Vector3<Real> b {
+            normal.dot(origin), other1.normal.dot(other1.origin), other2.normal.dot(other2.origin)
+        };
+        const Matrix3<Real> a_inv = a.unchecked_inverse();
+        const Vector3<Real> point { a_inv.at(0).dot(b), a_inv.at(1).dot(b), a_inv.at(2).dot(b) };
+        return point;
     }
 
     // tested
@@ -6885,6 +6906,73 @@ public:
         const Plane<Real> top_plane { top_origin, top_normal };
 
         return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+    }
+
+    // TODO: valid() method?
+
+    [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Frustum", index < 8);
+        switch (index) {
+        case 0: // near-left-bottom
+            return near_plane.intersection(left_plane, bottom_plane).value();
+        case 1: // near-left-top
+            return near_plane.intersection(left_plane, top_plane).value();
+        case 2: // near-right-bottom
+            return near_plane.intersection(right_plane, bottom_plane).value();
+        case 3: // near-right-top
+            return near_plane.intersection(right_plane, top_plane).value();
+        case 4: // far-left-bottom
+            return far_plane.intersection(left_plane, bottom_plane).value();
+        case 5: // far-left-top
+            return far_plane.intersection(left_plane, top_plane).value();
+        case 6: // far-right-bottom
+            return far_plane.intersection(right_plane, bottom_plane).value();
+        case 7: // far-right-top
+        default:
+            return far_plane.intersection(right_plane, top_plane).value();
+        }
+    }
+
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        switch (index) {
+        case 0: // near-left
+            return { vertex(0), vertex(1) };
+        case 1: // near-right
+            return { vertex(2), vertex(3) };
+        case 2: // near-bottom
+            return { vertex(0), vertex(2) };
+        case 3: // near-top
+            return { vertex(1), vertex(3) };
+        case 4: // far-left
+            return { vertex(4), vertex(5) };
+        case 5: // far-right
+            return { vertex(6), vertex(7) };
+        case 6: // far-bottom
+            return { vertex(4), vertex(6) };
+        case 7: // far-top
+            return { vertex(5), vertex(7) };
+        case 8: // left-bottom
+            return { vertex(0), vertex(4) };
+        case 9: // left-top
+            return { vertex(1), vertex(5) };
+        case 10: // right-bottom
+            return { vertex(2), vertex(6) };
+        case 11: // right-top
+        default:
+            return { vertex(3), vertex(7) };
+        }
+    }
+
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
+    {
+        return approx_greater_equal_zero(near_plane.signed_distance(point))
+            && approx_greater_equal_zero(far_plane.signed_distance(point))
+            && approx_greater_equal_zero(left_plane.signed_distance(point))
+            && approx_greater_equal_zero(right_plane.signed_distance(point))
+            && approx_greater_equal_zero(bottom_plane.signed_distance(point))
+            && approx_greater_equal_zero(top_plane.signed_distance(point));
     }
 };
 

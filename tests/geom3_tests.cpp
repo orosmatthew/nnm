@@ -1817,6 +1817,14 @@ inline void plane_tests()
         ASSERT_FALSE(p2.contains({ 5.0f, -20.0f, -100.0f }));
     }
 
+    test_section("signed_distance)");
+    {
+        constexpr auto result = p2.signed_distance({ -1.89f, -3.46f, 1.46f });
+        ASSERT(nnm::approx_zero(result));
+        ASSERT(nnm::approx_equal(p2.signed_distance({ -1.89f, -2.752893f, 2.167107f }), 1.0f));
+        ASSERT(nnm::approx_equal(p2.signed_distance({ 100.0f, -6.995535f, -2.075535f }), -5.0f));
+    }
+
     test_section("distance(const Vector3&)");
     {
         constexpr auto result = p2.distance({ -1.89f, -3.46f, 1.46f });
@@ -5657,6 +5665,35 @@ void frustum_tests()
 {
     test_case("Frustum");
 
+    test_section("Frustum()");
+    {
+        constexpr nnm::FrustumF f {};
+        ASSERT(f.near_plane.approx_equal(nnm::PlaneF()));
+        ASSERT(f.far_plane.approx_equal(nnm::PlaneF()));
+        ASSERT(f.left_plane.approx_equal(nnm::PlaneF()));
+        ASSERT(f.right_plane.approx_equal(nnm::PlaneF()));
+        ASSERT(f.bottom_plane.approx_equal(nnm::PlaneF()));
+        ASSERT(f.top_plane.approx_equal(nnm::PlaneF()));
+    }
+
+    test_section("Frustum(const Plane&, const Plane&, const Plane&, const Plane&, const Plane&, const Plane&)");
+    {
+        constexpr nnm::FrustumF f {
+            nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+            nnm::PlaneF({ 1.0f, 8.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+            nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+            nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+            nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+            nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })
+        };
+        ASSERT(f.near_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y())));
+        ASSERT(f.far_plane.approx_equal(nnm::PlaneF({ 1.0f, 8.0f, 3.0f }, -nnm::Vector3f::axis_y())));
+        ASSERT(f.left_plane.approx_equal(nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.right_plane.approx_equal(nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f })));
+        ASSERT(f.bottom_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f })));
+        ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
+    }
+
     test_section("from_camera_left_hand_pos_forward_up_fov_aspect_near_far");
     {
         const auto f = nnm::FrustumF::from_camera_left_hand_pos_forward_up_fov_aspect_near_far(
@@ -5691,6 +5728,111 @@ void frustum_tests()
         ASSERT(f.right_plane.approx_equal(nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f })));
         ASSERT(f.bottom_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f })));
         ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
+    }
+
+    constexpr nnm::FrustumF f1 {
+        nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+        nnm::PlaneF({ 1.0f, 2.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+        nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+        nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+        nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+        nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })
+    };
+
+    test_section("vertex");
+    {
+        std::vector<nnm::Vector3f> vertices;
+        constexpr nnm::Vector3f v0 = f1.vertex(0);
+        vertices.push_back(v0);
+        constexpr nnm::Vector3f v1 = f1.vertex(1);
+        vertices.push_back(v1);
+        constexpr nnm::Vector3f v2 = f1.vertex(2);
+        vertices.push_back(v2);
+        constexpr nnm::Vector3f v3 = f1.vertex(3);
+        vertices.push_back(v3);
+        constexpr nnm::Vector3f v4 = f1.vertex(4);
+        vertices.push_back(v4);
+        constexpr nnm::Vector3f v5 = f1.vertex(5);
+        vertices.push_back(v5);
+        constexpr nnm::Vector3f v6 = f1.vertex(6);
+        vertices.push_back(v6);
+        constexpr nnm::Vector3f v7 = f1.vertex(7);
+        vertices.push_back(v7);
+
+        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+            return std::find_if(
+                       vertices.begin(),
+                       vertices.end(),
+                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                != vertices.end();
+        };
+
+        ASSERT(vertices_contains_approx({ 0.0f, -1.0f, 2.5f }));
+        ASSERT(vertices_contains_approx({ 0.0f, -1.0f, 3.5f }));
+        ASSERT(vertices_contains_approx({ 2.0f, -1.0f, 2.5f }));
+        ASSERT(vertices_contains_approx({ 2.0f, -1.0f, 3.5f }));
+        ASSERT(vertices_contains_approx({ -3.0f, 2.0f, 1.0f }));
+        ASSERT(vertices_contains_approx({ -3.0f, 2.0f, 5.0f }));
+        ASSERT(vertices_contains_approx({ 5.0f, 2.0f, 1.0f }));
+        ASSERT(vertices_contains_approx({ 5.0f, 2.0f, 5.0f }));
+    }
+
+    test_section("edge");
+    {
+        std::vector<nnm::Segment3f> edges;
+        constexpr nnm::Segment3f e0 = f1.edge(0);
+        edges.push_back(e0);
+        constexpr nnm::Segment3f e1 = f1.edge(1);
+        edges.push_back(e1);
+        constexpr nnm::Segment3f e2 = f1.edge(2);
+        edges.push_back(e2);
+        constexpr nnm::Segment3f e3 = f1.edge(3);
+        edges.push_back(e3);
+        constexpr nnm::Segment3f e4 = f1.edge(4);
+        edges.push_back(e4);
+        constexpr nnm::Segment3f e5 = f1.edge(5);
+        edges.push_back(e5);
+        constexpr nnm::Segment3f e6 = f1.edge(6);
+        edges.push_back(e6);
+        constexpr nnm::Segment3f e7 = f1.edge(7);
+        edges.push_back(e7);
+        constexpr nnm::Segment3f e8 = f1.edge(8);
+        edges.push_back(e8);
+        constexpr nnm::Segment3f e9 = f1.edge(9);
+        edges.push_back(e9);
+        constexpr nnm::Segment3f e10 = f1.edge(10);
+        edges.push_back(e10);
+        constexpr nnm::Segment3f e11 = f1.edge(11);
+        edges.push_back(e11);
+
+        auto edges_contains_coincident = [&edges](const nnm::Segment3f& edge) {
+            return std::find_if(
+                       edges.begin(), edges.end(), [&edge](const nnm::Segment3f& e) { return e.coincident(edge); })
+                != edges.end();
+        };
+
+        ASSERT(edges_contains_coincident({ f1.vertex(0), f1.vertex(1) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(2), f1.vertex(3) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(0), f1.vertex(2) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(1), f1.vertex(3) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(4), f1.vertex(5) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(6), f1.vertex(7) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(4), f1.vertex(6) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(5), f1.vertex(7) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(0), f1.vertex(4) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(1), f1.vertex(5) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(2), f1.vertex(6) }));
+        ASSERT(edges_contains_coincident({ f1.vertex(3), f1.vertex(7) }));
+    }
+
+    test_section("contains");
+    {
+        ASSERT_FALSE(f1.contains(nnm::Vector3f::zero()));
+        ASSERT(f1.contains({ 0.0f, 0.0f, 3.0f }));
+        ASSERT(f1.contains(f1.vertex(6)));
+        ASSERT_FALSE(f1.contains({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(f1.contains({ 4.0f, 1.5f, 2.0f }));
+        ASSERT_FALSE(f1.contains({ 1.0f, 3.0f, 3.0f }))
     }
 }
 
