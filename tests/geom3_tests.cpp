@@ -5827,12 +5827,79 @@ void frustum_tests()
 
     test_section("contains");
     {
-        ASSERT_FALSE(f1.contains(nnm::Vector3f::zero()));
-        ASSERT(f1.contains({ 0.0f, 0.0f, 3.0f }));
-        ASSERT(f1.contains(f1.vertex(6)));
-        ASSERT_FALSE(f1.contains({ 1.0f, -2.0f, 3.0f }));
-        ASSERT(f1.contains({ 4.0f, 1.5f, 2.0f }));
-        ASSERT_FALSE(f1.contains({ 1.0f, 3.0f, 3.0f }))
+        constexpr bool r1 = f1.contains(nnm::Vector3f::zero());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.contains({ 0.0f, 0.0f, 3.0f });
+        ASSERT(r2);
+        constexpr bool r3 = f1.contains(f1.vertex(6));
+        ASSERT(r3);
+        constexpr bool r4 = f1.contains({ 1.0f, -2.0f, 3.0f });
+        ASSERT_FALSE(r4);
+        constexpr bool r5 = f1.contains({ 4.0f, 1.5f, 2.0f });
+        ASSERT(r5);
+        constexpr bool r6 = f1.contains({ 1.0f, 3.0f, 3.0f });
+        ASSERT_FALSE(r6);
+    }
+
+    test_section("intersects(const Line3&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::Line3f::axis_z());
+        ASSERT(r2);
+        constexpr bool r3 = f1.intersects(nnm::Line3f::axis_y_offset(1.0f, 3.0f));
+        ASSERT(r3);
+    }
+
+    test_section("intersects(const Ray3&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        ASSERT(r2);
+        constexpr bool r3 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = f1.intersects(nnm::Ray3f({ 1.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y()));
+        ASSERT(r4);
+        constexpr bool r5 = f1.intersects(nnm::Ray3f({ 1.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(r5);
+    }
+
+    test_section("intersects(const Segment3&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::Segment3(nnm::Vector3f::zero(), { 100.0f, 0.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::Segment3(nnm::Vector3f::zero(), { 0.0f, 0.0f, 100.0f }));
+        ASSERT(r2);
+        constexpr bool r3 = f1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -100.0f }));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = f1.intersects(nnm::Segment3f({ 1.0f, -2.0f, 3.0f }, { 0.0f, 100.0f, 0.0f }));
+        ASSERT(r4);
+        constexpr bool r5 = f1.intersects(nnm::Segment3f({ 1.0f, -2.0f, 3.0f }, { 0.0f, -100.0f, 0.0f }));
+        ASSERT_FALSE(r5);
+        constexpr bool r6 = f1.intersects(nnm::Segment3f({ 0.0f, -0.5f, 3.0f }, { 2.0f, 1.5f, 2.0f }));
+        ASSERT(r6);
+    }
+
+    test_section("intersects(const Plane&)");
+    {
+        const bool r1 = f1.intersects(nnm::PlaneF::xy());
+        ASSERT_FALSE(r1);
+        const bool r2 = f1.intersects(nnm::PlaneF::xz());
+        ASSERT(r2);
+    }
+
+    test_section("intersects(const Triangle3&)");
+    {
+        constexpr bool r1
+            = f1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }, { 0.0f, 100.0f, 0.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2
+            = f1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }, { 0.0f, 100.0f, 0.0f }));
+        ASSERT(r2);
+        constexpr bool r3
+            = f1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 3.0f }, { 1.0f, 1.75f, 3.0f }, { 2.0f, 1.5f, 2.0f }));
+        ASSERT(r3);
     }
 }
 

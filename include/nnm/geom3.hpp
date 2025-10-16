@@ -2908,6 +2908,9 @@ public:
         return !nnm::approx_equal(dot, static_cast<Real>(1)) && !nnm::approx_equal(dot, static_cast<Real>(-1));
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const;
+
     // tested
     [[nodiscard]] std::optional<Line3<Real>> intersection(const Plane& other) const
     {
@@ -2952,6 +2955,9 @@ public:
         const Vector3<Real> point { a_inv.at(0).dot(b), a_inv.at(1).dot(b), a_inv.at(2).dot(b) };
         return point;
     }
+
+    // TODO: test
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> intersection(const Triangle3<Real>& triangle) const;
 
     // tested
     [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
@@ -6975,29 +6981,12 @@ public:
             && approx_greater_equal_zero(top_plane.signed_distance(point));
     }
 
-    [[nodiscard]] constexpr Real signed_distance(const Vector3<Real>& point) const
-    {
-        std::optional<Real> min_abs_dist;
-        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
-        for (const Plane<Real>& plane : planes) {
-            const Real signed_dist = plane.signed_distance(point);
-            if (!min_abs_dist.has_value() || abs(signed_dist) < abs(min_abs_dist.value())) {
-                min_abs_dist = signed_dist;
-            }
-        }
-        return min_abs_dist.value();
-    }
-
-    [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
-    {
-        return abs(signed_distance(point));
-    }
-
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(line)) {
+            const std::optional<Vector3<Real>> inter = plane.intersection(line);
+            if (inter.has_value() && contains(*inter)) {
                 return true;
             }
         }
@@ -7008,7 +6997,8 @@ public:
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(ray)) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(ray);
+                inter.has_value() && contains(inter.value())) {
                 return true;
             }
         }
@@ -7017,23 +7007,25 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
-        if (contains(segment.start) || contains(segment.end)) {
+        if (contains(segment.midpoint())) {
             return true;
         }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(segment)) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(segment);
+                inter.has_value() && contains(inter.value())) {
                 return true;
             }
         }
         return false;
     }
 
-    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
+    [[nodiscard]] bool intersects(const Plane<Real>& plane) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& p : planes) {
-            if (p.intersects(plane)) {
+            if (const std::optional<Line3<Real>> inter = p.intersection(plane);
+                inter.has_value() && intersects(inter.value())) {
                 return true;
             }
         }
@@ -7047,7 +7039,8 @@ public:
         }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(triangle)) {
+            if (const std::optional<Segment3<Real>> inter = plane.intersection(triangle);
+                inter.has_value() && intersects(inter.value())) {
                 return true;
             }
         }
@@ -7061,7 +7054,8 @@ public:
         }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(rectangle)) {
+            if (const std::optional<Segment3<Real>> inter = plane.intersection(rectangle);
+                inter.has_value() && intersects(inter.value())) {
                 return true;
             }
         }
@@ -7387,6 +7381,18 @@ template <typename Real>
 constexpr std::optional<Vector3<Real>> Segment3<Real>::intersection(const Plane<Real>& plane) const
 {
     return plane.intersection(*this);
+}
+
+template <typename Real>
+constexpr bool Plane<Real>::intersects(const Triangle3<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Segment3<Real>> Plane<Real>::intersection(const Triangle3<Real>& triangle) const
+{
+    return triangle.intersection(*this);
 }
 
 template <typename Real>
