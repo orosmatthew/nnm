@@ -6974,6 +6974,274 @@ public:
             && approx_greater_equal_zero(bottom_plane.signed_distance(point))
             && approx_greater_equal_zero(top_plane.signed_distance(point));
     }
+
+    [[nodiscard]] constexpr Real signed_distance(const Vector3<Real>& point) const
+    {
+        std::optional<Real> min_abs_dist;
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            const Real signed_dist = plane.signed_distance(point);
+            if (!min_abs_dist.has_value() || abs(signed_dist) < abs(min_abs_dist.value())) {
+                min_abs_dist = signed_dist;
+            }
+        }
+        return min_abs_dist.value();
+    }
+
+    [[nodiscard]] constexpr Real distance(const Vector3<Real>& point) const
+    {
+        return abs(signed_distance(point));
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
+    {
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(line)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
+    {
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(ray)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
+    {
+        if (contains(segment.start) || contains(segment.end)) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(segment)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const
+    {
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& p : planes) {
+            if (p.intersects(plane)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const
+    {
+        if (contains(triangle.centroid())) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(triangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
+    {
+        if (contains(rectangle.center())) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(rectangle)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const
+    {
+        if (contains(sphere.center)) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(sphere)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const AlignedBox<Real>& box) const
+    {
+        if (contains(box.center())) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(box)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Box<Real>& box) const
+    {
+        if (contains(box.center())) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(box)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr bool intersects(const Frustum& other) const
+    {
+        if (contains(other.vertex(0))) {
+            return true;
+        }
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (plane.intersects(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Line3<Real>& line) const
+    {
+        Intersections3<Real> inters;
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(line); inter.has_value()) {
+                inters.insert(inter.value());
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
+    {
+        Intersections3<Real> inters;
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(ray); inter.has_value()) {
+                inters.insert(inter.value());
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
+    {
+        Intersections3<Real> inters;
+        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+        for (const Plane<Real>& plane : planes) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(segment); inter.has_value()) {
+                inters.insert(inter.value());
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        return inters;
+    }
+
+    [[nodiscard]] constexpr Frustum translate(const Vector3<Real>& offset) const
+    {
+        return { near_plane.translate(offset),  far_plane.translate(offset),    left_plane.translate(offset),
+                 right_plane.translate(offset), bottom_plane.translate(offset), top_plane.translate(offset) };
+    }
+
+    [[nodiscard]] Frustum rotate_axis_angle(
+        const Vector3<Real>& axis, const Real angle, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+    {
+        return { near_plane.rotate_axis_angle_at(origin, axis, angle),
+                 far_plane.rotate_axis_angle_at(origin, axis, angle),
+                 left_plane.rotate_axis_angle_at(origin, axis, angle),
+                 right_plane.rotate_axis_angle_at(origin, axis, angle),
+                 bottom_plane.rotate_axis_angle_at(origin, axis, angle),
+                 top_plane.rotate_axis_angle_at(origin, axis, angle) };
+    }
+
+    [[nodiscard]] constexpr Frustum rotate_quaternion(
+        const Quaternion<Real>& quaternion, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+    {
+        return {
+            near_plane.rotate_quaternion_at(origin, quaternion),   far_plane.rotate_quaternion_at(origin, quaternion),
+            left_plane.rotate_quaternion_at(origin, quaternion),   right_plane.rotate_quaternion_at(origin, quaternion),
+            bottom_plane.rotate_quaternion_at(origin, quaternion), top_plane.rotate_quaternion_at(origin, quaternion)
+        };
+    }
+
+    [[nodiscard]] constexpr Frustum scale(
+        const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+    {
+        return { near_plane.scale_at(origin, factor),   far_plane.scale_at(origin, factor),
+                 left_plane.scale_at(origin, factor),   right_plane.scale_at(origin, factor),
+                 bottom_plane.scale_at(origin, factor), top_plane.scale_at(origin, factor) };
+    }
+
+    [[nodiscard]] constexpr bool approx_equal(const Frustum& other) const
+    {
+        return near_plane.approx_equal(other.near_plane) && far_plane.approx_equal(other.far_plane)
+            && left_plane.approx_equal(other.left_plane) && right_plane.approx_equal(other.right_plane)
+            && bottom_plane.approx_equal(other.bottom_plane) && top_plane.approx_equal(other.top_plane);
+    }
+
+    [[nodiscard]] constexpr bool operator==(const Frustum& other) const
+    {
+        return near_plane == other.near_plane && far_plane == other.far_plane && left_plane == other.left_plane
+            && right_plane == other.right_plane && bottom_plane == other.bottom_plane && top_plane == other.top_plane;
+    }
+
+    [[nodiscard]] constexpr bool operator!=(const Frustum& other) const
+    {
+        return near_plane != other.near_plane || far_plane != other.far_plane || left_plane != other.left_plane
+            || right_plane != other.right_plane || bottom_plane != other.bottom_plane || top_plane != other.top_plane;
+    }
+
+    [[nodiscard]] constexpr bool operator<(const Frustum& other) const
+    {
+        if (near_plane != other.near_plane) {
+            return near_plane < other.near_plane;
+        }
+        if (far_plane != other.far_plane) {
+            return far_plane < other.far_plane;
+        }
+        if (left_plane != other.left_plane) {
+            return left_plane < other.left_plane;
+        }
+        if (right_plane != other.right_plane) {
+            return right_plane < other.right_plane;
+        }
+        if (bottom_plane != other.bottom_plane) {
+            return bottom_plane < other.bottom_plane;
+        }
+        return top_plane < other.top_plane;
+    }
 };
 
 template <typename Real>
