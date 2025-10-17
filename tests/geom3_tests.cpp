@@ -5849,6 +5849,8 @@ void frustum_tests()
         ASSERT(r2);
         constexpr bool r3 = f1.intersects(nnm::Line3f::axis_y_offset(1.0f, 3.0f));
         ASSERT(r3);
+        constexpr bool r4 = f1.intersects(nnm::Line3f::axis_z_offset(0.0f, 2.0f));
+        ASSERT(r4);
     }
 
     test_section("intersects(const Ray3&)");
@@ -5863,6 +5865,8 @@ void frustum_tests()
         ASSERT(r4);
         constexpr bool r5 = f1.intersects(nnm::Ray3f({ 1.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_y()));
         ASSERT_FALSE(r5);
+        constexpr bool r6 = f1.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT(r6);
     }
 
     test_section("intersects(const Segment3&)");
@@ -5879,6 +5883,8 @@ void frustum_tests()
         ASSERT_FALSE(r5);
         constexpr bool r6 = f1.intersects(nnm::Segment3f({ 0.0f, -0.5f, 3.0f }, { 2.0f, 1.5f, 2.0f }));
         ASSERT(r6);
+        constexpr bool r7 = f1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 2.0f }, { 0.0f, 2.0f, 3.0f }));
+        ASSERT(r7);
     }
 
     test_section("intersects(const Plane&)");
@@ -5887,6 +5893,8 @@ void frustum_tests()
         ASSERT_FALSE(r1);
         const bool r2 = f1.intersects(nnm::PlaneF::xz());
         ASSERT(r2);
+        const bool r3 = f1.intersects(f1.far_plane);
+        ASSERT(r3);
     }
 
     test_section("intersects(const Triangle3&)");
@@ -5900,6 +5908,91 @@ void frustum_tests()
         constexpr bool r3
             = f1.intersects(nnm::Triangle3f({ 0.0f, 0.0f, 3.0f }, { 1.0f, 1.75f, 3.0f }, { 2.0f, 1.5f, 2.0f }));
         ASSERT(r3);
+        constexpr bool r4
+            = f1.intersects(nnm::Triangle3f({ 0.0f, 2.0f, 2.0f }, { 0.0f, 2.0f, 3.0f }, { 2.0f, 2.0f, 2.0f }));
+        ASSERT(r4);
+    }
+
+    test_section("intersects(const Rectangle&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::Rectangle3f::from_xy_offset_size(nnm::Vector3f::zero(), 100.0f, 100.0f));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::Rectangle3f::from_xz_offset_size({ 0.0f, 0.0f, 1.0f }, 4.0f, 4.0f));
+        ASSERT(r2);
+        constexpr bool r3
+            = f1.intersects(nnm::Rectangle3f::from_xz_offset_size(nnm::Vector3f::zero(), 1000.0f, 1000.0f));
+        ASSERT(r3);
+        constexpr bool r4 = f1.intersects(nnm::Rectangle3f::from_yz_offset_size({ 0.0f, 1.0f, 3.0f }, 0.5f, 0.1f));
+        ASSERT(r4);
+        constexpr bool r5 = f1.intersects(nnm::Rectangle3f::from_xz_offset_size({ 0.0f, 2.0f, 3.0f }, 0.1f, 0.1f));
+        ASSERT(r5);
+    }
+
+    test_section("intersects(const Sphere&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::SphereF({ 0.0f, 0.0f, 0.0f }, 1.0f));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::SphereF({ -1.0f, 0.0f, 0.0f }, 1.0f));
+        ASSERT_FALSE(r2);
+        constexpr bool r3 = f1.intersects(nnm::SphereF({ 0.0f, 0.0f, 0.0f }, 1000.0f));
+        ASSERT(r3);
+        constexpr bool r4 = f1.intersects(nnm::SphereF({ 0.0f, 0.0f, 0.0f }, 3.0f));
+        ASSERT(r4);
+        constexpr bool r5 = f1.intersects(nnm::SphereF({ 0.0f, 1.0f, 3.0f }, 0.1f));
+        ASSERT(r5);
+    }
+
+    test_section("intersects(const AlignedBox&)");
+    {
+        constexpr bool r1
+            = f1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 0.0f, 0.0f }, { 10.0f, 0.5f, 1.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2
+            = f1.intersects(nnm::AlignedBoxF::from_bounding_points({ -3.0f, -3.0f, -3.0f }, { 3.0f, 3.0f, 3.0f }));
+        ASSERT(r2);
+        constexpr bool r3 = f1.intersects(
+            nnm::AlignedBoxF::from_bounding_points({ -5.0f, -5.0f, -5.0f }, { 1000.0f, 1000.0f, 1000.0f }));
+        ASSERT(r3);
+        constexpr bool r4
+            = f1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 0.0f, 2.0f }, { 2.0f, 1.5f, 3.0f }));
+        ASSERT(r4);
+        constexpr bool r5
+            = f1.intersects(nnm::AlignedBoxF::from_bounding_points({ -4.0f, 2.0f, -10.0f }, { 7.0f, 4.0f, 10.0f }));
+        ASSERT(r5);
+    }
+
+    test_section("intersects(const Box&)");
+    {
+        constexpr bool r1 = f1.intersects(nnm::BoxF::from_center_size(nnm::Vector3f::zero(), { 10.0f, 1.0f, 2.0f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1.intersects(nnm::BoxF::from_center_size({ 0.0f, 0.0f, 0.0f }, { 4.0f, 1.0f, 6.0f }));
+        ASSERT(r2);
+        constexpr bool r3
+            = f1.intersects(nnm::BoxF::from_center_size({ 0.0f, 0.0f, 0.0f }, { 1000.0f, 1000.0f, 1000.0f }));
+        ASSERT(r3);
+        constexpr bool r4 = f1.intersects(nnm::BoxF::from_center_size({ 1.0f, 1.0f, 3.0f }, { 0.1f, 0.1f, 0.1f }));
+        ASSERT(r4);
+        constexpr bool r5 = f1.intersects(nnm::BoxF::from_center_size({ 1.0f, 2.5f, 3.0f }, { 100.0f, 1.0f, 100.0f }));
+        ASSERT(r5);
+        constexpr bool r6 = f1.intersects(nnm::BoxF::from_center_size({ 1.0f, 2.5f, 3.0f }, { 100.0f, 0.5f, 100.0f }));
+        ASSERT_FALSE(r6);
+    }
+
+    const auto f2 = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+        { 5.0f, 2.5f, -1.0f },
+        (-nnm::Vector3f::axis_y())
+            .rotate_axis_angle(nnm::Vector3f::axis_x(), -nnm::pi<float>() / 4.0f)
+            .rotate_axis_angle(nnm::Vector3f::axis_z(), -nnm::pi<float>() / 4.0f),
+        nnm::Vector3f::axis_z(),
+        nnm::pi<float>() / 4.0f,
+        0.5f,
+        0.5f,
+        3.5f);
+    std::array<nnm::Vector3f, 8> vertices { f2.vertex(0), f2.vertex(1), f2.vertex(2), f2.vertex(3),
+                                            f2.vertex(4), f2.vertex(5), f2.vertex(6), f2.vertex(7) };
+
+    test_section("intersects(const Frustum&)");
+    {
     }
 }
 

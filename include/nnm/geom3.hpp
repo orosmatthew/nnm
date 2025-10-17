@@ -2959,6 +2959,9 @@ public:
     // TODO: test
     [[nodiscard]] constexpr std::optional<Segment3<Real>> intersection(const Triangle3<Real>& triangle) const;
 
+    // TODO: test
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> intersection(const Rectangle3<Real>& rectangle) const;
+
     // tested
     [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
@@ -4311,6 +4314,12 @@ public:
         return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const
+    {
+        return half_span_u.perpendicular(plane.normal) && half_span_v.perpendicular(plane.normal);
+    }
+
     /**
      * Determine if contains a point.
      * @param point Point.
@@ -4735,6 +4744,26 @@ public:
             return std::nullopt;
         }
         return plane_inter;
+    }
+
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> intersection(const Plane<Real>& plane) const
+    {
+        Intersections3<Real> inters;
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(edge(i)); inter.has_value()) {
+                inters.insert(inter.value());
+                if (inters.size() >= 2) {
+                    break;
+                }
+            }
+        }
+        if (inters.empty()) {
+            return std::nullopt;
+        }
+        if (inters.size() == 1) {
+            return Segment3<Real> { inters.data()[0], inters.data()[0] };
+        }
+        return Segment3<Real> { inters.data()[0], inters.data()[1] };
     }
 
     /**
@@ -6849,7 +6878,17 @@ public:
         const Real near,
         const Real far)
     {
-        const Vector3<Real> right = up.cross(forward);
+        Vector3<Real> corrected_up = up;
+        if (forward.parallel(up)) {
+            if (!forward.parallel(Vector3<Real>::axis_x())) {
+                corrected_up = Vector3<Real>::axis_x();
+            }
+            else {
+                corrected_up = Vector3<Real>::axis_y();
+            }
+        }
+        const Vector3<Real> right = corrected_up.cross(forward).normalize();
+        corrected_up = forward.cross(right).normalize();
         const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
         const Real near_height_half = tan_fov_y * near;
         const Real near_width_half = near_height_half * aspect;
@@ -6859,18 +6898,18 @@ public:
         const Plane<Real> far_plane { position + forward * far, -forward };
 
         const Vector3<Real> left_origin = near_origin - right * near_width_half;
-        const Vector3<Real> left_normal = up.cross(left_origin - position).normalize();
+        const Vector3<Real> left_normal = corrected_up.cross(left_origin - position).normalize();
         const Plane<Real> left_plane { left_origin, left_normal };
 
         const Vector3<Real> right_origin = near_origin + right * near_width_half;
-        const Vector3<Real> right_normal = (right_origin - position).cross(up).normalize();
+        const Vector3<Real> right_normal = (right_origin - position).cross(corrected_up).normalize();
         const Plane<Real> right_plane { right_origin, right_normal };
 
-        const Vector3<Real> bottom_origin = near_origin - up * near_height_half;
+        const Vector3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
         const Vector3<Real> bottom_normal = (bottom_origin - position).cross(right).normalize();
         const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
 
-        const Vector3<Real> top_origin = near_origin + up * near_height_half;
+        const Vector3<Real> top_origin = near_origin + corrected_up * near_height_half;
         const Vector3<Real> top_normal = right.cross(top_origin - position).normalize();
         const Plane<Real> top_plane { top_origin, top_normal };
 
@@ -6886,7 +6925,17 @@ public:
         const Real near,
         const Real far)
     {
-        const Vector3<Real> right = forward.cross(up);
+        Vector3<Real> corrected_up = up;
+        if (forward.parallel(up)) {
+            if (!forward.parallel(Vector3<Real>::axis_x())) {
+                corrected_up = Vector3<Real>::axis_x();
+            }
+            else {
+                corrected_up = Vector3<Real>::axis_y();
+            }
+        }
+        const Vector3<Real> right = forward.cross(corrected_up).normalize();
+        corrected_up = right.cross(forward).normalize();
         const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
         const Real near_height_half = tan_fov_y * near;
         const Real near_width_half = near_height_half * aspect;
@@ -6896,18 +6945,18 @@ public:
         const Plane<Real> far_plane { position + forward * far, -forward };
 
         const Vector3<Real> left_origin = near_origin - right * near_width_half;
-        const Vector3<Real> left_normal = (left_origin - position).cross(up).normalize();
+        const Vector3<Real> left_normal = (left_origin - position).cross(corrected_up).normalize();
         const Plane<Real> left_plane { left_origin, left_normal };
 
         const Vector3<Real> right_origin = near_origin + right * near_width_half;
-        const Vector3<Real> right_normal = up.cross(right_origin - position).normalize();
+        const Vector3<Real> right_normal = corrected_up.cross(right_origin - position).normalize();
         const Plane<Real> right_plane { right_origin, right_normal };
 
-        const Vector3<Real> bottom_origin = near_origin - up * near_height_half;
+        const Vector3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
         const Vector3<Real> bottom_normal = right.cross(bottom_origin - position).normalize();
         const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
 
-        const Vector3<Real> top_origin = near_origin + up * near_height_half;
+        const Vector3<Real> top_origin = near_origin + corrected_up * near_height_half;
         const Vector3<Real> top_normal = (top_origin - position).cross(right).normalize();
         const Plane<Real> top_plane { top_origin, top_normal };
 
@@ -7049,7 +7098,7 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
     {
-        if (contains(rectangle.center())) {
+        if (contains(rectangle.center)) {
             return true;
         }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7064,54 +7113,53 @@ public:
 
     [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const
     {
-        if (contains(sphere.center)) {
-            return true;
-        }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(sphere)) {
-                return true;
+            if (const Real signed_dist = plane.signed_distance(sphere.center);
+                approx_less(signed_dist, -sphere.radius)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     [[nodiscard]] constexpr bool intersects(const AlignedBox<Real>& box) const
     {
-        if (contains(box.center())) {
-            return true;
-        }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(box)) {
-                return true;
+            const Vector3<Real> furthest { plane.normal.x > static_cast<Real>(0) ? box.max.x : box.min.x,
+                                           plane.normal.y > static_cast<Real>(0) ? box.max.y : box.min.y,
+                                           plane.normal.z > static_cast<Real>(0) ? box.max.z : box.min.z };
+            if (const Real signed_dist = plane.signed_distance(furthest); approx_less_zero(signed_dist)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     [[nodiscard]] constexpr bool intersects(const Box<Real>& box) const
     {
-        if (contains(box.center())) {
-            return true;
-        }
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(box)) {
-                return true;
+            const Real center_signed_dist = plane.signed_distance(box.center);
+            const Real extent = abs(plane.normal.dot(box.half_span_u)) + abs(plane.normal.dot(box.half_span_v))
+                + abs(plane.normal.dot(box.half_span_w));
+            if (approx_less_zero(center_signed_dist + extent)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
     [[nodiscard]] constexpr bool intersects(const Frustum& other) const
     {
-        if (contains(other.vertex(0))) {
-            return true;
+        for (uint8_t i = 0; i < 4; ++i) {
+            if (contains(other.vertex(i) || other.contains(vertex(i)))) {
+                return true;
+            }
         }
-        std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
-        for (const Plane<Real>& plane : planes) {
-            if (plane.intersects(other)) {
+        for (uint8_t i = 0; i < 12; ++i) {
+            if (intersects(other.edge(i)) || other.intersects(edge(i))) {
                 return true;
             }
         }
@@ -7393,6 +7441,12 @@ template <typename Real>
 constexpr std::optional<Segment3<Real>> Plane<Real>::intersection(const Triangle3<Real>& triangle) const
 {
     return triangle.intersection(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Segment3<Real>> Plane<Real>::intersection(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.intersection(*this);
 }
 
 template <typename Real>
