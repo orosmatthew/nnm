@@ -3003,17 +3003,16 @@ public:
     }
 
     // tested
-    [[nodiscard]] Plane rotate_quaternion_at(
+    [[nodiscard]] constexpr Plane rotate_quaternion_at(
         const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
-        return { origin.rotate_quaternion_at(rotate_origin, quaternion),
-                 normal.rotate_quaternion(quaternion).normalize() };
+        return { origin.rotate_quaternion_at(rotate_origin, quaternion), normal.rotate_quaternion(quaternion) };
     }
 
     // tested
-    [[nodiscard]] Plane rotate_quaternion(const Quaternion<Real>& quaternion) const
+    [[nodiscard]] constexpr Plane rotate_quaternion(const Quaternion<Real>& quaternion) const
     {
-        return { origin.rotate_quaternion(quaternion), normal.rotate_quaternion(quaternion).normalize() };
+        return { origin.rotate_quaternion(quaternion), normal.rotate_quaternion(quaternion) };
     }
 
     // tested
@@ -7154,7 +7153,7 @@ public:
     [[nodiscard]] constexpr bool intersects(const Frustum& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
-            if (contains(other.vertex(i) || other.contains(vertex(i)))) {
+            if (contains(other.vertex(i)) || other.contains(vertex(i))) {
                 return true;
             }
         }
@@ -7171,7 +7170,8 @@ public:
         Intersections3<Real> inters;
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (const std::optional<Vector3<Real>> inter = plane.intersection(line); inter.has_value()) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(line);
+                inter.has_value() && contains(inter.value())) {
                 inters.insert(inter.value());
                 if (inters.size() >= 2) {
                     break;
@@ -7186,7 +7186,8 @@ public:
         Intersections3<Real> inters;
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (const std::optional<Vector3<Real>> inter = plane.intersection(ray); inter.has_value()) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(ray);
+                inter.has_value() && contains(inter.value())) {
                 inters.insert(inter.value());
                 if (inters.size() >= 2) {
                     break;
@@ -7196,12 +7197,13 @@ public:
         return inters;
     }
 
-    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
+    [[nodiscard]] Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
     {
         Intersections3<Real> inters;
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            if (const std::optional<Vector3<Real>> inter = plane.intersection(segment); inter.has_value()) {
+            if (const std::optional<Vector3<Real>> inter = plane.intersection(segment);
+                inter.has_value() && contains(inter.value())) {
                 inters.insert(inter.value());
                 if (inters.size() >= 2) {
                     break;
@@ -7238,7 +7240,7 @@ public:
         };
     }
 
-    [[nodiscard]] constexpr Frustum scale(
+    [[nodiscard]] Frustum scale(
         const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
     {
         return { near_plane.scale_at(origin, factor),   far_plane.scale_at(origin, factor),

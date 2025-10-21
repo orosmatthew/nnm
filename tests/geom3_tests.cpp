@@ -2223,19 +2223,18 @@ inline void plane_tests()
     test_section("rotate_quaternion_at");
     {
         constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
-        const auto quat = nnm::QuaternionF::from_axis_angle(-nnm::Vector3f::axis_y(), 3.0f * nnm::pi<float>() / 2.0f);
-        const nnm::PlaneF p2r = p2.rotate_quaternion_at(origin, quat);
-        const nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion_at(origin, quat),
-                                         p2.normal.rotate_quaternion(quat).normalize() };
+        constexpr nnm::QuaternionF quat { 0.0f, -0.7071068f, 0.0f, -0.7071068f };
+        constexpr nnm::PlaneF p2r = p2.rotate_quaternion_at(origin, quat);
+        constexpr nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion_at(origin, quat),
+                                             p2.normal.rotate_quaternion(quat) };
         ASSERT(p2r.approx_equal(p2r_expected));
     }
 
     test_section("rotate_quaternion");
     {
-        const auto quat = nnm::QuaternionF::from_axis_angle(-nnm::Vector3f::axis_y(), 3.0f * nnm::pi<float>() / 2.0f);
-        const nnm::PlaneF p2r = p2.rotate_quaternion(quat);
-        const nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion(quat),
-                                         p2.normal.rotate_quaternion(quat).normalize() };
+        constexpr nnm::QuaternionF quat { 0.0f, -0.7071068f, 0.0f, -0.7071068f };
+        constexpr nnm::PlaneF p2r = p2.rotate_quaternion(quat);
+        constexpr nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion(quat), p2.normal.rotate_quaternion(quat) };
         ASSERT(p2r.approx_equal(p2r_expected));
     }
 
@@ -5978,21 +5977,202 @@ void frustum_tests()
         ASSERT_FALSE(r6);
     }
 
-    const auto f2 = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
-        { 5.0f, 2.5f, -1.0f },
-        (-nnm::Vector3f::axis_y())
-            .rotate_axis_angle(nnm::Vector3f::axis_x(), -nnm::pi<float>() / 4.0f)
-            .rotate_axis_angle(nnm::Vector3f::axis_z(), -nnm::pi<float>() / 4.0f),
-        nnm::Vector3f::axis_z(),
-        nnm::pi<float>() / 4.0f,
-        0.5f,
-        0.5f,
-        3.5f);
-    std::array<nnm::Vector3f, 8> vertices { f2.vertex(0), f2.vertex(1), f2.vertex(2), f2.vertex(3),
-                                            f2.vertex(4), f2.vertex(5), f2.vertex(6), f2.vertex(7) };
+    // const auto f2 = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+    //     { 5.0f, 2.5f, -1.0f },
+    //     (-nnm::Vector3f::axis_y())
+    //         .rotate_axis_angle(nnm::Vector3f::axis_x(), -nnm::pi<float>() / 4.0f)
+    //         .rotate_axis_angle(nnm::Vector3f::axis_z(), -nnm::pi<float>() / 4.0f),
+    //     nnm::Vector3f::axis_z(),
+    //     nnm::pi<float>() / 4.0f,
+    //     0.5f,
+    //     0.5f,
+    //     3.5f);
+    // std::array<nnm::Vector3f, 8> vertices { f2.vertex(0), f2.vertex(1), f2.vertex(2), f2.vertex(3),
+    //                                         f2.vertex(4), f2.vertex(5), f2.vertex(6), f2.vertex(7) };
+    constexpr nnm::FrustumF f2 {
+        { { 4.75f, 2.25f, -0.646446586f }, { 0.5f, -0.5f, 0.707106769f } },
+        { { 3.25f, 0.75f, 1.47487378f }, { 0.5f, 0.5f, -0.707106769f } },
+        { { 4.82322311f, 2.17677665f, -0.646446586f }, { -0.793814182f, 0.591011405f, 0.143403217f } },
+        { { 4.67677689f, 2.32322335f, -0.646446586f }, { 0.591011405f, -0.793814241f, 0.143403277f } },
+        { { 4.6464467f, 2.1464467f, -0.792893171f }, { 0.270598173f, 0.270598173f, 0.923879444f } },
+        { { 4.8535533f, 2.3535533f, -0.5f }, { -0.65328145f, -0.65328145f, -0.382683665f } }
+    };
 
     test_section("intersects(const Frustum&)");
     {
+        constexpr bool r1 = f1.intersects(f2);
+        ASSERT(r1);
+        constexpr bool r2 = f2.intersects(f1);
+        ASSERT(r2);
+        constexpr bool r3 = f1.intersects(f1);
+        ASSERT(r3);
+        constexpr nnm::FrustumF f3 = f2.translate({ 0.0f, 0.0f, -4.0f });
+        constexpr bool r4 = f1.intersects(f3);
+        ASSERT_FALSE(r4);
+        constexpr bool r5 = f3.intersects(f1);
+        ASSERT_FALSE(r5);
+    }
+
+    test_section("surface_intersections(const Line3&)");
+    {
+        constexpr nnm::Intersections3f r1 = f1.surface_intersections(nnm::Line3f::axis_x());
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2 = f1.surface_intersections(nnm::Line3f::axis_z());
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 4.0f } }));
+    }
+
+    test_section("surface_intersections(const Ray3&)");
+    {
+        constexpr nnm::Intersections3f r1
+            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT(r1.empty());
+        constexpr nnm::Intersections3f r2
+            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 4.0f } }));
+        constexpr nnm::Intersections3f r3
+            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        ASSERT(r3.empty());
+        constexpr nnm::Intersections3f r4
+            = f1.surface_intersections(nnm::Ray3f({ 0.0f, 0.0f, 3.0f }, nnm::Vector3f::axis_y()));
+        ASSERT(r4.approx_equal({ { 0.0f, 2.0f, 3.0f } }));
+    }
+
+    test_section("surface_intersections(const Segment3&)");
+    {
+        const nnm::Intersections3f r1
+            = f1.surface_intersections(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }));
+        ASSERT(r1.empty());
+        const nnm::Intersections3f r2
+            = f1.surface_intersections(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }));
+        ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 4.0f } }));
+        const nnm::Intersections3f r3
+            = f1.surface_intersections(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }));
+        ASSERT(r3.empty());
+        const nnm::Intersections3f r4
+            = f1.surface_intersections(nnm::Segment3f({ 0.0f, 0.0f, 3.0f }, { 0.0f, 100.0f, 3.0f }));
+        ASSERT(r4.approx_equal({ { 0.0f, 2.0f, 3.0f } }));
+        const nnm::Intersections3f r5
+            = f1.surface_intersections(nnm::Segment3f({ 0.0f, 0.0f, 3.0f }, { 0.0f, 1.0f, 3.0f }));
+        ASSERT(r5.empty());
+    }
+
+    test_section("translate");
+    {
+        constexpr nnm::Vector3f offset { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::FrustumF r1 = f1.translate({ -2.0f, 3.0f, 0.5f });
+        constexpr nnm::FrustumF e1 { f1.near_plane.translate(offset),   f1.far_plane.translate(offset),
+                                     f1.left_plane.translate(offset),   f1.right_plane.translate(offset),
+                                     f1.bottom_plane.translate(offset), f1.top_plane.translate(offset) };
+        ASSERT(r1.approx_equal(e1));
+    }
+
+    test_section("rotate_axis_angle");
+    {
+        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr auto axis = nnm::Vector3f::axis_x();
+        constexpr float angle = nnm::pi<float>() / 5.0f;
+        const nnm::FrustumF r1 = f1.rotate_axis_angle(axis, angle, origin);
+        const nnm::FrustumF e1 { f1.near_plane.rotate_axis_angle_at(origin, axis, angle),
+                                 f1.far_plane.rotate_axis_angle_at(origin, axis, angle),
+                                 f1.left_plane.rotate_axis_angle_at(origin, axis, angle),
+                                 f1.right_plane.rotate_axis_angle_at(origin, axis, angle),
+                                 f1.bottom_plane.rotate_axis_angle_at(origin, axis, angle),
+                                 f1.top_plane.rotate_axis_angle_at(origin, axis, angle) };
+        ASSERT(r1.approx_equal(e1));
+        const nnm::FrustumF r2 = f1.rotate_axis_angle(axis, angle);
+        const nnm::FrustumF e2 {
+            f1.near_plane.rotate_axis_angle(axis, angle),   f1.far_plane.rotate_axis_angle(axis, angle),
+            f1.left_plane.rotate_axis_angle(axis, angle),   f1.right_plane.rotate_axis_angle(axis, angle),
+            f1.bottom_plane.rotate_axis_angle(axis, angle), f1.top_plane.rotate_axis_angle(axis, angle)
+        };
+        ASSERT(r2.approx_equal(e2));
+    }
+
+    test_section("rotate_quaternion");
+    {
+        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::QuaternionF quat { 0.309017003f, 0.0f, 0.0f, 0.95105654f };
+        constexpr nnm::FrustumF r1 = f1.rotate_quaternion(quat, origin);
+        constexpr nnm::FrustumF e1 {
+            f1.near_plane.rotate_quaternion_at(origin, quat),   f1.far_plane.rotate_quaternion_at(origin, quat),
+            f1.left_plane.rotate_quaternion_at(origin, quat),   f1.right_plane.rotate_quaternion_at(origin, quat),
+            f1.bottom_plane.rotate_quaternion_at(origin, quat), f1.top_plane.rotate_quaternion_at(origin, quat)
+        };
+        ASSERT(r1.approx_equal(e1));
+    }
+
+    test_section("scale");
+    {
+        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::Vector3f factor { 1.5f, -0.25f, 3.0f };
+        const nnm::FrustumF r1 = f1.scale(factor, origin);
+        const nnm::FrustumF e1 { f1.near_plane.scale_at(origin, factor),   f1.far_plane.scale_at(origin, factor),
+                                 f1.left_plane.scale_at(origin, factor),   f1.right_plane.scale_at(origin, factor),
+                                 f1.bottom_plane.scale_at(origin, factor), f1.top_plane.scale_at(origin, factor) };
+        ASSERT(r1.approx_equal(e1));
+        const nnm::FrustumF r2 = f1.scale(factor);
+        const nnm::FrustumF e2 { f1.near_plane.scale(factor),   f1.far_plane.scale(factor),
+                                 f1.left_plane.scale(factor),   f1.right_plane.scale(factor),
+                                 f1.bottom_plane.scale(factor), f1.top_plane.scale(factor) };
+        ASSERT(r2.approx_equal(e2));
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr bool r1 = f1.approx_equal(
+            { nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+              nnm::PlaneF({ 1.0f, 2.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+              nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+              nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+              nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+              nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f }) });
+        ASSERT(r1);
+        constexpr bool r2 = f1.approx_equal(f2);
+        ASSERT_FALSE(r2);
+    }
+
+    test_section("operator==");
+    {
+        constexpr bool r1 = f1
+            == nnm::FrustumF(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+                             nnm::PlaneF({ 1.0f, 2.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+                             nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+                             nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+                             nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+                             nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f }));
+        ASSERT(r1);
+        constexpr bool r2 = f1 == f2;
+        ASSERT_FALSE(r2);
+    }
+
+    test_section("operator!=");
+    {
+        constexpr bool r1 = f1
+            != nnm::FrustumF(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+                             nnm::PlaneF({ 1.0f, 2.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+                             nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+                             nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+                             nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+                             nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1 != f2;
+        ASSERT(r2);
+    }
+
+    test_section("operator<");
+    {
+        constexpr bool r1 = f1
+            < nnm::FrustumF(nnm::PlaneF({ 1.0f, -1.0f, 3.0f }, nnm::Vector3f::axis_y()),
+                            nnm::PlaneF({ 1.0f, 2.0f, 3.0f }, -nnm::Vector3f::axis_y()),
+                            nnm::PlaneF({ 0.0f, -1.0f, 3.0f }, { 0.7071067812f, 0.7071067812f, 0.0f }),
+                            nnm::PlaneF({ 2.0f, -1.0f, 3.0f }, { -0.7071067812f, 0.7071067812f, 0.0f }),
+                            nnm::PlaneF({ 1.0f, -1.0f, 2.5f }, { 0.0f, 0.4472135955f, 0.8944271910f }),
+                            nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f }));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = f1 < f2;
+        ASSERT(r2);
+        constexpr bool r3 = f2 < f1;
+        ASSERT_FALSE(r3);
     }
 }
 
