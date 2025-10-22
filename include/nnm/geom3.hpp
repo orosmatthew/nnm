@@ -13,6 +13,7 @@
 #include <array>
 
 // ReSharper disable CppDFATimeOver
+// ReSharper disable CppTooWideScopeInitStatement
 
 namespace nnm {
 
@@ -6019,6 +6020,41 @@ public:
         const Vector3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
         const Vector3<Real> max = sphere.center + Vector3<Real>::all(sphere.radius);
         return { min, max };
+    }
+
+    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const
+    {
+        const Segment3<Real> s { min, max };
+        if (Plane<Real>::xy().parallel(s)) {
+            return Rectangle3<Real>::from_xy_offset_size(s.midpoint(), max.x - min.x, max.y - min.y);
+        }
+        if (Plane<Real>::xz().parallel(s)) {
+            return Rectangle3<Real>::from_xz_offset_size(s.midpoint(), max.x - min.x, max.z - min.z);
+        }
+        if (Plane<Real>::yz().parallel(s)) {
+            return Rectangle3<Real>::from_yz_offset_size(s.midpoint(), max.y - min.y, max.z - min.z);
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        const Vector3<Real> diff = max - min;
+        const bool x_zero = approx_zero(diff.x);
+        const bool y_zero = approx_zero(diff.y);
+        const bool z_zero = approx_zero(diff.z);
+        if ((x_zero && y_zero) || (x_zero && z_zero) || (y_zero && z_zero)) {
+            return Segment3<Real> { min, max };
+        }
+        return std::nullopt;
+    }
+
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!min.approx_zero(max)) {
+            return std::nullopt;
+        }
+        return min;
     }
 
     /**
