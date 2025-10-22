@@ -6832,16 +6832,48 @@ public:
     }
 };
 
+/**
+ * View frustum defined by 6 planes with normals pointing inwards.
+ * @tparam Real Floating-point type.
+ */
 template <typename Real>
 class Frustum {
 public:
+    /**
+     * Near plane with normal pointing inward.
+     */
     Plane<Real> near_plane;
+
+    /**
+     * Far plane with normal pointing inward.
+     */
     Plane<Real> far_plane;
+
+    /**
+     * Left plane with normal pointing inward.
+     */
     Plane<Real> left_plane;
+
+    /**
+     * Right plane with normal pointing inward.
+     */
     Plane<Real> right_plane;
+
+    /**
+     * Bottom plane with normal pointing inward.
+     */
     Plane<Real> bottom_plane;
+
+    /**
+     * Top plane with normal pointing inward.
+     */
     Plane<Real> top_plane;
 
+    /**
+     * Default initialize with all planes being default initialized.
+     * This is an invalid view frustum.
+     */
+    // tested
     constexpr Frustum()
         : near_plane { Plane<Real> {} }
         , far_plane { Plane<Real> {} }
@@ -6852,6 +6884,17 @@ public:
     {
     }
 
+    /**
+     * Initialize with 6 planes.
+     * All normals must be pointing inwards.
+     * @param near_plane Near plane with inward pointing normal.
+     * @param far_plane Far plane with inward pointing normal.
+     * @param left_plane Left plane with inward pointing normal.
+     * @param right_plane Right plane with inward pointing normal.
+     * @param bottom_plane Bottom plane with inward pointing normal.
+     * @param top_plane Top plane with inward pointing normal.
+     */
+    // tested
     constexpr Frustum(
         const Plane<Real> near_plane,
         const Plane<Real> far_plane,
@@ -6868,7 +6911,19 @@ public:
     {
     }
 
-    static Frustum from_camera_left_hand_pos_forward_up_fov_aspect_near_far(
+    /**
+     * Create view frustum based on camera parameters in a left-handed coordinate system.
+     * @param position Position of the camera.
+     * @param forward Normalized vector pointing in the forward direction of the camera.
+     * @param up Normalized vector that represents the up direction for the coordinate system.
+     * @param fov Vertical field-of-view in radians.
+     * @param aspect Aspect ratio (width/height).
+     * @param near Near distance.
+     * @param far Far distance.
+     * @return Result.
+     */
+    // tested
+    static Frustum from_camera_left_hand(
         const Vector3<Real>& position,
         const Vector3<Real>& forward,
         const Vector3<Real>& up,
@@ -6915,7 +6970,19 @@ public:
         return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
     }
 
-    static Frustum from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+    /**
+     * Create view frustum based on camera parameters in a right-handed coordinate system.
+     * @param position Position of the camera.
+     * @param forward Normalized vector pointing in the forward direction of the camera.
+     * @param up Normalized vector that represents the up direction for the coordinate system.
+     * @param fov Vertical field-of-view in radians.
+     * @param aspect Aspect ratio (width/height).
+     * @param near Near distance.
+     * @param far Far distance.
+     * @return Result.
+     */
+    // tested
+    static Frustum from_camera_right_hand(
         const Vector3<Real>& position,
         const Vector3<Real>& forward,
         const Vector3<Real>& up,
@@ -6962,8 +7029,12 @@ public:
         return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
     }
 
-    // TODO: valid() method?
-
+    /**
+     * Vertex at an index.
+     * @param index Index [0-7] inclusive.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Vector3<Real> vertex(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Frustum", index < 8);
@@ -6988,8 +7059,15 @@ public:
         }
     }
 
+    /**
+     * Edge at an index.
+     * @param index Index [0-11] inclusive.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
     {
+        NNM_BOUNDS_CHECK_ASSERT("Frustum", index < 12);
         switch (index) {
         case 0: // near-left
             return { vertex(0), vertex(1) };
@@ -7019,6 +7097,12 @@ public:
         }
     }
 
+    /**
+     * Determine if contains point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
         return approx_greater_equal_zero(near_plane.signed_distance(point))
@@ -7029,6 +7113,12 @@ public:
             && approx_greater_equal_zero(top_plane.signed_distance(point));
     }
 
+    /**
+     * Determine if intersects a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7041,6 +7131,12 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7053,6 +7149,13 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a line segment.
+     * A segment inside the frustum is considered intersecting.
+     * @param segment Segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const
     {
         if (contains(segment.midpoint())) {
@@ -7068,6 +7171,12 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] bool intersects(const Plane<Real>& plane) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7080,6 +7189,13 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a triangle.
+     * A triangle inside the frustum is considered intersecting.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const
     {
         if (contains(triangle.centroid())) {
@@ -7095,6 +7211,13 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a rectangle.
+     * A rectangle inside the frustum is considered intersecting.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const
     {
         if (contains(rectangle.center)) {
@@ -7110,6 +7233,13 @@ public:
         return false;
     }
 
+    /**
+     * Determine if intersects a sphere.
+     * A sphere inside the frustum is considered intersecting.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7122,6 +7252,13 @@ public:
         return true;
     }
 
+    /**
+     * Determine if intersects an aligned box.
+     * A box inside the frustum is considered intersecting.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const AlignedBox<Real>& box) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7136,6 +7273,13 @@ public:
         return true;
     }
 
+    /**
+     * Determine if intersects a box.
+     * A box inside the frustum is considered intersecting.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool intersects(const Box<Real>& box) const
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
@@ -7150,6 +7294,13 @@ public:
         return true;
     }
 
+    /**
+     * Determine if intersects another frustum.
+     * One frustum inside another is considered intersecting.
+     * @param other Other frustum.
+     * @return Result.
+     */
+    // tested.
     [[nodiscard]] constexpr bool intersects(const Frustum& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
@@ -7165,6 +7316,12 @@ public:
         return false;
     }
 
+    /**
+     * Surface intersection points with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Line3<Real>& line) const
     {
         Intersections3<Real> inters;
@@ -7181,6 +7338,12 @@ public:
         return inters;
     }
 
+    /**
+     * Surface intersections with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Ray3<Real>& ray) const
     {
         Intersections3<Real> inters;
@@ -7197,6 +7360,12 @@ public:
         return inters;
     }
 
+    /**
+     * Surface intersections with a line segment.
+     * @param segment Segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Intersections3<Real> surface_intersections(const Segment3<Real>& segment) const
     {
         Intersections3<Real> inters;
@@ -7213,12 +7382,26 @@ public:
         return inters;
     }
 
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Frustum translate(const Vector3<Real>& offset) const
     {
         return { near_plane.translate(offset),  far_plane.translate(offset),    left_plane.translate(offset),
                  right_plane.translate(offset), bottom_plane.translate(offset), top_plane.translate(offset) };
     }
 
+    /**
+     * Rotate by an axis and angle.
+     * @param axis Normalized axis vector.
+     * @param angle Angle in radians.
+     * @param origin Rotation origin defaulted to the global origin.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] Frustum rotate_axis_angle(
         const Vector3<Real>& axis, const Real angle, const Vector3<Real>& origin = Vector3<Real>::zero()) const
     {
@@ -7230,6 +7413,13 @@ public:
                  top_plane.rotate_axis_angle_at(origin, axis, angle) };
     }
 
+    /**
+     * Rotate by a quaternion.
+     * @param quaternion Quaternion.
+     * @param origin Rotation origin defaulted to the global origin.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Frustum rotate_quaternion(
         const Quaternion<Real>& quaternion, const Vector3<Real>& origin = Vector3<Real>::zero()) const
     {
@@ -7240,14 +7430,26 @@ public:
         };
     }
 
-    [[nodiscard]] Frustum scale(
-        const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+    /**
+     * Scale by a factor.
+     * @param factor Scaling factor.
+     * @param origin Scaling origin defaulted to the global origin.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Frustum scale(const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
     {
         return { near_plane.scale_at(origin, factor),   far_plane.scale_at(origin, factor),
                  left_plane.scale_at(origin, factor),   right_plane.scale_at(origin, factor),
                  bottom_plane.scale_at(origin, factor), top_plane.scale_at(origin, factor) };
     }
 
+    /**
+     * Determine if all members are approximately equal to another frustum.
+     * @param other Other frustum.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Frustum& other) const
     {
         return near_plane.approx_equal(other.near_plane) && far_plane.approx_equal(other.far_plane)
@@ -7255,18 +7457,35 @@ public:
             && bottom_plane.approx_equal(other.bottom_plane) && top_plane.approx_equal(other.top_plane);
     }
 
+    /**
+     * Determine if all members are exactly equal to another frustum.
+     * @param other Other frustum.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool operator==(const Frustum& other) const
     {
         return near_plane == other.near_plane && far_plane == other.far_plane && left_plane == other.left_plane
             && right_plane == other.right_plane && bottom_plane == other.bottom_plane && top_plane == other.top_plane;
     }
 
+    /**
+     * Determine if any members are not exactly equal to another frustum.
+     * @param other Other frustum.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Frustum& other) const
     {
         return near_plane != other.near_plane || far_plane != other.far_plane || left_plane != other.left_plane
             || right_plane != other.right_plane || bottom_plane != other.bottom_plane || top_plane != other.top_plane;
     }
 
+    /**
+     * Lexicographical comparison in the order of near, far, left, right, bottom, then top planes.
+     * @param other Other frustum.
+     * @return Result.
+     */
     [[nodiscard]] constexpr bool operator<(const Frustum& other) const
     {
         if (near_plane != other.near_plane) {

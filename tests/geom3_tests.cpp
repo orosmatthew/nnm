@@ -5693,9 +5693,9 @@ void frustum_tests()
         ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
     }
 
-    test_section("from_camera_left_hand_pos_forward_up_fov_aspect_near_far");
+    test_section("from_camera_left_hand");
     {
-        const auto f = nnm::FrustumF::from_camera_left_hand_pos_forward_up_fov_aspect_near_far(
+        const auto f = nnm::FrustumF::from_camera_left_hand(
             { 1.0f, -2.0f, 3.0f },
             nnm::Vector3f::axis_y(),
             nnm::Vector3f::axis_z(),
@@ -5711,9 +5711,9 @@ void frustum_tests()
         ASSERT(f.top_plane.approx_equal(nnm::PlaneF({ 1.0f, -1.0f, 3.5f }, { 0.0f, 0.4472135955f, -0.8944271910f })));
     }
 
-    test_section("from_camera_right_hand_pos_forward_up_fov_aspect_near_far");
+    test_section("from_camera_right_hand");
     {
-        const auto f = nnm::FrustumF::from_camera_right_hand_pos_forward_up_fov_aspect_near_far(
+        const auto f = nnm::FrustumF::from_camera_right_hand(
             { 1.0f, -2.0f, 3.0f },
             nnm::Vector3f::axis_y(),
             nnm::Vector3f::axis_z(),
