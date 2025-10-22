@@ -250,6 +250,15 @@ inline void line3_tests()
 
     constexpr nnm::Line3f l1 { { 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f } };
 
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> r1 = l1.collapse_point();
+        ASSERT_FALSE(r1.has_value());
+        constexpr nnm::Line3f degen_point { { 1.0f, -2.0f, 3.0f }, nnm::Vector3f::zero() };
+        constexpr std::optional<nnm::Vector3f> r2 = degen_point.collapse_point();
+        ASSERT(r2.has_value() && r2.value().approx_equal({ 1.0f, -2.0f, 3.0f }));
+    }
+
     test_section("parallel_containing");
     {
         constexpr auto l = l1.parallel_containing({ -5.0f, 6.0f, -7.0f });
@@ -775,16 +784,25 @@ inline void ray3_tests()
         ASSERT(r1.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
     }
 
-    test_section("normalize");
-    {
-        constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 7.0f, -9.0f } };
-        const auto r2 = r1.normalize();
-        ASSERT(r2.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
-        ASSERT(r2.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
-    }
-
     constexpr nnm::Ray3f r1 { { 1.0f, -2.0f, 3.0f }, { -0.424264073f, 0.565685451f, -0.707106769f } };
     constexpr nnm::Ray3f r2 { { 1.0f, -2.0f, 3.0f }, { 0.5773502692f, -0.5773502692f, 0.5773502692f } };
+
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> result1 = r1.collapse_point();
+        ASSERT_FALSE(result1.has_value());
+        constexpr nnm::Ray3f degen_point { { 1.0f, -2.0f, 3.0f }, nnm::Vector3f::zero() };
+        constexpr std::optional<nnm::Vector3f> result2 = degen_point.collapse_point();
+        ASSERT(result2.has_value() && result2.value().approx_equal({ 1.0f, -2.0f, 3.0f }));
+    }
+
+    test_section("normalize");
+    {
+        constexpr nnm::Ray3f r3 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 7.0f, -9.0f } };
+        const auto r4 = r3.normalize();
+        ASSERT(r4.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
+        ASSERT(r4.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
+    }
 
     test_section("collinear(const Vector3&)");
     {
@@ -1138,6 +1156,15 @@ inline void segment3_tests()
     }
 
     constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> r1 = s1.collapse_point();
+        ASSERT_FALSE(r1.has_value());
+        constexpr nnm::Segment3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+        constexpr std::optional<nnm::Vector3f> r2 = degen_point.collapse_point();
+        ASSERT(r2.has_value() && r2.value().approx_equal({ 1.0f, 1.0f, 1.0f }));
+    }
 
     test_section("collinear(const Vector3&)");
     {
@@ -2506,6 +2533,28 @@ inline void triangle3_tests()
     }
 
     constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+    constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+    constexpr nnm::Triangle3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+
+    test_case("collapse_segment");
+    {
+        constexpr std::optional<nnm::Segment3f> r1 = t1.collapse_segment();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Segment3f> r2 = degen_line.collapse_segment();
+        ASSERT(r2.has_value() && r2.value().coincident({ { -1.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } }));
+        constexpr std::optional<nnm::Segment3f> r3 = degen_point.collapse_segment();
+        ASSERT(r3.has_value() && r3.value().coincident({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } }));
+    }
+
+    test_case("collapse_to_point");
+    {
+        constexpr std::optional<nnm::Vector3f> r1 = t1.collapse_point();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Vector3f> r2 = degen_line.collapse_point();
+        ASSERT_FALSE(r2.has_value());
+        constexpr std::optional<nnm::Vector3f> r3 = degen_point.collapse_point();
+        ASSERT(r3.has_value() && r3.value().approx_equal({ 1.0f, 1.0f, 1.0f }));
+    }
 
     test_section("edge");
     {
@@ -2524,13 +2573,11 @@ inline void triangle3_tests()
         ASSERT(c.approx_equal(average));
     }
 
-    constexpr nnm::Triangle3f t2 { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
-
     test_section("circumcenter");
     {
         const std::optional<nnm::Vector3f> c1 = t1.circumcenter();
         ASSERT(c1.has_value() && c1->approx_equal({ 0.245901704f, 0.844262301f, -0.573770523f }));
-        const std::optional<nnm::Vector3f> c2 = t2.circumcenter();
+        const std::optional<nnm::Vector3f> c2 = degen_line.circumcenter();
         ASSERT_FALSE(c2.has_value());
     }
 
@@ -2538,7 +2585,7 @@ inline void triangle3_tests()
     {
         const float p1 = t1.perimeter();
         ASSERT(nnm::approx_equal(p1, 21.85209097f));
-        const float p2 = t2.perimeter();
+        const float p2 = degen_line.perimeter();
         ASSERT(nnm::approx_equal(p2, 4.0f));
     }
 
@@ -2546,14 +2593,14 @@ inline void triangle3_tests()
     {
         const auto result = t1.incenter();
         ASSERT(result.has_value() && result->approx_equal({ 1.7370612086f, -0.3100402543f, 1.3845008086f }));
-        ASSERT_FALSE(t2.incenter().has_value());
+        ASSERT_FALSE(degen_line.incenter().has_value());
     }
 
     test_section("orthocenter");
     {
         const std::optional<nnm::Vector3f> c1 = t1.orthocenter();
         ASSERT(c1.has_value() && c1->approx_equal({ 2.50819683f, -0.688524485f, 2.14754105f }));
-        const std::optional<nnm::Vector3f> c2 = t2.orthocenter();
+        const std::optional<nnm::Vector3f> c2 = degen_line.orthocenter();
         ASSERT_FALSE(c2.has_value());
     }
 
@@ -2563,7 +2610,7 @@ inline void triangle3_tests()
     {
         const float a1 = t1.area();
         ASSERT(nnm::approx_equal(a1, 16.5680415258f));
-        const float a2 = t2.area();
+        const float a2 = degen_line.area();
         ASSERT(nnm::approx_zero(a2));
         const float a3 = t3.area();
         ASSERT(nnm::approx_equal(a3, 16.5680415258f));
@@ -2593,11 +2640,11 @@ inline void triangle3_tests()
         ASSERT(
             pb2.has_value()
             & pb2->approx_equal({ { 2.5f, -1.0f, 2.5f }, { 0.532327354f, -0.435540527f, 0.725900888f } }));
-        const std::optional<nnm::Line3f> pb3 = t2.perpendicular_bisector(0);
+        const std::optional<nnm::Line3f> pb3 = degen_line.perpendicular_bisector(0);
         ASSERT_FALSE(pb3.has_value());
-        const std::optional<nnm::Line3f> pb4 = t2.perpendicular_bisector(1);
+        const std::optional<nnm::Line3f> pb4 = degen_line.perpendicular_bisector(1);
         ASSERT_FALSE(pb4.has_value());
-        const std::optional<nnm::Line3f> pb5 = t2.perpendicular_bisector(2);
+        const std::optional<nnm::Line3f> pb5 = degen_line.perpendicular_bisector(2);
         ASSERT_FALSE(pb5.has_value());
     }
 
@@ -2644,11 +2691,11 @@ inline void triangle3_tests()
         const std::optional<nnm::Segment3f> a3 = t1.altitude(2);
         ASSERT(
             a3.has_value() && a3->approx_equal({ { 4.0f, 0.0f, 2.0f }, { 0.710843325f, -1.51807225f, 2.32530117f } }));
-        const std::optional<nnm::Segment3f> a4 = t2.altitude(0);
+        const std::optional<nnm::Segment3f> a4 = degen_line.altitude(0);
         ASSERT_FALSE(a4.has_value());
-        const std::optional<nnm::Segment3f> a5 = t2.altitude(1);
+        const std::optional<nnm::Segment3f> a5 = degen_line.altitude(1);
         ASSERT_FALSE(a5.has_value());
-        const std::optional<nnm::Segment3f> a6 = t2.altitude(2);
+        const std::optional<nnm::Segment3f> a6 = degen_line.altitude(2);
         ASSERT_FALSE(a6.has_value());
     }
 
@@ -2676,7 +2723,7 @@ inline void triangle3_tests()
         ASSERT(w1.has_value() && w1->approx_equal({ 0.3f, 0.1f, 0.6f }));
         const std::optional<nnm::Vector3f> w2 = t3.barycentric({ 0.07f, 1.3f, -1.17f });
         ASSERT(w2.has_value() && w2->approx_equal({ 0.25f, 0.56f, 0.19f }));
-        const std::optional<nnm::Vector3f> w3 = t2.barycentric(nnm::Vector3f::zero());
+        const std::optional<nnm::Vector3f> w3 = degen_line.barycentric(nnm::Vector3f::zero());
         ASSERT_FALSE(w3.has_value());
     }
 
@@ -2686,9 +2733,9 @@ inline void triangle3_tests()
         ASSERT_FALSE(r1);
         const bool r2 = t1.contains({ 2.5f, -0.3f, 1.7f });
         ASSERT(r2);
-        const bool r3 = t2.contains({ 0.5f, 0.0f, 0.0f });
+        const bool r3 = degen_line.contains({ 0.5f, 0.0f, 0.0f });
         ASSERT(r3);
-        const bool r4 = t2.contains({ 0.0f, 1.0f, 0.0f });
+        const bool r4 = degen_line.contains({ 0.0f, 1.0f, 0.0f });
         ASSERT_FALSE(r4);
         const bool r5 = t1.contains({ 3.0f, 0.0f, 0.0f });
         ASSERT_FALSE(r5);
@@ -2698,7 +2745,7 @@ inline void triangle3_tests()
         ASSERT(r7);
         const bool r8 = t3.contains(t3.edge(1).midpoint());
         ASSERT(r8);
-        const bool r9 = t2.contains({ 0.0f, -100.0f, 0.0f });
+        const bool r9 = degen_line.contains({ 0.0f, -100.0f, 0.0f });
         ASSERT_FALSE(r9);
     }
 
@@ -2708,9 +2755,9 @@ inline void triangle3_tests()
         ASSERT_FALSE(r1);
         const bool r2 = t1.contains_projected({ 2.5f, -0.3f, 1.7f });
         ASSERT(r2);
-        const bool r3 = t2.contains_projected({ 0.5f, 0.0f, 0.0f });
+        const bool r3 = degen_line.contains_projected({ 0.5f, 0.0f, 0.0f });
         ASSERT(r3);
-        const bool r4 = t2.contains_projected({ 0.0f, 1.0f, 0.0f });
+        const bool r4 = degen_line.contains_projected({ 0.0f, 1.0f, 0.0f });
         ASSERT(r4);
         const bool r5 = t1.contains_projected({ 3.0f, 0.0f, 0.0f });
         ASSERT_FALSE(r5);
@@ -2720,17 +2767,17 @@ inline void triangle3_tests()
         ASSERT(r7);
         const bool r8 = t3.contains_projected(t3.edge(1).midpoint());
         ASSERT(r8);
-        const bool r9 = t2.contains_projected({ 0.0f, -100.0f, 0.0f });
+        const bool r9 = degen_line.contains_projected({ 0.0f, -100.0f, 0.0f });
         ASSERT(r9);
     }
 
-    test_section("collinear");
+    test_section("vertices_collinear");
     {
-        const bool r1 = t1.collinear();
+        constexpr bool r1 = t1.vertices_collinear();
         ASSERT_FALSE(r1);
-        const bool r2 = t2.collinear();
+        constexpr bool r2 = degen_line.vertices_collinear();
         ASSERT(r2);
-        const bool r3 = t3.collinear();
+        constexpr bool r3 = t3.vertices_collinear();
         ASSERT_FALSE(r3);
     }
 
@@ -2742,9 +2789,9 @@ inline void triangle3_tests()
         ASSERT(r2);
         const bool r3 = t1.coplanar({ 5.0009826255f, 0.9973796652f, 1.2891300792f });
         ASSERT(r3);
-        const bool r4 = t2.coplanar({ 1.0f, -2.0f, 3.0f });
+        const bool r4 = degen_line.coplanar({ 1.0f, -2.0f, 3.0f });
         ASSERT(r4);
-        const bool r5 = t2.coplanar({ 100.0f, 0.0f, 0.0f });
+        const bool r5 = degen_line.coplanar({ 100.0f, 0.0f, 0.0f });
         ASSERT(r5);
     }
 
@@ -2758,11 +2805,11 @@ inline void triangle3_tests()
             nnm::Line3f::from_points(
                 { 5.6279295263f, 0.2174812388f, 2.4491340955f }, { 3.7355435221f, 2.8096960263f, -1.3244196634f }));
         ASSERT(r3);
-        const bool r4 = t2.coplanar(nnm::Line3f::axis_x_offset(100.0f, -100.0f));
+        const bool r4 = degen_line.coplanar(nnm::Line3f::axis_x_offset(100.0f, -100.0f));
         ASSERT(r4);
-        const bool r5 = t2.coplanar(nnm::Line3f::axis_y());
+        const bool r5 = degen_line.coplanar(nnm::Line3f::axis_y());
         ASSERT(r5);
-        const bool r6 = t2.coplanar(nnm::Line3f::axis_y_offset(-100.0f, 100.0f));
+        const bool r6 = degen_line.coplanar(nnm::Line3f::axis_y_offset(-100.0f, 100.0f));
         ASSERT_FALSE(r6);
     }
 
@@ -2776,11 +2823,11 @@ inline void triangle3_tests()
             nnm::Ray3f::from_point_to_point(
                 { 5.6279295263f, 0.2174812388f, 2.4491340955f }, { 3.7355435221f, 2.8096960263f, -1.3244196634f }));
         ASSERT(r3);
-        const bool r4 = t2.coplanar(nnm::Ray3f { { 0.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x() });
+        const bool r4 = degen_line.coplanar(nnm::Ray3f { { 0.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x() });
         ASSERT(r4);
-        const bool r5 = t2.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        const bool r5 = degen_line.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
         ASSERT(r5);
-        const bool r6 = t2.coplanar(nnm::Ray3f { { -100.0f, 0.0f, 100.0f }, nnm::Vector3f::axis_y() });
+        const bool r6 = degen_line.coplanar(nnm::Ray3f { { -100.0f, 0.0f, 100.0f }, nnm::Vector3f::axis_y() });
         ASSERT_FALSE(r6);
     }
 
@@ -2794,11 +2841,11 @@ inline void triangle3_tests()
             nnm::Segment3f { { 5.6279295263f, 0.2174812388f, 2.4491340955f },
                              { 3.7355435221f, 2.8096960263f, -1.3244196634f } });
         ASSERT(r3);
-        const bool r4 = t2.coplanar(nnm::Segment3f { { 0.0f, 100.0f, -100.0f }, { 1.0f, 100.0f, -100.0f } });
+        const bool r4 = degen_line.coplanar(nnm::Segment3f { { 0.0f, 100.0f, -100.0f }, { 1.0f, 100.0f, -100.0f } });
         ASSERT(r4);
-        const bool r5 = t2.coplanar(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } });
+        const bool r5 = degen_line.coplanar(nnm::Segment3f { { 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } });
         ASSERT(r5);
-        const bool r6 = t2.coplanar(nnm::Segment3f { { -100.0f, 0.0f, 100.0f }, { -100.0f, 1.0f, 100.0f } });
+        const bool r6 = degen_line.coplanar(nnm::Segment3f { { -100.0f, 0.0f, 100.0f }, { -100.0f, 1.0f, 100.0f } });
         ASSERT_FALSE(r6);
     }
 
@@ -2808,13 +2855,13 @@ inline void triangle3_tests()
         ASSERT(r1);
         const bool r2 = t1.coplanar(nnm::PlaneF::xy());
         ASSERT_FALSE(r2);
-        const bool r3 = t2.coplanar(nnm::PlaneF::xy());
+        const bool r3 = degen_line.coplanar(nnm::PlaneF::xy());
         ASSERT(r3);
-        const bool r4 = t2.coplanar(nnm::PlaneF::xz());
+        const bool r4 = degen_line.coplanar(nnm::PlaneF::xz());
         ASSERT(r4);
-        const bool r5 = t2.coplanar(nnm::PlaneF::yz());
+        const bool r5 = degen_line.coplanar(nnm::PlaneF::yz());
         ASSERT_FALSE(r5);
-        const bool r6 = t2.coplanar(nnm::PlaneF::xz_offset(100.0f));
+        const bool r6 = degen_line.coplanar(nnm::PlaneF::xz_offset(100.0f));
         ASSERT_FALSE(r6);
     }
 
@@ -2826,9 +2873,9 @@ inline void triangle3_tests()
         ASSERT(p2.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
         const auto p3 = t1.project({ 0.8632112627f, -3.9685633672f, -1.3474929463f });
         ASSERT(p3.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
-        const auto p4 = t2.project({ 0.5f, 100.0f, 0.0f });
+        const auto p4 = degen_line.project({ 0.5f, 100.0f, 0.0f });
         ASSERT(p4.approx_equal({ 0.5f, 0.0f, 0.0f }));
-        const auto p5 = t2.project({ 100.0f, -100.0f, 0.0f });
+        const auto p5 = degen_line.project({ 100.0f, -100.0f, 0.0f });
         ASSERT(p5.approx_equal({ 1.0f, 0.0f, 0.0f }));
     }
 
@@ -2840,9 +2887,9 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_equal(d2, 5.5449966593f));
         const auto d3 = t1.distance(t1.vertices[1]);
         ASSERT(nnm::approx_zero(d3));
-        const auto d4 = t2.distance({ 0.5f, 0.0, 100.0f });
+        const auto d4 = degen_line.distance({ 0.5f, 0.0, 100.0f });
         ASSERT(nnm::approx_equal(d4, 100.0f));
-        const auto d5 = t2.distance({ 100.0f, 0.0f, 0.0f });
+        const auto d5 = degen_line.distance({ 100.0f, 0.0f, 0.0f });
         ASSERT(nnm::approx_equal(d5, 99.0f));
     }
 
@@ -2852,9 +2899,9 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_zero(d1));
         const auto d2 = t1.distance(nnm::Line3f::axis_y_offset(-1.0f, 0.0f));
         ASSERT(nnm::approx_equal(d2, 0.656532168f));
-        const auto d3 = t2.distance(nnm::Line3f::axis_x_offset(10.0f, 0.0f));
+        const auto d3 = degen_line.distance(nnm::Line3f::axis_x_offset(10.0f, 0.0f));
         ASSERT(nnm::approx_equal(d3, 10.0f));
-        const auto d4 = t2.distance(nnm::Line3f::axis_z_offset(5.0f, 0.0f));
+        const auto d4 = degen_line.distance(nnm::Line3f::axis_z_offset(5.0f, 0.0f));
         ASSERT(nnm::approx_equal(d4, 4.0f));
     }
 
@@ -2911,12 +2958,10 @@ inline void triangle3_tests()
         ASSERT_FALSE(r1);
         constexpr bool r2 = t1.parallel(nnm::Line3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
         ASSERT(r2);
-        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
         constexpr bool r3 = degen_line.parallel(nnm::Line3f::axis_x());
         ASSERT(r3);
         constexpr bool r4 = degen_line.parallel(nnm::Line3f::axis_y());
         ASSERT_FALSE(r4);
-        constexpr nnm::Triangle3f degen_point { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
         constexpr bool r5 = degen_point.parallel(nnm::Line3f::axis_x());
         ASSERT(r5);
         constexpr bool r6 = degen_point.parallel(nnm::Line3f::axis_y());
@@ -2931,9 +2976,9 @@ inline void triangle3_tests()
         ASSERT_FALSE(r2);
         const auto r3 = t1.intersects(nnm::Line3f::axis_y());
         ASSERT(r3);
-        const auto r4 = t2.intersects(nnm::Line3f::axis_y());
+        const auto r4 = degen_line.intersects(nnm::Line3f::axis_y());
         ASSERT(r4);
-        const auto r5 = t2.intersects(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
+        const auto r5 = degen_line.intersects(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
         ASSERT_FALSE(r5);
     }
 
@@ -2945,9 +2990,9 @@ inline void triangle3_tests()
         ASSERT_FALSE(i2.has_value());
         const auto i3 = t1.intersection(nnm::Line3f::axis_y());
         ASSERT(i3.has_value() && i3->approx_equal({ 0.0f, 0.25f, 0.0f }));
-        const auto r4 = t2.intersection(nnm::Line3f::axis_y());
+        const auto r4 = degen_line.intersection(nnm::Line3f::axis_y());
         ASSERT(r4.has_value() && r4->approx_equal({ 0.0f, 0.0f, 0.0f }));
-        const auto r5 = t2.intersection(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
+        const auto r5 = degen_line.intersection(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
         ASSERT_FALSE(r5.has_value());
     }
 
@@ -2961,11 +3006,11 @@ inline void triangle3_tests()
         ASSERT_FALSE(r3);
         const auto r4 = t1.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
         ASSERT(r4);
-        const auto r5 = t2.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        const auto r5 = degen_line.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
         ASSERT_FALSE(r5)
-        const auto r6 = t2.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        const auto r6 = degen_line.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
         ASSERT(r6)
-        const auto r7 = t2.intersects(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
+        const auto r7 = degen_line.intersects(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
         ASSERT_FALSE(r7);
     }
 
@@ -2979,11 +3024,11 @@ inline void triangle3_tests()
         ASSERT_FALSE(i3.has_value());
         const auto i4 = t1.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
         ASSERT(i4.has_value() && i4->approx_equal({ 0.0f, 0.25f, 0.0f }));
-        const auto i5 = t2.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
+        const auto i5 = degen_line.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
         ASSERT_FALSE(i5.has_value());
-        const auto i6 = t2.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        const auto i6 = degen_line.intersection(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
         ASSERT(i6.has_value() && i6->approx_zero());
-        const auto i7 = t2.intersection(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
+        const auto i7 = degen_line.intersection(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
         ASSERT_FALSE(i7.has_value());
     }
 
@@ -2999,11 +3044,11 @@ inline void triangle3_tests()
         ASSERT(r4);
         const auto r5 = t1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
         ASSERT_FALSE(r5);
-        const auto r6 = t2.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        const auto r6 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
         ASSERT_FALSE(r6);
-        const auto r7 = t2.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        const auto r7 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
         ASSERT(r7);
-        const auto r8 = t2.intersects(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
+        const auto r8 = degen_line.intersects(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
         ASSERT_FALSE(r8);
     }
 
@@ -3019,11 +3064,11 @@ inline void triangle3_tests()
         ASSERT(i4.has_value() && i4->approx_equal({ 0.0f, 0.25f, 0.0f }));
         const auto i5 = t1.intersection(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
         ASSERT_FALSE(i5.has_value());
-        const auto i6 = t2.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        const auto i6 = degen_line.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
         ASSERT_FALSE(i6.has_value());
-        const auto i7 = t2.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        const auto i7 = degen_line.intersection(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
         ASSERT(i7.has_value() && i7->approx_zero());
-        const auto i8 = t2.intersection(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
+        const auto i8 = degen_line.intersection(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
         ASSERT_FALSE(i8.has_value());
     }
 
@@ -3038,9 +3083,9 @@ inline void triangle3_tests()
         ASSERT(r3);
         constexpr auto r4 = t1.intersects(nnm::PlaneF::yz_offset(4.0f));
         ASSERT(r4);
-        constexpr auto r5 = t2.intersects(nnm::PlaneF::yz());
+        constexpr auto r5 = degen_line.intersects(nnm::PlaneF::yz());
         ASSERT(r5);
-        constexpr auto r6 = t2.intersects(nnm::PlaneF::xy_offset(1.0f));
+        constexpr auto r6 = degen_line.intersects(nnm::PlaneF::xy_offset(1.0f));
         ASSERT_FALSE(r6);
     }
 
@@ -3055,9 +3100,9 @@ inline void triangle3_tests()
         ASSERT(i3.has_value() && i3->coincident({ { 2.0f, 1.0f, 0.0f }, { -0.2857142857f, 0.1428571429f, 0.0f } }));
         constexpr auto i4 = t1.intersection(nnm::PlaneF::yz_offset(4.0f));
         ASSERT(i4.has_value() && i4->coincident({ { 4.0f, 0.0f, 2.0f }, { 4.0f, 0.0f, 2.0f } }));
-        constexpr auto i5 = t2.intersection(nnm::PlaneF::yz());
+        constexpr auto i5 = degen_line.intersection(nnm::PlaneF::yz());
         ASSERT(i5.has_value() && i5->coincident({ nnm::Vector3f::zero(), nnm::Vector3f::zero() }))
-        constexpr auto i6 = t2.intersection(nnm::PlaneF::xy_offset(1.0f));
+        constexpr auto i6 = degen_line.intersection(nnm::PlaneF::xy_offset(1.0f));
         ASSERT_FALSE(i6.has_value());
     }
 
@@ -3105,11 +3150,11 @@ inline void triangle3_tests()
     {
         constexpr auto r1 = t1.coincident(t1);
         ASSERT(r1);
-        constexpr auto r2 = t1.coincident(t2);
+        constexpr auto r2 = t1.coincident(degen_line);
         ASSERT_FALSE(r2);
-        constexpr auto r3 = t2.coincident(t1);
+        constexpr auto r3 = degen_line.coincident(t1);
         ASSERT_FALSE(r3);
-        constexpr auto r4 = t2.coincident(t2);
+        constexpr auto r4 = degen_line.coincident(degen_line);
         ASSERT(r4);
         constexpr auto r5 = t1.coincident({ { -2.0f, 3.0f, -4.0f }, { 1.0f, -2.0f, 3.0f }, { 4.0f, 0.0f, 2.0f } });
         ASSERT(r5);
@@ -3300,11 +3345,11 @@ inline void triangle3_tests()
     {
         constexpr auto r1 = t1.approx_equal(t1);
         ASSERT(r1);
-        constexpr auto r2 = t1.approx_equal(t2);
+        constexpr auto r2 = t1.approx_equal(degen_line);
         ASSERT_FALSE(r2);
-        constexpr auto r3 = t2.approx_equal(t1);
+        constexpr auto r3 = degen_line.approx_equal(t1);
         ASSERT_FALSE(r3);
-        constexpr auto r4 = t2.approx_equal(t2);
+        constexpr auto r4 = degen_line.approx_equal(degen_line);
         ASSERT(r4);
     }
 
@@ -3313,12 +3358,12 @@ inline void triangle3_tests()
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
         constexpr auto r1 = t1 == t1;
         ASSERT(r1);
-        constexpr auto r2 = t1 == t2;
+        constexpr auto r2 = t1 == degen_line;
         ASSERT_FALSE(r2);
-        constexpr auto r3 = t2 == t1;
+        constexpr auto r3 = degen_line == t1;
         ASSERT_FALSE(r3);
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
-        constexpr auto r4 = t2 == t2;
+        constexpr auto r4 = degen_line == degen_line;
         ASSERT(r4);
     }
 
@@ -3327,26 +3372,26 @@ inline void triangle3_tests()
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
         constexpr auto r1 = t1 != t1;
         ASSERT_FALSE(r1);
-        constexpr auto r2 = t1 != t2;
+        constexpr auto r2 = t1 != degen_line;
         ASSERT(r2);
-        constexpr auto r3 = t2 != t1;
+        constexpr auto r3 = degen_line != t1;
         ASSERT(r3);
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
-        constexpr auto r4 = t2 != t2;
+        constexpr auto r4 = degen_line != degen_line;
         ASSERT_FALSE(r4);
     }
 
     test_section("operator<");
     {
-        constexpr auto r1 = t1 < t2;
+        constexpr auto r1 = t1 < degen_line;
         ASSERT_FALSE(r1);
-        constexpr auto r2 = t2 < t1;
+        constexpr auto r2 = degen_line < t1;
         ASSERT(r2);
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
         constexpr auto r3 = t1 < t1;
         ASSERT_FALSE(r3);
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
-        constexpr auto r4 = t2 < t2;
+        constexpr auto r4 = degen_line < degen_line;
         ASSERT_FALSE(r4);
     }
 }
@@ -3395,19 +3440,39 @@ inline void rectangle3_tests()
         ASSERT(r1.half_span_v.approx_equal({ 0.0f, 0.0f, 1.75f }));
     }
 
-    test_section("valid");
-    {
-        constexpr nnm::Rectangle3f r1 { { 1.0, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 7.0f, -8.0f, 0.0f } };
-        constexpr auto result1 = r1.valid();
-        ASSERT_FALSE(result1);
-        constexpr auto r2 = nnm::Rectangle3f::from_yz_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
-        constexpr auto result2 = r2.valid();
-        ASSERT(result2);
-    }
-
     constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
     constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
     constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+
+    test_section("collapse_segment");
+    {
+        constexpr std::optional<nnm::Segment3f> result1 = r1.collapse_segment();
+        ASSERT_FALSE(result1.has_value());
+        constexpr std::optional<nnm::Segment3f> result2 = r_degen_line.collapse_segment();
+        ASSERT(result2.has_value() && result2.value().coincident({ { -4.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } }));
+        constexpr std::optional<nnm::Segment3f> result3 = r_degen_point.collapse_segment();
+        ASSERT(result3.has_value() && result3.value().approx_equal({ { -2.5f, 1.0f, 1.0f }, { -2.5f, 1.0f, 1.0f } }));
+    }
+
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> result1 = r1.collapse_point();
+        ASSERT_FALSE(result1.has_value());
+        constexpr std::optional<nnm::Vector3f> result2 = r_degen_line.collapse_point();
+        ASSERT_FALSE(result2.has_value());
+        constexpr std::optional<nnm::Vector3f> result3 = r_degen_point.collapse_point();
+        ASSERT(result3.has_value() && result3.value().approx_equal({ -2.5f, 1.0f, 1.0f }));
+    }
+
+    test_section("valid");
+    {
+        constexpr nnm::Rectangle3f r2 { { 1.0, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 7.0f, -8.0f, 0.0f } };
+        constexpr auto result1 = r2.valid();
+        ASSERT_FALSE(result1);
+        constexpr auto r3 = nnm::Rectangle3f::from_yz_offset_size({ 1.0f, -2.0f, 3.0f }, 2.0f, 3.5f);
+        constexpr auto result2 = r3.valid();
+        ASSERT(result2);
+    }
 
     test_section("vertex");
     {
@@ -4224,6 +4289,14 @@ void sphere_tests()
 
     constexpr nnm::SphereF s1 { { 1.0f, -2.0f, 3.0f }, 1.5f };
     constexpr nnm::SphereF s_degen { { 0.0f, 0.0f, 0.0f }, 0.0f };
+
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> r1 = s1.collapse_point();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Vector3f> r2 = s_degen.collapse_point();
+        ASSERT(r2.has_value() && r2.value().approx_equal({ 0.0f, 0.0f, 0.0f }));
+    }
 
     test_section("surface_area");
     {

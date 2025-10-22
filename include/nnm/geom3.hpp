@@ -437,6 +437,19 @@ public:
     }
 
     /**
+     * If direction is zero, return the point that represents the degenerate line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!direction.approx_zero()) {
+            return std::nullopt;
+        }
+        return origin;
+    }
+
+    /**
      * Line that is parallel to this line and intersects a point.
      * @param point Point.
      * @return Result.
@@ -1086,6 +1099,19 @@ public:
     }
 
     /**
+     * If direction is zero, return the point that represents the degenerate ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!direction.approx_zero()) {
+            return std::nullopt;
+        }
+        return origin;
+    }
+
+    /**
      * Normalize the direction.
      * @return Result.
      */
@@ -1686,6 +1712,19 @@ public:
         : start { other.start }
         , end { other.end }
     {
+    }
+
+    /**
+     * If start and end points are equal, returns the point that represents the degenerate line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!start.approx_equal(end)) {
+            return std::nullopt;
+        }
+        return start;
     }
 
     /**
@@ -3217,6 +3256,41 @@ public:
     }
 
     /**
+     * If all vertices are collinear, returns the line segment that represents the degenerate triangle.
+     * @return Result.
+     */
+    // tested.
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        if (!vertices_collinear()) {
+            return std::nullopt;
+        }
+        const Real d01 = vertices[0].distance_sqrd(vertices[1]);
+        const Real d02 = vertices[0].distance_sqrd(vertices[2]);
+        const Real d12 = vertices[1].distance_sqrd(vertices[2]);
+        if (approx_greater_equal(d01, d02) && approx_greater_equal(d01, d12)) {
+            return Segment3<Real> { vertices[0], vertices[1] };
+        }
+        if (approx_greater_equal(d02, d01) && approx_greater_equal(d02, d12)) {
+            return Segment3<Real> { vertices[0], vertices[2] };
+        }
+        return Segment3<Real> { vertices[1], vertices[2] };
+    }
+
+    /**
+     * If all vertices are coincident, returns the point that represents the degenerate triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!vertices_coincident()) {
+            return std::nullopt;
+        }
+        return vertices[0];
+    }
+
+    /**
      * Edge in the order of vertex 0 to 1, 1 to 2, then 2 to 0.
      * @param index Edge index.
      * @return Result.
@@ -3488,16 +3562,20 @@ public:
         return cond1 || cond2;
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool vertices_coincident() const
+    {
+        return vertices[0].approx_equal(vertices[1]) && vertices[0].approx_equal(vertices[2]);
+    }
+
     /**
      * Determine if all vertices are collinear.
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear() const
+    [[nodiscard]] constexpr bool vertices_collinear() const
     {
-        const auto l1 = Line3<Real>::from_points(vertices[0], vertices[1]);
-        const auto l2 = Line3<Real>::from_points(vertices[1], vertices[2]);
-        return l1.coincident(l2);
+        return edge(0).parallel(edge(1));
     }
 
     /**
@@ -4326,6 +4404,35 @@ public:
         return { offset,
                  size_y / static_cast<Real>(2) * Vector3<Real>::axis_y(),
                  size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    /**
+     * If either half-span is zero, returns the line segment that represents the degenerate rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        if (half_span_u.approx_zero()) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v };
+        }
+        if (half_span_v.approx_zero()) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u };
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * If both half-spans are zero, returns the point that represents the degenerate rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!half_span_u.approx_zero() || !half_span_v.approx_zero()) {
+            return std::nullopt;
+        }
+        return center;
     }
 
     /**
@@ -5261,6 +5368,19 @@ public:
     static Sphere from_center_surface_point(const Vector3<Real>& center, const Vector3<Real>& point)
     {
         return Sphere(center, center.distance(point));
+    }
+
+    /**
+     * If radius is zero, returns the point representing the degenerate sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!approx_zero(radius)) {
+            return std::nullopt;
+        }
+        return center;
     }
 
     /**
