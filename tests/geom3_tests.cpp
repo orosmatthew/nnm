@@ -343,6 +343,19 @@ inline void line3_tests()
                 { -4.5435928528f, -3.1536294284f, 5.8279349987f })));
     }
 
+    test_section("coplanar(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr bool result1 = nnm::Line3f::axis_x().coplanar(r1);
+        ASSERT(result1);
+        constexpr bool result2 = nnm::Line3f::axis_y().coplanar(r1);
+        ASSERT_FALSE(result2);
+        constexpr bool result3 = nnm::Line3f::axis_x_offset(1.0f, 1.0f).coplanar(r1);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).coplanar(r1);
+        ASSERT_FALSE(result4);
+    }
+
     test_section("contains");
     {
         constexpr auto result = l1.contains({ 0.0f, 0.0f, 0.0f });
@@ -383,6 +396,114 @@ inline void line3_tests()
         ASSERT(nnm::approx_zero(d4));
     }
 
+    test_section("distance(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        const auto d1 = nnm::Line3f::axis_x().distance(s1);
+        ASSERT(nnm::approx_equal(d1, 0.263117403f));
+        const auto d2 = nnm::Line3f({ -6.0f, -4.0f, 7.0f }, { 1.0f, 0.0f, 0.0f }).distance(s1);
+        ASSERT(nnm::approx_equal(d2, 4.472135955f));
+        const auto d3 = nnm::Line3f({ -6.0f, 7.0f, -7.0f }, { 0.0f, 0.0f, -1.0f }).distance(s1);
+        ASSERT(nnm::approx_equal(d3, 2.8284271247f));
+    }
+
+    test_section("distance(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto d1 = nnm::Line3f::axis_x().distance(p2);
+        ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
+        constexpr auto d2 = nnm::Line3f::axis_z().distance(p2);
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() }.distance(p2);
+        ASSERT(nnm::approx_equal(d3, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d4 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() }.distance(p2);
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() }.distance(p2);
+        ASSERT(nnm::approx_zero(d5));
+    }
+
+    test_section("distance(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        const auto d1 = nnm::Line3f::axis_y().distance(t1);
+        ASSERT(nnm::approx_zero(d1));
+        const auto d2 = nnm::Line3f::axis_y_offset(-1.0f, 0.0f).distance(t1);
+        ASSERT(nnm::approx_equal(d2, 0.656532168f));
+        constexpr nnm::Triangle3f t2 { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        const auto d3 = nnm::Line3f::axis_x_offset(10.0f, 0.0f).distance(t2);
+        ASSERT(nnm::approx_equal(d3, 10.0f));
+        const auto d4 = nnm::Line3f::axis_z_offset(5.0f, 0.0f).distance(t2);
+        ASSERT(nnm::approx_equal(d4, 4.0f));
+    }
+
+    test_section("distance(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        const auto result1 = nnm::Line3f::axis_x().distance(r1);
+        ASSERT(nnm::approx_zero(result1));
+        const auto result2 = nnm::Line3f::axis_y().distance(r1);
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        const auto result3
+            = nnm::Line3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } }.distance(r1);
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4 = nnm::Line3f { { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } }.distance(r1);
+        ASSERT(nnm::approx_equal(result4, 1.0f));
+        const auto result5 = nnm::Line3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } }.distance(r1);
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        const auto result6 = nnm::Line3f::axis_x().distance(r_degen_line);
+        ASSERT(nnm::approx_zero(result6));
+        const auto result7 = nnm::Line3f::axis_y().distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result7, 1.0f));
+        const auto result8
+            = nnm::Line3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result8, 1.4142135624f));
+        const auto result9 = nnm::Line3f::axis_x().distance(r_degen_point);
+        ASSERT(nnm::approx_equal(result9, 1.4142135624f));
+        const auto result10 = nnm::Line3f::axis_x_offset(1.0f, 1.0f).distance(r_degen_point);
+        ASSERT(nnm::approx_zero(result10));
+    }
+
+    test_section("distance(const Sphere&)");
+    {
+        constexpr nnm::SphereF s1 { { 1.0f, -2.0f, 3.0f }, 1.5f };
+        constexpr nnm::SphereF s_degen { { 0.0f, 0.0f, 0.0f }, 0.0f };
+        const auto r1 = nnm::Line3f::axis_x_offset(-2.0f, 3.0f).distance(s1);
+        ASSERT(nnm::approx_zero(r1));
+        const auto r2 = nnm::Line3f::axis_x().distance(s1);
+        ASSERT(nnm::approx_equal(r2, 2.1055512755f));
+        const auto r3 = nnm::Line3f::axis_y_offset(2.5f, 3.0f).distance(s1);
+        ASSERT(nnm::approx_zero(r3));
+        const auto r4 = nnm::Line3f::axis_x_offset(1.0f, 1.0f).distance(s_degen);
+        ASSERT(nnm::approx_equal(r4, 1.4142135624f));
+        const auto r5 = nnm::Line3f::axis_z().distance(s_degen);
+        ASSERT(nnm::approx_zero(r5));
+    }
+
+    test_section("distance(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        const float r1 = nnm::Line3f::axis_x().distance(b1);
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2 = nnm::Line3f::axis_z().distance(b1);
+        ASSERT(nnm::approx_zero(r2));
+    }
+
+    test_section("distance(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        const float r1 = nnm::Line3f::axis_x().distance(b1);
+        ASSERT(nnm::approx_equal(r1, 1.23223305f));
+        const float r2 = nnm::Line3f::axis_y_offset(0.0f, 1.5f).distance(b1);
+        ASSERT(nnm::approx_equal(r2, 0.2677670343f));
+        const float r3 = nnm::Line3f::axis_z_offset(0.0f, -1.0f).distance(b1);
+        ASSERT(nnm::approx_zero(r3));
+    }
+
     test_section("parallel(const Line3&)");
     {
         constexpr auto result = l1.parallel(l1);
@@ -397,6 +518,30 @@ inline void line3_tests()
         constexpr auto result = nnm::Line3f::axis_x().parallel(r1);
         ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::from_points({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f }).parallel(r1));
+    }
+
+    test_section("parallel(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        constexpr auto result = nnm::Line3f::axis_x().parallel(s1);
+        ASSERT_FALSE(result);
+        ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }).parallel(s1))
+        ASSERT(nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f }).parallel(s1))
+    }
+
+    test_section("parallel(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto r1 = nnm::Line3f::axis_x().parallel(p2);
+        ASSERT(r1);
+        constexpr auto r2 = nnm::Line3f::axis_z().parallel(p2);
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() }.parallel(p2);
+        ASSERT(r3);
+        constexpr auto r4 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() }.parallel(p2);
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() }.parallel(p2);
+        ASSERT_FALSE(r5);
     }
 
     test_section("perpendicular(const Line3&)");
@@ -2760,6 +2905,24 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_equal(d3, 3.0f));
     }
 
+    test_section("parallel(const Triangle3&)");
+    {
+        constexpr bool r1 = t1.parallel(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = t1.parallel(nnm::Line3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
+        ASSERT(r2);
+        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        constexpr bool r3 = degen_line.parallel(nnm::Line3f::axis_x());
+        ASSERT(r3);
+        constexpr bool r4 = degen_line.parallel(nnm::Line3f::axis_y());
+        ASSERT_FALSE(r4);
+        constexpr nnm::Triangle3f degen_point { { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr bool r5 = degen_point.parallel(nnm::Line3f::axis_x());
+        ASSERT(r5);
+        constexpr bool r6 = degen_point.parallel(nnm::Line3f::axis_y());
+        ASSERT(r6);
+    }
+
     test_section("intersects(const Line3&)");
     {
         const auto r1 = t1.intersects(nnm::Line3f::from_segment(t1.edge(0)));
@@ -3316,6 +3479,18 @@ inline void rectangle3_tests()
         ASSERT(nnm::approx_equal(r1.perimeter(), 11.6568542494f));
         ASSERT(nnm::approx_equal(r_degen_line.perimeter(), 6.0f));
         ASSERT(nnm::approx_zero(r_degen_point.perimeter()));
+    }
+
+    test_section("coplanar(const Line3&)");
+    {
+        constexpr bool result1 = r1.coplanar(nnm::Line3f::axis_x());
+        ASSERT(result1);
+        constexpr bool result2 = r1.coplanar(nnm::Line3f::axis_y());
+        ASSERT_FALSE(result2);
+        constexpr bool result3 = r1.coplanar(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
+        ASSERT(result3);
+        constexpr bool result4 = r1.coplanar(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT_FALSE(result4);
     }
 
     test_section("contains");
@@ -4802,7 +4977,7 @@ void aligned_box_tests()
         ASSERT(nnm::approx_equal(r4, 164.0f));
     }
 
-    test_section("distance");
+    test_section("distance(const Vector3&)");
     {
         const float r1 = b1.distance(nnm::Vector3f::zero());
         ASSERT(nnm::approx_equal(r1, 0.5f));
@@ -4812,6 +4987,14 @@ void aligned_box_tests()
         ASSERT(nnm::approx_zero(r3));
         const float r4 = b1.distance({ 10.0f, 10.0f, 10.0f });
         ASSERT(nnm::approx_equal(r4, 12.8062484749f));
+    }
+
+    test_section("distance(const Line3&)");
+    {
+        const float r1 = b1.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2 = b1.distance(nnm::Line3f::axis_z());
+        ASSERT(nnm::approx_zero(r2));
     }
 
     test_section("intersects(const Line3&)");
@@ -5107,11 +5290,10 @@ void box_tests()
 
     // auto b1 = nnm::BoxF::from_center_size({ 1.0f, -2.0f, 3.0f }, { 2.0f, 4.0f, 3.0f });
     // b1 = b1.rotate_axis_angle(nnm::Vector3f::axis_y(), nnm::pi<float>() / 4.0f, b1.center);
-    constexpr auto b1 = nnm::BoxF(
-        { 1.0f, -2.0f, 3.0f },
-        { 0.707106769f, 0.0f, -0.707106769f },
-        { 0.0f, 2.0f, 0.0f },
-        { 1.06066012f, 0.0f, 1.06066012f });
+    constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                             { 0.707106769f, 0.0f, -0.707106769f },
+                             { 0.0f, 2.0f, 0.0f },
+                             { 1.06066012f, 0.0f, 1.06066012f } };
 
     test_section("vertex");
     {
@@ -5300,7 +5482,7 @@ void box_tests()
         ASSERT(nnm::approx_equal(r4, 1.2573591981f));
     }
 
-    test_section("distance");
+    test_section("distance(const Vector3&)");
     {
         const float r1 = b1.distance(nnm::Vector3f::zero());
         ASSERT(nnm::approx_equal(r1, 1.3915069639f));
@@ -5310,6 +5492,16 @@ void box_tests()
         ASSERT(nnm::approx_zero(r3));
         const float r4 = b1.distance({ 0.0f, -2.0f, 5.0f });
         ASSERT(nnm::approx_equal(r4, 1.1213202924f));
+    }
+
+    test_section("distance(const Line3&)");
+    {
+        const float r1 = b1.distance(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_equal(r1, 1.23223305f));
+        const float r2 = b1.distance(nnm::Line3f::axis_y_offset(0.0f, 1.5f));
+        ASSERT(nnm::approx_equal(r2, 0.2677670343f));
+        const float r3 = b1.distance(nnm::Line3f::axis_z_offset(0.0f, -1.0f));
+        ASSERT(nnm::approx_zero(r3));
     }
 
     test_section("intersects(const Line3&)");

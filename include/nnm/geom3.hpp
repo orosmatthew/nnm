@@ -492,6 +492,7 @@ public:
      * @param segment Line segment.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool collinear(const Segment3<Real>& segment) const;
 
     /**
@@ -543,6 +544,14 @@ public:
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
+     * Determine if coplanar with a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Rectangle3<Real>& rectangle) const;
+
+    /**
      * Determine if intersects a point.
      * @param point Point.
      * @return Result.
@@ -592,6 +601,62 @@ public:
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const;
 
     /**
+     * Closest distance to a line segment. Zero if they intersect.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const;
+
+    /**
+     * Closest distance to a plane. Zero if they intersect.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const;
+
+    /**
+     * Closest distance to a triangle. Zero if they intersect.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Closest distance to a rectangle. Zero if they intersect.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Closest distance to a sphere. Zero if they intersect.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const;
+
+    /**
+     * Closest distance to an aligned box. Zero if intersecting.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance to box. Zero if intersecting.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Box<Real>& box) const;
+
+    /**
      * Determine if parallel with another line.
      * @param other Other line.
      * @return Result.
@@ -609,6 +674,28 @@ public:
      */
     // tested
     [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const;
+
+    /**
+     * Determine if parallel to line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Segment3<Real>& segment) const;
+
+    /**
+     * Determine if parallel to plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Plane<Real>& plane) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr bool parallel(const Triangle3<Real>& triangle) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr bool parallel(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Determine if perpendicular to another line.
@@ -2490,6 +2577,9 @@ public:
     // tested
     static std::optional<Plane> from_triangle(const Triangle3<Real>& triangle);
 
+    // TODO: test
+    static Plane from_rectangle(const Rectangle3<Real>& rectangle);
+
     /**
      * Plane that spans the x and y axes.
      * @return Result.
@@ -3612,6 +3702,23 @@ public:
     }
 
     /**
+     * Determine if parallel with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
+    {
+        const Vector3<Real> d01 = vertices[0] - vertices[1];
+        const Vector3<Real> d02 = vertices[0] - vertices[2];
+        if (d01.parallel(d02)) {
+            return d01.parallel(line.direction);
+        }
+        const Vector3<Real> cross = d01.cross(d02);
+        return cross.perpendicular(line.direction);
+    }
+
+    /**
      * Determine if intersects with a line.
      * @param line Line.
      * @return Result.
@@ -4222,7 +4329,7 @@ public:
     }
 
     /**
-     * Determine if valid. Validility is determined if half_span_u and half_span_v are orthogonal.
+     * Determine if valid. Validity is determined if half_span_u and half_span_v are orthogonal.
      * @return Result.
      */
     // tested
@@ -4311,6 +4418,22 @@ public:
     [[nodiscard]] Real perimeter() const
     {
         return static_cast<Real>(2) * size_u() + static_cast<Real>(2) * size_v();
+    }
+
+    /**
+     * Determine if coplanar with a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (!approx_zero(normal.dot(line.direction))) {
+            return false;
+        }
+        const Vector3<Real> diff = line.origin - center;
+        return approx_zero(normal.dot(diff));
     }
 
     // TODO: test
@@ -5972,6 +6095,24 @@ public:
     }
 
     /**
+     * Closest distance to a line. Zero if intersecting.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(line);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
+    }
+
+    /**
      * Determine if intersects a line.
      * @param line Line.
      * @return Result.
@@ -6594,6 +6735,24 @@ public:
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return sqrt(distance_sqrd(point));
+    }
+
+    /**
+     * Closest distance to a line. Zero if intersecting.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Line3<Real>& line) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(line);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return min_dist;
     }
 
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
@@ -7563,9 +7722,57 @@ bool Line3<Real>::coplanar(const Triangle3<Real>& triangle) const
 }
 
 template <typename Real>
+constexpr bool Line3<Real>::coplanar(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.coplanar(*this);
+}
+
+template <typename Real>
 Real Line3<Real>::distance(const Ray3<Real>& ray) const
 {
     return ray.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Segment3<Real>& segment) const
+{
+    return segment.distance(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance(const Plane<Real>& plane) const
+{
+    return plane.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Triangle3<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Sphere<Real>& sphere) const
+{
+    return sphere.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const AlignedBox<Real>& box) const
+{
+    return box.distance(*this);
+}
+
+template <typename Real>
+Real Line3<Real>::distance(const Box<Real>& box) const
+{
+    return box.distance(*this);
 }
 
 template <typename Real>
@@ -7584,6 +7791,24 @@ template <typename Real>
 constexpr bool Line3<Real>::parallel(const Ray3<Real>& ray) const
 {
     return ray.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::parallel(const Segment3<Real>& segment) const
+{
+    return segment.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::parallel(const Plane<Real>& plane) const
+{
+    return plane.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::parallel(const Triangle3<Real>& triangle) const
+{
+    return triangle.parallel(*this);
 }
 
 template <typename Real>
@@ -7686,6 +7911,12 @@ template <typename Real>
 std::optional<Plane<Real>> Plane<Real>::from_triangle(const Triangle3<Real>& triangle)
 {
     return from_points(triangle.vertices[0], triangle.vertices[1], triangle.vertices[2]);
+}
+
+template <typename Real>
+Plane<Real> Plane<Real>::from_rectangle(const Rectangle3<Real>& rectangle)
+{
+    return { rectangle.center, rectangle.half_span_u.cross(rectangle.half_span_v).normalize() };
 }
 
 template <typename Real>
