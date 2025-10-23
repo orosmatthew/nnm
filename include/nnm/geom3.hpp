@@ -6734,6 +6734,60 @@ public:
     }
 
     /**
+     * If any half span is zero, then return the rectangle that represents the degenerate box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const
+    {
+        if (half_span_u.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_v, half_span_w };
+        }
+        if (half_span_v.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_u, half_span_w };
+        }
+        if (half_span_w.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_u, half_span_v };
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * If any two half-spans are zero, return the line segment that represents the degenerate box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        const bool u_zero = half_span_u.approx_zero();
+        const bool v_zero = half_span_v.approx_zero();
+        const bool w_zero = half_span_w.approx_zero();
+        if (u_zero && v_zero) {
+            return Segment3<Real> { center - half_span_w, center + half_span_w };
+        }
+        if (u_zero && w_zero) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v };
+        }
+        if (v_zero && w_zero) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u };
+        }
+        return std::nullopt;
+    }
+
+    /**
+     * If all half-spans are zero, then return the point that represents the degenerate box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    {
+        if (!half_span_u.approx_zero() || !half_span_v.approx_zero() || !half_span_w.approx_zero()) {
+            return std::nullopt;
+        }
+        return center;
+    }
+
+    /**
      * Vertex at an index,
      * @param index Index [0-7] inclusive.
      * @return Result.
