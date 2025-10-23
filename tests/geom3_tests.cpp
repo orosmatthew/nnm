@@ -4861,6 +4861,45 @@ void aligned_box_tests()
     }
 
     constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+    constexpr nnm::AlignedBoxF b_degen_rect { { -1.0f, -2.0f, 3.0f }, { 1.0f, 0.0f, 3.0f } };
+    constexpr nnm::AlignedBoxF b_degen_segment { { 3.0f, -1.0f, 3.0f }, { 3.0f, 2.0f, 3.0f } };
+    constexpr nnm::AlignedBoxF b_degen_point { { 1.0f, -2.0f, 3.0f }, { 1.0f, -2.0f, 3.0f } };
+
+    test_section("collapse_rectangle");
+    {
+        constexpr std::optional<nnm::Rectangle3f> r1 = b1.collapse_rectangle();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Rectangle3f> r2 = b_degen_rect.collapse_rectangle();
+        ASSERT(r2.has_value() && r2->coincident({ { 0.0f, -1.0f, 3.0f }, { 1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } }));
+        constexpr std::optional<nnm::Rectangle3f> r3 = b_degen_segment.collapse_rectangle();
+        ASSERT(r3.has_value() && r3->coincident({ { 3.0f, 0.5f, 3.0f }, { 0.0f, 1.5f, 0.0f }, { 0.0f, 0.0f, 0.0f } }));
+        constexpr std::optional<nnm::Rectangle3f> r4 = b_degen_point.collapse_rectangle();
+        ASSERT(r4.has_value() && r4->coincident({ { 1.0f, -2.0f, 3.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } }));
+    }
+
+    test_section("collapse_segment");
+    {
+        constexpr std::optional<nnm::Segment3f> r1 = b1.collapse_segment();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Segment3f> r2 = b_degen_rect.collapse_segment();
+        ASSERT_FALSE(r2.has_value());
+        constexpr std::optional<nnm::Segment3f> r3 = b_degen_segment.collapse_segment();
+        ASSERT(r3.has_value() && r3->coincident({ { 3.0f, -1.0f, 3.0f }, { 3.0f, 2.0f, 3.0f } }));
+        constexpr std::optional<nnm::Segment3f> r4 = b_degen_point.collapse_segment();
+        ASSERT(r4.has_value() && r4->coincident({ { 1.0f, -2.0f, 3.0f }, { 1.0f, -2.0f, 3.0f } }));
+    }
+
+    test_section("collapse_point");
+    {
+        constexpr std::optional<nnm::Vector3f> r1 = b1.collapse_point();
+        ASSERT_FALSE(r1.has_value());
+        constexpr std::optional<nnm::Vector3f> r2 = b_degen_rect.collapse_point();
+        ASSERT_FALSE(r2.has_value());
+        constexpr std::optional<nnm::Vector3f> r3 = b_degen_segment.collapse_point();
+        ASSERT_FALSE(r3.has_value());
+        constexpr std::optional<nnm::Vector3f> r4 = b_degen_point.collapse_point();
+        ASSERT(r4.has_value() && r4->approx_equal( { 1.0f, -2.0f, 3.0f }));
+    }
 
     test_section("vertex");
     {

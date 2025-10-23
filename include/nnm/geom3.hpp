@@ -6022,6 +6022,12 @@ public:
         return { min, max };
     }
 
+    /**
+     * If min and max are parallel with the xy, xz, or yz planes,
+     * then returns the rectangle that represents the degenerate aligned box.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const
     {
         const Segment3<Real> s { min, max };
@@ -6037,6 +6043,12 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * If min and max are parallel with the x, y, or z axes,
+     * then return the line segment that represents the degenerate aligned box.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
     {
         const Vector3<Real> diff = max - min;
@@ -6049,9 +6061,14 @@ public:
         return std::nullopt;
     }
 
+    /**
+     * If min and and max are equal, then return the point that represents the degenerate aligned box.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
     {
-        if (!min.approx_zero(max)) {
+        if (!min.approx_equal(max)) {
             return std::nullopt;
         }
         return min;
