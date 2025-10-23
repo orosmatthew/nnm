@@ -553,6 +553,47 @@ inline void line3_tests()
         ASSERT_FALSE(r5);
     }
 
+    test_section("parallel(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        constexpr nnm::Triangle3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+        constexpr bool r1 = nnm::Line3f::axis_x().parallel(t1);
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = nnm::Line3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }).parallel(t1);
+        ASSERT(r2);
+        constexpr bool r3 = nnm::Line3f::axis_x().parallel(degen_line);
+        ASSERT(r3);
+        constexpr bool r4 = nnm::Line3f::axis_y().parallel(degen_line);
+        ASSERT_FALSE(r4);
+        constexpr bool r5 = nnm::Line3f::axis_x().parallel(degen_point);
+        ASSERT(r5);
+        constexpr bool r6 = nnm::Line3f::axis_y().parallel(degen_point);
+        ASSERT(r6);
+    }
+
+    test_section("parallel(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr bool result1 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).parallel(r1);
+        ASSERT(result1);
+        constexpr bool result2 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).parallel(r1);
+        ASSERT_FALSE(result2);
+        constexpr bool result3
+            = nnm::Line3f({ 0.0f, -1.0f, 10.0f }, { 0.0f, 0.70710678118655f, 0.70710678118655f }).parallel(r1);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).parallel(r_degen_line);
+        ASSERT(result4);
+        constexpr bool result5 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).parallel(r_degen_line);
+        ASSERT_FALSE(result5);
+        constexpr bool result6 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).parallel(r_degen_point);
+        ASSERT(result6);
+        constexpr bool result7 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).parallel(r_degen_point);
+        ASSERT(result7);
+    }
+
     test_section("perpendicular(const Line3&)");
     {
         constexpr auto result = l1.perpendicular(l1);
@@ -570,6 +611,53 @@ inline void line3_tests()
         constexpr auto result = nnm::Line3f::axis_x().perpendicular(r1);
         ASSERT_FALSE(result);
         ASSERT(nnm::Line3f::from_points({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f }).perpendicular(r1));
+    }
+
+    test_section("perpendicular(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        constexpr auto result = nnm::Line3f::axis_x().perpendicular(s1);
+        ASSERT_FALSE(result);
+        ASSERT(
+            nnm::Line3f::from_points({ 0.0f, 0.0f, 0.0f }, { -1.1918502675f, 0.1906960428f, 0.8104581819f })
+                .perpendicular(s1));
+    }
+
+    test_section("perpendicular(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto r1 = nnm::Line3f::axis_x().perpendicular(p2);
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = nnm::Line3f { nnm::Vector3f::zero(), p2.normal }.perpendicular(p2);
+        ASSERT(r2);
+        constexpr auto r3 = nnm::Line3f { nnm::Vector3f::zero(), -p2.normal }.perpendicular(p2);
+        ASSERT(r3);
+        constexpr auto r4 = nnm::Line3f::axis_z().perpendicular(p2);
+        ASSERT_FALSE(r4);
+    }
+
+    test_section("perpendicular(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        constexpr nnm::Triangle3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+        constexpr bool r1 = nnm::Line3f::axis_x().perpendicular(t1);
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = nnm::Line3f({ 100.0f, 0.0f, 0.0f }, { 0.271607f, -0.724286f, -0.63375f }).perpendicular(t1);
+        ASSERT(r2);
+        constexpr bool r3 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(degen_line);
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = nnm::Line3f::axis_z_offset(-10.0f, 10.0f).perpendicular(degen_line);
+        ASSERT(r4);
+        constexpr bool r5 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(degen_point);
+        ASSERT(r5);
+        constexpr bool r6 = nnm::Line3f::axis_z_offset(-10.0f, 10.0f).perpendicular(degen_point);
+        ASSERT(r6);
+    }
+
+    test_section("perpendicular(const Rectangle3&)");
+    {
+        // TODO: here
     }
 
     test_section("intersects(const Line3&)");
@@ -2952,7 +3040,7 @@ inline void triangle3_tests()
         ASSERT(nnm::approx_equal(d3, 3.0f));
     }
 
-    test_section("parallel(const Triangle3&)");
+    test_section("parallel(const Line3&)");
     {
         constexpr bool r1 = t1.parallel(nnm::Line3f::axis_x());
         ASSERT_FALSE(r1);
@@ -2965,6 +3053,22 @@ inline void triangle3_tests()
         constexpr bool r5 = degen_point.parallel(nnm::Line3f::axis_x());
         ASSERT(r5);
         constexpr bool r6 = degen_point.parallel(nnm::Line3f::axis_y());
+        ASSERT(r6);
+    }
+
+    test_section("perpendicular(const Line3&)");
+    {
+        constexpr bool r1 = t1.perpendicular(nnm::Line3f::axis_x());
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = t1.perpendicular(nnm::Line3f({ 100.0f, 0.0f, 0.0f }, { 0.271607f, -0.724286f, -0.63375f }));
+        ASSERT(r2);
+        constexpr bool r3 = degen_line.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = degen_line.perpendicular(nnm::Line3f::axis_z_offset(-10.0f, 10.0f));
+        ASSERT(r4);
+        constexpr bool r5 = degen_point.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT(r5);
+        constexpr bool r6 = degen_point.perpendicular(nnm::Line3f::axis_z_offset(-10.0f, 10.0f));
         ASSERT(r6);
     }
 
@@ -3781,6 +3885,38 @@ inline void rectangle3_tests()
         ASSERT(nnm::approx_equal(result8, 2.6925824036f));
         const auto result9 = r_degen_point.distance(r6);
         ASSERT(nnm::approx_zero(result9));
+    }
+
+    test_section("parallel(const Line3&)");
+    {
+        constexpr bool result1 = r1.parallel(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT(result1);
+        constexpr bool result2 = r1.parallel(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT_FALSE(result2);
+        constexpr bool result3
+            = r1.parallel(nnm::Line3f({ 0.0f, -1.0f, 10.0f }, { 0.0f, 0.70710678118655f, 0.70710678118655f }));
+        ASSERT(result3);
+        constexpr bool result4 = r_degen_line.parallel(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT(result4);
+        constexpr bool result5 = r_degen_line.parallel(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT_FALSE(result5);
+        constexpr bool result6 = r_degen_point.parallel(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT(result6);
+        constexpr bool result7 = r_degen_point.parallel(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT(result7);
+    }
+
+    test_section("perpendicular(const Line3&)");
+    {
+        constexpr bool result1 = r1.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT_FALSE(result1);
+        constexpr bool result2 = r1.perpendicular(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT_FALSE(result2)
+        constexpr bool result3
+            = r1.perpendicular(nnm::Line3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
+        ASSERT(result3);
+        constexpr bool result4 = r_degen_line.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT_FALSE(resl)
     }
 
     test_section("intersects(const Line3&)");
