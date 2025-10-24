@@ -794,6 +794,78 @@ public:
     }
 
     /**
+     * Determine if intersects a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const;
+
+    /**
+     * Determine if intersects a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const;
+
+    /**
+     * Determine if intersects a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Plane<Real>& plane) const;
+
+    /**
+     * Determine if intersects a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Determine if intersects a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Determine if intersects a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const;
+
+    /**
+     * Determine if intersects an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const AlignedBox<Real>& box) const;
+
+    /**
+     * Determine if intersects a box.
+     * @param box Box.
+     * @return Results.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Box<Real>& box) const;
+
+    /**
+     * Determine if intersects a view frustum.
+     * @param frustum View frustum.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool intersects(const Frustum<Real>& frustum) const;
+
+    /**
      * Intersection point with another line.
      * @param other Other line.
      * @return Result, null if no intersection.
@@ -817,14 +889,6 @@ public:
     }
 
     /**
-     * Determine if intersects a ray.
-     * @param ray Ray.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] constexpr bool intersects(const Ray3<Real>& ray) const;
-
-    /**
      * Intersection point with a ray.
      * @param ray Ray.
      * @return Result, null if no intersection.
@@ -832,11 +896,69 @@ public:
     // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Ray3<Real>& ray) const;
 
-    // TODO: test
-    [[nodiscard]] constexpr bool intersects(const Segment3<Real>& segment) const;
-
-    // TODO: test
+    /**
+     * Intersection point with segment. Null if collinear.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Segment3<Real>& segment) const;
+
+    /**
+     * Intersection point with plane. Null if coplanar.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Plane<Real>& plane) const;
+
+    /**
+     * Intersection point with triangle. Null if coplanar.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Determine if intersects a rectangle. Null if coplanar.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr std::optional<Vector3<Real>> intersection(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Surface intersections with sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Sphere<Real>& sphere) const;
+
+    /**
+     * Surface intersections with an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const AlignedBox<Real>& box) const;
+
+    /**
+     * Surface intersections with a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Box<Real>& box) const;
+
+    /**
+     * Surface intersections with view frustum.
+     * @param frustum View frustum.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Intersections3<Real> surface_intersections(const Frustum<Real>& frustum) const;
 
     /**
      * Project point on the line.
@@ -8101,9 +8223,93 @@ constexpr bool Line3<Real>::intersects(const Segment3<Real>& segment) const
 }
 
 template <typename Real>
+constexpr bool Line3<Real>::intersects(const Plane<Real>& plane) const
+{
+    return plane.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Triangle3<Real>& triangle) const
+{
+    return triangle.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Sphere<Real>& sphere) const
+{
+    return sphere.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const AlignedBox<Real>& box) const
+{
+    return box.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Box<Real>& box) const
+{
+    return box.intersects(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::intersects(const Frustum<Real>& frustum) const
+{
+    return frustum.intersects(*this);
+}
+
+template <typename Real>
 constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Segment3<Real>& segment) const
 {
     return segment.intersection(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Plane<Real>& plane) const
+{
+    return plane.intersection(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Triangle3<Real>& triangle) const
+{
+    return triangle.intersection(*this);
+}
+
+template <typename Real>
+constexpr std::optional<Vector3<Real>> Line3<Real>::intersection(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.intersection(*this);
+}
+
+template <typename Real>
+constexpr Intersections3<Real> Line3<Real>::surface_intersections(const Sphere<Real>& sphere) const
+{
+    return sphere.surface_intersections(*this);
+}
+
+template <typename Real>
+constexpr Intersections3<Real> Line3<Real>::surface_intersections(const AlignedBox<Real>& box) const
+{
+    return box.surface_intersections(*this);
+}
+
+template <typename Real>
+constexpr Intersections3<Real> Line3<Real>::surface_intersections(const Box<Real>& box) const
+{
+    return box.surface_intersections(*this);
+}
+
+template <typename Real>
+constexpr Intersections3<Real> Line3<Real>::surface_intersections(const Frustum<Real>& frustum) const
+{
+    return frustum.surface_intersections(*this);
 }
 
 template <typename Real>
