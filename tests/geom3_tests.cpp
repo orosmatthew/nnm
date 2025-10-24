@@ -657,7 +657,24 @@ inline void line3_tests()
 
     test_section("perpendicular(const Rectangle3&)");
     {
-        // TODO: here
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr bool result1 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(r1);
+        ASSERT_FALSE(result1);
+        constexpr bool result2 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).perpendicular(r1);
+        ASSERT_FALSE(result2)
+        constexpr bool result3
+            = nnm::Line3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }).perpendicular(r1);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(r_degen_line);
+        ASSERT_FALSE(result4);
+        constexpr bool result5 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).perpendicular(r_degen_line);
+        ASSERT(result5);
+        constexpr bool result6 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(r_degen_point);
+        ASSERT(result6);
+        constexpr bool result7 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).perpendicular(r_degen_point);
+        ASSERT(result7);
     }
 
     test_section("intersects(const Line3&)");
@@ -3916,7 +3933,13 @@ inline void rectangle3_tests()
             = r1.perpendicular(nnm::Line3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
         ASSERT(result3);
         constexpr bool result4 = r_degen_line.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
-        ASSERT_FALSE(resl)
+        ASSERT_FALSE(result4);
+        constexpr bool result5 = r_degen_line.perpendicular(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT(result5);
+        constexpr bool result6 = r_degen_point.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
+        ASSERT(result6);
+        constexpr bool result7 = r_degen_point.perpendicular(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT(result7);
     }
 
     test_section("intersects(const Line3&)");

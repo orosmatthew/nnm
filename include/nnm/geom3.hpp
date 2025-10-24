@@ -764,7 +764,12 @@ public:
     // tested
     [[nodiscard]] constexpr bool perpendicular(const Triangle3<Real>& triangle) const;
 
-    // TODO: test
+    /**
+     * Determine if perpendicular to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Rectangle3<Real>& rectangle) const;
 
     /**
@@ -4810,6 +4815,12 @@ public:
         return cross.perpendicular(line.direction);
     }
 
+    /**
+     * Determine if perpendicular to a line.
+     * @param line Line
+     * @returns Result.
+     */
+    // tested
     [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
     {
         if (collapse_point().has_value()) {
