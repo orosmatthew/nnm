@@ -989,6 +989,14 @@ public:
     }
 
     /**
+     * Determine if tangent to a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool tangent(const Sphere<Real>& sphere) const;
+
+    /**
      * Translate by an offset.
      * @param offset Offset.
      * @return Result.
@@ -8310,6 +8318,12 @@ template <typename Real>
 constexpr Intersections3<Real> Line3<Real>::surface_intersections(const Frustum<Real>& frustum) const
 {
     return frustum.surface_intersections(*this);
+}
+
+template <typename Real>
+constexpr bool Line3<Real>::tangent(const Sphere<Real>& sphere) const
+{
+    return sphere.tangent(*this);
 }
 
 template <typename Real>

@@ -1021,6 +1021,22 @@ inline void line3_tests()
                 .coincident(nnm::Line3f::from_points({ -1.0f, -1.0f, -1.0f }, { 2.0f, 2.0f, 2.0f })));
     }
 
+    test_section("tangent(const Sphere&)");
+    {
+        constexpr nnm::SphereF s1 { { 1.0f, -2.0f, 3.0f }, 1.5f };
+        constexpr nnm::SphereF s_degen { { 0.0f, 0.0f, 0.0f }, 0.0f };
+        constexpr auto r1 = nnm::Line3f::axis_x_offset(-2.0f, 3.0f).tangent(s1);
+        ASSERT_FALSE(r1);
+        constexpr auto r2 = nnm::Line3f::axis_x().tangent(s1);
+        ASSERT_FALSE(r2);
+        constexpr auto r3 = nnm::Line3f::axis_y_offset(2.5f, 3.0f).tangent(s1);
+        ASSERT(r3);
+        constexpr auto r4 = nnm::Line3f::axis_x_offset(1.0f, 1.0f).tangent(s_degen);
+        ASSERT_FALSE(r4);
+        constexpr auto r5 = nnm::Line3f::axis_z().tangent(s_degen);
+        ASSERT(r5);
+    }
+
     test_section("translate");
     {
         constexpr auto t1 = l1.translate({ 5.0f, 6.0f, -7.0f });
