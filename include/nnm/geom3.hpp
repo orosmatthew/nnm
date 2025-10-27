@@ -1278,6 +1278,7 @@ public:
      * @param ray Ray.
      * @return Result.
      */
+    // tested
     [[nodiscard]] constexpr bool coplanar(const Ray3& ray) const
     {
         return Line3<Real>::from_ray(*this).coplanar(Line3<Real>::from_ray(ray));
@@ -1307,7 +1308,16 @@ public:
      * @param triangle Triangle.
      * @return Result.
      */
+    // tested
     [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Determine if coplanar with a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Determine if ray intersects a point.
@@ -1388,6 +1398,62 @@ public:
         const Vector3<Real> p2 = other.origin + other.direction * t_other;
         return p1.distance(p2);
     }
+
+    /**
+     * Closest distance to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Segment3<Real>& segment) const;
+
+    /**
+     * Closest distance to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const;
+
+    /**
+     * Closest distance to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Closest distance to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Closest distance to a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const;
+
+    /**
+     * Closest distance to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Box<Real>& box) const;
 
     /**
      * Determine if parallel to a line.
@@ -4658,11 +4724,27 @@ public:
     [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
         const Vector3<Real> normal = half_span_u.cross(half_span_v);
-        if (!approx_zero(normal.dot(line.direction))) {
+        if (!normal.perpendicular(line.direction)) {
             return false;
         }
-        const Vector3<Real> diff = line.origin - center;
-        return approx_zero(normal.dot(diff));
+        const Vector3<Real> dir = center.direction_unnormalized(line.origin);
+        return normal.perpendicular(dir);
+    }
+
+    /**
+     * Determine if coplanar with a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (!normal.perpendicular(ray.direction)) {
+            return false;
+        }
+        const Vector3<Real> dir = center.direction_unnormalized(ray.origin);
+        return normal.perpendicular(dir);
     }
 
     // TODO: test
@@ -6443,6 +6525,22 @@ public:
     }
 
     /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(ray);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    /**
      * Determine if intersects a line.
      * @param line Line.
      * @return Result.
@@ -7135,6 +7233,22 @@ public:
             if (dist < min_dist) {
                 min_dist = dist;
             }
+        }
+        return min_dist;
+    }
+
+    /**
+     * Closest distance to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Ray3<Real>& ray) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(ray);
+            min_dist = min(min_dist, dist);
         }
         return min_dist;
     }
@@ -8337,6 +8451,54 @@ template <typename Real>
 constexpr bool Ray3<Real>::coplanar(const Plane<Real>& plane) const
 {
     return plane.coplanar(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::coplanar(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.coplanar(*this);
+}
+
+template <typename Real>
+constexpr Real Ray3<Real>::distance(const Plane<Real>& plane) const
+{
+    return plane.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const Segment3<Real>& segment) const
+{
+    return segment.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const Triangle3<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const Sphere<Real>& sphere) const
+{
+    return sphere.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const AlignedBox<Real>& box) const
+{
+    return box.distance(*this);
+}
+
+template <typename Real>
+Real Ray3<Real>::distance(const Box<Real>& box) const
+{
+    return box.distance(*this);
 }
 
 template <typename Real>
