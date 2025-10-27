@@ -1467,6 +1467,74 @@ inline void ray3_tests()
         ASSERT(r1.parallel(nnm::Ray3f::from_point_to_point({ 0.0f, 2.0f, -6.0f }, { 3.0f, -2.0f, -1.0f })));
     }
 
+    test_section("parallel(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        constexpr auto result = nnm::Ray3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }).parallel(s1);
+        ASSERT_FALSE(result);
+        ASSERT(nnm::Ray3f::from_point_to_point(s1.start, s1.end).parallel(s1));
+        ASSERT(nnm::Ray3f(s1.start + nnm::Vector3f(2.0f, -3.0f, 10.0f), -s1.direction()).parallel(s1));
+    }
+
+    test_section("parallel(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto result1 = nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() }.parallel(p2);
+        ASSERT_FALSE(result1);
+        constexpr auto result2
+            = nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } }.parallel(p2);
+        ASSERT_FALSE(result2);
+        constexpr auto result3 = nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() }.parallel(p2);
+        ASSERT(result3);
+        constexpr auto result4 = nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() }.parallel(p2);
+        ASSERT_FALSE(result4);
+        constexpr auto result5 = nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_x() }.parallel(p2);
+        ASSERT(result5);
+        constexpr auto result6 = nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_z() }.parallel(p2);
+        ASSERT_FALSE(result6);
+    }
+
+    test_section("parallel(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        constexpr nnm::Triangle3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+        constexpr bool result1 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).parallel(t1);
+        ASSERT_FALSE(result1);
+        constexpr bool result2 = nnm::Ray3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }).parallel(t1);
+        ASSERT(result2);
+        constexpr bool result3 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).parallel(degen_line);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()).parallel(degen_line);
+        ASSERT_FALSE(result4);
+        constexpr bool result5 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).parallel(degen_point);
+        ASSERT(result5);
+        constexpr bool result6 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()).parallel(degen_point);
+        ASSERT(result6);
+    }
+
+    test_section("parallel(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f rect { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr bool result1 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).parallel(rect);
+        ASSERT(result1);
+        constexpr bool result2 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).parallel(rect);
+        ASSERT_FALSE(result2);
+        constexpr bool result3
+            = nnm::Ray3f({ 0.0f, -1.0f, 10.0f }, { 0.0f, 0.70710678118655f, 0.70710678118655f }).parallel(rect);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).parallel(r_degen_line);
+        ASSERT(result4);
+        constexpr bool result5 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).parallel(r_degen_line);
+        ASSERT_FALSE(result5);
+        constexpr bool result6 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).parallel(r_degen_point);
+        ASSERT(result6);
+        constexpr bool result7 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).parallel(r_degen_point);
+        ASSERT(result7);
+    }
+
     test_section("perpendicular(const Line3&)");
     {
         constexpr auto result = r1.perpendicular(nnm::Line3f::axis_x());
@@ -3481,6 +3549,22 @@ inline void triangle3_tests()
         ASSERT(r6);
     }
 
+    test_section("parallel(const Ray3&)");
+    {
+        constexpr bool r1 = t1.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = t1.parallel(nnm::Ray3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
+        ASSERT(r2);
+        constexpr bool r3 = degen_line.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT(r3);
+        constexpr bool r4 = degen_line.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()));
+        ASSERT_FALSE(r4);
+        constexpr bool r5 = degen_point.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT(r5);
+        constexpr bool r6 = degen_point.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()));
+        ASSERT(r6);
+    }
+
     test_section("perpendicular(const Line3&)");
     {
         constexpr bool r1 = t1.perpendicular(nnm::Line3f::axis_x());
@@ -4340,6 +4424,25 @@ inline void rectangle3_tests()
         constexpr bool result6 = r_degen_point.parallel(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
         ASSERT(result6);
         constexpr bool result7 = r_degen_point.parallel(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT(result7);
+    }
+
+    test_section("parallel(const Ray3&)");
+    {
+        constexpr bool result1 = r1.parallel(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(result1);
+        constexpr bool result2 = r1.parallel(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(result2);
+        constexpr bool result3
+            = r1.parallel(nnm::Ray3f({ 0.0f, -1.0f, 10.0f }, { 0.0f, 0.70710678118655f, 0.70710678118655f }));
+        ASSERT(result3);
+        constexpr bool result4 = r_degen_line.parallel(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(result4);
+        constexpr bool result5 = r_degen_line.parallel(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(result5);
+        constexpr bool result6 = r_degen_point.parallel(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(result6);
+        constexpr bool result7 = r_degen_point.parallel(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
         ASSERT(result7);
     }
 

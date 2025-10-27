@@ -1478,6 +1478,38 @@ public:
     }
 
     /**
+     * Determine if parallel to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Segment3<Real>& segment) const;
+
+    /**
+     * Determine if parallel with a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Plane<Real>& plane) const;
+
+    /**
+     * Determine if parallel with a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Determine if parallel with a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool parallel(const Rectangle3<Real>& rectangle) const;
+
+    /**
      * Determine if perpendicular to a line.
      * @param line Line.
      * @return Result.
@@ -3961,13 +3993,26 @@ public:
     // tested
     [[nodiscard]] constexpr bool parallel(const Line3<Real>& line) const
     {
-        const Vector3<Real> d01 = vertices[0] - vertices[1];
-        const Vector3<Real> d02 = vertices[0] - vertices[2];
-        if (d01.parallel(d02)) {
-            return d01.parallel(line.direction);
+        if (collapse_point().has_value()) {
+            return true;
         }
-        const Vector3<Real> cross = d01.cross(d02);
-        return cross.perpendicular(line.direction);
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->parallel(line);
+        }
+        const Vector3<Real> normal = (vertices[0] - vertices[1]).cross(vertices[0] - vertices[2]);
+        return normal.perpendicular(line.direction);
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
+    {
+        if (collapse_point().has_value()) {
+            return true;
+        }
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->parallel(ray);
+        }
+        const Vector3<Real> normal = (vertices[0] - vertices[1]).cross(vertices[0] - vertices[2]);
+        return normal.perpendicular(ray.direction);
     }
 
     [[nodiscard]] constexpr bool perpendicular(const Line3<Real>& line) const
@@ -4958,8 +5003,20 @@ public:
         if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
             return degen_segment->parallel(line);
         }
-        const Vector3<Real> cross = half_span_u.cross(half_span_v);
-        return cross.perpendicular(line.direction);
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        return normal.perpendicular(line.direction);
+    }
+
+    [[nodiscard]] constexpr bool parallel(const Ray3<Real>& ray) const
+    {
+        if (collapse_point().has_value()) {
+            return true;
+        }
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->parallel(ray);
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        return normal.perpendicular(ray.direction);
     }
 
     /**
@@ -8463,6 +8520,30 @@ template <typename Real>
 constexpr Real Ray3<Real>::distance(const Plane<Real>& plane) const
 {
     return plane.distance(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::parallel(const Segment3<Real>& segment) const
+{
+    return segment.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::parallel(const Plane<Real>& plane) const
+{
+    return plane.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::parallel(const Triangle3<Real>& triangle) const
+{
+    return triangle.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::parallel(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.parallel(*this);
 }
 
 template <typename Real>
