@@ -1009,154 +1009,89 @@ public:
 
     /**
      * Scale about an origin by a factor.
-     * @param scale_origin Scale origin.
      * @param factor Scale factor.
+     * @param scale_origin Scaling origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
+    [[nodiscard]] Line3 scale(
+        const Vector3<Real>& factor, const Vector3<Real>& scale_origin = Vector3<Real>::zero()) const
     {
         return { origin.scale_at(scale_origin, factor), direction.scale(factor).normalize() };
     }
 
     /**
-     * Scale about the global origin by a factor.
-     * @param factor Scale factor.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 scale(const Vector3<Real>& factor) const
-    {
-        return { origin.scale(factor), direction.scale(factor).normalize() };
-    }
-
-    /**
      * Rotate about an origin by an axis and angle.
-     * @param rotate_origin Rotate origin.
      * @param axis Normalized rotation axis.
      * @param angle Angle in radians.
+     * @param rotate_origin Rotate origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 rotate_axis_angle_at(
-        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    [[nodiscard]] Line3 rotate_axis_angle(
+        const Vector3<Real>& axis, const Real angle, const Vector3<Real>& rotate_origin = Vector3<Real>::zero()) const
     {
         return { origin.rotate_axis_angle_at(rotate_origin, axis, angle),
                  direction.rotate_axis_angle(axis, angle).normalize() };
     }
 
     /**
-     * Rotate about the global origin by an axis and angle.
-     * @param axis Normalized rotation axis.
-     * @param angle Angle in radians.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const
-    {
-        return { origin.rotate_axis_angle(axis, angle), direction.rotate_axis_angle(axis, angle).normalize() };
-    }
-
-    /**
      * Rotate about an origin by a quaternion.
-     * @param rotate_origin Rotate origin.
      * @param quaternion Quaternion.
+     * @param rotate_origin Rotate origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 rotate_quaternion_at(
-        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    [[nodiscard]] Line3 rotate_quaternion(
+        const Quaternion<Real>& quaternion, const Vector3<Real>& rotate_origin = Vector3<Real>::zero()) const
     {
         return { origin.rotate_quaternion_at(rotate_origin, quaternion),
                  direction.rotate_quaternion(quaternion).normalize() };
     }
 
     /**
-     * Rotate about the global origin by a quaternion.
-     * @param quaternion Quaternion.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 rotate_quaternion(const Quaternion<Real>& quaternion) const
-    {
-        return { origin.rotate_quaternion(quaternion), direction.rotate_quaternion(quaternion).normalize() };
-    }
-
-    /**
      * Shear about an origin along the x-axis.
-     * @param shear_origin Shear origin.
      * @param factor_y Y-Axis shear factor.
      * @param factor_z Z-Axis shear factor.
+     * @param shear_origin Shear origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    [[nodiscard]] Line3 shear_x(
+        const Real factor_y, const Real factor_z, const Vector3<Real>& shear_origin = Vector3<Real>::zero()) const
     {
         return { origin.shear_x_at(shear_origin, factor_y, factor_z),
                  direction.shear_x(factor_y, factor_z).normalize() };
     }
 
     /**
-     * Shear about the global origin along the x-axis.
-     * @param factor_y Y-Axis shear factor.
-     * @param factor_z Z-Axis shear factor.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 shear_x(const Real factor_y, const Real factor_z) const
-    {
-        return { origin.shear_x(factor_y, factor_z), direction.shear_x(factor_y, factor_z).normalize() };
-    }
-
-    /**
      * Shear about an origin along the y-axis.
-     * @param shear_origin Shear origin.
      * @param factor_x X-Axis factor.
      * @param factor_z Z-Axis factor.
+     * @param shear_origin Shear origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    [[nodiscard]] Line3 shear_y(
+        const Real factor_x, const Real factor_z, const Vector3<Real>& shear_origin = Vector3<Real>::zero()) const
     {
         return { origin.shear_y_at(shear_origin, factor_x, factor_z),
                  direction.shear_y(factor_x, factor_z).normalize() };
     }
 
     /**
-     * Shear about the global origin along the y-axis.
-     * @param factor_x X-Axis factor.
-     * @param factor_z Z-Axis factor.
-     * @return Result.
-     */
-    [[nodiscard]] Line3 shear_y(const Real factor_x, const Real factor_z) const
-    {
-        return { origin.shear_y(factor_x, factor_z), direction.shear_y(factor_x, factor_z).normalize() };
-    }
-
-    /**
      * Shear about an origin along the z-axis.
-     * @param shear_origin Shear origin.
      * @param factor_x X-Axis factor.
      * @param factor_y Y-Axis factor.
+     * @param shear_origin Shear origin. Defaults to global origin.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    [[nodiscard]] Line3 shear_z(
+        const Real factor_x, const Real factor_y, const Vector3<Real>& shear_origin = Vector3<Real>::zero()) const
     {
         return { origin.shear_z_at(shear_origin, factor_x, factor_y),
                  direction.shear_z(factor_x, factor_y).normalize() };
-    }
-
-    /**
-     * Shear about the global origin along the z-axis.
-     * @param factor_x X-Axis factor.
-     * @param factor_y Y-Axis factor.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 shear_z(const Real factor_x, const Real factor_y) const
-    {
-        return { origin.shear_z(factor_x, factor_y), direction.shear_z(factor_x, factor_y).normalize() };
     }
 
     /**
