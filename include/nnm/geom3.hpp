@@ -344,24 +344,27 @@ public:
     }
 
     /**
-     * Line that intersects two points.
+     * Line that intersects two points. Null if points are coincident.
      * @param point1 First point.
      * @param point2 Second point.
      * @return Result.
      */
     // tested
-    static Line3 from_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
+    static std::optional<Line3> from_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
     {
-        return { point1, point1.direction(point2) };
+        if (point1.approx_equal(point2)) {
+            return std::nullopt;
+        }
+        return Line3 { point1, point1.direction(point2) };
     }
 
     /**
-     * Extends a line segment to an infinite line.
+     * Extends a line segment to an infinite line. Null if segment is degenerate.
      * @param segment Line segment.
      * @return Result.
      */
     // tested
-    static Line3 from_segment(const Segment3<Real>& segment);
+    static std::optional<Line3> from_segment(const Segment3<Real>& segment);
 
     /**
      * Line that is an extension from a ray.
@@ -438,20 +441,18 @@ public:
     }
 
     /**
-     * If direction is zero, return the point that represents the degenerate line.
+     * Determine if line is valid.
+     * A line is valid if its direction vector is non-zero and normalized.
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    [[nodiscard]] constexpr bool valid() const
     {
-        if (!direction.approx_zero()) {
-            return std::nullopt;
-        }
-        return origin;
+        return nnm::approx_equal(direction.length_sqrd(), static_cast<Real>(1));
     }
 
     /**
-     * Line that is parallel to this line and intersects a point.
+     * Create a line that is parallel to this line and intersects a point.
      * @param point Point.
      * @return Result.
      */
@@ -462,7 +463,7 @@ public:
     }
 
     /**
-     * Line that is perpendicular to this line and intersects a point.
+     * Create a line that is perpendicular to this line and intersects a point.
      * Both direction and -direction are valid for the resulting line.
      * @param point Point.
      * @return Result.
@@ -474,7 +475,7 @@ public:
     }
 
     /**
-     * Line that is perpendicular to this line and parallel to a plane.
+     * Create a line that is perpendicular to this line and parallel to a plane.
      * Both direction and -direction are valid for the resulting line.
      * @param plane Plane.
      * @return Result.
@@ -483,18 +484,7 @@ public:
     [[nodiscard]] Line3 perpendicular_plane_parallel(const Plane<Real>& plane) const;
 
     /**
-     * Normalize the line's direction.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] Line3 normalize() const
-    {
-        return { origin, direction.normalize() };
-    }
-
-    /**
-     * Determine if collinear with a ray which means
-     * that all points for both the line and the ray exist on the same line.
+     * Determine if collinear with a ray.
      * @param ray Ray.
      * @return Result.
      */
@@ -507,7 +497,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Segment3<Real>& segment) const;
+    [[nodiscard]] constexpr bool collinear(const Segment3<Real>& segment) const;
 
     /**
      * Determine if coplanar with another line.
@@ -517,12 +507,9 @@ public:
     // tested
     [[nodiscard]] constexpr bool coplanar(const Line3& other) const
     {
-        if (parallel(other)) {
-            return true;
-        }
         const Vector3<Real> diff = origin - other.origin;
         const Vector3<Real> dir_cross = direction.cross(other.direction);
-        return approx_zero(diff.dot(dir_cross));
+        return diff.perpendicular(dir_cross);
     }
 
     /**
@@ -539,7 +526,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const;
+    [[nodiscard]] constexpr bool coplanar(const Segment3<Real>& segment) const;
 
     /**
      * Determine if coplanar with plane.
@@ -555,7 +542,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Triangle3<Real>& triangle) const;
+    [[nodiscard]] constexpr bool coplanar(const Triangle3<Real>& triangle) const;
 
     /**
      * Determine if coplanar with a rectangle.
@@ -678,7 +665,7 @@ public:
     // tested
     [[nodiscard]] constexpr bool parallel(const Line3& other) const
     {
-        return direction.cross(other.direction).approx_zero();
+        return direction.parallel(other.direction);
     }
 
     /**
@@ -1206,17 +1193,9 @@ public:
         return { from, from.direction(to) };
     }
 
-    /**
-     * If direction is zero, return the point that represents the degenerate ray.
-     * @return Result.
-     */
-    // tested
-    [[nodiscard]] constexpr std::optional<Vector3<Real>> collapse_point() const
+    [[nodiscard]] constexpr bool valid() const
     {
-        if (!direction.approx_zero()) {
-            return std::nullopt;
-        }
-        return origin;
+        return nnm::approx_equal(direction.length_sqrd(), static_cast<Real>(1));
     }
 
     /**
@@ -1952,6 +1931,12 @@ public:
     {
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool degenerate() const
+    {
+        return start.approx_equal(end);
+    }
+
     /**
      * If start and end points are equal, returns the point that represents the degenerate line segment.
      * @return Result.
@@ -1971,9 +1956,11 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool collinear(const Vector3<Real>& point) const
     {
-        return Line3<Real>::from_segment(*this).contains(point);
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(point);
+        return dir.parallel(diff);
     }
 
     /**
@@ -1982,9 +1969,11 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool collinear(const Line3<Real>& line) const
     {
-        return Line3<Real>::from_segment(*this).coincident(line);
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(line.origin);
+        return dir.parallel(line.direction) && dir.parallel(diff);
     }
 
     /**
@@ -1993,9 +1982,11 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool collinear(const Ray3<Real>& ray) const
     {
-        return Line3<Real>::from_segment(*this).collinear(ray);
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(ray.origin);
+        return dir.parallel(ray.direction) && dir.parallel(diff);
     }
 
     /**
@@ -2004,9 +1995,11 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool collinear(const Segment3& other) const
+    [[nodiscard]] constexpr bool collinear(const Segment3& other) const
     {
-        return Line3<Real>::from_segment(*this).coincident(Line3<Real>::from_segment(other));
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(other.start);
+        return dir.parallel(other.direction_unnormalized()) && dir.parallel(diff);
     }
 
     /**
@@ -2015,9 +2008,12 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
-        return Line3<Real>::from_segment(*this).coplanar(line);
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(line.origin);
+        const Vector3<Real> dir_cross = dir.cross(line.direction);
+        return diff.perpendicular(dir_cross);
     }
 
     /**
@@ -2026,9 +2022,12 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Ray3<Real>& ray) const
+    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const
     {
-        return Line3<Real>::from_segment(*this).coplanar(ray);
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(ray.origin);
+        const Vector3<Real> dir_cross = dir.cross(ray.direction);
+        return diff.perpendicular(dir_cross);
     }
 
     /**
@@ -2037,9 +2036,12 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Segment3& other) const
+    [[nodiscard]] constexpr bool coplanar(const Segment3& other) const
     {
-        return Line3<Real>::from_segment(*this).coplanar(Line3<Real>::from_segment(other));
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = start.direction_unnormalized(other.start);
+        const Vector3<Real> dir_cross = dir.cross(other.direction_unnormalized());
+        return diff.perpendicular(dir_cross);
     }
 
     /**
@@ -3493,6 +3495,12 @@ public:
     {
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr bool degenerate() const
+    {
+        return edge(0).parallel(edge(1));
+    }
+
     /**
      * If all vertices are collinear, returns the line segment that represents the degenerate triangle.
      * @return Result.
@@ -3604,7 +3612,15 @@ public:
         if (!alt1.has_value()) {
             return std::nullopt;
         }
-        return Line3<Real>::from_segment(*alt0).intersection(Line3<Real>::from_segment(*alt1));
+        const std::optional<Line3<Real>> alt0_line = Line3<Real>::from_segment(*alt0);
+        if (!alt0_line.has_value()) {
+            return std::nullopt;
+        }
+        const std::optional<Line3<Real>> alt1_line = Line3<Real>::from_segment(*alt1);
+        if (!alt1_line.has_value()) {
+            return std::nullopt;
+        }
+        return alt0_line->intersection(*alt1_line);
     }
 
     /**
@@ -3649,7 +3665,11 @@ public:
             return std::nullopt;
         }
         const Segment3<Real> e = edge(index);
-        const Vector3<Real> dir = Line3<Real>::from_segment(e).perpendicular_plane_parallel(*p).direction;
+        const std::optional<Line3<Real>> e_line = Line3<Real>::from_segment(e);
+        if (!e_line.has_value()) {
+            return std::nullopt;
+        }
+        const Vector3<Real> dir = e_line->perpendicular_plane_parallel(*p).direction;
         return Line3<Real> { e.midpoint(), dir };
     }
 
@@ -3697,14 +3717,17 @@ public:
         NNM_BOUNDS_CHECK_ASSERT("Triangle3", index < 3);
         const Vector3<Real>& vertex = vertices[index];
         const uint8_t next_index = (index + 1) % 3;
-        const Line3<Real> base_line = Line3<Real>::from_segment(edge(next_index));
+        const std::optional<Line3<Real>> base_line = Line3<Real>::from_segment(edge(next_index));
+        if (!base_line.has_value()) {
+            return std::nullopt;
+        }
         const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
         if (!plane.has_value()) {
             return std::nullopt;
         }
-        const Vector3<Real> perp_dir = base_line.perpendicular_plane_parallel(*plane).direction;
+        const Vector3<Real> perp_dir = base_line->perpendicular_plane_parallel(*plane).direction;
         const Line3<Real> altitude_line { vertex, perp_dir };
-        const std::optional<Vector3<Real>> intersection = altitude_line.intersection(base_line);
+        const std::optional<Vector3<Real>> intersection = altitude_line.intersection(*base_line);
         if (!intersection.has_value()) {
             return std::nullopt;
         }
@@ -3837,18 +3860,9 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
     {
-        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        if (!plane.has_value()) {
-            for (uint8_t i = 0; i < 3; ++i) {
-                if (!edge(i).coplanar(line)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return plane->coplanar(line);
+        return edge(0).coplanar(line) && edge(1).coplanar(line);
     }
 
     /**
@@ -3868,9 +3882,15 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool coplanar(const Segment3<Real>& segment) const
+    [[nodiscard]] constexpr bool coplanar(const Segment3<Real>& segment) const
     {
-        return coplanar(Line3<Real>::from_segment(segment));
+        if (collapse_point().has_value()) {
+            return true;
+        }
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->coplanar(segment);
+        }
+        return edge(0).coplanar(segment) && edge(1).coplanar(segment);
     }
 
     /**
@@ -4681,6 +4701,11 @@ public:
         return { offset,
                  size_y / static_cast<Real>(2) * Vector3<Real>::axis_y(),
                  size_z / static_cast<Real>(2) * Vector3<Real>::axis_z() };
+    }
+
+    [[nodiscard]] constexpr bool degenerate() const
+    {
+        return half_span_v.approx_zero() || half_span_u.approx_zero();
     }
 
     /**
@@ -8278,9 +8303,12 @@ public:
 };
 
 template <typename Real>
-Line3<Real> Line3<Real>::from_segment(const Segment3<Real>& segment)
+std::optional<Line3<Real>> Line3<Real>::from_segment(const Segment3<Real>& segment)
 {
-    return { segment.start, (segment.end - segment.start).normalize() };
+    if (segment.degenerate()) {
+        return std::nullopt;
+    }
+    return Line3 { segment.start, segment.start.direction(segment.end) };
 }
 
 template <typename Real>
@@ -8303,7 +8331,7 @@ constexpr bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 }
 
 template <typename Real>
-bool Line3<Real>::collinear(const Segment3<Real>& segment) const
+constexpr bool Line3<Real>::collinear(const Segment3<Real>& segment) const
 {
     return segment.collinear(*this);
 }
@@ -8315,7 +8343,7 @@ constexpr bool Line3<Real>::coplanar(const Ray3<Real>& ray) const
 }
 
 template <typename Real>
-bool Line3<Real>::coplanar(const Segment3<Real>& segment) const
+constexpr bool Line3<Real>::coplanar(const Segment3<Real>& segment) const
 {
     return segment.coplanar(*this);
 }
@@ -8327,7 +8355,7 @@ constexpr bool Line3<Real>::coplanar(const Plane<Real>& plane) const
 }
 
 template <typename Real>
-bool Line3<Real>::coplanar(const Triangle3<Real>& triangle) const
+constexpr bool Line3<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
 }
