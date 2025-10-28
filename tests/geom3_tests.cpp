@@ -295,7 +295,7 @@ inline void line3_tests()
     test_section("collinear(const Segment3&)");
     {
         constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
-        const auto result = nnm::Line3f::axis_x().collinear(s1);
+        constexpr auto result = nnm::Line3f::axis_x().collinear(s1);
         ASSERT_FALSE(result);
         ASSERT_FALSE(nnm::Line3f::from_points({ 2.0f, -1.0f, 4.0f }, { -3.0f, 6.0f, -5.0f })->collinear(s1));
         ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })->collinear(s1));
@@ -3443,18 +3443,18 @@ inline void triangle3_tests()
 
     test_section("coplanar(const Line3&)");
     {
-        const bool r1 = t1.coplanar(nnm::Line3f::axis_x());
+        constexpr bool r1 = t1.coplanar(nnm::Line3f::axis_x());
         ASSERT_FALSE(r1);
         const bool r2 = t1.coplanar(*nnm::Line3f::from_segment(t1.edge(0)));
         ASSERT(r2);
         const bool r3 = t1.coplanar(*nnm::Line3f::from_points(
             { 5.6279295263f, 0.2174812388f, 2.4491340955f }, { 3.7355435221f, 2.8096960263f, -1.3244196634f }));
         ASSERT(r3);
-        const bool r4 = degen_line.coplanar(nnm::Line3f::axis_x_offset(100.0f, -100.0f));
+        constexpr bool r4 = degen_line.coplanar(nnm::Line3f::axis_x_offset(100.0f, -100.0f));
         ASSERT(r4);
-        const bool r5 = degen_line.coplanar(nnm::Line3f::axis_y());
+        constexpr bool r5 = degen_line.coplanar(nnm::Line3f::axis_y());
         ASSERT(r5);
-        const bool r6 = degen_line.coplanar(nnm::Line3f::axis_y_offset(-100.0f, 100.0f));
+        constexpr bool r6 = degen_line.coplanar(nnm::Line3f::axis_y_offset(-100.0f, 100.0f));
         ASSERT_FALSE(r6);
     }
 
