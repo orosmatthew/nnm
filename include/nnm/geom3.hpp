@@ -1532,6 +1532,38 @@ public:
     }
 
     /**
+     * Determine if perpendicular to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool perpendicular(const Segment3<Real>& segment) const;
+
+    /**
+     * Determine if perpendicular to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool perpendicular(const Plane<Real>& plane) const;
+
+    /**
+     * Determine if perpendicular to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool perpendicular(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Determine if perpendicular to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr bool perpendicular(const Rectangle3<Real>& rectangle) const;
+
+    /**
      * Determine if intersects a line.
      * @param line Line.
      * @return Result.
@@ -4029,6 +4061,18 @@ public:
         return cross.parallel(line.direction);
     }
 
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
+    {
+        if (collapse_point().has_value()) {
+            return true;
+        }
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->perpendicular(ray);
+        }
+        const Vector3<Real> normal = (vertices[0] - vertices[1]).cross(vertices[0] - vertices[2]);
+        return normal.parallel(ray.direction);
+    }
+
     /**
      * Determine if intersects with a line.
      * @param line Line.
@@ -5035,6 +5079,18 @@ public:
         }
         const Vector3<Real> cross = half_span_u.cross(half_span_v);
         return cross.parallel(line.direction);
+    }
+
+    [[nodiscard]] constexpr bool perpendicular(const Ray3<Real>& ray) const
+    {
+        if (collapse_point().has_value()) {
+            return true;
+        }
+        if (std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->perpendicular(ray);
+        }
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        return normal.parallel(ray.direction);
     }
 
     /**
@@ -8544,6 +8600,30 @@ template <typename Real>
 constexpr bool Ray3<Real>::parallel(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.parallel(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::perpendicular(const Segment3<Real>& segment) const
+{
+    return segment.perpendicular(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::perpendicular(const Plane<Real>& plane) const
+{
+    return plane.perpendicular(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::perpendicular(const Triangle3<Real>& triangle) const
+{
+    return triangle.perpendicular(*this);
+}
+
+template <typename Real>
+constexpr bool Ray3<Real>::perpendicular(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.perpendicular(*this);
 }
 
 template <typename Real>

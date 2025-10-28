@@ -1549,6 +1549,74 @@ inline void ray3_tests()
         ASSERT(r1.perpendicular(nnm::Ray3f::from_point_to_point({ 2.0f, 0.0f, 3.0f }, { -0.2f, -0.4f, 4.0f })));
     }
 
+    test_section("perpendicular(const Segment3&)");
+    {
+        constexpr nnm::Segment3f s1 { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f } };
+        ASSERT_FALSE(nnm::Ray3f::from_point_to_point({ 0.0f, 0.0f, 0.0f }, { -1.0f, -1.0f, -1.0f }).perpendicular(s1));
+        constexpr auto r3 = nnm::Ray3f { { 0.0f, 0.0f, 0.0f }, { -0.819782316f, 0.131165162f, 0.557451963f } };
+        ASSERT(r3.perpendicular(s1));
+        constexpr auto result = nnm::Ray3f(r3.origin, -r3.direction).perpendicular(s1);
+        ASSERT(result);
+    }
+
+    test_section("perpendicular(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto result1 = nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() }.perpendicular(p2);
+        ASSERT_FALSE(result1);
+        constexpr auto result2 = nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() }.perpendicular(p2);
+        ASSERT_FALSE(result2);
+        constexpr auto result3 = nnm::Ray3f { nnm::Vector3f::zero(), p2.normal }.perpendicular(p2);
+        ASSERT(result3);
+        constexpr auto result4 = nnm::Ray3f { nnm::Vector3f::zero(), -p2.normal }.perpendicular(p2);
+        ASSERT(result4);
+    }
+
+    test_section("perpendicular(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
+        constexpr nnm::Triangle3f degen_point { { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } };
+        constexpr bool result1 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).perpendicular(t1);
+        ASSERT_FALSE(result1);
+        constexpr bool result2
+            = nnm::Ray3f({ 100.0f, 0.0f, 0.0f }, { 0.271607f, -0.724286f, -0.63375f }).perpendicular(t1);
+        ASSERT(result2);
+        constexpr bool result3 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(degen_line);
+        ASSERT_FALSE(result3);
+        constexpr bool result4 = nnm::Ray3f({ -10.0f, 10.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(degen_line);
+        ASSERT(result4);
+        constexpr bool result5 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(degen_point);
+        ASSERT(result5);
+        constexpr bool result6
+            = nnm::Ray3f({ -10.0f, 10.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(degen_point);
+        ASSERT(result6);
+    }
+
+    test_section("perpendicular(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f rect { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr bool result1 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(rect);
+        ASSERT_FALSE(result1);
+        constexpr bool result2 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(rect);
+        ASSERT_FALSE(result2)
+        constexpr bool result3
+            = nnm::Ray3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }).perpendicular(rect);
+        ASSERT(result3);
+        constexpr bool result4 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(r_degen_line);
+        ASSERT_FALSE(result4);
+        constexpr bool result5 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(r_degen_line);
+        ASSERT(result5);
+        constexpr bool result6
+            = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(r_degen_point);
+        ASSERT(result6);
+        constexpr bool result7
+            = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(r_degen_point);
+        ASSERT(result7);
+    }
+
     test_section("intersects(const Line3&)");
     {
         constexpr auto result = r1.intersects(nnm::Line3f::axis_x());
@@ -3581,6 +3649,22 @@ inline void triangle3_tests()
         ASSERT(r6);
     }
 
+    test_section("perpendicular(const Ray3&)");
+    {
+        constexpr bool r1 = t1.perpendicular(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r1);
+        constexpr bool r2 = t1.perpendicular(nnm::Ray3f({ 100.0f, 0.0f, 0.0f }, { 0.271607f, -0.724286f, -0.63375f }));
+        ASSERT(r2);
+        constexpr bool r3 = degen_line.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(r3);
+        constexpr bool r4 = degen_line.perpendicular(nnm::Ray3f({ -10.0f, 10.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT(r4);
+        constexpr bool r5 = degen_point.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(r5);
+        constexpr bool r6 = degen_point.perpendicular(nnm::Ray3f({ -10.0f, 10.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT(r6);
+    }
+
     test_section("intersects(const Line3&)");
     {
         const auto r1 = t1.intersects(nnm::Line3f::from_segment(t1.edge(0)));
@@ -4462,6 +4546,27 @@ inline void rectangle3_tests()
         constexpr bool result6 = r_degen_point.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
         ASSERT(result6);
         constexpr bool result7 = r_degen_point.perpendicular(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
+        ASSERT(result7);
+    }
+
+    test_section("perpendicular(const Ray3&)");
+    {
+        constexpr bool result1 = r1.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(result1);
+        constexpr bool result2 = r1.perpendicular(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT_FALSE(result2)
+        constexpr bool result3
+            = r1.perpendicular(nnm::Ray3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
+        ASSERT(result3);
+        constexpr bool result4 = r_degen_line.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT_FALSE(result4);
+        constexpr bool result5 = r_degen_line.perpendicular(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
+        ASSERT(result5);
+        constexpr bool result6
+            = r_degen_point.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
+        ASSERT(result6);
+        constexpr bool result7
+            = r_degen_point.perpendicular(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
         ASSERT(result7);
     }
 
