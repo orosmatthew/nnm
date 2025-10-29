@@ -567,6 +567,49 @@ public:
     }
 
     /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        return (point - origin).cross(direction).length_sqrd();
+    }
+
+    /**
+     * Closest distance squared to another line.
+     * @param other Other line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3& other) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        if (dir_cross.approx_zero()) {
+            return distance_sqrd(other.origin);
+        }
+        const Vector3<Real> diff = origin - other.origin;
+        return sqrd(dir_cross.dot(diff)) / dir_cross.length_sqrd();
+    }
+
+    /**
+     * Closest distance squared to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const;
+
+    /**
+     * Closest distance squared to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const;
+
+    /**
      * Closest distance to a point.
      * @param point Point.
      * @return Result.
@@ -574,7 +617,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
-        return (point - origin).cross(direction).length();
+        return sqrt(distance_sqrd(point));
     }
 
     /**
@@ -585,12 +628,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3& other) const
     {
-        const Vector3<Real> dir_cross = direction.cross(other.direction);
-        if (dir_cross.approx_zero()) {
-            return distance(other.origin);
-        }
-        const Vector3<Real> diff = origin - other.origin;
-        return abs(dir_cross.dot(diff)) / dir_cross.length();
+        return sqrt(distance_sqrd(other));
     }
 
     /**
@@ -1311,6 +1349,82 @@ public:
     }
 
     /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        const Vector3<Real> diff = point - origin;
+        if (const Real t = diff.dot(direction); approx_less_zero(t)) {
+            return origin.distance_sqrd(point);
+        }
+        return diff.cross(direction).length_sqrd();
+    }
+
+    /**
+     * Closest distance squared to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(line.direction);
+        const Real dir_cross_len = dir_cross.length_sqrd();
+        const Vector3<Real> diff = line.origin - origin;
+        if (approx_zero(dir_cross_len)) {
+            return line.distance_sqrd(origin);
+        }
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len;
+        const Real t_line = diff.cross(direction).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t)) {
+            return line.distance_sqrd(origin);
+        }
+        const Vector3<Real> p1 = origin + direction * t;
+        const Vector3<Real> p2 = line.origin + line.direction * t_line;
+        return p1.distance_sqrd(p2);
+    }
+
+    /**
+     * Closest distance squared to another ray.
+     * @param other Other ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Ray3& other) const
+    {
+        const Vector3<Real> dir_cross = direction.cross(other.direction);
+        const Real dir_cross_len = dir_cross.length_sqrd();
+        const Vector3<Real> diff = other.origin - origin;
+        if (approx_zero(dir_cross_len)) {
+            const Real d1 = distance_sqrd(other.origin);
+            const Real d2 = other.distance_sqrd(origin);
+            return min(d1, d2);
+        }
+        const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t)) {
+            return other.distance_sqrd(origin);
+        }
+        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t_other)) {
+            return distance_sqrd(other.origin);
+        }
+        const Vector3<Real> p1 = origin + direction * t;
+        const Vector3<Real> p2 = other.origin + other.direction * t_other;
+        return p1.distance_sqrd(p2);
+    }
+
+    /**
+     * Closest distance squared to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const;
+
+    /**
      * Closest distance to a point. Zero if intersects.
      * @param point Point.
      * @return Result.
@@ -1318,11 +1432,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = point - origin;
-        if (const Real t = dir.dot(direction); approx_less_zero(t)) {
-            return origin.distance(point);
-        }
-        return dir.cross(direction).length();
+        return sqrt(distance_sqrd(point));
     }
 
     /**
@@ -1333,20 +1443,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        const Vector3<Real> dir_cross = direction.cross(line.direction);
-        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = line.origin - origin;
-        if (approx_zero(dir_cross_len_sqrd)) {
-            return line.distance(origin);
-        }
-        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        const Real t_line = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t)) {
-            return line.distance(origin);
-        }
-        const Vector3<Real> p1 = origin + direction * t;
-        const Vector3<Real> p2 = line.origin + line.direction * t_line;
-        return p1.distance(p2);
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -1357,25 +1454,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Ray3& other) const
     {
-        const Vector3<Real> dir_cross = direction.cross(other.direction);
-        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = other.origin - origin;
-        if (approx_zero(dir_cross_len_sqrd)) {
-            const Real d1 = distance(other.origin);
-            const Real d2 = other.distance(origin);
-            return min(d1, d2);
-        }
-        const Real t = diff.cross(other.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t)) {
-            return other.distance(origin);
-        }
-        const Real t_other = diff.cross(direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t_other)) {
-            return distance(other.origin);
-        }
-        const Vector3<Real> p1 = origin + direction * t;
-        const Vector3<Real> p2 = other.origin + other.direction * t_other;
-        return p1.distance(p2);
+        return sqrt(distance_sqrd(other));
     }
 
     /**
@@ -2079,6 +2158,142 @@ public:
     }
 
     /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        if (std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return degen_point->distance_sqrd(point);
+        }
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = point - start;
+        const Real t = diff.dot(dir) / dir.dot(dir);
+        if (approx_less_zero(t)) {
+            return diff.length_sqrd();
+        }
+        if (approx_greater(t, static_cast<Real>(1))) {
+            return (point - end).length_sqrd();
+        }
+        const Vector3<Real> proj = start + dir * t;
+        return (point - proj).length_sqrd();
+    }
+
+    /**
+     * Closest distance squared to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        if (std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return line.distance_sqrd(*degen_point);
+        }
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = line.origin - start;
+        const Vector3<Real> dir_cross = dir.cross(line.direction);
+        const Real dir_cross_len = dir_cross.length_sqrd();
+        if (approx_zero(dir_cross_len)) {
+            const Real d1 = line.distance_sqrd(start);
+            const Real d2 = line.distance_sqrd(end);
+            return min(d1, d2);
+        }
+        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t)) {
+            return line.distance_sqrd(start);
+        }
+        if (approx_greater(t, static_cast<Real>(1))) {
+            return line.distance_sqrd(end);
+        }
+        const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len;
+        const Vector3<Real> p1 = start + dir * t;
+        const Vector3<Real> p2 = line.origin + line.direction * t_line;
+        return p1.distance_sqrd(p2);
+    }
+
+    /**
+     * Closest distance squared to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
+    {
+        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return ray.distance_sqrd(*degen_point);
+        }
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> diff = ray.origin - start;
+        const Vector3<Real> dir_cross = dir.cross(ray.direction);
+        const Real dir_cross_len = dir_cross.length_sqrd();
+        if (approx_zero(dir_cross_len)) {
+            const Real d1 = ray.distance_sqrd(start);
+            const Real d2 = ray.distance_sqrd(end);
+            const Real d3 = distance_sqrd(ray.origin);
+            return min(d1, d2, d3);
+        }
+        const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t)) {
+            return ray.distance_sqrd(start);
+        }
+        if (approx_greater(t, static_cast<Real>(1))) {
+            return ray.distance_sqrd(end);
+        }
+        const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t_ray)) {
+            return distance_sqrd(ray.origin);
+        }
+        const Vector3<Real> p1 = start + dir * t;
+        const Vector3<Real> p2 = ray.origin + ray.direction * t_ray;
+        return p1.distance_sqrd(p2);
+    }
+
+    /**
+     * Closest distance squared to another line segment.
+     * @param other Other line segment.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Segment3& other) const
+    {
+        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return other.distance_sqrd(*degen_point);
+        }
+        const Vector3<Real> dir = direction_unnormalized();
+        const Vector3<Real> dir_other = other.direction_unnormalized();
+        const Vector3<Real> dir_cross = dir.cross(dir_other);
+        const Real dir_cross_len = dir_cross.length_sqrd();
+        const Vector3<Real> diff = other.start - start;
+        if (approx_zero(dir_cross_len)) {
+            const Real d1 = other.distance_sqrd(start);
+            const Real d2 = other.distance_sqrd(end);
+            const Real d3 = distance_sqrd(other.start);
+            const Real d4 = distance_sqrd(other.end);
+            return min(d1, d2, d3, d4);
+        }
+        const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t)) {
+            return other.distance_sqrd(start);
+        }
+        if (approx_greater(t, static_cast<Real>(1))) {
+            return other.distance_sqrd(end);
+        }
+        const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len;
+        if (approx_less_zero(t_other)) {
+            return distance_sqrd(other.start);
+        }
+        if (approx_greater(t_other, static_cast<Real>(1))) {
+            return distance_sqrd(other.end);
+        }
+        const Vector3<Real> p1 = start + dir * t;
+        const Vector3<Real> p2 = other.start + dir_other * t_other;
+        return p1.distance_sqrd(p2);
+    }
+
+    /**
      * Closest distance to a point. Zero if intersects.
      * @param point Point.
      * @return Result.
@@ -2086,17 +2301,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
-        const Vector3<Real> dir = end - start;
-        const Vector3<Real> diff = point - start;
-        Real t = diff.dot(dir) / dir.dot(dir);
-        if (approx_less_zero(t)) {
-            return diff.length();
-        }
-        if (approx_greater(t, static_cast<Real>(1))) {
-            return (point - end).length();
-        }
-        Vector3<Real> proj = start + dir * t;
-        return (point - proj).length();
+        return sqrt(distance_sqrd(point));
     }
 
     /**
@@ -2107,26 +2312,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        const Vector3<Real> dir = direction_unnormalized();
-        const Vector3<Real> dir_cross = dir.cross(line.direction);
-        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = line.origin - start;
-        if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            const Real d1 = line.distance(start);
-            const Real d2 = line.distance(end);
-            return min(d1, d2);
-        }
-        const Real t = diff.cross(line.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t)) {
-            return line.distance(start);
-        }
-        if (approx_greater(t, static_cast<Real>(1))) {
-            return line.distance(end);
-        }
-        const Real t_line = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        const Vector3<Real> p1 = start.lerp(end, t);
-        const Vector3<Real> p2 = line.origin + line.direction * t_line;
-        return p1.distance(p2);
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -2137,34 +2323,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
-        // TODO: do this for other methods
-        if (start.approx_equal(end)) {
-            return ray.distance(start);
-        }
-        const Vector3<Real> dir = direction_unnormalized();
-        const Vector3<Real> dir_cross = dir.cross(ray.direction);
-        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = ray.origin - start;
-        if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            const Real d1 = ray.distance(start);
-            const Real d2 = ray.distance(end);
-            const Real d3 = distance(ray.origin);
-            return min(d1, min(d2, d3));
-        }
-        const Real t = diff.cross(ray.direction).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t)) {
-            return ray.distance(start);
-        }
-        if (approx_greater(t, static_cast<Real>(1))) {
-            return ray.distance(end);
-        }
-        const Real t_ray = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t_ray)) {
-            return distance(ray.origin);
-        }
-        const Vector3<Real> p1 = start.lerp(end, t);
-        const Vector3<Real> p2 = ray.origin + ray.direction * t_ray;
-        return p1.distance(p2);
+        return sqrt(distance_sqrd(ray));
     }
 
     /**
@@ -2175,38 +2334,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Segment3& other) const
     {
-        if (start.approx_equal(end)) {
-            return other.distance(start);
-        }
-        const Vector3<Real> dir = direction_unnormalized();
-        const Vector3<Real> dir_other = other.direction_unnormalized();
-        const Vector3<Real> dir_cross = dir.cross(dir_other);
-        const Real dir_cross_len_sqrd = dir_cross.length_sqrd();
-        const Vector3<Real> diff = other.start - start;
-        if (nnm::approx_zero(dir_cross_len_sqrd)) {
-            const Real d1 = other.distance(start);
-            const Real d2 = other.distance(end);
-            const Real d3 = distance(other.start);
-            const Real d4 = distance(other.end);
-            return min(min(d1, d2), min(d3, d4));
-        }
-        const Real t = diff.cross(dir_other).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t)) {
-            return other.distance(start);
-        }
-        if (approx_greater(t, static_cast<Real>(1))) {
-            return other.distance(end);
-        }
-        const Real t_other = diff.cross(dir).dot(dir_cross) / dir_cross_len_sqrd;
-        if (approx_less_zero(t_other)) {
-            return distance(other.start);
-        }
-        if (approx_greater(t_other, static_cast<Real>(1))) {
-            return distance(other.end);
-        }
-        const Vector3<Real> p1 = start.lerp(end, t);
-        const Vector3<Real> p2 = other.start.lerp(other.end, t_other);
-        return p1.distance(p2);
+        return sqrt(distance_sqrd(other));
     }
 
     // TODO: test
@@ -8367,6 +8495,18 @@ constexpr bool Line3<Real>::coplanar(const Rectangle3<Real>& rectangle) const
 }
 
 template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Ray3<Real>& ray) const
+{
+    return ray.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Segment3<Real>& segment) const
+{
+    return segment.distance_sqrd(*this);
+}
+
+template <typename Real>
 Real Line3<Real>::distance(const Ray3<Real>& ray) const
 {
     return ray.distance(*this);
@@ -8598,6 +8738,12 @@ template <typename Real>
 constexpr bool Ray3<Real>::coplanar(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.coplanar(*this);
+}
+
+template <typename Real>
+constexpr Real Ray3<Real>::distance_sqrd(const Segment3<Real>& segment) const
+{
+    return segment.distance_sqrd(*this);
 }
 
 template <typename Real>
