@@ -2224,6 +2224,82 @@ inline void segment3_tests()
         ASSERT(nnm::approx_zero(d11));
     }
 
+    test_section("distance_sqrd(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto d1 = nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d1, 2.0f));
+        constexpr auto d2 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d2, 18.0f));
+        constexpr auto d3 = nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_zero(d3));
+        constexpr auto d4 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() }.distance_sqrd(p2);
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d5, 2.0f));
+        constexpr auto d6 = nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d6, 2.0f));
+        constexpr auto d7 = nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d7, 2.0f));
+        constexpr auto d8 = nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } }.distance_sqrd(p2);
+        ASSERT(nnm::approx_equal(d8, 2.0f));
+    }
+
+    test_section("distance_sqrd(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr auto d1 = nnm::Segment3f({ -1.0f, 2.0f, 0.0f }, { -1.0f, 3.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d1, 2.36885245894616f));
+        constexpr auto d2 = nnm::Segment3f({ -1.0f, 3.0f, 0.0f }, { -1.0f, 2.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d2, 2.36885245894616f));
+        constexpr auto d3 = nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_zero(d3));
+        constexpr auto d4 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d5, 0.29508196726188f));
+        constexpr auto d6 = nnm::Segment3f({ 0.0f, 10.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d6, 0.29508196726188f));
+    }
+
+    test_section("distance_sqrd(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr auto result1 = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance_sqrd(r1);
+        ASSERT(nnm::approx_equal(result1, 1.0f));
+        constexpr auto result2 = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance_sqrd(r1);
+        ASSERT(nnm::approx_zero(result2));
+        constexpr auto result3 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } }.distance_sqrd(r1);
+        ASSERT(nnm::approx_zero(result3));
+        constexpr auto result4 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, -10.0f, 12.0f } }.distance_sqrd(r1);
+        ASSERT(nnm::approx_equal(result4, 2.0f))
+        constexpr auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance_sqrd(r1);
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        constexpr auto result6
+            = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_equal(result6, 1.0f));
+        constexpr auto result7
+            = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_zero(result7));
+        constexpr auto result8
+            = nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } }.distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_zero(result8));
+        constexpr auto result9
+            = nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, -12.0f, 0.0f } }.distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_equal(result9, 4.0f));
+        constexpr auto result10
+            = nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } }.distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_equal(result10, 9.0f));
+        constexpr auto result11
+            = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance_sqrd(r_degen_point);
+        ASSERT(nnm::approx_equal(result11, 7.25f));
+        constexpr auto result12
+            = nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } }.distance_sqrd(r_degen_point);
+        ASSERT(nnm::approx_zero(result12));
+    }
+
     test_section("distance(const Vector3&)");
     {
         const auto d1 = s1.distance({ 0.0f, 0.0f, 0.0f });
@@ -2290,6 +2366,76 @@ inline void segment3_tests()
         const auto d11
             = s1.distance(nnm::Segment3f({ 1.3429285263f, 1.4817304819f, -0.7047254731f }, { -2.0f, 0.0f, 0.0f }));
         ASSERT(nnm::approx_zero(d11));
+    }
+
+    test_section("distance(const Plane&)");
+    {
+        constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
+        constexpr auto d1 = nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } }.distance(p2);
+        ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
+        constexpr auto d2 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } }.distance(p2);
+        ASSERT(nnm::approx_equal(d2, 3.0f * nnm::sqrt(2.0f)));
+        constexpr auto d3 = nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } }.distance(p2);
+        ASSERT(nnm::approx_zero(d3));
+        constexpr auto d4 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() }.distance(p2);
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } }.distance(p2);
+        ASSERT(nnm::approx_equal(d5, nnm::sqrt(2.0f)));
+        constexpr auto d6 = nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() }.distance(p2);
+        ASSERT(nnm::approx_equal(d6, nnm::sqrt(2.0f)));
+        constexpr auto d7 = nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } }.distance(p2);
+        ASSERT(nnm::approx_equal(d7, nnm::sqrt(2.0f)));
+        constexpr auto d8 = nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } }.distance(p2);
+        ASSERT(nnm::approx_equal(d8, nnm::sqrt(2.0f)));
+    }
+
+    test_section("distance(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        const auto d1 = nnm::Segment3f({ -1.0f, 2.0f, 0.0f }, { -1.0f, 3.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_equal(d1, 1.5391076827f));
+        const auto d2 = nnm::Segment3f({ -1.0f, 3.0f, 0.0f }, { -1.0f, 2.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_equal(d2, 1.5391076827f));
+        const auto d3 = nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, -1.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_zero(d3));
+        const auto d4 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_zero(d4));
+        const auto d5 = nnm::Segment3f({ 0.0f, 1.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_equal(d5, 0.5432144763f));
+        const auto d6 = nnm::Segment3f({ 0.0f, 10.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }).distance(t1);
+        ASSERT(nnm::approx_equal(d6, 0.5432144763f));
+    }
+
+    test_section("distance(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        const auto result1 = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r1);
+        ASSERT(nnm::approx_equal(result1, 1.0f));
+        const auto result2 = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r1);
+        ASSERT(nnm::approx_zero(result2));
+        const auto result3 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } }.distance(r1);
+        ASSERT(nnm::approx_zero(result3));
+        const auto result4 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, -10.0f, 12.0f } }.distance(r1);
+        ASSERT(nnm::approx_equal(result4, 1.4142135624f))
+        const auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance(r1);
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        const auto result6 = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result6, 1.0f));
+        const auto result7 = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_zero(result7));
+        const auto result8 = nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_zero(result8));
+        const auto result9 = nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, -12.0f, 0.0f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result9, 2.0f));
+        const auto result10 = nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } }.distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result10, 3.0f));
+        const auto result11 = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance(r_degen_point);
+        ASSERT(nnm::approx_equal(result11, 2.6925824036f));
+        const auto result12
+            = nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } }.distance(r_degen_point);
+        ASSERT(nnm::approx_zero(result12));
     }
 
     test_section("direction_unnormalized");
@@ -4034,21 +4180,21 @@ inline void triangle3_tests()
 
     test_section("intersects(const Segment3&)");
     {
-        const auto r1 = t1.intersects(t1.edge(0));
+        constexpr auto r1 = t1.intersects(t1.edge(0));
         ASSERT(r1);
-        const auto r2 = t1.intersects(nnm::Segment3f({ -2.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
+        constexpr auto r2 = t1.intersects(nnm::Segment3f({ -2.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }));
         ASSERT_FALSE(r2);
-        const auto r3 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        constexpr auto r3 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
         ASSERT_FALSE(r3);
-        const auto r4 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        constexpr auto r4 = t1.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
         ASSERT(r4);
-        const auto r5 = t1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
+        constexpr auto r5 = t1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 0.0f }, { 0.0f, -10.0f, 0.0f }));
         ASSERT_FALSE(r5);
-        const auto r6 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
+        constexpr auto r6 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, 10.0f, 0.0f }));
         ASSERT_FALSE(r6);
-        const auto r7 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        constexpr auto r7 = degen_line.intersects(nnm::Segment3f({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
         ASSERT(r7);
-        const auto r8 = degen_line.intersects(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
+        constexpr auto r8 = degen_line.intersects(nnm::Segment3f({ -1.0f, 1.0f, 1.0f }, { -1.0f, 1.0f, -10.0f }));
         ASSERT_FALSE(r8);
     }
 
