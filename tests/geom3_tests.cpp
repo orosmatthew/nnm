@@ -834,15 +834,15 @@ inline void line3_tests()
     {
         constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
         constexpr nnm::Triangle3f degen_line { { 0.0f, 0.0f, 0.0f }, { 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f } };
-        const auto r1 = nnm::Line3f::from_segment(t1.edge(0))->intersects(t1);
+        constexpr auto r1 = nnm::Line3f({ 1.0f, -2.0f, 3.0f }, { -0.329293f, 0.548821f, -0.76835f }).intersects(t1);
         ASSERT(r1);
-        const auto r2 = nnm::Line3f::axis_x().intersects(t1);
+        constexpr auto r2 = nnm::Line3f::axis_x().intersects(t1);
         ASSERT_FALSE(r2);
-        const auto r3 = nnm::Line3f::axis_y().intersects(t1);
+        constexpr auto r3 = nnm::Line3f::axis_y().intersects(t1);
         ASSERT(r3);
-        const auto r4 = nnm::Line3f::axis_y().intersects(degen_line);
+        constexpr auto r4 = nnm::Line3f::axis_y().intersects(degen_line);
         ASSERT(r4);
-        const auto r5 = nnm::Line3f::axis_z_offset(-1.0f, 1.0f).intersects(degen_line);
+        constexpr auto r5 = nnm::Line3f::axis_z_offset(-1.0f, 1.0f).intersects(degen_line);
         ASSERT_FALSE(r5);
     }
 
@@ -3610,23 +3610,23 @@ inline void triangle3_tests()
 
     test_section("contains");
     {
-        const bool r1 = t1.contains({ 3.0f, 0.0f, 0.0f });
+        constexpr bool r1 = t1.contains({ 3.0f, 0.0f, 0.0f });
         ASSERT_FALSE(r1);
-        const bool r2 = t1.contains({ 2.5f, -0.3f, 1.7f });
+        constexpr bool r2 = t1.contains({ 2.5f, -0.3f, 1.7f });
         ASSERT(r2);
-        const bool r3 = degen_line.contains({ 0.5f, 0.0f, 0.0f });
+        constexpr bool r3 = degen_line.contains({ 0.5f, 0.0f, 0.0f });
         ASSERT(r3);
-        const bool r4 = degen_line.contains({ 0.0f, 1.0f, 0.0f });
+        constexpr bool r4 = degen_line.contains({ 0.0f, 1.0f, 0.0f });
         ASSERT_FALSE(r4);
-        const bool r5 = t1.contains({ 3.0f, 0.0f, 0.0f });
+        constexpr bool r5 = t1.contains({ 3.0f, 0.0f, 0.0f });
         ASSERT_FALSE(r5);
-        const bool r6 = t1.contains({ 2.5f, -0.3f, 1.7f });
+        constexpr bool r6 = t1.contains({ 2.5f, -0.3f, 1.7f });
         ASSERT(r6);
-        const bool r7 = t1.contains(t1.vertices[2]);
+        constexpr bool r7 = t1.contains(t1.vertices[2]);
         ASSERT(r7);
-        const bool r8 = t3.contains(t3.edge(1).midpoint());
+        constexpr bool r8 = t3.contains(t3.edge(1).midpoint());
         ASSERT(r8);
-        const bool r9 = degen_line.contains({ 0.0f, -100.0f, 0.0f });
+        constexpr bool r9 = degen_line.contains({ 0.0f, -100.0f, 0.0f });
         ASSERT_FALSE(r9);
     }
 
@@ -3749,15 +3749,15 @@ inline void triangle3_tests()
 
     test_section("project");
     {
-        const auto p1 = t1.project({ -1.5f, 3.5f, 3.0f });
+        constexpr auto p1 = t1.project({ -1.5f, 3.5f, 3.0f });
         ASSERT(p1.approx_equal({ -0.2336065574f, 0.1229508197f, 0.0450819672f }))
-        const auto p2 = t1.project({ -1.0f, 1.0f, 3.0f });
+        constexpr auto p2 = t1.project({ -1.0f, 1.0f, 3.0f });
         ASSERT(p2.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
-        const auto p3 = t1.project({ 0.8632112627f, -3.9685633672f, -1.3474929463f });
+        constexpr auto p3 = t1.project({ 0.8632112627f, -3.9685633672f, -1.3474929463f });
         ASSERT(p3.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
-        const auto p4 = degen_line.project({ 0.5f, 100.0f, 0.0f });
+        constexpr auto p4 = degen_line.project({ 0.5f, 100.0f, 0.0f });
         ASSERT(p4.approx_equal({ 0.5f, 0.0f, 0.0f }));
-        const auto p5 = degen_line.project({ 100.0f, -100.0f, 0.0f });
+        constexpr auto p5 = degen_line.project({ 100.0f, -100.0f, 0.0f });
         ASSERT(p5.approx_equal({ 1.0f, 0.0f, 0.0f }));
     }
 
@@ -3900,15 +3900,15 @@ inline void triangle3_tests()
 
     test_section("intersects(const Line3&)");
     {
-        const auto r1 = t1.intersects(*nnm::Line3f::from_segment(t1.edge(0)));
+        constexpr auto r1 = t1.intersects(nnm::Line3f({ 1.0f, -2.0f, 3.0f }, { -0.329293f, 0.548821f, -0.76835f }));
         ASSERT(r1);
-        const auto r2 = t1.intersects(nnm::Line3f::axis_x());
+        constexpr auto r2 = t1.intersects(nnm::Line3f::axis_x());
         ASSERT_FALSE(r2);
-        const auto r3 = t1.intersects(nnm::Line3f::axis_y());
+        constexpr auto r3 = t1.intersects(nnm::Line3f::axis_y());
         ASSERT(r3);
-        const auto r4 = degen_line.intersects(nnm::Line3f::axis_y());
+        constexpr auto r4 = degen_line.intersects(nnm::Line3f::axis_y());
         ASSERT(r4);
-        const auto r5 = degen_line.intersects(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
+        constexpr auto r5 = degen_line.intersects(nnm::Line3f::axis_z_offset(-1.0f, 1.0f));
         ASSERT_FALSE(r5);
     }
 
