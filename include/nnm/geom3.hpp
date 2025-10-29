@@ -609,6 +609,15 @@ public:
     // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const;
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const;
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -3131,6 +3140,21 @@ public:
         return diff.dot(normal);
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        return sqrd(signed_distance(point));
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        if (!parallel(line)) {
+            return static_cast<Real>(0);
+        }
+        return distance_sqrd(line.origin);
+    }
+
     /**
      * Determine the closest distance to a point. Zero if intersects.
      * @param point Point.
@@ -3463,7 +3487,7 @@ public:
     [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
         const Vector3<Real> diff = point - origin;
-        const Real dist = diff.dot(normal) / normal.dot(normal);
+        const Real dist = diff.dot(normal);
         return point - normal * dist;
     }
 
@@ -3918,13 +3942,17 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool contains(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr bool contains(const Vector3<Real>& point) const
     {
-        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        if (!plane.has_value()) {
-            return edge(0).contains(point) || edge(1).contains(point) || edge(2).contains(point);
+        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return degen_point->approx_equal(point);
         }
-        if (!plane->contains(point)) {
+        if (const std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->contains(point);
+        }
+        const Vector3<Real> normal = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
+        const Vector3<Real> diff = point - vertices[0];
+        if (!normal.perpendicular(diff)) {
             return false;
         }
         return contains_projected(point);
@@ -4047,26 +4075,46 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Vector3<Real> project(const Vector3<Real>& point) const
+    [[nodiscard]] constexpr Vector3<Real> project(const Vector3<Real>& point) const
     {
-        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        Vector3<Real> plane_proj = point;
-        if (plane.has_value()) {
-            plane_proj = plane->project(point);
+        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return *degen_point;
         }
-        if (contains(plane_proj)) {
-            return plane_proj;
+        if (const std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->project(point);
         }
-        uint8_t closest_edge = 0;
-        Real closest_edge_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 3; ++i) {
-            const Real dist = edge(i).distance(plane_proj);
-            if (dist < closest_edge_dist) {
-                closest_edge = i;
-                closest_edge_dist = dist;
+        if (!contains_projected(point)) {
+            const Real e0_dist = edge(0).distance_sqrd(point);
+            const Real e1_dist = edge(1).distance_sqrd(point);
+            const Real e2_dist = edge(2).distance_sqrd(point);
+            if (e0_dist < e1_dist && e0_dist < e2_dist) {
+                return edge(0).project(point);
             }
+            if (e1_dist < e0_dist && e1_dist < e2_dist) {
+                return edge(1).project(point);
+            }
+            return edge(2).project(point);
         }
-        return edge(closest_edge).project(plane_proj);
+        const Vector3<Real> diff = point - vertices[0];
+        const Vector3<Real> normal = (vertices[1] - vertices[0]).cross(vertices[2] - vertices[0]);
+        const Real dist = diff.dot(normal) / normal.dot(normal);
+        return point - normal * dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
+    {
+        // Degenerated are handled by project.
+        return project(point).distance_sqrd(point);
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        return min(edge(0).distance_sqrd(line), edge(1).distance_sqrd(line), edge(2).distance_sqrd(line));
     }
 
     /**
@@ -4077,11 +4125,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
-        if (contains(point)) {
-            return static_cast<Real>(0);
-        }
-        const Vector3<Real> proj = project(point);
-        return point.distance(proj);
+        return sqrt(distance_sqrd(point));
     }
 
     /**
@@ -4092,10 +4136,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        if (intersects(line)) {
-            return static_cast<Real>(0);
-        }
-        return min(edge(0).distance(line), edge(1).distance(line), edge(2).distance(line));
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -4227,17 +4268,28 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Line3<Real>& line) const
+    [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
     {
-        const std::optional<Plane<Real>> plane = Plane<Real>::from_triangle(*this);
-        if (!plane.has_value() || plane->coplanar(line)) {
+        // Degenerated are handled gracefully by det check below.
+        const Vector3<Real> d10 = vertices[1] - vertices[0];
+        const Vector3<Real> d20 = vertices[2] - vertices[0];
+        const Vector3<Real> line_dir_edge_cross = line.direction.cross(d20);
+        const Real det = d10.dot(line_dir_edge_cross);
+        if (approx_zero(det)) {
             return edge(0).intersects(line) || edge(1).intersects(line) || edge(2).intersects(line);
         }
-        const std::optional<Vector3<Real>> point = plane->intersection(line);
-        if (!point.has_value()) {
+        // Moller–Trumbore algorithm
+        const Real inv_det = static_cast<Real>(1) / det;
+        const Vector3<Real> diff = line.origin - vertices[0];
+        const Real u = inv_det * diff.dot(line_dir_edge_cross);
+        if (approx_less_zero(u) || approx_greater(u, static_cast<Real>(1))) {
             return false;
         }
-        return contains_projected(*point);
+        const Real v = inv_det * line.direction.dot(diff.cross(d10));
+        if (approx_less_zero(v) || approx_greater(u + v, static_cast<Real>(1))) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -5043,6 +5095,20 @@ public:
         return point.distance_sqrd(closest);
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        if (intersects(line)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance_sqrd(line);
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -5062,17 +5128,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        if (intersects(line)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 4; ++i) {
-            const Real dist = edge(i).distance(line);
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -8504,6 +8560,24 @@ template <typename Real>
 constexpr Real Line3<Real>::distance_sqrd(const Segment3<Real>& segment) const
 {
     return segment.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Plane<Real>& plane) const
+{
+    return plane.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Triangle3<Real>& triangle) const
+{
+    return triangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance_sqrd(*this);
 }
 
 template <typename Real>
