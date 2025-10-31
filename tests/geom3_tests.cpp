@@ -486,9 +486,9 @@ inline void line3_tests()
     test_section("distance_sqrd(const Box&)");
     {
         constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
-                                { 0.707106769f, 0.0f, -0.707106769f },
-                                { 0.0f, 2.0f, 0.0f },
-                                { 1.06066012f, 0.0f, 1.06066012f } };
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
         constexpr float r1 = nnm::Line3f::axis_x().distance_sqrd(b1);
         ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
         constexpr float r2 = nnm::Line3f::axis_y_offset(0.0f, 1.5f).distance_sqrd(b1);
@@ -1516,6 +1516,35 @@ inline void ray3_tests()
         constexpr auto result12
             = nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() }.distance_sqrd(r_degen_point);
         ASSERT(nnm::approx_zero(result12));
+    }
+
+    test_section("distance_sqrd(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        constexpr float result1 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result1, 0.25f));
+        constexpr float result2 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(result2));
+        constexpr float result3 = nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result3, 0.25f));
+    }
+
+    test_section("distance_sqrd(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        constexpr float result1 = nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result1, 1.5183982895123f));
+        constexpr float result2 = nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result2, 1.9362916305822f));
+        constexpr float result3 = nnm::Ray3f({ 0.0f, 0.0f, 1.5f }, nnm::Vector3f::axis_y()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result3, 0.07169918465782f));
+        constexpr float result4 = nnm::Ray3f({ 0.0f, -1.0f, 0.0f }, nnm::Vector3f::axis_z()).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(result4));
+        constexpr float result5 = nnm::Ray3f({ 0.0f, -1.0f, 0.0f }, -nnm::Vector3f::axis_z()).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(result5, 1.9362916305822f));
     }
 
     test_section("distance(const Vector3&)");

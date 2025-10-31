@@ -1488,6 +1488,22 @@ public:
     [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
 
     /**
+     * Closest distance squared to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const AlignedBox<Real>& box);
+
+    /**
+     * Closest distance squared to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Box<Real>& box);
+
+    /**
      * Closest distance to a point. Zero if intersects.
      * @param point Point.
      * @return Result.
@@ -7189,6 +7205,17 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(ray);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -7219,12 +7246,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(ray);
-            min_dist = nnm::min(min_dist, dist);
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(ray));
     }
 
     /**
@@ -7912,6 +7934,17 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(ray);
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return sqrt(distance_sqrd(point));
@@ -7936,12 +7969,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Ray3<Real>& ray) const
     {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(ray);
-            min_dist = min(min_dist, dist);
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(ray));
     }
 
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
@@ -9217,6 +9245,18 @@ template <typename Real>
 constexpr Real Ray3<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Ray3<Real>::distance_sqrd(const AlignedBox<Real>& box)
+{
+    return box.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Ray3<Real>::distance_sqrd(const Box<Real>& box)
+{
+    return box.distance_sqrd(*this);
 }
 
 template <typename Real>
