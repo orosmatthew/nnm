@@ -2344,6 +2344,35 @@ inline void segment3_tests()
         ASSERT(nnm::approx_zero(result12));
     }
 
+    test_section("distance_sqrd(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        constexpr float r1 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 0.25f));
+        constexpr float r2 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r3, 0.25f));
+    }
+
+    test_section("distance_sqrd(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        constexpr float r1 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
+        constexpr float r2 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -100.0f, 0.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r2, 1.9362916305822f));
+        constexpr float r3 = nnm::Segment3f({ 0.0f, 0.0f, 1.5f }, { 0.0f, 100.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r3, 0.07169918465782f));
+        constexpr float r4 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r4));
+        constexpr float r5 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r5, 1.9362916305822f));
+    }
+
     test_section("distance(const Vector3&)");
     {
         const auto d1 = s1.distance({ 0.0f, 0.0f, 0.0f });
@@ -2480,6 +2509,55 @@ inline void segment3_tests()
         const auto result12
             = nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } }.distance(r_degen_point);
         ASSERT(nnm::approx_zero(result12));
+    }
+
+    test_section("distance(const Sphere&)");
+    {
+        constexpr nnm::SphereF sphere { { 1.0f, -2.0f, 3.0f }, 1.5f };
+        constexpr nnm::SphereF s_degen { { 0.0f, 0.0f, 0.0f }, 0.0f };
+        const auto r1 = nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { 10.0f, -2.0f, 3.0f }).distance(sphere);
+        ASSERT(nnm::approx_zero(r1));
+        const auto r2 = nnm::Segment3f({ -2.0f, -2.0f, 3.0f }, { -10.0f, -2.0f, 3.0f }).distance(sphere);
+        ASSERT(nnm::approx_equal(r2, 1.5f));
+        const auto r3 = nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }).distance(sphere);
+        ASSERT(nnm::approx_equal(r3, 7.5f));
+        const auto r4 = nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }).distance(sphere);
+        ASSERT(nnm::approx_equal(r4, 2.1055512755f));
+        const auto r5 = nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }).distance(sphere);
+        ASSERT(nnm::approx_equal(r5, 2.2416573868f));
+        const auto r6 = nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }).distance(s_degen);
+        ASSERT(nnm::approx_equal(r6, 1.0f));
+        const auto r7 = nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }).distance(s_degen);
+        ASSERT(nnm::approx_zero(r7));
+    }
+
+    test_section("distance(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        const float r1 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }).distance(b1);
+        ASSERT(nnm::approx_zero(r2));
+        const float r3 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r3, 0.5f));
+    }
+
+    test_section("distance(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        const float r1 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r1, 1.23223305f));
+        const float r2 = nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -100.0f, 0.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r2, 1.3915069639f));
+        const float r3 = nnm::Segment3f({ 0.0f, 0.0f, 1.5f }, { 0.0f, 100.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r3, 0.2677670343f));
+        const float r4 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }).distance(b1);
+        ASSERT(nnm::approx_zero(r4));
+        const float r5 = nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r5, 1.3915069639f));
     }
 
     test_section("direction_unnormalized");
@@ -6851,6 +6929,16 @@ void aligned_box_tests()
         ASSERT(nnm::approx_equal(r3, 0.5f));
     }
 
+    test_section("distance(const Segment3&)");
+    {
+        const float r1 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }));
+        ASSERT(nnm::approx_zero(r2));
+        const float r3 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }));
+        ASSERT(nnm::approx_equal(r3, 0.5f));
+    }
+
     test_section("intersects(const Line3&)");
     {
         constexpr auto r1 = b1.intersects(nnm::Line3f::axis_x());
@@ -7416,6 +7504,20 @@ void box_tests()
         const float r4 = b1.distance(nnm::Ray3f({ 0.0f, -1.0f, 0.0f }, nnm::Vector3f::axis_z()));
         ASSERT(nnm::approx_zero(r4));
         const float r5 = b1.distance(nnm::Ray3f({ 0.0f, -1.0f, 0.0f }, -nnm::Vector3f::axis_z()));
+        ASSERT(nnm::approx_equal(r5, 1.3915069639f));
+    }
+
+    test_section("distance(const Segment3&)");
+    {
+        const float r1 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { 100.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r1, 1.23223305f));
+        const float r2 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -100.0f, 0.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r2, 1.3915069639f));
+        const float r3 = b1.distance(nnm::Segment3f({ 0.0f, 0.0f, 1.5f }, { 0.0f, 100.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r3, 0.2677670343f));
+        const float r4 = b1.distance(nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, 100.0f }));
+        ASSERT(nnm::approx_zero(r4));
+        const float r5 = b1.distance(nnm::Segment3f({ 0.0f, -1.0f, 0.0f }, { 0.0f, 0.0f, -100.0f }));
         ASSERT(nnm::approx_equal(r5, 1.3915069639f));
     }
 
