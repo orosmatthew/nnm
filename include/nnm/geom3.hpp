@@ -4271,14 +4271,24 @@ public:
         return point - normal * dist;
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
     {
-        // Degenerated are handled by project.
+        // Degenerates are handled by project method.
         return project(point).distance_sqrd(point);
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
     {
         if (intersects(line)) {
@@ -4287,7 +4297,12 @@ public:
         return min(edge(0).distance_sqrd(line), edge(1).distance_sqrd(line), edge(2).distance_sqrd(line));
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -4300,7 +4315,12 @@ public:
             edge(2).distance_sqrd(ray));
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -4314,7 +4334,12 @@ public:
             edge(2).distance_sqrd(segment));
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
     {
         if (intersects(plane)) {
@@ -4323,6 +4348,34 @@ public:
         return min(
             plane.distance_sqrd(vertices[0]), plane.distance_sqrd(vertices[1]), plane.distance_sqrd(vertices[2]));
     }
+
+    /**
+     * Closest distance squared to another triangle.
+     * @param other Other triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        return min(
+            edge(0).distance_sqrd(other.edge(0)),
+            edge(0).distance_sqrd(other.edge(1)),
+            edge(0).distance_sqrd(other.edge(2)),
+            edge(1).distance_sqrd(other.edge(1)),
+            edge(1).distance_sqrd(other.edge(2)),
+            edge(2).distance_sqrd(other.edge(2)));
+    }
+
+    /**
+     * Closest distance squared to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Closest distance to a point. Zero if intersects.
@@ -4390,17 +4443,16 @@ public:
     // tested
     [[nodiscard]] Real distance(const Triangle3& other) const
     {
-        if (intersects(other)) {
-            return static_cast<Real>(0);
-        }
-        return min(
-            edge(0).distance(other.edge(0)),
-            edge(0).distance(other.edge(1)),
-            edge(0).distance(other.edge(2)),
-            edge(1).distance(other.edge(1)),
-            edge(1).distance(other.edge(2)),
-            edge(2).distance(other.edge(2)));
+        return sqrt(distance_sqrd(other));
     }
+
+    /**
+     * Closest distance to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Determine if parallel with a line.
@@ -4669,7 +4721,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Triangle3& other) const
+    [[nodiscard]] constexpr bool intersects(const Triangle3& other) const
     {
         return intersects(other.edge(0)) || intersects(other.edge(1)) || intersects(other.edge(2))
             || other.intersects(edge(0)) || other.intersects(edge(1)) || other.intersects(edge(2));
@@ -5373,6 +5425,26 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const
+    {
+        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
+            return triangle.distance_sqrd(*degen_point);
+        }
+        if (const std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
+            return degen_segment->distance_sqrd(triangle);
+        }
+        if (intersects(triangle)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 3; ++i) {
+            const Real dist = distance_sqrd(triangle.edge(i));
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -5446,23 +5518,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
     {
-        if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
-            return triangle.distance(*degen_point);
-        }
-        if (const std::optional<Segment3<Real>> degen_segment = collapse_segment(); degen_segment.has_value()) {
-            return degen_segment->distance(triangle);
-        }
-        if (intersects(triangle)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 3; ++i) {
-            const Real dist = distance(triangle.edge(i));
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(triangle));
     }
 
     /**
@@ -5854,7 +5910,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] bool intersects(const Triangle3<Real>& triangle) const
+    [[nodiscard]] constexpr bool intersects(const Triangle3<Real>& triangle) const
     {
         if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
             return triangle.contains(*degen_point);
@@ -9299,6 +9355,12 @@ constexpr std::optional<Segment3<Real>> Plane<Real>::intersection(const Rectangl
 }
 
 template <typename Real>
+constexpr Real Triangle3<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance_sqrd(*this);
+}
+
+template <typename Real>
 constexpr bool Segment3<Real>::intersects(const Plane<Real>& plane) const
 {
     return plane.intersects(*this);
@@ -9326,6 +9388,12 @@ template <typename Real>
 bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
+}
+
+template <typename Real>
+Real Triangle3<Real>::distance(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>
