@@ -5369,7 +5369,12 @@ public:
         return point.distance_sqrd(closest);
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
     {
         if (intersects(line)) {
@@ -5383,7 +5388,12 @@ public:
         return min_dist;
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -5397,7 +5407,12 @@ public:
         return min_dist;
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -5411,7 +5426,12 @@ public:
         return min_dist;
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
     {
         if (intersects(plane)) {
@@ -5425,7 +5445,12 @@ public:
         return min_dist;
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const
     {
         if (const std::optional<Vector3<Real>> degen_point = collapse_point(); degen_point.has_value()) {
@@ -5440,6 +5465,25 @@ public:
         Real min_dist = std::numeric_limits<Real>::max();
         for (uint8_t i = 0; i < 3; ++i) {
             const Real dist = distance_sqrd(triangle.edge(i));
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    /**
+     * Closest distance squared to another rectangle.
+     * @param other Other rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3& other) const
+    {
+        if (intersects(other)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = distance_sqrd(other.edge(i));
             min_dist = min(min_dist, dist);
         }
         return min_dist;
@@ -5529,17 +5573,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Rectangle3& other) const
     {
-        if (intersects(other)) {
-            return static_cast<Real>(0);
-        }
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 4; ++i) {
-            const Real dist = distance(other.edge(i));
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(other));
     }
 
     // TODO
