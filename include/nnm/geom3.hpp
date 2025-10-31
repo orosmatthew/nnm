@@ -3224,13 +3224,23 @@ public:
         return diff.dot(normal);
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a point.
+     * @param point Point.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Vector3<Real>& point) const
     {
         return sqrd(signed_distance(point));
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a line.
+     * @param line Line.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
     {
         if (!parallel(line)) {
@@ -3239,7 +3249,12 @@ public:
         return distance_sqrd(line.origin);
     }
 
-    // TODO: test
+    /**
+     * Closest distance squared to a ray.
+     * @param ray Ray.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Ray3<Real>& ray) const
     {
         if (intersects(ray)) {
@@ -3248,6 +3263,12 @@ public:
         return distance_sqrd(ray.origin);
     }
 
+    /**
+     * Closest distance squared to a line segment.
+     * @param segment Line segment.
+     * @return Result.
+     */
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Segment3<Real>& segment) const
     {
         if (intersects(segment)) {
@@ -3257,6 +3278,36 @@ public:
         const Real d2 = distance_sqrd(segment.end);
         return min(d1, d2);
     }
+
+    /**
+     * Closest distance squared to another plane.
+     * @param other Other plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane& other) const
+    {
+        if (!parallel(other)) {
+            return static_cast<Real>(0);
+        }
+        return distance_sqrd(other.origin);
+    }
+
+    /**
+     * Closest distance squared to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Closest distance squared to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Determine the closest distance to a point. Zero if intersects.
@@ -3326,6 +3377,22 @@ public:
         }
         return distance(other.origin);
     }
+
+    /**
+     * Closest distance to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Triangle3<Real>& triangle) const;
+
+    /**
+     * Closest distance to a rectangle.
+     * @param rectangle Rectangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Rectangle3<Real>& rectangle) const;
 
     /**
      * Determine if parallel with a line.
@@ -4245,6 +4312,16 @@ public:
             edge(0).distance_sqrd(segment),
             edge(1).distance_sqrd(segment),
             edge(2).distance_sqrd(segment));
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
+    {
+        if (intersects(plane)) {
+            return static_cast<Real>(0);
+        }
+        return min(
+            plane.distance_sqrd(vertices[0]), plane.distance_sqrd(vertices[1]), plane.distance_sqrd(vertices[2]));
     }
 
     /**
@@ -5277,6 +5354,20 @@ public:
         Real min_dist = min(distance_sqrd(segment.start), distance_sqrd(segment.end));
         for (uint8_t i = 0; i < 4; ++i) {
             const Real dist = edge(i).distance_sqrd(segment);
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
+    {
+        if (intersects(plane)) {
+            return static_cast<Real>(0);
+        }
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 4; ++i) {
+            const Real dist = edge(i).distance_sqrd(plane);
             min_dist = min(min_dist, dist);
         }
         return min_dist;
@@ -9163,6 +9254,30 @@ template <typename Real>
 constexpr std::optional<Vector3<Real>> Segment3<Real>::intersection(const Plane<Real>& plane) const
 {
     return plane.intersection(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance_sqrd(const Triangle3<Real>& triangle) const
+{
+    return triangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance(const Triangle3<Real>& triangle) const
+{
+    return triangle.distance(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance(const Rectangle3<Real>& rectangle) const
+{
+    return rectangle.distance(*this);
 }
 
 template <typename Real>

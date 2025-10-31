@@ -3094,6 +3094,121 @@ inline void plane_tests()
         ASSERT(nnm::approx_equal(p2.signed_distance({ 100.0f, -6.995535f, -2.075535f }), -5.0f));
     }
 
+    test_section("distance_sqrd(const Vector3&)");
+    {
+        constexpr auto result1 = p2.distance_sqrd({ -1.89f, -3.46f, 1.46f });
+        ASSERT(nnm::approx_zero(result1));
+        constexpr auto result2 = p2.distance_sqrd({ -1.89f, -2.752893f, 2.167107f });
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        constexpr auto result3 = p2.distance_sqrd({ 100.0f, -6.995535f, -2.075535f });
+        ASSERT(nnm::approx_equal(result3, 25.0f));
+    }
+
+    test_section("distance_sqrd(const Line3&)");
+    {
+        constexpr auto d1 = p2.distance_sqrd(nnm::Line3f::axis_x());
+        ASSERT(nnm::approx_equal(d1, 2.0f));
+        constexpr auto d2 = p2.distance_sqrd(nnm::Line3f::axis_z());
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3 = p2.distance_sqrd(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d3, 18.0f));
+        constexpr auto d4 = p2.distance_sqrd(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = p2.distance_sqrd(nnm::Line3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_zero(d5));
+    }
+
+    test_section("distance_sqrd(const Ray3&)");
+    {
+        constexpr auto d1 = p2.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(d1, 2.0f));
+        constexpr auto d2
+            = p2.distance_sqrd(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3 = p2.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d3, 2.0f));
+        constexpr auto d4 = p2.distance_sqrd(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
+        ASSERT(nnm::approx_equal(d4, 18.0f));
+        constexpr auto d5 = p2.distance_sqrd(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
+        ASSERT(nnm::approx_equal(d5, 18.0f));
+        constexpr auto d6 = p2.distance_sqrd(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_z() });
+        ASSERT(nnm::approx_zero(d6));
+    }
+
+    test_section("distance_sqrd(const Segment3&)");
+    {
+        constexpr auto d1 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d1, 2.0f));
+        constexpr auto d2 = p2.distance_sqrd(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
+        ASSERT(nnm::approx_equal(d2, 18.0f));
+        constexpr auto d3 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        ASSERT(nnm::approx_zero(d3));
+        constexpr auto d4 = p2.distance_sqrd(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        ASSERT(nnm::approx_zero(d4));
+        constexpr auto d5 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d5, 2.0f));
+        constexpr auto d6 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        ASSERT(nnm::approx_equal(d6, 2.0f));
+        constexpr auto d7 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d7, 2.0f));
+        constexpr auto d8 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, -8.0f, 0.0f }, { 0.0f, -4.0f, 0.0f } });
+        ASSERT(nnm::approx_equal(d8, 2.0f));
+    }
+
+    test_section("distance_sqrd(const Plane&)");
+    {
+        constexpr auto d1 = p2.distance(p2);
+        ASSERT(nnm::approx_zero(d1));
+        constexpr auto d2 = p2.distance(nnm::PlaneF { p2.origin.translate({ 100.0f, 0.0f, 0.0f }), -p2.normal });
+        ASSERT(nnm::approx_zero(d2));
+        constexpr auto d3
+            = p2.distance(nnm::PlaneF { p2.origin.translate({ -100.0f, 0.707107f, 0.707107f }), p2.normal });
+        ASSERT(nnm::approx_equal(d3, 1.0f));
+        constexpr auto d4
+            = p2.distance(nnm::PlaneF { p2.origin.translate({ -100.0f, -0.707107f, -0.707107f }), p2.normal });
+        ASSERT(nnm::approx_equal(d4, 1.0f));
+        constexpr auto d5 = p1.distance(p2);
+        ASSERT(nnm::approx_zero(d5));
+        constexpr auto d6 = p2.distance(p1);
+        ASSERT(nnm::approx_zero(d6));
+    }
+
+    test_section("distance_sqrd(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr auto d1 = nnm::PlaneF::xy().distance_sqrd(t1);
+        ASSERT(nnm::approx_zero(d1));
+        constexpr auto d2 = nnm::PlaneF::xy_offset(5.0f).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d2, 4.0f));
+        constexpr auto d3 = nnm::PlaneF::yz_offset(5.0f).distance_sqrd(t1);
+        ASSERT(nnm::approx_equal(d3, 1.0f));
+    }
+
+    test_section("distance_sqrd(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr auto result1 = nnm::PlaneF::xy().distance_sqrd(r1);
+        ASSERT(nnm::approx_zero(result1));
+        constexpr auto result2 = nnm::PlaneF::yz().distance_sqrd(r1);
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        constexpr auto result3 = nnm::PlaneF::xy_offset(1.0f).distance_sqrd(r1);
+        ASSERT(nnm::approx_zero(result3));
+        constexpr auto result4 = nnm::PlaneF::xy().distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_zero(result4));
+        constexpr auto result5 = nnm::PlaneF::yz().distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        constexpr auto result6 = nnm::PlaneF::xy_offset(2.0f).distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_equal(result6, 4.0f));
+        constexpr auto result7 = nnm::PlaneF::yz_offset(-3.0f).distance_sqrd(r_degen_line);
+        ASSERT(nnm::approx_zero(result7));
+        constexpr auto result8 = nnm::PlaneF::xy().distance_sqrd(r_degen_point);
+        ASSERT(nnm::approx_equal(result8, 1.0f));
+        constexpr auto result9 = nnm::PlaneF::yz_offset(-2.5f).distance_sqrd(r_degen_point);
+        ASSERT(nnm::approx_zero(result9));
+    }
+
     test_section("distance(const Vector3&)");
     {
         constexpr auto result = p2.distance({ -1.89f, -3.46f, 1.46f });
@@ -3168,6 +3283,42 @@ inline void plane_tests()
         ASSERT(nnm::approx_zero(d5));
         constexpr auto d6 = p2.distance(p1);
         ASSERT(nnm::approx_zero(d6));
+    }
+
+    test_section("distance(const Triangle3&)");
+    {
+        constexpr nnm::Triangle3f t1 { { 1.0f, -2.0f, 3.0f }, { -2.0f, 3.0f, -4.0f }, { 4.0f, 0.0f, 2.0f } };
+        constexpr auto d1 = nnm::PlaneF::xy().distance(t1);
+        ASSERT(nnm::approx_zero(d1));
+        constexpr auto d2 = nnm::PlaneF::xy_offset(5.0f).distance(t1);
+        ASSERT(nnm::approx_equal(d2, 2.0f));
+        constexpr auto d3 = nnm::PlaneF::yz_offset(5.0f).distance(t1);
+        ASSERT(nnm::approx_equal(d3, 1.0f));
+    }
+
+    test_section("distance(const Rectangle3&)");
+    {
+        constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
+        constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
+        constexpr auto result1 = nnm::PlaneF::xy().distance(r1);
+        ASSERT(nnm::approx_zero(result1));
+        constexpr auto result2 = nnm::PlaneF::yz().distance(r1);
+        ASSERT(nnm::approx_equal(result2, 1.0f));
+        constexpr auto result3 = nnm::PlaneF::xy_offset(1.0f).distance(r1);
+        ASSERT(nnm::approx_zero(result3));
+        constexpr auto result4 = nnm::PlaneF::xy().distance(r_degen_line);
+        ASSERT(nnm::approx_zero(result4));
+        constexpr auto result5 = nnm::PlaneF::yz().distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result5, 1.0f));
+        constexpr auto result6 = nnm::PlaneF::xy_offset(2.0f).distance(r_degen_line);
+        ASSERT(nnm::approx_equal(result6, 2.0f));
+        constexpr auto result7 = nnm::PlaneF::yz_offset(-3.0f).distance(r_degen_line);
+        ASSERT(nnm::approx_zero(result7));
+        constexpr auto result8 = nnm::PlaneF::xy().distance(r_degen_point);
+        ASSERT(nnm::approx_equal(result8, 1.0f));
+        constexpr auto result9 = nnm::PlaneF::yz_offset(-2.5f).distance(r_degen_point);
+        ASSERT(nnm::approx_zero(result9));
     }
 
     test_section("parallel(const Line3&)");
@@ -4738,7 +4889,7 @@ inline void rectangle3_tests()
         ASSERT(result9);
     }
 
-    test_section("distance_sqrd");
+    test_section("distance_sqrd(const Vector3&)");
     {
         constexpr auto result1 = r1.distance_sqrd(r1.vertex(0));
         ASSERT(nnm::approx_zero(result1));
