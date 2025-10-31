@@ -474,6 +474,29 @@ inline void line3_tests()
         ASSERT(nnm::approx_zero(result10));
     }
 
+    test_section("distance_sqrd(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        constexpr float r1 = nnm::Line3f::axis_x().distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 0.25f));
+        constexpr float r2 = nnm::Line3f::axis_z().distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r2));
+    }
+
+    test_section("distance_sqrd(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                { 0.707106769f, 0.0f, -0.707106769f },
+                                { 0.0f, 2.0f, 0.0f },
+                                { 1.06066012f, 0.0f, 1.06066012f } };
+        constexpr float r1 = nnm::Line3f::axis_x().distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
+        constexpr float r2 = nnm::Line3f::axis_y_offset(0.0f, 1.5f).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r2, 0.07169918465782f));
+        constexpr float r3 = nnm::Line3f::axis_z_offset(0.0f, -1.0f).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r3));
+    }
+
     test_section("distance(const Vector3&)");
     {
         const auto d1 = l1.distance({ 0.0f, 0.0f, 0.0f });
@@ -1265,14 +1288,6 @@ inline void ray3_tests()
         constexpr nnm::Ray3f degen_point { { 1.0f, -2.0f, 3.0f }, nnm::Vector3f::zero() };
         constexpr bool result2 = degen_point.valid();
         ASSERT_FALSE(result2);
-    }
-
-    test_section("normalize");
-    {
-        constexpr nnm::Ray3f r3 { { 1.0f, -2.0f, 3.0f }, { -5.0f, 7.0f, -9.0f } };
-        const auto r4 = r3.normalize();
-        ASSERT(r4.origin.approx_equal({ 1.0f, -2.0f, 3.0f }));
-        ASSERT(r4.direction.approx_equal({ -0.4016096645f, 0.5622535302f, -0.7228973960f }));
     }
 
     test_section("collinear(const Vector3&)");

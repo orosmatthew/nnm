@@ -292,7 +292,7 @@ private:
 };
 
 /**
- * Infinite line.
+ * Infinite line defined by an origin and normalized direction.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -304,7 +304,7 @@ public:
     Vector3<Real> origin;
 
     /**
-     * Direction.
+     * Normalized direction.
      */
     Vector3<Real> direction;
 
@@ -632,6 +632,22 @@ public:
      */
     // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Closest distance squared to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance squared to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Box<Real>& box) const;
 
     /**
      * Closest distance to a point.
@@ -1192,7 +1208,7 @@ public:
 };
 
 /**
- * 3D Ray.
+ * Ray which is defined by an origin and normalized direction.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -1255,19 +1271,15 @@ public:
         return { from, from.direction(to) };
     }
 
-    [[nodiscard]] constexpr bool valid() const
-    {
-        return nnm::approx_equal(direction.length_sqrd(), static_cast<Real>(1));
-    }
-
     /**
-     * Normalize the direction.
+     * Determine if ray is valid.
+     * A ray is valid if its direction vector is non-zero and normalized.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Ray3 normalize() const
+    [[nodiscard]] constexpr bool valid() const
     {
-        return { origin, direction.normalize() };
+        return nnm::approx_equal(direction.length_sqrd(), static_cast<Real>(1));
     }
 
     /**
@@ -1302,6 +1314,9 @@ public:
     {
         return Line3<Real>::from_ray(*this).coincident(Line3<Real>::from_ray(other));
     }
+
+    // TODO: test
+    [[nodiscard]] constexpr bool collinear(const Segment3<Real>& segment) const;
 
     /**
      * Determine if coplanar with a line.
@@ -7163,6 +7178,17 @@ public:
         return closest.distance_sqrd(point);
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(line);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -7182,14 +7208,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(line);
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -7882,6 +7901,17 @@ public:
         return delta.length_sqrd();
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Line3<Real>& line) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(line);
+            min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     [[nodiscard]] Real distance(const Vector3<Real>& point) const
     {
         return sqrt(distance_sqrd(point));
@@ -7895,14 +7925,7 @@ public:
     // tested
     [[nodiscard]] Real distance(const Line3<Real>& line) const
     {
-        Real min_dist = std::numeric_limits<Real>::max();
-        for (uint8_t i = 0; i < 6; ++i) {
-            const Real dist = face(i).distance(line);
-            if (dist < min_dist) {
-                min_dist = dist;
-            }
-        }
-        return min_dist;
+        return sqrt(distance_sqrd(line));
     }
 
     /**
@@ -8924,6 +8947,18 @@ template <typename Real>
 constexpr Real Line3<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const AlignedBox<Real>& box) const
+{
+    return box.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Line3<Real>::distance_sqrd(const Box<Real>& box) const
+{
+    return box.distance_sqrd(*this);
 }
 
 template <typename Real>
