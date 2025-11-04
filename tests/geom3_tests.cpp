@@ -4602,7 +4602,7 @@ inline void triangle3_tests()
             = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }).distance(b1);
         ASSERT(nnm::approx_equal(r1, 1.23223305f));
         const float r2
-            = nnm::Triangle3f({ 1.0f, 10.0f, 0.0f }, { 1.0f, -2.0f, 10.0f }, { 1.0f, -10.0f, 0.0f }).distance_sqrd(b1);
+            = nnm::Triangle3f({ 1.0f, 10.0f, 0.0f }, { 1.0f, -2.0f, 10.0f }, { 1.0f, -10.0f, 0.0f }).distance(b1);
         ASSERT(nnm::approx_zero(r2));
         const float r3
             = nnm::Triangle3f({ -0.5f, -1.0f, 1.5f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, -5.0f, 0.0f }).distance(b1);
