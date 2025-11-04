@@ -4489,6 +4489,22 @@ public:
     [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
 
     /**
+     * Closest distance squared to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance squared to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Box<Real>& box) const;
+
+    /**
      * Closest distance to a point. Zero if intersects.
      * @param point Point.
      * @return Result.
@@ -7319,6 +7335,22 @@ public:
     }
 
     /**
+     * Closest distance squared to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(triangle);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    /**
      * Closest distance to a point.
      * @param point Point.
      * @return Result.
@@ -8076,6 +8108,39 @@ public:
         for (uint8_t i = 0; i < 6; ++i) {
             const Real dist = face(i).distance_sqrd(segment);
             min_dist = min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(plane);
+            min_dist = min(min_dist, dist);
+            if (approx_zero(min_dist)) {
+                break;
+            }
+        }
+        return min_dist;
+    }
+
+    /**
+     * Closest distance squared to a triangle.
+     * @param triangle Triangle.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Triangle3<Real>& triangle) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(triangle);
+            min_dist = min(min_dist, dist);
+            if (approx_zero(min_dist)) {
+                break;
+            }
         }
         return min_dist;
     }
@@ -9674,6 +9739,18 @@ template <typename Real>
 constexpr Real Triangle3<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Triangle3<Real>::distance_sqrd(const AlignedBox<Real>& box) const
+{
+    return box.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Triangle3<Real>::distance_sqrd(const Box<Real>& box) const
+{
+    return box.distance_sqrd(*this);
 }
 
 template <typename Real>

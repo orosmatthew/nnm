@@ -3341,7 +3341,21 @@ inline void plane_tests()
         constexpr float r3 = nnm::PlaneF({ -3.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x()).distance_sqrd(b1);
         ASSERT(nnm::approx_equal(r3, 4.0f));
     }
+
     test_section("distance_sqrd(const Box&)");
+    {
+
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        constexpr float r1 = nnm::PlaneF::xy().distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
+        constexpr float r2 = nnm::PlaneF::yz().distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3 = nnm::PlaneF::yz_offset(-2.0f).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r3, 1.51839843245134f));
+    }
 
     test_section("distance(const Vector3&)");
     {
@@ -4404,6 +4418,37 @@ inline void triangle3_tests()
         constexpr auto result8 = nnm::Triangle3f({ -2.5f, 0.0f, 0.0f }, { -2.5f, 2.0f, 0.0f }, { -2.5f, 2.0f, 3.0f })
                                      .distance_sqrd(r_degen_point);
         ASSERT(nnm::approx_zero(result8));
+    }
+
+    test_section("distance_sqrd(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        constexpr float r1
+            = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 3.0f, -2.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 0.25f));
+        constexpr float r2
+            = nnm::Triangle3f({ -3.0f, 0.0f, 1.0f }, { -3.0f, -2.0f, 1.0f }, { -3.0f, 0.0f, 3.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r2, 4.0f));
+        constexpr float r3
+            = nnm::Triangle3f({ 10.0f, 0.0f, 1.0f }, { 0.0f, -10.0f, 1.0f }, { -10.0f, 0.0f, 1.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r3));
+    }
+
+    test_section("distance_sqrd(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        constexpr float r1
+            = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
+        constexpr float r2
+            = nnm::Triangle3f({ 1.0f, 10.0f, 0.0f }, { 1.0f, -2.0f, 10.0f }, { 1.0f, -10.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3
+            = nnm::Triangle3f({ -0.5f, -1.0f, 1.5f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, -5.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_equal(r3, 0.38603907872361f));
     }
 
     test_section("distance(const Vector3&)");
@@ -6952,6 +6997,19 @@ void aligned_box_tests()
         ASSERT(nnm::approx_equal(r4, 164.0f));
     }
 
+    test_section("distance_sqrd(const Triangle3&)");
+    {
+        constexpr float r1
+            = b1.distance_sqrd(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 3.0f, -2.0f }));
+        ASSERT(nnm::approx_equal(r1, 0.25f));
+        constexpr float r2
+            = b1.distance_sqrd(nnm::Triangle3f({ -3.0f, 0.0f, 1.0f }, { -3.0f, -2.0f, 1.0f }, { -3.0f, 0.0f, 3.0f }));
+        ASSERT(nnm::approx_equal(r2, 4.0f));
+        constexpr float r3
+            = b1.distance_sqrd(nnm::Triangle3f({ 10.0f, 0.0f, 1.0f }, { 0.0f, -10.0f, 1.0f }, { -10.0f, 0.0f, 1.0f }));
+        ASSERT(nnm::approx_zero(r3));
+    }
+
     test_section("distance(const Plane&)");
     {
         constexpr float r1 = b1.distance_sqrd(nnm::PlaneF::xy());
@@ -7532,7 +7590,7 @@ void box_tests()
         ASSERT_FALSE(r4);
     }
 
-    test_section("distance_sqrd");
+    test_section("distance_sqrd(const Vector3&)");
     {
         constexpr float r1 = b1.distance_sqrd(nnm::Vector3f::zero());
         ASSERT(nnm::approx_equal(r1, 1.9362916306f));
@@ -7542,6 +7600,19 @@ void box_tests()
         ASSERT(nnm::approx_zero(r3));
         constexpr float r4 = b1.distance_sqrd({ 0.0f, -2.0f, 5.0f });
         ASSERT(nnm::approx_equal(r4, 1.2573591981f));
+    }
+
+    test_section("distance_sqrd(const Triangle3&)");
+    {
+        constexpr float r1
+            = b1.distance_sqrd(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r1, 1.5183982895123f));
+        constexpr float r2
+            = b1.distance_sqrd(nnm::Triangle3f({ 1.0f, 10.0f, 0.0f }, { 1.0f, -2.0f, 10.0f }, { 1.0f, -10.0f, 0.0f }));
+        ASSERT(nnm::approx_zero(r2));
+        constexpr float r3
+            = b1.distance_sqrd(nnm::Triangle3f({ -0.5f, -1.0f, 1.5f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, -5.0f, 0.0f }));
+        ASSERT(nnm::approx_equal(r3, 0.38603907872361f));
     }
 
     test_section("distance(const Vector3&)");
