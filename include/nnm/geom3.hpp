@@ -3381,6 +3381,22 @@ public:
     [[nodiscard]] constexpr Real distance_sqrd(const Rectangle3<Real>& rectangle) const;
 
     /**
+     * Closest distance squared to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance squared to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance_sqrd(const Box<Real>& box) const;
+
+    /**
      * Determine the closest distance to a point. Zero if intersects.
      * @param point Point.
      * @return Result.
@@ -3464,6 +3480,30 @@ public:
      */
     // tested
     [[nodiscard]] constexpr Real distance(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Closest distance to a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Sphere<Real>& sphere) const;
+
+    /**
+     * Closest distance to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Box<Real>& box) const;
 
     /**
      * Determine if parallel with a line.
@@ -7267,6 +7307,17 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] constexpr Real distance_sqrd(const Plane<Real>& plane) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance_sqrd(plane);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
+    }
+
     /**
      * Closest distance to a point.
      * @param point Point.
@@ -7304,6 +7355,22 @@ public:
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         return sqrt(distance_sqrd(segment));
+    }
+
+    /**
+     * Closest distance to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(plane);
+            min_dist = nnm::min(min_dist, dist);
+        }
+        return min_dist;
     }
 
     /**
@@ -8049,6 +8116,25 @@ public:
     [[nodiscard]] Real distance(const Segment3<Real>& segment) const
     {
         return sqrt(distance_sqrd(segment));
+    }
+
+    /**
+     * Closest distance to a plane.
+     * @param plane Plane.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] constexpr Real distance(const Plane<Real>& plane) const
+    {
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (uint8_t i = 0; i < 6; ++i) {
+            const Real dist = face(i).distance(plane);
+            min_dist = min(min_dist, dist);
+            if (approx_zero(min_dist)) {
+                break;
+            }
+        }
+        return min_dist;
     }
 
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
@@ -9543,6 +9629,18 @@ constexpr Real Plane<Real>::distance_sqrd(const Rectangle3<Real>& rectangle) con
 }
 
 template <typename Real>
+constexpr Real Plane<Real>::distance_sqrd(const AlignedBox<Real>& box) const
+{
+    return box.distance_sqrd(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance_sqrd(const Box<Real>& box) const
+{
+    return box.distance_sqrd(*this);
+}
+
+template <typename Real>
 constexpr Real Plane<Real>::distance(const Triangle3<Real>& triangle) const
 {
     return triangle.distance(*this);
@@ -9606,6 +9704,24 @@ template <typename Real>
 bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
 {
     return triangle.coplanar(*this);
+}
+
+template <typename Real>
+Real Plane<Real>::distance(const AlignedBox<Real>& box) const
+{
+    return box.distance(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance(const Box<Real>& box) const
+{
+    return box.distance(*this);
+}
+
+template <typename Real>
+constexpr Real Plane<Real>::distance(const Sphere<Real>& sphere) const
+{
+    return sphere.distance(*this);
 }
 
 template <typename Real>
