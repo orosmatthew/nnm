@@ -3488,11 +3488,11 @@ inline void plane_tests()
     test_section("distance(const AlignedBox&)");
     {
         constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
-        const float r1 = nnm::PlaneF::xy().distance(b1);
+        constexpr float r1 = nnm::PlaneF::xy().distance(b1);
         ASSERT(nnm::approx_equal(r1, 0.5f));
-        const float r2 = nnm::PlaneF::xz().distance(b1);
+        constexpr float r2 = nnm::PlaneF::xz().distance(b1);
         ASSERT(nnm::approx_zero(r2));
-        const float r3 = nnm::PlaneF({ -3.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x()).distance(b1);
+        constexpr float r3 = nnm::PlaneF({ -3.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x()).distance(b1);
         ASSERT(nnm::approx_equal(r3, 2.0f));
     }
 
@@ -4550,6 +4550,63 @@ inline void triangle3_tests()
         const auto result8 = nnm::Triangle3f({ -2.5f, 0.0f, 0.0f }, { -2.5f, 2.0f, 0.0f }, { -2.5f, 2.0f, 3.0f })
                                  .distance(r_degen_point);
         ASSERT(nnm::approx_zero(result8));
+    }
+
+    test_section("distance(const Sphere&)");
+    {
+        constexpr nnm::SphereF s1 { { 1.0f, -2.0f, 3.0f }, 1.5f };
+        const auto r1 = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }).distance(s1);
+        ASSERT(nnm::approx_equal(r1, 1.5822070015f));
+        const auto r2 = nnm::Triangle3f({ 0.0f, -5.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 4.0f }).distance(s1);
+        ASSERT(nnm::approx_zero(r2));
+        const auto r3
+            = nnm::Triangle3f({ 0.0f, -5.0f, 0.0f }, { 0.0f, -2.0f, 4.0f }, { 0.0f, 0.0f, 0.0f }).distance(s1);
+        ASSERT(nnm::approx_zero(r3));
+        const auto r4
+            = nnm::Triangle3f({ -0.5f, -5.0f, 0.0f }, { -0.5f, -2.0f, 4.0f }, { -0.5f, 0.0f, 0.0f }).distance(s1);
+        ASSERT(nnm::approx_zero(r4));
+        const auto r5 = nnm::Triangle3f({ 0.0, 0.0, 6.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, -5.0f, 3.0f }).distance(s1);
+        ASSERT(nnm::approx_zero(r5));
+        const auto r6 = nnm::Triangle3f(
+                            { 1.4913057739f, -1.194313814f, 3.7420624503f },
+                            { 1.2924884416f, -2.7911804169f, 3.0f },
+                            { 1.0f, -1.5f, 3.0f })
+                            .distance(s1);
+        ASSERT(nnm::approx_zero(r6));
+        const auto r7
+            = nnm::Triangle3f({ -2.0f, -5.0f, 0.0f }, { -2.0f, -2.0f, 4.0f }, { -2.0f, 0.0f, 0.0f }).distance(s1);
+        ASSERT(nnm::approx_equal(r7, 1.5f));
+    }
+
+    test_section("distance(const AlignedBox&)");
+    {
+        constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
+        const float r1
+            = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 3.0f, -2.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2
+            = nnm::Triangle3f({ -3.0f, 0.0f, 1.0f }, { -3.0f, -2.0f, 1.0f }, { -3.0f, 0.0f, 3.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r2, 2.0f));
+        const float r3
+            = nnm::Triangle3f({ 10.0f, 0.0f, 1.0f }, { 0.0f, -10.0f, 1.0f }, { -10.0f, 0.0f, 1.0f }).distance(b1);
+        ASSERT(nnm::approx_zero(r3));
+    }
+
+    test_section("distance(const Box&)");
+    {
+        constexpr nnm::BoxF b1 { { 1.0f, -2.0f, 3.0f },
+                                 { 0.707106769f, 0.0f, -0.707106769f },
+                                 { 0.0f, 2.0f, 0.0f },
+                                 { 1.06066012f, 0.0f, 1.06066012f } };
+        const float r1
+            = nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 2.0f, 0.0f, 0.0f }, { 0.0f, -2.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r1, 1.23223305f));
+        const float r2
+            = nnm::Triangle3f({ 1.0f, 10.0f, 0.0f }, { 1.0f, -2.0f, 10.0f }, { 1.0f, -10.0f, 0.0f }).distance_sqrd(b1);
+        ASSERT(nnm::approx_zero(r2));
+        const float r3
+            = nnm::Triangle3f({ -0.5f, -1.0f, 1.5f }, { -1.0f, 0.0f, 1.0f }, { 1.0f, -5.0f, 0.0f }).distance(b1);
+        ASSERT(nnm::approx_equal(r3, 0.6213204316f));
     }
 
     test_section("parallel(const Line3&)");
@@ -7069,6 +7126,33 @@ void aligned_box_tests()
         constexpr float r3 = b1.distance(nnm::PlaneF({ -3.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x()));
         ASSERT(nnm::approx_equal(r3, 2.0f));
     }
+
+    test_section("distance(const Triangle3&)");
+    {
+        const float r1
+            = b1.distance(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }, { 0.0f, 3.0f, -2.0f }));
+        ASSERT(nnm::approx_equal(r1, 0.5f));
+        const float r2
+            = b1.distance(nnm::Triangle3f({ -3.0f, 0.0f, 1.0f }, { -3.0f, -2.0f, 1.0f }, { -3.0f, 0.0f, 3.0f }));
+        ASSERT(nnm::approx_equal(r2, 2.0f));
+        const float r3
+            = b1.distance(nnm::Triangle3f({ 10.0f, 0.0f, 1.0f }, { 0.0f, -10.0f, 1.0f }, { -10.0f, 0.0f, 1.0f }));
+        ASSERT(nnm::approx_zero(r3));
+    }
+
+    // TODO: here
+    test_section("distance(const Rectangle3&)");
+    {
+    }
+
+    // TODO: here
+    test_section("distance(const Sphere&)");
+
+    // TODO: here
+    test_section("distance(const AlignedBox&)");
+
+    // TODO: here
+    test_section("distance(const Box&)");
 
     test_section("intersects(const Line3&)");
     {

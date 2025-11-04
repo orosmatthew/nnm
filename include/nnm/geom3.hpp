@@ -3495,7 +3495,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+    [[nodiscard]] constexpr Real distance(const AlignedBox<Real>& box) const;
 
     /**
      * Closest distance to a box.
@@ -4580,6 +4580,30 @@ public:
      */
     // tested
     [[nodiscard]] Real distance(const Rectangle3<Real>& rectangle) const;
+
+    /**
+     * Closest distance to a sphere.
+     * @param sphere Sphere.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Sphere<Real>& sphere) const;
+
+    /**
+     * Closest distance to an aligned box.
+     * @param box Aligned box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const AlignedBox<Real>& box) const;
+
+    /**
+     * Closest distance to a box.
+     * @param box Box.
+     * @return Result.
+     */
+    // tested
+    [[nodiscard]] Real distance(const Box<Real>& box) const;
 
     /**
      * Determine if parallel with a line.
@@ -7405,6 +7429,12 @@ public:
         return min_dist;
     }
 
+    // TODO: test
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
+    {
+        return sqrt(distance_sqrd(triangle));
+    }
+
     /**
      * Determine if intersects a line.
      * @param line Line.
@@ -8200,6 +8230,12 @@ public:
             }
         }
         return min_dist;
+    }
+
+    // TODO: test
+    [[nodiscard]] Real distance(const Triangle3<Real>& triangle) const
+    {
+        return sqrt(distance_sqrd(triangle));
     }
 
     [[nodiscard]] constexpr bool intersects(const Line3<Real>& line) const
@@ -9784,7 +9820,7 @@ bool Plane<Real>::coplanar(const Triangle3<Real>& triangle) const
 }
 
 template <typename Real>
-Real Plane<Real>::distance(const AlignedBox<Real>& box) const
+constexpr Real Plane<Real>::distance(const AlignedBox<Real>& box) const
 {
     return box.distance(*this);
 }
@@ -9805,6 +9841,24 @@ template <typename Real>
 Real Triangle3<Real>::distance(const Rectangle3<Real>& rectangle) const
 {
     return rectangle.distance(*this);
+}
+
+template <typename Real>
+Real Triangle3<Real>::distance(const Sphere<Real>& sphere) const
+{
+    return sphere.distance(*this);
+}
+
+template <typename Real>
+Real Triangle3<Real>::distance(const AlignedBox<Real>& box) const
+{
+    return box.distance(*this);
+}
+
+template <typename Real>
+Real Triangle3<Real>::distance(const Box<Real>& box) const
+{
+    return box.distance(*this);
 }
 
 template <typename Real>
