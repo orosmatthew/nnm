@@ -8,5 +8,5 @@
 int main()
 {
     nnm_tests();
-    END_TESTS
+    return end_tests();
 }

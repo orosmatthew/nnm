@@ -14,6 +14,10 @@
 
 // ReSharper disable CppDFATimeOver
 
+#ifndef NNM_EPSILON
+#define NNM_EPSILON 0.00001
+#endif
+
 #if defined(NNM_BOUNDS_CHECK)
 #include <stdexcept>
 #define NNM_BOUNDS_CHECK_ASSERT(msg, expression) \
@@ -28,7 +32,7 @@ namespace nnm {
 /**
  * Mathematical pi.
  * @tparam Real Floating-point type.
- * @return Mathematical pi.
+ * @return Value of pi.
  */
 template <typename Real>
 constexpr Real pi()
@@ -37,21 +41,39 @@ constexpr Real pi()
 }
 
 /**
+ * Mathematical pi as a float.
+ * @return Value of pi.
+ */
+constexpr float pi_f()
+{
+    return pi<float>();
+}
+
+/**
+ * Mathematical pi as a double.
+ * @return Value of pi.
+ */
+constexpr double pi_d()
+{
+    return pi<double>();
+}
+
+/**
  * Epsilon value is the upper bound on approximation errors.
  * @tparam Real Floating-point type.
- * @return Epsilon value.
+ * @return Value of epsilon.
  */
 template <typename Real>
 constexpr Real epsilon()
 {
-    return static_cast<Real>(0.00001);
+    return static_cast<Real>(NNM_EPSILON);
 }
 
 /**
- * One multiplied by the sign of a value.
+ * 1 multiplied by the sign of a value.
  * @tparam Num Numeric type.
  * @param value Value to get the sign of.
- * @return -1 for negatives and 1 for 0 or positive.
+ * @return -1 for negatives and 1 for positives or 0.
  */
 template <typename Num>
 constexpr Num sign(const Num value)
@@ -63,7 +85,7 @@ constexpr Num sign(const Num value)
 }
 
 /**
- * Absolute value which is the number's distance from zero.
+ * Absolute value.
  * @tparam Num Numeric type
  * @param value Value to take the absolute value of.
  * @return Result.
@@ -80,17 +102,17 @@ constexpr Num abs(const Num value)
 /**
  * The maximum between two values.
  * @tparam Num Numeric type.
- * @param a First value.
- * @param b Second value.
+ * @param first First value.
+ * @param second Second value.
  * @return Result.
  */
 template <typename Num>
-constexpr Num max(const Num a, const Num b)
+constexpr Num max(const Num first, const Num second)
 {
-    if (a > b) {
-        return a;
+    if (first > second) {
+        return first;
     }
-    return b;
+    return second;
 }
 
 /**
@@ -118,6 +140,9 @@ constexpr Num max(const Num first, const Rest... rest)
 template <typename Real>
 constexpr bool approx_zero(const Real value)
 {
+    if (value == static_cast<Real>(0)) {
+        return true;
+    }
     Real tolerance = epsilon<Real>() * abs(value);
     tolerance = max(tolerance, epsilon<Real>());
     return abs(value) <= tolerance;
@@ -126,71 +151,71 @@ constexpr bool approx_zero(const Real value)
 /**
  * Determines if two values are approximately equal based on the epsilon value.
  * @tparam Real Floating-point type.
- * @param a First value.
- * @param b Second value.
+ * @param first First value.
+ * @param second Second value.
  * @return True if approximately equal or false otherwise.
  */
 template <typename Real>
-constexpr bool approx_equal(const Real a, const Real b)
+constexpr bool approx_equal(const Real first, const Real second)
 {
-    if (a == b) {
+    if (first == second) {
         return true;
     }
-    Real tolerance = epsilon<Real>() * max(abs(a), abs(b));
+    Real tolerance = epsilon<Real>() * max(abs(first), abs(second));
     tolerance = max(tolerance, epsilon<Real>());
-    return abs(a - b) <= tolerance;
+    return abs(first - second) <= tolerance;
 }
 
 /**
  * Determine if the first value is approximately less-than but not equal to the second value.
  * @tparam Real Floating-point type.
- * @param a First value.
- * @param b Second value.
+ * @param first First value.
+ * @param second Second value.
  * @return Result.
  */
 template <typename Real>
-constexpr bool approx_less(const Real a, const Real b)
+constexpr bool approx_less(const Real first, const Real second)
 {
-    return a < b && !approx_equal(a, b);
+    return first < second && !approx_equal(first, second);
 }
 
 /**
  * Determine if the first value is approximately greater-than but not equal to the second value.
  * @tparam Real Floating-point type.
- * @param a First value.
- * @param b Second value.
+ * @param first First value.
+ * @param second Second value.
  * @return Result.
  */
 template <typename Real>
-constexpr bool approx_greater(const Real a, const Real b)
+constexpr bool approx_greater(const Real first, const Real second)
 {
-    return a > b && !approx_equal(a, b);
+    return first > second && !approx_equal(first, second);
 }
 
 /**
  * Determine if the first value is approximately greater-than or equal to the second value.
  * @tparam Real Floating-point type.
- * @param a First value.
- * @param b Second value.
+ * @param first First value.
+ * @param second Second value.
  * @return Result.
  */
 template <typename Real>
-constexpr bool approx_less_equal(const Real a, const Real b)
+constexpr bool approx_less_equal(const Real first, const Real second)
 {
-    return a <= b || approx_equal(a, b);
+    return first <= second || approx_equal(first, second);
 }
 
 /**
  * Determine if the first value is approximately greater-than or equal to the second value.
  * @tparam Real Floating-point type.
- * @param a First value.
+ * @param first First value.
  * @param b Second value.
  * @return Result.
  */
 template <typename Real>
-constexpr bool approx_greater_equal(const Real a, const Real b)
+constexpr bool approx_greater_equal(const Real first, const Real b)
 {
-    return a >= b || approx_equal(a, b);
+    return first >= b || approx_equal(first, b);
 }
 
 /**
@@ -311,19 +336,18 @@ constexpr Num sqrd(const Num value)
 }
 
 /**
- * Floating-point mathematical modulus where the result is always positive.
+ * Floating-point euclidean modulus where the result is always positive.
  * @tparam Real Floating-point type.
  * @param dividend Dividend.
  * @param divisor Divisor.
  * @return Result.
  */
 template <typename Real>
-Real modf(const Real dividend, const Real divisor)
+Real euclidean_modf(const Real dividend, const Real divisor)
 {
     const Real result = std::fmod(dividend, divisor);
-    const Real zero = static_cast<Real>(0);
-    if ((result < zero && divisor > zero) || (result > zero && divisor < zero)) {
-        return result + divisor;
+    if (result < static_cast<Real>(0)) {
+        return result + abs(divisor);
     }
     return result;
 }
@@ -380,7 +404,7 @@ constexpr Int rem(const Int dividend, const Int divisor)
 template <typename Real>
 Real normalize_angle(const Real angle)
 {
-    return modf(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
+    return euclidean_modf(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
 }
 
 /**
@@ -396,9 +420,9 @@ bool angle_in_range(const Real angle, const Real from, const Real to)
 {
     const Real two_pi = static_cast<Real>(2) * pi<Real>();
     if (from <= to) {
-        return modf(angle - from, two_pi) <= modf(to - from, two_pi);
+        return euclidean_modf(angle - from, two_pi) <= euclidean_modf(to - from, two_pi);
     }
-    return modf(angle - from, two_pi) >= modf(to - from, two_pi);
+    return euclidean_modf(angle - from, two_pi) >= euclidean_modf(to - from, two_pi);
 }
 
 /**

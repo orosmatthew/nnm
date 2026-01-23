@@ -304,14 +304,14 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
     }
 
-    test_case("modf");
+    test_case("euclidean_modf");
     {
-        ASSERT(nnm::approx_equal(nnm::modf(0.0f, 1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::modf(0.0f, -1.0f), 0.0f));
-        ASSERT(nnm::approx_equal(nnm::modf(5.0f, 3.0f), 2.0f));
-        ASSERT(nnm::approx_equal(nnm::modf(-5.0f, 3.0f), 1.0f));
-        ASSERT(nnm::approx_equal(nnm::modf(5.0f, -3.0f), -1.0f));
-        ASSERT(nnm::approx_equal(nnm::modf(-5.0f, -3.0f), -2.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(0.0f, 1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(0.0f, -1.0f), 0.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, 3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, 3.0f), 1.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, -3.0f), 2.0f));
+        ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, -3.0f), 1.0f));
     }
 
     test_case("mod");
