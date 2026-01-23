@@ -1065,7 +1065,6 @@ public:
     /**
      * Transform by a 2D transformation matrix about the origin.
      * @param by 2D transformation matrix to transform by.
-     * @param z The homogenous coordinate which defaults to one.
      * @return Resulting transformed vector.
      */
     [[nodiscard]] constexpr Vector2 transform(const Transform2<Real>& by) const;
@@ -1523,7 +1522,7 @@ public:
         return all(static_cast<Real>(0));
     }
 
-    [[nodiscard]] Vector2<Real> to_vector() const
+    [[nodiscard]] constexpr Vector2<Real> to_vector() const
     {
         return Vector2<Real> { x, y };
     }
@@ -1555,7 +1554,7 @@ public:
 
     [[nodiscard]] Vector2<Real> direction(const Point2& to) const
     {
-        return (to - *this).to_vector().normalize();
+        return (to - *this).normalize();
     }
 
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized(const Point2& to) const
@@ -9275,19 +9274,19 @@ constexpr Matrix2<Real> Vector2<Real>::outer(const Vector2& other) const
 }
 
 template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::translate(const Vector2& by) const
-{
-    return transform(Transform2<Real>::from_translation(by));
-}
-
-template <typename Real>
 Vector2<Real> Vector2<Real>::rotate(const Real angle) const
 {
     return transform(Basis2<Real>::from_rotation(angle));
 }
 
 template <typename Real>
-Vector2<Real> Vector2<Real>::rotate_at(const Vector2& origin, Real angle) const
+Point2<Real> Point2<Real>::rotate(Real angle) const
+{
+    return transform(Basis2<Real>::from_rotation(angle));
+}
+
+template <typename Real>
+Point2<Real> Point2<Real>::rotate_at(const Point2& origin, Real angle) const
 {
     return transform_at(origin, Basis2<Real>::from_rotation(angle));
 }
@@ -9299,21 +9298,9 @@ constexpr Vector2<Real> Vector2<Real>::scale(const Vector2& factor) const
 }
 
 template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::scale_at(const Vector2& origin, const Vector2& factor) const
-{
-    return transform_at(origin, Basis2<Real>::from_scale(factor));
-}
-
-template <typename Real>
 constexpr Vector2<Real> Vector2<Real>::shear_x(const Real factor) const
 {
     return transform(Basis2<Real>::from_shear_x(factor));
-}
-
-template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::shear_x_at(const Vector2& origin, Real factor) const
-{
-    return transform_at(origin, Basis2<Real>::from_shear_x(factor));
 }
 
 template <typename Real>
@@ -9323,33 +9310,15 @@ constexpr Vector2<Real> Vector2<Real>::shear_y(const Real factor) const
 }
 
 template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::shear_y_at(const Vector2& origin, Real factor) const
-{
-    return transform_at(origin, Basis2<Real>::from_shear_y(factor));
-}
-
-template <typename Real>
 constexpr Vector2<Real> Vector2<Real>::transform(const Basis2<Real>& by) const
 {
     return by.matrix * *this;
 }
 
 template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Basis2<Real>& by) const
+constexpr Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by) const
 {
-    return (*this - origin).transform(by) + origin;
-}
-
-template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::transform(const Transform2<Real>& by, const Real z) const
-{
-    return Vector3<Real>(*this, z).transform(by).xy();
-}
-
-template <typename Real>
-constexpr Vector2<Real> Vector2<Real>::transform_at(const Vector2& origin, const Transform2<Real>& by, Real z) const
-{
-    return (*this - origin).transform(by, z) + origin;
+    return (by.matrix * Vector3<Real> { *this, static_cast<Real>(0) }).xy();
 }
 
 template <typename Real>
@@ -9359,6 +9328,66 @@ constexpr Vector2<Real> Vector2<Real>::operator*(const Matrix2<Real>& matrix) co
     result.x = x * matrix.at(0, 0) + y * matrix.at(0, 1);
     result.y = x * matrix.at(1, 0) + y * matrix.at(1, 1);
     return result;
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::scale(const Vector2<Real>& factor) const
+{
+    return transform(Basis2<Real>::from_scale(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::scale_at(const Point2& origin, const Vector2<Real>& factor) const
+{
+    return transform_at(origin, Basis2<Real>::from_scale(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::shear_x(Real factor) const
+{
+    return transform(Basis2<Real>::from_shear_x(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::shear_x_at(const Point2& origin, Real factor) const
+{
+    return transform_at(origin, Basis2<Real>::from_shear_x(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::shear_y(Real factor) const
+{
+    return transform(Basis2<Real>::from_shear_y(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::shear_y_at(const Point2& origin, Real factor) const
+{
+    return transform_at(origin, Basis2<Real>::from_shear_y(factor));
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::transform(const Basis2<Real>& by) const
+{
+    return from_vector(by.matrix * to_vector());
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::transform_at(const Point2& origin, const Basis2<Real>& by) const
+{
+    return from_vector(by.matrix * (*this - origin) + origin.to_vector());
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::transform(const Transform2<Real>& by) const
+{
+    return from_vector((by.matrix * Vector3<Real> { to_vector(), static_cast<Real>(1) }).xy());
+}
+
+template <typename Real>
+constexpr Point2<Real> Point2<Real>::transform_at(const Point2& origin, const Transform2<Real>& by) const
+{
+    return from_vector((by.matrix * Vector3<Real> { *this - origin, static_cast<Real>(1) }).xy() + origin.to_vector());
 }
 
 template <typename Real>
