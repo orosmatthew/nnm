@@ -14,8 +14,8 @@
 
 // ReSharper disable CppDFATimeOver
 
-#ifndef NNM_EPSILON
-#define NNM_EPSILON 0.00001
+#ifndef NNM_EPSILON_SCALE
+#define NNM_EPSILON_SCALE 100
 #endif
 
 #if defined(NNM_BOUNDS_CHECK)
@@ -66,7 +66,7 @@ constexpr double pi_d()
 template <typename Real>
 constexpr Real epsilon()
 {
-    return static_cast<Real>(NNM_EPSILON);
+    return std::numeric_limits<Real>::epsilon() * static_cast<Real>(NNM_EPSILON_SCALE);
 }
 
 /**
