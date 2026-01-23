@@ -336,7 +336,7 @@ constexpr Num sqrd(const Num value)
 }
 
 /**
- * Floating-point euclidean modulus where the result is always positive.
+ * Floating-point Euclidean modulus where the result is always positive.
  * @tparam Real Floating-point type.
  * @param dividend Dividend.
  * @param divisor Divisor.
@@ -353,7 +353,7 @@ Real euclidean_modf(const Real dividend, const Real divisor)
 }
 
 /**
- * Integer euclidean modulus where the result is always positive.
+ * Integer Euclidean modulus where the result is always positive.
  * @tparam Int Integer type.
  * @param dividend Dividend.
  * @param divisor Divisor.
@@ -404,25 +404,9 @@ constexpr Int rem(const Int dividend, const Int divisor)
 template <typename Real>
 Real normalize_angle(const Real angle)
 {
-    return euclidean_modf(angle + pi<Real>(), static_cast<Real>(2) * pi<Real>()) - pi<Real>();
-}
-
-/**
- * Determines if an angle in radians is within a range taking into account wrap-around.
- * @tparam Real Floating-point type.
- * @param angle Angle to test in radians.
- * @param from First angle in radians.
- * @param to Second angle in radians
- * @return True if within range, false otherwise.
- */
-template <typename Real>
-bool angle_in_range(const Real angle, const Real from, const Real to)
-{
-    const Real two_pi = static_cast<Real>(2) * pi<Real>();
-    if (from <= to) {
-        return euclidean_modf(angle - from, two_pi) <= euclidean_modf(to - from, two_pi);
-    }
-    return euclidean_modf(angle - from, two_pi) >= euclidean_modf(to - from, two_pi);
+    constexpr Real two = static_cast<Real>(2);
+    constexpr Real p = pi<Real>();
+    return euclidean_modf(angle + p, two * p) - p;
 }
 
 /**

@@ -369,36 +369,6 @@ inline void nnm_tests()
             nnm::approx_equal(nnm::normalize_angle(-8.0f * nnm::pi<float>() / 3.0f), -2.0f * nnm::pi<float>() / 3.0f));
     }
 
-    test_case("angle_in_range");
-    {
-        ASSERT(nnm::angle_in_range(0.0f, 0.0f, 0.0f));
-
-        ASSERT_FALSE(nnm::angle_in_range(nnm::pi<float>() / 4.0f, 0.0f, nnm::pi<float>() / 5.0f));
-        ASSERT_FALSE(nnm::angle_in_range(nnm::pi<float>() / 4.0f, nnm::pi<float>() / 5.0f, 0.0f));
-        ASSERT(nnm::angle_in_range(nnm::pi<float>() / 4.0f, 0.0f, nnm::pi<float>() / 3.0f));
-        ASSERT(nnm::angle_in_range(nnm::pi<float>() / 4.0f, nnm::pi<float>() / 3.0f, 0.0f));
-        ASSERT(nnm::angle_in_range(4.0f * nnm::pi<float>() / 3.0f, nnm::pi<float>(), 2.0f * nnm::pi<float>()));
-        ASSERT(nnm::angle_in_range(4.0f * nnm::pi<float>() / 3.0f, 2.0f * nnm::pi<float>(), nnm::pi<float>()));
-        ASSERT(nnm::angle_in_range(0.0f, nnm::pi<float>(), 7.0f * nnm::pi<float>() / 3.0f));
-
-        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, 0.0f, -nnm::pi<float>() / 5.0f));
-        ASSERT_FALSE(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 5.0f, 0.0f));
-        ASSERT(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, 0.0f, -nnm::pi<float>() / 3.0f));
-        ASSERT(nnm::angle_in_range(-nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 3.0f, 0.0f));
-        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi<float>() / 3.0f, -nnm::pi<float>(), -2.0f * nnm::pi<float>()));
-        ASSERT(nnm::angle_in_range(-4.0f * nnm::pi<float>() / 3.0f, -2.0f * nnm::pi<float>(), -nnm::pi<float>()));
-        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi<float>(), -7.0f * nnm::pi<float>() / 3.0f));
-
-        ASSERT(nnm::angle_in_range(0.0f, -nnm::pi<float>() / 4.0f, nnm::pi<float>() / 4.0f));
-        ASSERT(nnm::angle_in_range(0.0f, nnm::pi<float>() / 4.0f, -nnm::pi<float>() / 4.0f));
-        ASSERT(
-            nnm::angle_in_range(
-                2.0f * nnm::pi<float>() / 3.0f, -3.0f * nnm::pi<float>() / 2.0f, nnm::pi<float>() / 7.0f));
-        ASSERT(
-            nnm::angle_in_range(
-                2.0f * nnm::pi<float>() / 3.0f, nnm::pi<float>() / 7.0f, -3.0f * nnm::pi<float>() / 2.0f));
-    }
-
     test_case("floor");
     {
         ASSERT(nnm::floor(5.3f) == 5.0f);
