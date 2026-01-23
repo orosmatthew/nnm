@@ -353,18 +353,18 @@ Real euclidean_modf(const Real dividend, const Real divisor)
 }
 
 /**
- * Integer mathematical modulus where the result is always positive.
+ * Integer euclidean modulus where the result is always positive.
  * @tparam Int Integer type.
  * @param dividend Dividend.
  * @param divisor Divisor.
  * @return Result.
  */
 template <typename Int>
-constexpr Int mod(const Int dividend, const Int divisor)
+constexpr Int euclidean_mod(const Int dividend, const Int divisor)
 {
     const Int result = dividend % divisor;
-    if ((result < 0 && divisor > 0) || (result > 0 && divisor < 0)) {
-        return result + divisor;
+    if (result < static_cast<Int>(0)) {
+        return result + abs(divisor);
     }
     return result;
 }

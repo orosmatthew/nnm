@@ -314,15 +314,15 @@ inline void nnm_tests()
         ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, -3.0f), 1.0f));
     }
 
-    test_case("mod");
+    test_case("euclidean_mod");
     {
-        constexpr auto result = nnm::mod(0, 1);
+        constexpr auto result = nnm::euclidean_mod(0, 1);
         ASSERT(nnm::approx_equal(result, 0));
-        ASSERT(nnm::approx_equal(nnm::mod(0, -1), 0));
-        ASSERT(nnm::approx_equal(nnm::mod(5, 3), 2));
-        ASSERT(nnm::approx_equal(nnm::mod(-5, 3), 1));
-        ASSERT(nnm::approx_equal(nnm::mod(5, -3), -1));
-        ASSERT(nnm::approx_equal(nnm::mod(-5, -3), -2));
+        ASSERT(nnm::approx_equal(nnm::euclidean_mod(0, -1), 0));
+        ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, 3), 2));
+        ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, 3), 1));
+        ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, -3), 2));
+        ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, -3), 1));
     }
 
     test_case("remf");
