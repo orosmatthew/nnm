@@ -624,6 +624,10 @@ template <typename Real>
 class Vector2;
 using Vector2f = Vector2<float>;
 using Vector2d = Vector2<double>;
+template <typename Real>
+class Point2;
+using Point2f = Point2<float>;
+using Point2d = Point2<double>;
 template <typename Int>
 class Vector2i;
 using Vector2ii = Vector2i<int>;
@@ -1488,12 +1492,14 @@ public:
     Real x;
     Real y;
 
+    // tested
     constexpr Point2()
         : x { static_cast<Real>(0) }
         , y { static_cast<Real>(0) }
     {
     }
 
+    // tested
     template <typename Other>
     explicit constexpr Point2(const Point2<Other>& point)
         : x { static_cast<Real>(point.x) }
@@ -1501,32 +1507,38 @@ public:
     {
     }
 
+    // tested
     constexpr Point2(const Real x, const Real y)
         : x { x }
         , y { y }
     {
     }
 
+    // tested
     static constexpr Point2 from_vector(const Vector2<Real>& vector)
     {
         return Point2 { vector.x, vector.y };
     }
 
+    // tested
     static constexpr Point2 all(const Real value)
     {
         return Point2 { value, value };
     }
 
+    // tested
     static constexpr Point2 zero()
     {
         return all(static_cast<Real>(0));
     }
 
+    // tested
     [[nodiscard]] constexpr Vector2<Real> to_vector() const
     {
         return Vector2<Real> { x, y };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 abs() const
     {
         return Point2 { nnm::abs(x), nnm::abs(y) };

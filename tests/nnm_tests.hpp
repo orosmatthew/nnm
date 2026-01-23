@@ -1277,6 +1277,75 @@ inline void nnm_tests()
 
     test_case("Point2");
     {
+        test_section("Point2()");
+        {
+            constexpr nnm::Point2f p1;
+            ASSERT(p1.x == 0.0f);
+            ASSERT(p1.y == 0.0f);
+        }
+
+        test_section("Point2(const Point2<Other>&)");
+        {
+            constexpr nnm::Point2d p1 { 1.0, -3.0 };
+            constexpr auto p2 = nnm::Point2f { p1 };
+            ASSERT(nnm::approx_equal(p2.x, 1.0f));
+            ASSERT(nnm::approx_equal(p2.y, -3.0f));
+        }
+
+        test_section("Point2(Real, Real)");
+        {
+            constexpr nnm::Point2f p1 { 1.0f, -3.0f };
+            ASSERT(nnm::approx_equal(p1.x, 1.0f));
+            ASSERT(nnm::approx_equal(p1.y, -3.0f));
+        }
+
+        test_section("from_vector");
+        {
+            constexpr nnm::Vector2f v1 { 1.0f, -3.0f };
+            constexpr auto p1 = nnm::Point2f::from_vector(v1);
+            ASSERT(p1.approx_equal({ 1.0f, -3.0 }));
+        }
+
+        test_section("all");
+        {
+            constexpr auto p1 = nnm::Point2f::all(3.5f);
+            ASSERT(p1.approx_equal({ 3.5f, 3.5f }));
+        }
+
+        test_section("zero");
+        {
+            constexpr auto p1 = nnm::Point2f::zero();
+            ASSERT(p1.x == 0.0f);
+            ASSERT(p1.y == 0.0f);
+        }
+
+        test_section("to_vector");
+        {
+            constexpr nnm::Point2f p1 { 1.0f, -3.0f };
+            constexpr nnm::Vector2f v1 = p1.to_vector();
+            ASSERT(v1.approx_equal({ 1.0f, -3.0f }));
+        }
+
+        test_section("abs");
+        {
+            constexpr nnm::Point2f p1 { 1.0f, -3.0f };
+            constexpr nnm::Point2f r1 = p1.abs();
+            ASSERT(r1.approx_equal({ 1.0f, 3.0f }));
+            constexpr nnm::Point2f p2 { -1.0f, 3.0f };
+            constexpr nnm::Point2f r2 = p2.abs();
+            ASSERT(r2.approx_equal({ 1.0f, 3.0f }));
+        }
+
+        test_section("ceil");
+        {
+            constexpr nnm::Point2f p1 { 1.1f, -3.7f };
+            const nnm::Point2f r1 = p1.ceil();
+            ASSERT(r1.approx_equal({ 2.0f, -3.0f }))
+            constexpr nnm::Point2f p2 { 1.6f, -3.2f };
+            const nnm::Point2f r2 = p2.ceil();
+            ASSERT(r2.approx_equal({ 2.0f, -3.0f }));
+        }
+
         test_section("direction");
         {
             constexpr nnm::Point2 from1(1.0f, 1.0f);
@@ -1416,16 +1485,16 @@ inline void nnm_tests()
 
         test_section("angle_to");
         {
-            nnm::Point2 v1(2.0f, -3.0f);
-            nnm::Point2 v2(-4.0f, 5.0f);
-            ASSERT(nnm::approx_equal(v1.angle_to(v2), 2.21429744f));
+            nnm::Point2 p1(2.0f, -3.0f);
+            nnm::Point2 p2(-4.0f, 5.0f);
+            ASSERT(nnm::approx_equal(p1.angle_to(p2), 2.21429744f));
         }
 
         test_section("translate");
         {
-            constexpr nnm::Point2 v1(2.0f, -3.0f);
-            constexpr nnm::Vector2 v2(-4.0f, 5.0f);
-            constexpr auto result = v1.translate(v2);
+            constexpr nnm::Point2 p1(2.0f, -3.0f);
+            constexpr nnm::Vector2 v1(-4.0f, 5.0f);
+            constexpr auto result = p1.translate(v1);
             ASSERT(result.approx_equal({ -2.0f, 2.0f }));
         }
 
@@ -1433,47 +1502,46 @@ inline void nnm_tests()
 
         test_section("scale_at");
         {
-            constexpr nnm::Point2 v1 { 2.0f, -3.0f };
-            constexpr auto result = v1.scale_at(origin, { 1.5f, -2.0f });
+            constexpr nnm::Point2 p1 { 2.0f, -3.0f };
+            constexpr auto result = p1.scale_at(origin, { 1.5f, -2.0f });
             ASSERT(result.approx_equal({ 4.5f, 9.0f }));
         }
 
         test_section("rotate_at");
         {
-            constexpr nnm::Point2 v1(2.0f, -3.0f);
-            ASSERT(v1.rotate_at(origin, nnm::pi<float>() / 4.0f).approx_equal({ 3.36396f, 1.707107f }));
+            constexpr nnm::Point2 p1(2.0f, -3.0f);
+            ASSERT(p1.rotate_at(origin, nnm::pi<float>() / 4.0f).approx_equal({ 3.36396f, 1.707107f }));
         }
 
         test_section("shear_x_at");
         {
-            constexpr nnm::Point2 v1 { 2.0f, -3.0f };
-            constexpr auto result = v1.shear_x_at(origin, 0.5f);
+            constexpr nnm::Point2 p1 { 2.0f, -3.0f };
+            constexpr auto result = p1.shear_x_at(origin, 0.5f);
             ASSERT(result.approx_equal({ 0.0f, -3.0f }));
         }
 
         test_section("shear_y_at");
         {
-            constexpr nnm::Point2 v1 { 2.0f, -3.0f };
-            constexpr auto result = v1.shear_y_at(origin, -0.5f);
+            constexpr nnm::Point2 p1 { 2.0f, -3.0f };
+            constexpr auto result = p1.shear_y_at(origin, -0.5f);
             ASSERT(result.approx_equal({ 2.0f, -5.5f }));
         }
 
-
         test_section("transform_at(const Vector2&, const Basis2&)");
         {
-            constexpr nnm::Point2 v1 { 2.0f, -3.0f };
+            constexpr nnm::Point2 p1 { 2.0f, -3.0f };
             constexpr nnm::Basis2f basis { { { 1.0f, -2.0f }, { -4.0f, 1.2f } } };
-            constexpr auto result = v1.transform_at(origin, basis);
+            constexpr auto result = p1.transform_at(origin, basis);
             ASSERT(result.approx_equal({ 18.0f, -13.8f }));
         }
 
         test_section("transform_at(const Vector3&, const Transform2&, Real)");
         {
-            constexpr nnm::Point2 v1 { 2.0f, -3.0f };
+            constexpr nnm::Point2 p1 { 2.0f, -3.0f };
             constexpr nnm::Transform2f transform {
-                    { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } }
+                { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } }
             };
-            constexpr auto result = v1.transform_at(origin, transform);
+            constexpr auto result = p1.transform_at(origin, transform);
             ASSERT(result.approx_equal({ 21.0f, 2.6f }));
         }
     }
