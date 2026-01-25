@@ -73,6 +73,26 @@ void point2_tests()
         TEST_ASSERT(r2.approx_equal({ 2.0f, -3.0f }));
     }
 
+    test_section("floor");
+    {
+        constexpr nnm::Point2f p1 { 1.1f, -3.7f };
+        const nnm::Point2f r1 = p1.floor();
+        TEST_ASSERT(r1.approx_equal({ 1.0f, -4.0f }))
+        constexpr nnm::Point2f p2 { 1.6f, -3.2f };
+        const nnm::Point2f r2 = p2.floor();
+        TEST_ASSERT(r2.approx_equal({ 1.0f, -4.0f }));
+    }
+
+    test_section("round");
+    {
+        constexpr nnm::Point2f p1 { 1.1f, -3.7f };
+        const nnm::Point2f r1 = p1.round();
+        TEST_ASSERT(r1.approx_equal({ 1.0f, -4.0f }))
+        constexpr nnm::Point2f p2 { 1.6f, -3.2f };
+        const nnm::Point2f r2 = p2.round();
+        TEST_ASSERT(r2.approx_equal({ 2.0f, -3.0f }));
+    }
+
     test_section("direction");
     {
         constexpr nnm::Point2 from1(1.0f, 1.0f);

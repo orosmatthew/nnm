@@ -1544,16 +1544,19 @@ public:
         return Point2 { nnm::abs(x), nnm::abs(y) };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 ceil() const
     {
         return Point2 { nnm::ceil(x), nnm::ceil(y) };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 floor() const
     {
         return Point2 { nnm::floor(x), nnm::floor(y) };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 round() const
     {
         return Point2 { nnm::round(x), nnm::round(y) };
