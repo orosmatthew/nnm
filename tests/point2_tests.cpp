@@ -93,6 +93,13 @@ void point2_tests()
         TEST_ASSERT(r2.approx_equal({ 2.0f, -3.0f }));
     }
 
+    test_section("clamp");
+    {
+        constexpr nnm::Point2 p1 { 1.1f, -3.0f };
+        constexpr auto result = p1.clamp({ 1.0f, -2.0f }, { 2.0f, 2.0f });
+        TEST_ASSERT(result.approx_equal({ 1.1f, -2.0f }));
+    }
+
     test_section("direction");
     {
         constexpr nnm::Point2 from1(1.0f, 1.0f);
@@ -230,22 +237,55 @@ void point2_tests()
         TEST_ASSERT(nnm::approx_equal(from.manhattan_distance(to), 0.0f));
     }
 
+    test_section("lerp");
+    {
+        constexpr nnm::Point2f from { 1.0f, 1.0f };
+        constexpr nnm::Point2f to { 3.0f, 5.0f };
+        constexpr auto result = from.lerp(to, 0.0f);
+        TEST_ASSERT(result.approx_equal({ 1.0f, 1.0f }));
+        TEST_ASSERT(from.lerp(to, 1.0f).approx_equal({ 3.0f, 5.0f }));
+        TEST_ASSERT(from.lerp(to, 0.5f).approx_equal({ 2.0f, 3.0f }));
+        TEST_ASSERT(from.lerp(to, 0.25f).approx_equal({ 1.5f, 2.0f }));
+        TEST_ASSERT(from.lerp(to, 0.75f).approx_equal({ 2.5f, 4.0f }));
+    }
+
+    test_section("lerp_clamped");
+    {
+        constexpr nnm::Point2 from { 1.0f, 1.0f };
+        constexpr nnm::Point2 to { 3.0f, 5.0f };
+        constexpr auto result = from.lerp_clamped(to, 0.0f);
+        TEST_ASSERT(result.approx_equal({ 1.0f, 1.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, 1.0f).approx_equal({ 3.0f, 5.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, 0.5f).approx_equal({ 2.0f, 3.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, 0.25f).approx_equal({ 1.5f, 2.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, 0.75f).approx_equal({ 2.5f, 4.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, 5.0f).approx_equal({ 3.0f, 5.0f }));
+        TEST_ASSERT(from.lerp_clamped(to, -5.0f).approx_equal({ 1.0f, 1.0f }));
+    }
+
     test_section("angle_to");
     {
-        nnm::Point2 p1(2.0f, -3.0f);
-        nnm::Point2 p2(-4.0f, 5.0f);
+        nnm::Point2 p1 { 2.0f, -3.0f };
+        nnm::Point2 p2 { -4.0f, 5.0f };
         TEST_ASSERT(nnm::approx_equal(p1.angle_to(p2), 2.21429744f));
     }
 
     test_section("translate");
     {
-        constexpr nnm::Point2 p1(2.0f, -3.0f);
-        constexpr nnm::Vector2 v1(-4.0f, 5.0f);
+        constexpr nnm::Point2 p1 { 2.0f, -3.0f };
+        constexpr nnm::Vector2 v1 { -4.0f, 5.0f };
         constexpr auto result = p1.translate(v1);
         TEST_ASSERT(result.approx_equal({ -2.0f, 2.0f }));
     }
 
     constexpr nnm::Point2 origin { -3.0f, 1.0f };
+
+    test_section("scale");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        constexpr auto result = p1.scale({ 1.5f, -2.0f });
+        TEST_ASSERT(result.approx_equal({ 3.0f, 6.0f }));
+    }
 
     test_section("scale_at");
     {

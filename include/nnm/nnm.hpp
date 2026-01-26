@@ -1562,21 +1562,25 @@ public:
         return Point2 { nnm::round(x), nnm::round(y) };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 clamp(const Point2& min, const Point2& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
+    // tested
     [[nodiscard]] Vector2<Real> direction(const Point2& to) const
     {
         return (to - *this).normalize();
     }
 
+    // tested
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized(const Point2& to) const
     {
         return to - *this;
     }
 
+    // tested
     [[nodiscard]] constexpr Real distance_sqrd(const Point2& to) const
     {
         const Real diff_x = to.x - x;
@@ -1584,43 +1588,51 @@ public:
         return sqrd(diff_x) + sqrd(diff_y);
     }
 
+    // tested
     [[nodiscard]] Real distance(const Point2& to) const
     {
         return sqrt(distance_sqrd(to));
     }
 
+    // tested
     [[nodiscard]] constexpr Real manhattan_distance(const Point2& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 lerp(const Point2& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 lerp_clamped(const Point2& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
+    // tested
     [[nodiscard]] Real angle_to(const Point2& to) const
     {
         return atan2(to.y - y, to.x - x);
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 translate(const Vector2<Real>& offset) const
     {
         return { x + offset.x, y + offset.y };
     }
 
+    // tested
+    [[nodiscard]] constexpr Point2 scale(const Vector2<Real>& factor) const;
+
+    // tested
+    [[nodiscard]] constexpr Point2 scale_at(const Point2& origin, const Vector2<Real>& factor) const;
+
     [[nodiscard]] Point2 rotate(Real angle) const;
 
     [[nodiscard]] Point2 rotate_at(const Point2& origin, Real angle) const;
-
-    [[nodiscard]] constexpr Point2 scale(const Vector2<Real>& factor) const;
-
-    [[nodiscard]] constexpr Point2 scale_at(const Point2& origin, const Vector2<Real>& factor) const;
 
     [[nodiscard]] constexpr Point2 shear_x(Real factor) const;
 
