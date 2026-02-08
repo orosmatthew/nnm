@@ -1630,56 +1630,73 @@ public:
     // tested
     [[nodiscard]] constexpr Point2 scale_at(const Point2& origin, const Vector2<Real>& factor) const;
 
+    // tested
     [[nodiscard]] Point2 rotate(Real angle) const;
 
+    // tested
     [[nodiscard]] Point2 rotate_at(const Point2& origin, Real angle) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 shear_x(Real factor) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 shear_x_at(const Point2& origin, Real factor) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 shear_y(Real factor) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 shear_y_at(const Point2& origin, Real factor) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 transform(const Basis2<Real>& by) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 transform_at(const Point2& origin, const Basis2<Real>& by) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 transform(const Transform2<Real>& by) const;
 
+    // tested
     [[nodiscard]] constexpr Point2 transform_at(const Point2& origin, const Transform2<Real>& by) const;
 
+    // tested
     [[nodiscard]] constexpr bool approx_equal(const Point2& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
     }
 
+    // tested
     [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
+    // tested
     [[nodiscard]] const Real* begin() const
     {
         return &x;
     }
 
+    // tested
     [[nodiscard]] const Real* end() const
     {
         return &y + 1;
     }
 
+    // tested
     Real* begin()
     {
         return &x;
     }
 
+    // tested
     Real* end()
     {
         return &y + 1;
     }
 
+    // tested
     [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
@@ -1693,6 +1710,7 @@ public:
         }
     }
 
+    // tested
     constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
@@ -1706,39 +1724,46 @@ public:
         }
     }
 
+    // tested
     [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
         return at(index);
     }
 
+    // tested
     [[nodiscard]] Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
         return at(index);
     }
 
+    // tested
     [[nodiscard]] constexpr bool operator==(const Point2& other) const
     {
         return x == other.x && y == other.y;
     }
 
+    // tested
     [[nodiscard]] constexpr bool operator!=(const Point2& other) const
     {
         return x != other.x || y != other.y;
     }
 
+    // tested
     [[nodiscard]] constexpr Point2 operator+(const Vector2<Real>& offset) const
     {
         return translate(offset);
     }
 
+    // tested
     constexpr Point2& operator+=(const Vector2<Real>& offset)
     {
         *this = *this + offset;
         return *this;
     }
 
+    // tested
     [[nodiscard]] constexpr Vector2<Real> operator-(const Point2& other) const
     {
         return to_vector() - other.to_vector();

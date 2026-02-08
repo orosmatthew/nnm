@@ -294,10 +294,23 @@ void point2_tests()
         TEST_ASSERT(result.approx_equal({ 4.5f, 9.0f }));
     }
 
+    test_section("rotate");
+    {
+        nnm::Point2 p1 { 2.0f, -3.0f };
+        TEST_ASSERT(p1.rotate(nnm::pi<float>() / 4.0f).approx_equal({ 3.53553f, -0.707107f }));
+    }
+
     test_section("rotate_at");
     {
-        constexpr nnm::Point2 p1(2.0f, -3.0f);
+        constexpr nnm::Point2 p1 { 2.0f, -3.0f };
         TEST_ASSERT(p1.rotate_at(origin, nnm::pi<float>() / 4.0f).approx_equal({ 3.36396f, 1.707107f }));
+    }
+
+    test_section("shear_x");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        constexpr auto result = p1.shear_x(0.5f);
+        TEST_ASSERT(result.approx_equal({ 0.5f, -3.0f }));
     }
 
     test_section("shear_x_at");
@@ -307,11 +320,26 @@ void point2_tests()
         TEST_ASSERT(result.approx_equal({ 0.0f, -3.0f }));
     }
 
+    test_section("shear_y");
+    {
+        constexpr nnm::Point2 p1 { 2.0f, -3.0f };
+        constexpr auto result = p1.shear_y(-0.5f);
+        TEST_ASSERT(result.approx_equal({ 2.0f, -4.0f }));
+    }
+
     test_section("shear_y_at");
     {
         constexpr nnm::Point2 p1 { 2.0f, -3.0f };
         constexpr auto result = p1.shear_y_at(origin, -0.5f);
         TEST_ASSERT(result.approx_equal({ 2.0f, -5.5f }));
+    }
+
+    test_section("transform(const Basis2&)");
+    {
+        constexpr nnm::Point2f v1 { 2.0f, -3.0f };
+        constexpr nnm::Basis2f basis({ { 1.0f, -2.0f }, { -4.0f, 1.2f } });
+        constexpr auto result = v1.transform(basis);
+        TEST_ASSERT(result.approx_equal({ 14.0f, -7.6f }));
     }
 
     test_section("transform_at(const Vector2&, const Basis2&)");
@@ -322,11 +350,113 @@ void point2_tests()
         TEST_ASSERT(result.approx_equal({ 18.0f, -13.8f }));
     }
 
+    test_section("transform(const Transform2&)");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        constexpr nnm::Transform2f transform({ { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } });
+        constexpr auto result = p1.transform(transform);
+        TEST_ASSERT(result.approx_equal({ 17.0f, -2.8f }));
+    }
+
     test_section("transform_at(const Vector3&, const Transform2&, Real)");
     {
         constexpr nnm::Point2 p1 { 2.0f, -3.0f };
         constexpr nnm::Transform2f transform { { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } } };
         constexpr auto result = p1.transform_at(origin, transform);
         TEST_ASSERT(result.approx_equal({ 21.0f, 2.6f }));
+    }
+
+    test_section("approx_equal");
+    {
+        constexpr nnm::Point2f p1 { 1.0f, 1.0f };
+        constexpr nnm::Point2f p2 { 1.0f + nnm::epsilon<float>() / 2.0f, 1.0f };
+        constexpr auto result = p1.approx_equal(p2);
+        TEST_ASSERT(result);
+        nnm::Point2f p3 { 1.0f, 1.0f };
+        nnm::Point2f p4 { 1.0f + 2.0f * nnm::epsilon<float>(), 1.0f };
+        TEST_ASSERT_FALSE(p3.approx_equal(p4));
+    }
+
+    test_section("approx_zero");
+    {
+        constexpr nnm::Point2f p1 { 0.0f, 0.0f };
+        constexpr auto result = p1.approx_zero();
+        TEST_ASSERT(result);
+        nnm::Point2f p2 { nnm::epsilon<float>(), 0.0f };
+        TEST_ASSERT(p2.approx_zero());
+        nnm::Point2f p3 { 0.0f, nnm::epsilon<float>() };
+        TEST_ASSERT(p3.approx_zero());
+        nnm::Point2f p4 { 0.1f, 0.1f };
+        TEST_ASSERT_FALSE(p4.approx_zero());
+    }
+
+    test_section("begin");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        TEST_ASSERT(p1.begin() == &p1.x);
+    }
+
+    test_section("end");
+    {
+        nnm::Point2f p1 { 2.0f, -3.0f };
+        TEST_ASSERT(p1.end() == &p1.y + 1);
+    }
+
+    test_section("at");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        constexpr auto result = p1.at(0);
+        TEST_ASSERT(result == 2.0f);
+        TEST_ASSERT(p1.at(1) == -3.0f);
+    }
+
+    test_section("operator[]");
+    {
+        constexpr nnm::Point2f p1 { 2.0f, -3.0f };
+        constexpr auto result = p1[0];
+        TEST_ASSERT(result == 2.0f);
+        TEST_ASSERT(p1[1] == -3.0f);
+    }
+
+    constexpr nnm::Point2f p1 { 1.0f, 2.0f };
+    constexpr nnm::Point2f p2 { 3.0f, 4.0f };
+    constexpr nnm::Point2f p3 { 1.0f, 2.0f };
+
+    test_section("operator==");
+    {
+        constexpr auto result = p1 == p3;
+        TEST_ASSERT(result);
+        TEST_ASSERT_FALSE(p1 == p2);
+    }
+
+    test_section("operator!=");
+    {
+        constexpr auto result = p1 != p3;
+        TEST_ASSERT_FALSE(result);
+        TEST_ASSERT(p1 != p2);
+    }
+
+    test_section("operator+");
+    {
+        constexpr nnm::Point2f p { 1.0f, -2.0f };
+        constexpr nnm::Vector2f v { -4.0f, 3.0f };
+        constexpr nnm::Point2f result = p + v;
+        TEST_ASSERT(result.approx_equal({ -3.0f, 1.0f }));
+    }
+
+    test_section("operator+=");
+    {
+        nnm::Point2f p { 1.0f, -2.0f };
+        constexpr nnm::Vector2f v { -4.0f, 3.0f };
+        p += v;
+        TEST_ASSERT(p.approx_equal({ -3.0f, 1.0f }));
+    }
+
+    test_section("operator-");
+    {
+        constexpr nnm::Point2f p4 { 1.0f, -2.0f };
+        constexpr nnm::Point2f p5 { -4.0f, 3.0f };
+        constexpr nnm::Vector2f result = p4 - p5;
+        TEST_ASSERT(result.approx_equal({ 5.0f, -5.0f }))
     }
 }
