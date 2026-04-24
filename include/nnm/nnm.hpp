@@ -2006,14 +2006,6 @@ public:
         return x != static_cast<Real>(0) || y != static_cast<Real>(0);
     }
 
-    /**
-     * Converts point to vector.
-     * @return Resulting vector.
-     */
-    [[nodiscard]] explicit constexpr operator Vector2<Real>() const
-    {
-        return { x, y };
-    }
 };
 
 /**

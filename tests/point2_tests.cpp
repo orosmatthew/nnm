@@ -495,10 +495,10 @@ void point2_tests()
         TEST_ASSERT_FALSE(static_cast<bool>(nnm::Point2f(0.0f, 0.0f)));
     }
 
-    test_section("operator Vector2");
+    test_section("to_vector explicit conversion path");
     {
         constexpr nnm::Point2f p { 1.0f, -2.0f };
-        constexpr nnm::Vector2f result = static_cast<nnm::Vector2f>(p);
+        constexpr nnm::Vector2f result = p.to_vector();
         TEST_ASSERT(result.approx_equal({ 1.0f, -2.0f }));
     }
 
