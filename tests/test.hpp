@@ -1,11 +1,6 @@
 #pragma once
 
-#include <string>
-
-void test_case(const std::string& name);
-void test_section(const std::string& name);
-void test_failed(const char* file, int line);
-int end_tests();
+#include "test_helper.hpp"
 
 #define ASSERT(expression) \
     if (!(expression))     \
