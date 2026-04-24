@@ -300,25 +300,25 @@ void function_tests()
         TEST_ASSERT(nnm::approx_equal(nnm::sqrd(-1.0e10f), 1.0e20f));
     }
 
-    test_case("modf");
+    test_case("euclidean_modf");
     {
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(0.0f, 1.0f), 0.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(0.0f, -1.0f), 0.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(5.0f, 3.0f), 2.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(-5.0f, 3.0f), 1.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(5.0f, -3.0f), -1.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::modf(-5.0f, -3.0f), -2.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(0.0f, 1.0f), 0.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(0.0f, -1.0f), 0.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, 3.0f), 2.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, 3.0f), 1.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, -3.0f), -1.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, -3.0f), -2.0f));
     }
 
-    test_case("mod");
+    test_case("euclidean_mod");
     {
-        constexpr auto result = nnm::mod(0, 1);
+        constexpr auto result = nnm::euclidean_mod(0, 1);
         TEST_ASSERT(nnm::approx_equal(result, 0));
-        TEST_ASSERT(nnm::approx_equal(nnm::mod(0, -1), 0));
-        TEST_ASSERT(nnm::approx_equal(nnm::mod(5, 3), 2));
-        TEST_ASSERT(nnm::approx_equal(nnm::mod(-5, 3), 1));
-        TEST_ASSERT(nnm::approx_equal(nnm::mod(5, -3), -1));
-        TEST_ASSERT(nnm::approx_equal(nnm::mod(-5, -3), -2));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(0, -1), 0));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, 3), 2));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, 3), 1));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, -3), -1));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, -3), -2));
     }
 
     test_case("remf");
