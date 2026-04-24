@@ -704,7 +704,7 @@ public:
     Real y;
 
     /**
-     * Default initializes to all zeros.
+     * Initializes all components to zero.
      */
     constexpr Vector2()
         : x { static_cast<Real>(0) }
@@ -713,7 +713,7 @@ public:
     }
 
     /**
-     * Initializes by casting the integer 2D vector variant value.
+     * Casts from the two-dimensional integer vector variant.
      * @tparam Int Integer type.
      * @param vector Vector to cast from.
      */
@@ -721,7 +721,7 @@ public:
     explicit constexpr Vector2(const Vector2i<Int>& vector);
 
     /**
-     * Initializes by casting a different floating-point type vector.
+     * Casts from a vector with a different floating-point type.
      * @tparam Other Other floating-point type.
      * @param vector Vector to cast from.
      */
@@ -733,7 +733,7 @@ public:
     }
 
     /**
-     * Initializes from two provided values.
+     * Initializes with components.
      * @param x X value.
      * @param y Y value.
      */
@@ -899,7 +899,7 @@ public:
     }
 
     /**
-     * Linear interpolate between two this vector and another vector.
+     * Linear interpolate between this vector and another vector.
      * @param to Vector to interpolate to.
      * @param weight Weight between the two interpolated vectors.
      * @return Resulting interpolated vector.
@@ -912,7 +912,7 @@ public:
     /**
      * Linear interpolate between this vector and another vector where the weight is clamped between zero and one.
      * @param to Vector to interpolate to.
-     * @param weight Weight between the two interpolate vectors that is clamped between zero and one.
+     * @param weight Weight between the two interpolated vectors that is clamped between zero and one.
      * @return Resulting interpolated vector.
      */
     [[nodiscard]] constexpr Vector2 lerp_clamped(const Vector2& to, const Real weight) const
@@ -1359,7 +1359,7 @@ public:
     }
 
     /**
-     * Multiplied each component of this vector by another vector.
+     * Multiplies each component of this vector by another vector.
      * @param other Other vector.
      * @return Reference to this vector.
      */
@@ -1402,7 +1402,7 @@ public:
     /**
      * Component-wise division.
      * @param other Other vector.
-     * @return Result/
+     * @return Result.
      */
     [[nodiscard]] constexpr Vector2 operator/(const Vector2& other) const
     {
@@ -1410,7 +1410,7 @@ public:
     }
 
     /**
-     * Divide each component by another vector.
+     * Divides each component by another vector.
      * @param other Other vector.
      * @return Reference to this vector.
      */
@@ -2066,7 +2066,7 @@ public:
     }
 
     /**
-     * Initialize with specific components.
+     * Initializes with specific components.
      * @param x X value.
      * @param y Y value.
      */
@@ -2087,7 +2087,7 @@ public:
     }
 
     /**
-     * Vector with all components to zero.
+     * Vector with all components set to zero.
      * @return Resulting vector.
      */
     static constexpr Vector2i zero()
@@ -2096,7 +2096,7 @@ public:
     }
 
     /**
-     * Vector with all components to one.
+     * Vector with all components set to one.
      * @return Resulting vector.
      */
     static constexpr Vector2i one()
@@ -2143,8 +2143,8 @@ public:
     }
 
     /**
-     * Distance between the position of this vector to another vector along the grid defined by the x and y axes.
-     * @param to Position to.
+     * Manhattan distance to another vector.
+     * @param to Other vector.
      * @return Resulting distance.
      */
     [[nodiscard]] constexpr Int manhattan_distance(const Vector2i& to) const
@@ -2154,7 +2154,7 @@ public:
 
     /**
      * Squared length of the vector.
-     * @return Resulting length.
+     * @return Resulting squared length.
      */
     [[nodiscard]] constexpr Int length_sqrd() const
     {
@@ -2172,7 +2172,7 @@ public:
     }
 
     /**
-     * Vector cross product
+     * Vector cross product.
      * @param other Other vector.
      * @return Result.
      */
@@ -2182,7 +2182,7 @@ public:
     }
 
     /**
-     * Determines if parallel to another vector.
+     * Determines if this vector is parallel to another vector.
      * @param other Other vector.
      * @return True if parallel, false otherwise.
      */
@@ -2192,9 +2192,9 @@ public:
     }
 
     /**
-     * Determines if perpendicular to another vector.
+     * Determines if this vector is perpendicular to another vector.
      * @param other Other vector.
-     * @return True if parallel, false otherwise.
+     * @return True if perpendicular, false otherwise.
      */
     [[nodiscard]] constexpr bool perpendicular(const Vector2i& other) const
     {
@@ -2334,7 +2334,7 @@ public:
     /**
      * Constant reference to component at index.
      * @param index Index.
-     * @return Resulting constant reference.
+     * @return Constant reference.
      */
     [[nodiscard]] constexpr const Int& at(const uint8_t index) const
     {
@@ -2352,7 +2352,7 @@ public:
     /**
      * Reference to component at index.
      * @param index Index.
-     * @return Resulting reference.
+     * @return Reference.
      */
     constexpr Int& at(const uint8_t index)
     {
@@ -2370,7 +2370,7 @@ public:
     /**
      * Constant reference to component at index.
      * @param index Index.
-     * @return Resulting constant reference.
+     * @return Constant reference.
      */
     [[nodiscard]] constexpr const Int& operator[](const uint8_t index) const
     {
@@ -2388,7 +2388,7 @@ public:
     /**
      * Reference to component at index.
      * @param index Index.
-     * @return Resulting reference.
+     * @return Reference.
      */
     constexpr Int& operator[](const uint8_t index)
     {
@@ -2434,9 +2434,9 @@ public:
     }
 
     /**
-     * Component-wise addition.
+     * Adds another vector to this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator+=(const Vector2i& other)
     {
@@ -2456,9 +2456,9 @@ public:
     }
 
     /**
-     * Component-wise subtraction.
+     * Subtracts another vector from this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator-=(const Vector2i& other)
     {
@@ -2478,9 +2478,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication.
+     * Multiplies each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator*=(const Vector2i& other)
     {
@@ -2490,7 +2490,7 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Vector-scalar multiplication.
      * @param value Value.
      * @return Result.
      */
@@ -2500,9 +2500,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Multiplies each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator*=(const Int value)
     {
@@ -2522,9 +2522,9 @@ public:
     }
 
     /**
-     * Component-wise division.
+     * Divides each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator/=(const Vector2i& other)
     {
@@ -2534,7 +2534,7 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Vector-scalar division.
      * @param value Value.
      * @return Result.
      */
@@ -2544,9 +2544,9 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Divides each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator/=(const Int value)
     {
@@ -2566,9 +2566,9 @@ public:
     }
 
     /**
-     * Component-wise remainder.
+     * Applies component-wise remainder with another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator%=(const Vector2i& other)
     {
@@ -2588,9 +2588,9 @@ public:
     }
 
     /**
-     * Component-wise remainder with value.
+     * Applies component-wise remainder with a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector2i& operator%=(const Int value)
     {
@@ -2656,7 +2656,7 @@ public:
 };
 
 /**
- * Component-wise multiplication with value.
+ * Scalar-vector multiplication.
  * @tparam Int Integer type.
  * @param value Value.
  * @param vector Vector.
@@ -2669,7 +2669,7 @@ constexpr Vector2i<Int> operator*(const Int value, const Vector2i<Int>& vector)
 }
 
 /**
- * Component-wise division with value.
+ * Scalar-vector division.
  * @tparam Int Integer type.
  * @param value Value.
  * @param vector Vector.
@@ -2695,7 +2695,7 @@ constexpr Vector2i<Int> operator%(const Int value, const Vector2i<Int>& vector)
 }
 
 /**
- * three-dimensional vector.
+ * Three-dimensional vector.
  * @tparam Real Floating-point type.
  */
 template <typename Real>
@@ -2737,9 +2737,9 @@ public:
     }
 
     /**
-     * Initialize initial components with two-dimensional vector and z with value.
+     * Initializes x and y from a two-dimensional vector and z from a value.
      * @param vector Two-dimensional vector.
-     * @param z Z value
+     * @param z Z value.
      */
     constexpr Vector3(const Vector2<Real>& vector, const Real z)
         : x { vector.x }
@@ -2749,7 +2749,7 @@ public:
     }
 
     /**
-     * Initialize with components.
+     * Initializes with components.
      * @param x X value.
      * @param y Y value.
      * @param z Z value.
@@ -2762,7 +2762,7 @@ public:
     }
 
     /**
-     * Vector with all components with value.
+     * Vector with all components set to a value.
      * @param value Value.
      * @return Result.
      */
@@ -2772,7 +2772,7 @@ public:
     }
 
     /**
-     * Vector with all components zero.
+     * Vector with all components set to zero.
      * @return Result.
      */
     static constexpr Vector3 zero()
@@ -2781,7 +2781,7 @@ public:
     }
 
     /**
-     * Vector with all components one.
+     * Vector with all components set to one.
      * @return Result.
      */
     static constexpr Vector3 one()
@@ -3538,9 +3538,9 @@ public:
     }
 
     /**
-     * Component-wise addition.
+     * Adds another vector to this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator+=(const Vector3& other)
     {
@@ -3561,9 +3561,9 @@ public:
     }
 
     /**
-     * Component-wise subtraction.
+     * Subtracts another vector from this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator-=(const Vector3& other)
     {
@@ -3584,9 +3584,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication.
+     * Multiplies each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator*=(const Vector3& other)
     {
@@ -3604,7 +3604,7 @@ public:
     [[nodiscard]] constexpr Vector3 operator*(const Matrix3<Real>& matrix) const;
 
     /**
-     * Component-wise multiplication with value.
+     * Vector-scalar multiplication.
      * @param value Value.
      * @return Result.
      */
@@ -3614,9 +3614,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Multiplies each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator*=(const Real value)
     {
@@ -3637,9 +3637,9 @@ public:
     }
 
     /**
-     * Component-wise division.
+     * Divides each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator/=(const Vector3& other)
     {
@@ -3650,8 +3650,8 @@ public:
     }
 
     /**
-     * Component-wise division with value.
-     * @param value Value
+     * Vector-scalar division.
+     * @param value Value.
      * @return Result.
      */
     [[nodiscard]] constexpr Vector3 operator/(const Real value) const
@@ -3660,9 +3660,9 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Divides each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3& operator/=(const Real value)
     {
@@ -3718,7 +3718,7 @@ public:
 };
 
 /**
- * Component-wise multiplication with value.
+ * Scalar-vector multiplication.
  * @tparam Real Floating-point type.
  * @param value Value.
  * @param vector Vector.
@@ -3731,7 +3731,7 @@ constexpr Vector3<Real> operator*(const Real value, const Vector3<Real>& vector)
 }
 
 /**
- * Component-wise division with value.
+ * Scalar-vector division.
  * @tparam Real Floating-point type.
  * @param value Value.
  * @param vector Vector.
@@ -3755,7 +3755,7 @@ public:
     Int z;
 
     /**
-     * Initialize with all zeros.
+     * Initializes with all zeros.
      */
     constexpr Vector3i()
         : x { 0 }
@@ -3778,7 +3778,7 @@ public:
     }
 
     /**
-     * Initialize first two components from two-dimensional vector and z value.
+     * Initializes x and y from a two-dimensional vector and z from a value.
      * @param vector Vector.
      * @param z Z value.
      */
@@ -3790,7 +3790,7 @@ public:
     }
 
     /**
-     * Initialize with components.
+     * Initializes with components.
      * @param x X value.
      * @param y Y value.
      * @param z Z value.
@@ -3803,7 +3803,7 @@ public:
     }
 
     /**
-     * Initialize all components with value.
+     * Initializes all components with value.
      * @param value Value.
      * @return Result.
      */
@@ -3813,7 +3813,7 @@ public:
     }
 
     /**
-     * Initialize all components with zero.
+     * Initializes all components with zero.
      * @return Result.
      */
     static constexpr Vector3i zero()
@@ -3822,7 +3822,7 @@ public:
     }
 
     /**
-     * Initialize all components with one.
+     * Initializes all components with one.
      * @return Result.
      */
     static constexpr Vector3i one()
@@ -4213,9 +4213,9 @@ public:
     }
 
     /**
-     * Component-wise addition.
+     * Adds another vector to this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator+=(const Vector3i& other)
     {
@@ -4236,9 +4236,9 @@ public:
     }
 
     /**
-     * Component-wise subtraction.
+     * Subtracts another vector from this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator-=(const Vector3i& other)
     {
@@ -4259,9 +4259,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication.
+     * Multiplies each component by another vector.
      * @param other Other vector.
-     * @return Result.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator*=(const Vector3i& other)
     {
@@ -4272,7 +4272,7 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Vector-scalar multiplication.
      * @param value Value.
      * @return Result.
      */
@@ -4282,9 +4282,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Multiplies each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator*=(const Int value)
     {
@@ -4305,9 +4305,9 @@ public:
     }
 
     /**
-     * Component-wise subtraction.
+     * Divides each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator/=(const Vector3i& other)
     {
@@ -4318,7 +4318,7 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Vector-scalar division.
      * @param value Value.
      * @return Result.
      */
@@ -4328,9 +4328,9 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Divides each component by a value.
      * @param value Value.
-     * @return Result.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator/=(const Int value)
     {
@@ -4351,9 +4351,9 @@ public:
     }
 
     /**
-     * Component-wise remainder.
+     * Applies component-wise remainder with another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector3i& operator%=(const Vector3i& other)
     {
@@ -4446,7 +4446,7 @@ public:
 };
 
 /**
- * Component-wise multiplication with value.
+ * Scalar-vector multiplication.
  * @tparam Int Integer type.
  * @param value Value.
  * @param vector Vector.
@@ -4459,7 +4459,7 @@ constexpr Vector3i<Int> operator*(const Int value, const Vector3i<Int>& vector)
 }
 
 /**
- * Component-wise division with value.
+ * Scalar-vector division.
  * @tparam Int Integer type.
  * @param value Value.
  * @param vector Vector.
@@ -4497,7 +4497,7 @@ public:
     Real w;
 
     /**
-     * Initialize all components with zero.
+     * Initializes all components with zero.
      */
     constexpr Vector4()
         : x { static_cast<Real>(0) }
@@ -4522,7 +4522,7 @@ public:
     }
 
     /**
-     * Initialize x and y from two-dimensional vector and z and w values.
+     * Initializes x and y from a two-dimensional vector and z and w from values.
      * @param vector Two-dimensional vector.
      * @param z Z value.
      * @param w W value.
@@ -4536,7 +4536,7 @@ public:
     }
 
     /**
-     * Initialize x, y, and z with three-dimensional vector and w value.
+     * Initializes x, y, and z from a three-dimensional vector and w from a value.
      * @param vector Three-dimensional vector.
      * @param w W value.
      */
@@ -4549,7 +4549,7 @@ public:
     }
 
     /**
-     * Initialize with components.
+     * Initializes with components.
      * @param x X value.
      * @param y Y value.
      * @param z Z value.
@@ -4564,14 +4564,14 @@ public:
     }
 
     /**
-     * Vector from quaternion. X, y, and z values are copied directly.
+     * Vector from quaternion. X, Y, and Z values are copied directly.
      * @param quaternion Quaternion.
      * @return Result.
      */
     static constexpr Vector4 from_quaternion(const Quaternion<Real>& quaternion);
 
     /**
-     * Vector with all components with value.
+     * Vector with all components set to a value.
      * @param value Value.
      * @return Result.
      */
@@ -4581,7 +4581,7 @@ public:
     }
 
     /**
-     * Vector with all components zero.
+     * Vector with all components set to zero.
      * @return Result.
      */
     static constexpr Vector4 zero()
@@ -4590,7 +4590,7 @@ public:
     }
 
     /**
-     * Vector with all components one.
+     * Vector with all components set to one.
      * @return Result.
      */
     static constexpr Vector4 one()
@@ -5124,9 +5124,9 @@ public:
     }
 
     /**
-     * Component-wise addition.
+     * Adds another vector to this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator+=(const Vector4& other)
     {
@@ -5148,9 +5148,9 @@ public:
     }
 
     /**
-     * Component-wise subtraction.
+     * Subtracts another vector from this vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator-=(const Vector4& other)
     {
@@ -5172,9 +5172,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication.
+     * Multiplies each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator*=(const Vector4& other)
     {
@@ -5193,7 +5193,7 @@ public:
     [[nodiscard]] constexpr Vector4 operator*(const Matrix4<Real>& matrix) const;
 
     /**
-     * Component-wise multiplication with value.
+     * Vector-scalar multiplication.
      * @param value Value.
      * @return Result.
      */
@@ -5203,9 +5203,9 @@ public:
     }
 
     /**
-     * Component-wise multiplication with value.
+     * Multiplies each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator*=(const Real value)
     {
@@ -5227,9 +5227,9 @@ public:
     }
 
     /**
-     * Component-wise division.
+     * Divides each component by another vector.
      * @param other Other vector.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator/=(const Vector4& other)
     {
@@ -5241,7 +5241,7 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Vector-scalar division.
      * @param value Value.
      * @return Result.
      */
@@ -5251,9 +5251,9 @@ public:
     }
 
     /**
-     * Component-wise division with value.
+     * Divides each component by a value.
      * @param value Value.
-     * @return Reference to this modified vector.
+     * @return Reference to this vector.
      */
     constexpr Vector4& operator/=(const Real value)
     {
@@ -5311,7 +5311,7 @@ public:
 };
 
 /**
- * Component-wise multiplication with value.
+ * Scalar-vector multiplication.
  * @tparam Real Floating-point type.
  * @param value Value.
  * @param vector Vector.
@@ -5324,7 +5324,7 @@ constexpr Vector4<Real> operator*(const Real value, const Vector4<Real>& vector)
 }
 
 /**
- * Component-wise division with value.
+ * Scalar-vector division.
  * @tparam Real Floating-point type.
  * @param value Value.
  * @param vector Vector.
@@ -5349,7 +5349,7 @@ public:
     Real w;
 
     /**
-     * Initialize with quaternion identity.
+     * Initializes with quaternion identity.
      */
     constexpr Quaternion()
         : x { static_cast<Real>(0) }
@@ -5374,7 +5374,7 @@ public:
     }
 
     /**
-     * Initialize from a four-dimensional vector. No normalization is done.
+     * Initializes from a four-dimensional vector. No normalization is done.
      * @param vector Vector.
      */
     explicit constexpr Quaternion(const Vector4<Real>& vector)
@@ -5386,7 +5386,7 @@ public:
     }
 
     /**
-     * Initialize with components. No normalization is done.
+     * Initializes with components. No normalization is done.
      * @param x X value.
      * @param y Y value.
      * @param z Z value.
@@ -5744,7 +5744,7 @@ public:
     Vector2<Real> columns[2];
 
     /**
-     * Initialize with identity matrix.
+     * Initializes with identity matrix.
      */
     constexpr Matrix2()
         : columns { { static_cast<Real>(1), static_cast<Real>(0) }, { static_cast<Real>(0), static_cast<Real>(1) } }
@@ -5764,7 +5764,7 @@ public:
     }
 
     /**
-     * Initialize with columns
+     * Initializes with columns
      * @param column0 First column
      * @param column1 Second column
      */
@@ -5774,7 +5774,7 @@ public:
     }
 
     /**
-     * Initialize with elements
+     * Initializes with elements
      * @param col0_row0 First column, first row
      * @param col0_row1 First column, second row
      * @param col1_row0 Second column, first row
@@ -6183,7 +6183,7 @@ public:
     /**
      * Matrix-vector multiplication.
      * @param vector Vector.
-     * @return Resulting two-dimensional matrix.
+     * @return Resulting two-dimensional vector.
      */
     [[nodiscard]] constexpr Vector2<Real> operator*(const Vector2<Real>& vector) const
     {
@@ -6320,7 +6320,7 @@ public:
     Matrix2<Real> matrix;
 
     /**
-     * Initialize with identity basis.
+     * Initializes with identity basis.
      */
     constexpr Basis2()
         : matrix(Matrix2<Real>::identity())
@@ -6339,7 +6339,7 @@ public:
     }
 
     /**
-     * Initialize from 2x2 matrix. No validation is done.
+     * Initializes from a 2x2 matrix. No validation is done.
      * @param matrix 2x2 matrix to cast from.
      */
     explicit constexpr Basis2(const Matrix2<Real>& matrix)
@@ -6659,7 +6659,7 @@ public:
     Vector3<Real> columns[3];
 
     /**
-     * Initialize with identity matrix.
+     * Initializes with identity matrix.
      */
     constexpr Matrix3()
         : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0) },
@@ -6688,7 +6688,7 @@ public:
     }
 
     /**
-     * Initialize with columns.
+     * Initializes with columns.
      * @param column0 First column.
      * @param column1 Second column.
      * @param column2 Third column.
@@ -6699,7 +6699,7 @@ public:
     }
 
     /**
-     * Initialize with elements.
+     * Initializes with elements.
      * @param col0_row0 First column, first row
      * @param col0_row1 First column, second row
      * @param col0_row2 First column, third row
@@ -7301,7 +7301,7 @@ public:
     Matrix3<Real> matrix;
 
     /**
-     * Initialize with identity.
+     * Initializes with identity.
      */
     constexpr Transform2()
         : matrix(Matrix3<Real>::identity())
@@ -7320,7 +7320,7 @@ public:
     }
 
     /**
-     * Initialize from 3x3 matrix. No validation is done.
+     * Initializes from a 3x3 matrix. No validation is done.
      * @param matrix 3x3 matrix.
      */
     explicit constexpr Transform2(const Matrix3<Real>& matrix)
@@ -7329,7 +7329,7 @@ public:
     }
 
     /**
-     * Transform from two-dimensional basis and two-dimension translation. No validation is done.
+     * Transform from a two-dimensional basis and two-dimensional translation. No validation is done.
      * @param basis Basis.
      * @param translation Translation.
      * @return Result.
@@ -7348,7 +7348,7 @@ public:
     }
 
     /**
-     * Transform with basis.
+     * Transform from basis.
      * @param basis Basis.
      * @return Result.
      */
@@ -7358,8 +7358,8 @@ public:
     }
 
     /**
-     * Transform with translation
-     * @param translation Translation
+     * Transform from translation.
+     * @param translation Translation.
      * @return Result.
      */
     static constexpr Transform2 from_translation(const Vector2<Real>& translation)
@@ -7388,7 +7388,7 @@ public:
     }
 
     /**
-     * Transform with shear along x-axis.
+     * Transform with shear along the x-axis.
      * @param factor Factor.
      * @return Result.
      */
@@ -7398,8 +7398,8 @@ public:
     }
 
     /**
-     * Transform with shear along y-axis.
-     * @param factor factor.
+     * Transform with shear along the y-axis.
+     * @param factor Factor.
      * @return Result.
      */
     static constexpr Transform2 from_shear_y(const Real factor)
@@ -7447,7 +7447,7 @@ public:
     }
 
     /**
-     * If the transform is valid.
+     * Determines if the transform is valid.
      * @return True if valid, false otherwise.
      */
     [[nodiscard]] constexpr bool valid() const
@@ -7544,8 +7544,8 @@ public:
     }
 
     /**
-     * Shear along x-axis.
-     * @param factor factor.
+     * Shear along the x-axis.
+     * @param factor Factor.
      * @return Result.
      */
     [[nodiscard]] constexpr Transform2 shear_x(const Real factor) const
@@ -7741,7 +7741,7 @@ public:
     }
 
     /**
-     * Initialize from 3x3 matrix. No validation is done.
+     * Initializes from a 3x3 matrix. No validation is done.
      * @param matrix 3x3 matrix.
      */
     explicit constexpr Basis3(const Matrix3<Real>& matrix)
@@ -8163,7 +8163,7 @@ public:
     Vector4<Real> columns[4];
 
     /**
-     * Initialize with identity matrix.
+     * Initializes with identity matrix.
      */
     constexpr Matrix4()
         : columns { { static_cast<Real>(1), static_cast<Real>(0), static_cast<Real>(0), static_cast<Real>(0) },
@@ -8201,7 +8201,7 @@ public:
     }
 
     /**
-     * Initialize with columns.
+     * Initializes with columns.
      * @param column0 First column.
      * @param column1 Second column.
      * @param column2 Third column.
@@ -8217,7 +8217,7 @@ public:
     }
 
     /**
-     * Initialize with elements.
+     * Initializes with elements.
      * @param col0_row0 First column, first row.
      * @param col0_row1 First column, second row.
      * @param col0_row2 First column, third row.
@@ -8849,7 +8849,7 @@ public:
     Matrix4<Real> matrix;
 
     /**
-     * Initialize with identity.
+     * Initializes with identity.
      */
     constexpr Transform3()
         : matrix(Matrix4<Real>::identity())
@@ -8868,7 +8868,7 @@ public:
     }
 
     /**
-     * Initialize from a 4x4 matrix. No validation/checks are done.
+     * Initializes from a 4x4 matrix. No validation or checks are done.
      * @param matrix Matrix.
      */
     explicit constexpr Transform3(const Matrix4<Real>& matrix)
@@ -8973,8 +8973,8 @@ public:
 
     /**
      * Transform sheared about the z-axis.
-     * @param factor_x X-Axis factor.
-     * @param factor_y Z-Axis factor.
+     * @param factor_x X-axis factor.
+     * @param factor_y Y-axis factor.
      * @return Result.
      */
     static constexpr Transform3 from_shear_z(const Real factor_x, const Real factor_y)
@@ -9362,8 +9362,8 @@ public:
 
     /**
      * Shear about the z-axis.
-     * @param factor_x X-Axis factor.
-     * @param factor_y Z-Axis factor.
+     * @param factor_x X-axis factor.
+     * @param factor_y Y-axis factor.
      * @return Result.
      */
     [[nodiscard]] constexpr Transform3 shear_z(const Real factor_x, const Real factor_y) const
@@ -9373,8 +9373,8 @@ public:
 
     /**
      * Local shear about the z-axis.
-     * @param factor_x X-Axis factor.
-     * @param factor_y Z-Axis factor.
+     * @param factor_x X-axis factor.
+     * @param factor_y Y-axis factor.
      * @return Result.
      */
     [[nodiscard]] constexpr Transform3 shear_z_local(const Real factor_x, const Real factor_y) const
@@ -9840,3 +9840,4 @@ constexpr Vector4<Real> Vector4<Real>::operator*(const Matrix4<Real>& matrix) co
 }
 
 #endif
+
