@@ -9,6 +9,7 @@ int main()
     point2_tests();
     vector2i_tests();
     vector3_tests();
+    point3_tests();
     vector3i_tests();
     vector4_tests();
     quaternion_tests();

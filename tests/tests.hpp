@@ -10,6 +10,7 @@ void vector2_tests();
 void point2_tests();
 void vector2i_tests();
 void vector3_tests();
+void point3_tests();
 void vector3i_tests();
 void vector4_tests();
 void quaternion_tests();

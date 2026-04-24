@@ -18,6 +18,7 @@ if (NNM_BUILD_TESTS)
             tests/point2_tests.cpp
             tests/vector2i_tests.cpp
             tests/vector3_tests.cpp
+            tests/point3_tests.cpp
             tests/vector3i_tests.cpp
             tests/vector4_tests.cpp
             tests/quaternion_tests.cpp
