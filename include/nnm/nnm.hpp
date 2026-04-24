@@ -1486,20 +1486,30 @@ public:
     }
 };
 
+/**
+ * 2-dimensional point.
+ * @tparam Real Floating-point value.
+ */
 template <typename Real>
 class Point2 {
 public:
     Real x;
     Real y;
 
-    // tested
+    /**
+     * Constructs point at the origin.
+     */
     constexpr Point2()
         : x { static_cast<Real>(0) }
         , y { static_cast<Real>(0) }
     {
     }
 
-    // tested
+    /**
+     * Copy constructs from another point with a potentially different floating-point type.
+     * @tparam Other Other floating-point type.
+     * @param point Point.
+     */
     template <typename Other>
     explicit constexpr Point2(const Point2<Other>& point)
         : x { static_cast<Real>(point.x) }
@@ -1507,80 +1517,127 @@ public:
     {
     }
 
-    // tested
+    /**
+     * Constructs point from x and y coordinates.
+     * @param x X-coordinate.
+     * @param y Y-coordinate.
+     */
     constexpr Point2(const Real x, const Real y)
         : x { x }
         , y { y }
     {
     }
 
-    // tested
+    /**
+     * Constructs point from a vector.
+     * @param vector Vector.
+     * @return Resulting point.
+     */
     static constexpr Point2 from_vector(const Vector2<Real>& vector)
     {
         return Point2 { vector.x, vector.y };
     }
 
-    // tested
+    /**
+     * Point with all coordinates set to a value.
+     * @param value Value.
+     * @return Resulting point.
+     */
     static constexpr Point2 all(const Real value)
     {
         return Point2 { value, value };
     }
 
-    // tested
+    /**
+     * Point at the origin.
+     * @return Resulting point.
+     */
     static constexpr Point2 zero()
     {
         return all(static_cast<Real>(0));
     }
 
-    // tested
+    /**
+     * Converts point to vector.
+     * @return Resulting vector.
+     */
     [[nodiscard]] constexpr Vector2<Real> to_vector() const
     {
         return Vector2<Real> { x, y };
     }
 
-    // tested
+    /**
+     * Absolute value of all coordinates.
+     * @return Resulting point.
+     */
     [[nodiscard]] constexpr Point2 abs() const
     {
         return Point2 { nnm::abs(x), nnm::abs(y) };
     }
 
-    // tested
+    /**
+     * Ceiling of all coordinates.
+     * @return Resulting point.
+     */
     [[nodiscard]] constexpr Point2 ceil() const
     {
         return Point2 { nnm::ceil(x), nnm::ceil(y) };
     }
 
-    // tested
+    /**
+     * Floor of all coordinates.
+     * @return Resulting point.
+     */
     [[nodiscard]] constexpr Point2 floor() const
     {
         return Point2 { nnm::floor(x), nnm::floor(y) };
     }
 
-    // tested
+    /**
+     * Round all coordinates.
+     * @return Resulting point.
+     */
     [[nodiscard]] constexpr Point2 round() const
     {
         return Point2 { nnm::round(x), nnm::round(y) };
     }
 
-    // tested
+    /**
+     * Component-wise clamp.
+     * @param min Minimum.
+     * @param max Maximum.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Point2 clamp(const Point2& min, const Point2& max) const
     {
         return { nnm::clamp(x, min.x, max.x), nnm::clamp(y, min.y, max.y) };
     }
 
-    // tested
+    /**
+     * Unit-length direction vector from this point to another point.
+     * @param to Point to get the direction to.
+     * @return Resulting direction vector.
+     */
     [[nodiscard]] Vector2<Real> direction(const Point2& to) const
     {
         return (to - *this).normalize();
     }
 
-    // tested
+    /**
+     * Direction vector from this point to another point without normalizing.
+     * @param to Point to get the direction to.
+     * @return Resulting direction vector.
+     */
     [[nodiscard]] constexpr Vector2<Real> direction_unnormalized(const Point2& to) const
     {
         return to - *this;
     }
 
-    // tested
+    /**
+     * Squared distance to another point.
+     * @param to Other point.
+     * @return Resulting squared distance.
+     */
     [[nodiscard]] constexpr Real distance_sqrd(const Point2& to) const
     {
         const Real diff_x = to.x - x;
@@ -1588,115 +1645,218 @@ public:
         return sqrd(diff_x) + sqrd(diff_y);
     }
 
-    // tested
+    /**
+     * Distance to another point.
+     * @param to Other point.
+     * @return Resulting distance.
+     */
     [[nodiscard]] Real distance(const Point2& to) const
     {
         return sqrt(distance_sqrd(to));
     }
 
-    // tested
+    /**
+     * Manhattan distance to another point.
+     * @param to Other point.
+     * @return Resulting Manhattan distance.
+     */
     [[nodiscard]] constexpr Real manhattan_distance(const Point2& to) const
     {
         return nnm::abs(x - to.x) + nnm::abs(y - to.y);
     }
 
-    // tested
+    /**
+     * Linear interpolate between this point and another point.
+     * @param to Point to interpolate to.
+     * @param weight Weight between the two interpolated points.
+     * @return Resulting interpolated point.
+     */
     [[nodiscard]] constexpr Point2 lerp(const Point2& to, const Real weight) const
     {
         return { nnm::lerp(x, to.x, weight), nnm::lerp(y, to.y, weight) };
     }
 
-    // tested
+    /**
+     * Linear interpolate between this point and another point where the weight is clamped between zero and one.
+     * @param to Point to interpolate to.
+     * @param weight Weight between the two interpolated points that is clamped between zero and one.
+     * @return Resulting interpolated point.
+     */
     [[nodiscard]] constexpr Point2 lerp_clamped(const Point2& to, const Real weight) const
     {
         return { nnm::lerp_clamped(x, to.x, weight), nnm::lerp_clamped(y, to.y, weight) };
     }
 
-    // tested
+    /**
+     * Angle in radians from this point to another point.
+     * @param to Other point.
+     * @return Resulting angle in radians.
+     */
     [[nodiscard]] Real angle_to(const Point2& to) const
     {
         return atan2(to.y - y, to.x - x);
     }
 
-    // tested
+    /**
+     * Translate by an offset.
+     * @param offset Offset.
+     * @return Resulting translated point.
+     */
     [[nodiscard]] constexpr Point2 translate(const Vector2<Real>& offset) const
     {
         return { x + offset.x, y + offset.y };
     }
 
-    // tested
+    /**
+     * Component-wise scale about the origin.
+     * @param factor Scale factor.
+     * @return Resulting scaled point.
+     */
     [[nodiscard]] constexpr Point2 scale(const Vector2<Real>& factor) const;
 
-    // tested
+    /**
+     * Component-wise scale about an origin.
+     * @param origin Origin.
+     * @param factor Scale factor.
+     * @return Resulting scaled point.
+     */
     [[nodiscard]] constexpr Point2 scale_at(const Point2& origin, const Vector2<Real>& factor) const;
 
-    // tested
+    /**
+     * Rotate about the origin.
+     * @param angle Angle in radians.
+     * @return Resulting rotated point.
+     */
     [[nodiscard]] Point2 rotate(Real angle) const;
 
-    // tested
+    /**
+     * Rotate about an origin.
+     * @param origin Origin.
+     * @param angle Angle in radians.
+     * @return Resulting rotated point.
+     */
     [[nodiscard]] Point2 rotate_at(const Point2& origin, Real angle) const;
 
-    // tested
+    /**
+     * Shear along the x-axis about the origin.
+     * @param factor Factor.
+     * @return Resulting sheared point.
+     */
     [[nodiscard]] constexpr Point2 shear_x(Real factor) const;
 
-    // tested
+    /**
+     * Shear along the x-axis about an origin.
+     * @param origin Origin.
+     * @param factor Factor.
+     * @return Resulting sheared point.
+     */
     [[nodiscard]] constexpr Point2 shear_x_at(const Point2& origin, Real factor) const;
 
-    // tested
+    /**
+     * Shear along the y-axis about the origin.
+     * @param factor Factor.
+     * @return Resulting sheared point.
+     */
     [[nodiscard]] constexpr Point2 shear_y(Real factor) const;
 
-    // tested
+    /**
+     * Shear along the y-axis about an origin.
+     * @param origin Origin.
+     * @param factor Factor.
+     * @return Resulting sheared point.
+     */
     [[nodiscard]] constexpr Point2 shear_y_at(const Point2& origin, Real factor) const;
 
-    // tested
+    /**
+     * Transform by a 2D basis about the origin.
+     * @param by 2D basis to transform by.
+     * @return Resulting transformed point.
+     */
     [[nodiscard]] constexpr Point2 transform(const Basis2<Real>& by) const;
 
-    // tested
+    /**
+     * Transform by a 2D basis about an origin.
+     * @param origin Origin.
+     * @param by 2D basis to transform by.
+     * @return Resulting transformed point.
+     */
     [[nodiscard]] constexpr Point2 transform_at(const Point2& origin, const Basis2<Real>& by) const;
 
-    // tested
+    /**
+     * Transform by a 2D transformation matrix about the origin.
+     * @param by 2D transformation matrix to transform by.
+     * @return Resulting transformed point.
+     */
     [[nodiscard]] constexpr Point2 transform(const Transform2<Real>& by) const;
 
-    // tested
+    /**
+     * Transform by a 2D transformation matrix about an origin.
+     * @param origin Origin.
+     * @param by 2D transformation matrix to transform by.
+     * @return Resulting transformed point.
+     */
     [[nodiscard]] constexpr Point2 transform_at(const Point2& origin, const Transform2<Real>& by) const;
 
-    // tested
+    /**
+     * Determines if this point is approximately equal to another point.
+     * @param other Other point.
+     * @return True if approximately equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_equal(const Point2& other) const
     {
         return nnm::approx_equal(x, other.x) && nnm::approx_equal(y, other.y);
     }
 
-    // tested
+    /**
+     * Determines if all coordinates are approximately zero.
+     * @return True if approximately zero, false otherwise.
+     */
     [[nodiscard]] constexpr bool approx_zero() const
     {
         return nnm::approx_zero(x) && nnm::approx_zero(y);
     }
 
-    // tested
+    /**
+     * Start of the constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* begin() const
     {
         return &x;
     }
 
-    // tested
+    /**
+     * End of the constant iterator.
+     * @return Constant iterator.
+     */
     [[nodiscard]] const Real* end() const
     {
         return &y + 1;
     }
 
-    // tested
+    /**
+     * Start of the iterator.
+     * @return Iterator.
+     */
     Real* begin()
     {
         return &x;
     }
 
-    // tested
+    /**
+     * End of the iterator.
+     * @return Iterator.
+     */
     Real* end()
     {
         return &y + 1;
     }
 
-    // tested
+    /**
+     * Constant reference to coordinate at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
     [[nodiscard]] constexpr const Real& at(const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
@@ -1710,7 +1870,11 @@ public:
         }
     }
 
-    // tested
+    /**
+     * Reference to coordinate at index.
+     * @param index Index.
+     * @return Reference.
+     */
     constexpr Real& at(const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
@@ -1724,62 +1888,105 @@ public:
         }
     }
 
-    // tested
+    /**
+     * Constant reference to coordinate at index.
+     * @param index Index.
+     * @return Constant reference.
+     */
     [[nodiscard]] constexpr const Real& operator[](const uint8_t index) const
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
         return at(index);
     }
 
-    // tested
+    /**
+     * Reference to coordinate at index.
+     * @param index Index.
+     * @return Reference.
+     */
     [[nodiscard]] Real& operator[](const uint8_t index)
     {
         NNM_BOUNDS_CHECK_ASSERT("Point2", index <= 1);
         return at(index);
     }
 
-    // tested
+    /**
+     * Determines if this point equals another.
+     * @param other Other point.
+     * @return True if equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator==(const Point2& other) const
     {
         return x == other.x && y == other.y;
     }
 
-    // tested
+    /**
+     * Determines if this point does not equal another.
+     * @param other Other point.
+     * @return True if not equal, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator!=(const Point2& other) const
     {
         return x != other.x || y != other.y;
     }
 
-    // tested
+    /**
+     * Point-vector addition.
+     * @param offset Offset.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Point2 operator+(const Vector2<Real>& offset) const
     {
         return translate(offset);
     }
 
-    // tested
+    /**
+     * Adds an offset to this point.
+     * @param offset Offset.
+     * @return Reference to this point.
+     */
     constexpr Point2& operator+=(const Vector2<Real>& offset)
     {
         *this = *this + offset;
         return *this;
     }
 
-    // tested
+    /**
+     * Point-point subtraction.
+     * @param other Other point.
+     * @return Resulting offset vector.
+     */
     [[nodiscard]] constexpr Vector2<Real> operator-(const Point2& other) const
     {
         return to_vector() - other.to_vector();
     }
 
+    /**
+     * Point-vector subtraction.
+     * @param offset Offset.
+     * @return Result.
+     */
     [[nodiscard]] constexpr Point2 operator-(const Vector2<Real>& offset) const
     {
         return translate(-offset);
     }
 
+    /**
+     * Subtracts an offset from this point.
+     * @param offset Offset.
+     * @return Reference to this point.
+     */
     constexpr Point2& operator-=(const Vector2<Real>& offset)
     {
         *this = *this - offset;
         return *this;
     }
 
+    /**
+     * Lexicographical comparison between coordinates.
+     * @param other Other point.
+     * @return True if less than, false otherwise.
+     */
     [[nodiscard]] constexpr bool operator<(const Point2& other) const
     {
         if (x < other.x) {
@@ -1791,11 +1998,18 @@ public:
         return y < other.y;
     }
 
+    /**
+     * Evaluates to false if all coordinates are zero, true otherwise.
+     */
     [[nodiscard]] explicit constexpr operator bool() const
     {
         return x != static_cast<Real>(0) || y != static_cast<Real>(0);
     }
 
+    /**
+     * Converts point to vector.
+     * @return Resulting vector.
+     */
     [[nodiscard]] explicit constexpr operator Vector2<Real>() const
     {
         return { x, y };
