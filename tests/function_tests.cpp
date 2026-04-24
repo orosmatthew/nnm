@@ -306,19 +306,20 @@ void function_tests()
         TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(0.0f, -1.0f), 0.0f));
         TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, 3.0f), 2.0f));
         TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, 3.0f), 1.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, -3.0f), -1.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, -3.0f), -2.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(5.0f, -3.0f), 2.0f));
+        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_modf(-5.0f, -3.0f), 1.0f));
     }
 
     test_case("euclidean_mod");
     {
-        constexpr auto result = nnm::euclidean_mod(0, 1);
-        TEST_ASSERT(nnm::approx_equal(result, 0));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(0, -1), 0));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, 3), 2));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, 3), 1));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(5, -3), -1));
-        TEST_ASSERT(nnm::approx_equal(nnm::euclidean_mod(-5, -3), -2));
+        static_assert(nnm::euclidean_mod(0, 1) == 0);
+
+        TEST_ASSERT(nnm::euclidean_mod(0, 1) == 0);
+        TEST_ASSERT(nnm::euclidean_mod(0, -1) == 0);
+        TEST_ASSERT(nnm::euclidean_mod(5, 3) == 2);
+        TEST_ASSERT(nnm::euclidean_mod(-5, 3) == 1);
+        TEST_ASSERT(nnm::euclidean_mod(5, -3) == 2);
+        TEST_ASSERT(nnm::euclidean_mod(-5, -3) == 1);
     }
 
     test_case("remf");
@@ -347,12 +348,14 @@ void function_tests()
         TEST_ASSERT(nnm::approx_zero(nnm::normalize_angle(0.0f)));
 
         TEST_ASSERT(nnm::approx_equal(nnm::normalize_angle(nnm::pi<float>() / 4.0f), nnm::pi<float>() / 4.0f));
-        TEST_ASSERT(nnm::approx_equal(nnm::normalize_angle(2.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
+        TEST_ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(2.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
         TEST_ASSERT(
             nnm::approx_equal(nnm::normalize_angle(5.0f * nnm::pi<float>() / 4.0f), -3.0f * nnm::pi<float>() / 4.0f));
         TEST_ASSERT(nnm::approx_equal(nnm::normalize_angle(7.0f * nnm::pi<float>() / 4.0f), -nnm::pi<float>() / 4.0f));
         TEST_ASSERT(nnm::approx_zero(nnm::normalize_angle(2.0f * nnm::pi<float>())));
-        TEST_ASSERT(nnm::approx_equal(nnm::normalize_angle(8.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
+        TEST_ASSERT(
+            nnm::approx_equal(nnm::normalize_angle(8.0f * nnm::pi<float>() / 3.0f), 2.0f * nnm::pi<float>() / 3.0f));
 
         TEST_ASSERT(nnm::approx_equal(nnm::normalize_angle(-nnm::pi<float>() / 4.0f), -nnm::pi<float>() / 4.0f));
         TEST_ASSERT(

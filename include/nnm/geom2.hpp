@@ -1679,7 +1679,7 @@ public:
         const Vector2<Real> dir = end - start;
         const Vector2<Real> diff = point - start;
         Real t = diff.dot(dir) / dir.dot(dir);
-        Vector2<Real> closest;
+        Point2<Real> closest;
         if (t < static_cast<Real>(0)) {
             closest = start;
         }
@@ -1713,7 +1713,7 @@ public:
         if (t > static_cast<Real>(1)) {
             return (point - end).length();
         }
-        Vector2<Real> proj = start + dir * t;
+        Point2<Real> proj = start + dir * t;
         return (point - proj).length();
     }
 
