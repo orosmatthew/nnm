@@ -2867,59 +2867,6 @@ public:
     }
 
     /**
-     * The direction from position of this vector to the position of another vector.
-     * @param to Position to.
-     * @return Resulting normalized direction vector.
-     */
-    [[nodiscard]] Vector3 direction(const Vector3& to) const
-    {
-        return (to - *this).normalize();
-    }
-
-    /**
-     * The non-normalized direction from position of this vector to the position of another vector.
-     * @param to Position to.
-     * @return Resulting non-normalized direction vector.
-     */
-    [[nodiscard]] constexpr Vector3 direction_unnormalized(const Vector3& to) const
-    {
-        return to - *this;
-    }
-
-    /**
-     * Squared distance from the position of this vector to the position of another vector.
-     * @param to Position to.
-     * @return Resulting squared distance.
-     */
-    [[nodiscard]] constexpr Real distance_sqrd(const Vector3& to) const
-    {
-        const Real diff_x = to.x - x;
-        const Real diff_y = to.y - y;
-        const Real diff_z = to.z - z;
-        return sqrd(diff_x) + sqrd(diff_y) + sqrd(diff_z);
-    }
-
-    /**
-     * Distance from the position of this vector to the position of another vector.
-     * @param to Position to.
-     * @return Result.
-     */
-    [[nodiscard]] Real distance(const Vector3& to) const
-    {
-        return sqrt(this->distance_sqrd(to));
-    }
-
-    /**
-     * Distance between the position of this vector to another vector along the grid defined by the x, y, and z axes.
-     * @param to Position to.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Real manhattan_distance(const Vector3& to) const
-    {
-        return nnm::abs(x - to.x) + nnm::abs(y - to.y) + nnm::abs(z - to.z);
-    }
-
-    /**
      * Squared vector length.
      * @return Resulting squared length.
      */
@@ -3103,28 +3050,12 @@ public:
     }
 
     /**
-     * Translate vector as position.
-     * @param by Offset to translate by.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 translate(const Vector3& by) const;
-
-    /**
      * Rotate via normalized axis and angle in radians about the origin.
      * @param axis Normalized axis.
      * @param angle Angle in radians.
      * @return Result.
      */
     [[nodiscard]] Vector3 rotate_axis_angle(const Vector3& axis, Real angle) const;
-
-    /**
-     * Rotate via normalized axis and angle in radians around an origin.
-     * @param origin Origin to rotate about.
-     * @param axis Normalized axis.
-     * @param angle Angle in radians.
-     * @return Result.
-     */
-    [[nodiscard]] Vector3 rotate_axis_angle_at(const Vector3& origin, const Vector3& axis, Real angle) const;
 
     /**
      * Rotate via quaternion about the origin.
@@ -3134,28 +3065,11 @@ public:
     [[nodiscard]] constexpr Vector3 rotate_quaternion(const Quaternion<Real>& quaternion) const;
 
     /**
-     * Rotate via quaternion about an origin.
-     * @param origin Origin to rotate about.
-     * @param quaternion Quaternion
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 rotate_quaternion_at(
-        const Vector3& origin, const Quaternion<Real>& quaternion) const;
-
-    /**
      * Component-wise scale about the origin.
      * @param factor Scale factor.
      * @return Result.
      */
     [[nodiscard]] constexpr Vector3 scale(const Vector3& factor) const;
-
-    /**
-     * Component-wise scale about an origin.
-     * @param origin Origin to scale bout.
-     * @param factor Scale factor.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 scale_at(const Vector3& origin, const Vector3& factor) const;
 
     /**
      * Shear along x-axis about the origin.
@@ -3166,30 +3080,12 @@ public:
     [[nodiscard]] constexpr Vector3 shear_x(Real factor_y, Real factor_z) const;
 
     /**
-     * Shear along x-axis about an origin.
-     * @param origin Origin to shear about.
-     * @param factor_y Y-Axis factor.
-     * @param factor_z Z-Axis factor.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const;
-
-    /**
      * Shear along y-axis about the origin.
      * @param factor_x X-Axis factor.
      * @param factor_z Z-Axis factor.
      * @return Result.
      */
     [[nodiscard]] constexpr Vector3 shear_y(Real factor_x, Real factor_z) const;
-
-    /**
-     * Shear along y-axis about the origin.
-     * @param origin Origin to shear about.
-     * @param factor_x X-Axis factor.
-     * @param factor_z Z-Axis factor.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const;
 
     /**
      * Shear along z-axis about the origin.
@@ -3200,28 +3096,11 @@ public:
     [[nodiscard]] constexpr Vector3 shear_z(Real factor_x, Real factor_y) const;
 
     /**
-     * Shear along z-axis about an origin.
-     * @param origin Origin to shear about.
-     * @param factor_x X-Axis factor.
-     * @param factor_y Y-Axis factor.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const;
-
-    /**
      * Transform by a three-dimensional basis matrix about the origin.
      * @param by Basis to transform by.
      * @return Result.
      */
     [[nodiscard]] constexpr Vector3 transform(const Basis3<Real>& by) const;
-
-    /**
-     * Transform by a three-dimensional basis matrix about an origin.
-     * @param origin Origin to transform about.
-     * @param by Basis to transform by.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 transform_at(const Vector3& origin, const Basis3<Real>& by) const;
 
     /**
      * Transform by a two-dimensional transformation matrix about the origin.
@@ -3231,30 +3110,12 @@ public:
     [[nodiscard]] constexpr Vector3 transform(const Transform2<Real>& by) const;
 
     /**
-     * Transform by a two-dimensional transformation matrix about an origin.
-     * @param origin Origin to transform about.
-     * @param by Transformation matrix to transform by.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const;
-
-    /**
      * Transform by a three-dimensional transformation matrix about the origin.
      * @param by Transformation matrix to transform by.
-     * @param w The homogenous coordinate that defaults to one.
+     * @param w The homogenous coordinate that defaults to zero for direction vectors.
      * @return Result.
      */
-    [[nodiscard]] constexpr Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
-
-    /**
-     * Transform by a three-dimensional transformation matrix about an origin.
-     * @param origin Origin to transform about.
-     * @param by Transform matrix to transform by.
-     * @param w The homogenous coordinate that defaults to one.
-     * @return Result.
-     */
-    [[nodiscard]] constexpr Vector3 transform_at(
-        const Vector3& origin, const Transform3<Real>& by, Real w = static_cast<Real>(1)) const;
+    [[nodiscard]] constexpr Vector3 transform(const Transform3<Real>& by, Real w = static_cast<Real>(0)) const;
 
     /**
      * Maximum component.
@@ -10251,12 +10112,6 @@ constexpr Matrix3<Real> Vector3<Real>::outer(const Vector3& other) const
 }
 
 template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::translate(const Vector3& by) const
-{
-    return transform(Transform3<Real>::from_translation(by));
-}
-
-template <typename Real>
 constexpr Point3<Real> Point3<Real>::translate(const Vector3<Real>& offset) const
 {
     return transform(Transform3<Real>::from_translation(offset));
@@ -10275,12 +10130,6 @@ Point3<Real> Point3<Real>::rotate_axis_angle(const Vector3<Real>& axis, const Re
 }
 
 template <typename Real>
-Vector3<Real> Vector3<Real>::rotate_axis_angle_at(const Vector3& origin, const Vector3& axis, Real angle) const
-{
-    return transform_at(origin, Basis3<Real>::from_rotation_axis_angle(axis, angle));
-}
-
-template <typename Real>
 Point3<Real> Point3<Real>::rotate_axis_angle_at(const Point3& origin, const Vector3<Real>& axis, Real angle) const
 {
     return transform_at(origin, Basis3<Real>::from_rotation_axis_angle(axis, angle));
@@ -10296,13 +10145,6 @@ template <typename Real>
 constexpr Point3<Real> Point3<Real>::rotate_quaternion(const Quaternion<Real>& quaternion) const
 {
     return transform(Basis3<Real>::from_rotation_quaternion(quaternion));
-}
-
-template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::rotate_quaternion_at(
-    const Vector3& origin, const Quaternion<Real>& quaternion) const
-{
-    return transform_at(origin, Basis3<Real>::from_rotation_quaternion(quaternion));
 }
 
 template <typename Real>
@@ -10325,12 +10167,6 @@ constexpr Point3<Real> Point3<Real>::scale(const Vector3<Real>& factor) const
 }
 
 template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::scale_at(const Vector3& origin, const Vector3& factor) const
-{
-    return transform_at(origin, Basis3<Real>::from_scale(factor));
-}
-
-template <typename Real>
 constexpr Point3<Real> Point3<Real>::scale_at(const Point3& origin, const Vector3<Real>& factor) const
 {
     return transform_at(origin, Basis3<Real>::from_scale(factor));
@@ -10346,12 +10182,6 @@ template <typename Real>
 constexpr Point3<Real> Point3<Real>::shear_x(Real factor_y, Real factor_z) const
 {
     return transform(Basis3<Real>::from_shear_x(factor_y, factor_z));
-}
-
-template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::shear_x_at(const Vector3& origin, Real factor_y, Real factor_z) const
-{
-    return transform_at(origin, Basis3<Real>::from_shear_x(factor_y, factor_z));
 }
 
 template <typename Real>
@@ -10373,12 +10203,6 @@ constexpr Point3<Real> Point3<Real>::shear_y(Real factor_x, Real factor_z) const
 }
 
 template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::shear_y_at(const Vector3& origin, Real factor_x, Real factor_z) const
-{
-    return transform_at(origin, Basis3<Real>::from_shear_y(factor_x, factor_z));
-}
-
-template <typename Real>
 constexpr Point3<Real> Point3<Real>::shear_y_at(const Point3& origin, Real factor_x, Real factor_z) const
 {
     return transform_at(origin, Basis3<Real>::from_shear_y(factor_x, factor_z));
@@ -10394,12 +10218,6 @@ template <typename Real>
 constexpr Point3<Real> Point3<Real>::shear_z(Real factor_x, Real factor_y) const
 {
     return transform(Basis3<Real>::from_shear_z(factor_x, factor_y));
-}
-
-template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::shear_z_at(const Vector3& origin, Real factor_x, Real factor_y) const
-{
-    return transform_at(origin, Basis3<Real>::from_shear_z(factor_x, factor_y));
 }
 
 template <typename Real>
@@ -10421,12 +10239,6 @@ constexpr Point3<Real> Point3<Real>::transform(const Basis3<Real>& by) const
 }
 
 template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Basis3<Real>& by) const
-{
-    return (*this - origin).transform(by) + origin;
-}
-
-template <typename Real>
 constexpr Point3<Real> Point3<Real>::transform_at(const Point3& origin, const Basis3<Real>& by) const
 {
     return from_vector(by.matrix * (*this - origin) + origin.to_vector());
@@ -10442,12 +10254,6 @@ template <typename Real>
 constexpr Point3<Real> Point3<Real>::transform(const Transform2<Real>& by) const
 {
     return from_vector(by.matrix * to_vector());
-}
-
-template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector2<Real>& origin, const Transform2<Real>& by) const
-{
-    return (*this - Vector3 { origin, static_cast<Real>(0) }).transform(by) + Vector3 { origin, static_cast<Real>(0) };
 }
 
 template <typename Real>
@@ -10468,12 +10274,6 @@ template <typename Real>
 constexpr Point3<Real> Point3<Real>::transform(const Transform3<Real>& by, const Real w) const
 {
     return from_vector(Vector4<Real>(to_vector(), w).transform(by).xyz());
-}
-
-template <typename Real>
-constexpr Vector3<Real> Vector3<Real>::transform_at(const Vector3& origin, const Transform3<Real>& by, Real w) const
-{
-    return (*this - origin).transform(by, w) + origin;
 }
 
 template <typename Real>

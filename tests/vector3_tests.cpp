@@ -122,159 +122,6 @@ void vector3_tests()
         TEST_ASSERT(result == nnm::Vector3(0.0f, 12.0f, -3.0f));
     }
 
-    test_section("direction");
-    {
-        nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-        nnm::Vector3 to(2.0f, 2.0f, 2.0f);
-        auto direction = from.direction(to);
-        TEST_ASSERT(direction.approx_equal(nnm::Vector3f::all(0.57735f)));
-
-        from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-        to = nnm::Vector3(1.0f, 1.0f, 1.0f);
-        direction = from.direction(to);
-        TEST_ASSERT(direction.approx_equal(nnm::Vector3f::all(0.57735f)));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(1.0f, 0.0f, 0.0f);
-        direction = from.direction(to);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 1.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(0.0f, 1.0f, 0.0f);
-        direction = from.direction(to);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 1.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(0.0f, 0.0f, 1.0f);
-        direction = from.direction(to);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 1.0f));
-
-        from = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        to = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        direction = from.direction(to);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-    }
-
-    test_section("direction_unnormalized");
-    {
-        constexpr nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-        constexpr nnm::Vector3 to(2.0f, 2.0f, 2.0f);
-        constexpr auto direction1 = from.direction_unnormalized(to);
-        TEST_ASSERT(direction1.approx_equal(nnm::Vector3f::all(1.0f)));
-
-        constexpr auto from1 = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-        constexpr auto to1 = nnm::Vector3(1.0f, 1.0f, 1.0f);
-        auto direction = from1.direction_unnormalized(to1);
-        TEST_ASSERT(direction.approx_equal(nnm::Vector3f::all(2.0f)));
-
-        constexpr auto from2 = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        constexpr auto to2 = nnm::Vector3(1.0f, 0.0f, 0.0f);
-        direction = from2.direction_unnormalized(to2);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 1.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-
-        constexpr auto from3 = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        constexpr auto to3 = nnm::Vector3(0.0f, 1.0f, 0.0f);
-        direction = from3.direction_unnormalized(to3);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 1.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-
-        constexpr auto from4 = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        constexpr auto to4 = nnm::Vector3(0.0f, 0.0f, 1.0f);
-        direction = from4.direction_unnormalized(to4);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 1.0f));
-
-        constexpr auto from5 = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        constexpr auto to5 = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        direction = from5.direction_unnormalized(to5);
-        TEST_ASSERT(nnm::approx_equal(direction.x, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.y, 0.0f));
-        TEST_ASSERT(nnm::approx_equal(direction.z, 0.0f));
-    }
-
-    test_section("distance_sqrd");
-    {
-        constexpr nnm::Vector3 from1(1.0f, 1.0f, 1.0f);
-        constexpr nnm::Vector3 to1(2.0f, 2.0f, 2.0f);
-        constexpr auto result = from1.distance_sqrd(to1);
-        TEST_ASSERT(nnm::approx_equal(result, 3.0f));
-
-        auto from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-        auto to = nnm::Vector3(1.0f, 1.0f, 1.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance_sqrd(to), 12.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(3.0f, 0.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance_sqrd(to), 9.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(0.0f, 4.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance_sqrd(to), 16.0f));
-
-        from = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        to = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance_sqrd(to), 0.0f));
-    }
-
-    test_section("distance");
-    {
-        nnm::Vector3 from(1.0f, 1.0f, 1.0f);
-        nnm::Vector3 to(2.0f, 2.0f, 2.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance(to), nnm::sqrt(3.0f)));
-
-        from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-        to = nnm::Vector3(1.0f, 1.0f, 1.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance(to), nnm::sqrt(12.0f)));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(3.0f, 0.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance(to), 3.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(0.0f, 4.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance(to), 4.0f));
-
-        from = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        to = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        TEST_ASSERT(nnm::approx_equal(from.distance(to), 0.0f));
-    }
-
-    test_section("manhattan_distance");
-    {
-        constexpr nnm::Vector3 from1(1.0f, 1.0f, 1.0f);
-        constexpr nnm::Vector3 to1(2.0f, 2.0f, 2.0f);
-        constexpr auto result = from1.manhattan_distance(to1);
-        TEST_ASSERT(nnm::approx_equal(result, 3.0f));
-
-        auto from = nnm::Vector3(-1.0f, -1.0f, -1.0f);
-        auto to = nnm::Vector3(1.0f, 1.0f, 1.0f);
-        TEST_ASSERT(nnm::approx_equal(from.manhattan_distance(to), 6.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(3.0f, 0.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.manhattan_distance(to), 3.0f));
-
-        from = nnm::Vector3(0.0f, 0.0f, 0.0f);
-        to = nnm::Vector3(0.0f, 4.0f, 0.0f);
-        TEST_ASSERT(nnm::approx_equal(from.manhattan_distance(to), 4.0f));
-
-        from = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        to = nnm::Vector3(1.0f, 2.0f, 3.0f);
-        TEST_ASSERT(nnm::approx_equal(from.manhattan_distance(to), 0.0f));
-    }
-
     test_section("length_sqrd");
     {
         constexpr nnm::Vector3 v(1.0f, 2.0f, 3.0f);
@@ -414,29 +261,11 @@ void vector3_tests()
         TEST_ASSERT(result.perpendicular(v1));
     }
 
-    test_section("translate");
-    {
-        constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
-        constexpr nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
-        constexpr auto result = v1.translate(v2);
-        TEST_ASSERT(result.approx_equal({ -3.0f, 2.5f, 7.0f }))
-    }
-
     test_section("rotate_axis_angle");
     {
         nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
         nnm::Vector3 axis = nnm::Vector3(2.0f, 0.5f, -0.8f).normalize();
         TEST_ASSERT(v1.rotate_axis_angle(axis, nnm::pi<float>() / 5.0f).approx_equal({ 1.2574f, 3.10567f, -1.66545f }))
-    }
-
-    constexpr nnm::Vector3f origin { -3.0f, 1.5f, 10.0f };
-
-    test_section("rotate_axis_angle_at");
-    {
-        constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-        const auto axis = nnm::Vector3 { 2.0f, 0.5f, -0.8f }.normalize();
-        TEST_ASSERT(v1.rotate_axis_angle_at(origin, axis, nnm::pi<float>() / 5.0f)
-                   .approx_equal({ 0.071436f, 8.32907f, -1.36574f }));
     }
 
     test_section("rotate_quaternion");
@@ -447,28 +276,12 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 1.2574f, 3.10567f, -1.66545f }));
     }
 
-    test_section("rotate_quaternion_at");
-    {
-        constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-        constexpr nnm::QuaternionF q { 0.27948463f, 0.0698711574f, -0.111793853f, 0.95105654f };
-        constexpr auto result = v1.rotate_quaternion_at(origin, q);
-        TEST_ASSERT(result.approx_equal({ 0.071436f, 8.32907f, -1.36574f }));
-    }
-
     test_section("scale");
     {
         constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
         constexpr nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
         constexpr auto result = v1.scale(v2);
         TEST_ASSERT(result.approx_equal({ -4.0f, 1.0f, -30.0f }));
-    }
-
-    test_section("scale_at");
-    {
-        constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-        constexpr nnm::Vector3 v2 { -4.0f, 0.5f, 10.0f };
-        constexpr auto result = v1.scale_at(origin, v2);
-        TEST_ASSERT(result.approx_equal({ -19.0f, 1.75f, -120.0f }));
     }
 
     test_section("shear_x");
@@ -478,13 +291,6 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 1.0f, 2.5f, -3.5f }));
     }
 
-    test_section("shear_x_at");
-    {
-        constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-        constexpr auto result = v1.shear_x_at(origin, 0.5f, -0.5f);
-        TEST_ASSERT(result.approx_equal({ 1.0f, 4.0f, -5.0f }));
-    }
-
     test_section("shear_y");
     {
         constexpr nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
@@ -492,25 +298,11 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 2.0f, 2.0f, -4.0f }));
     }
 
-    test_section("shear_y_at");
-    {
-        constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
-        constexpr auto result = v1.shear_y_at(origin, 0.5f, -0.5f);
-        TEST_ASSERT(result.approx_equal({ 1.25f, 2.0f, -3.25f }));
-    }
-
     test_section("shear_z");
     {
         constexpr nnm::Vector3 v1 { 1.0f, 2.0f, -3.0f };
         constexpr auto result = v1.shear_z(0.5f, -0.5f);
         TEST_ASSERT(result.approx_equal({ -0.5f, 3.5f, -3.0f }));
-    }
-
-    test_section("shear_z_at");
-    {
-        constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-        constexpr auto result = v1.shear_z_at(origin, 0.5f, -0.5f);
-        TEST_ASSERT(result.approx_equal({ -5.5f, 8.5f, -3.0f }));
     }
 
     test_section("transform(const Basis3&)");
@@ -521,14 +313,6 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 9.0f, -12.4f, -30.44f }));
     }
 
-    test_section("transform_at(const Vector3&, const Basis3&)");
-    {
-        constexpr nnm::Vector3f v1 { 1.0f, 2.0f, -3.0f };
-        constexpr nnm::Basis3f basis { { { 1.0f, -3.0f, -2.0f }, { 4.0f, -0.5f, 0.78f }, { 0.0f, 2.8f, 10.0f } } };
-        constexpr auto result = v1.transform_at(origin, basis);
-        TEST_ASSERT(result.approx_equal({ 3.0f, -47.15f, -127.61f }));
-    }
-
     test_section("transform(const Transform2&)");
     {
         constexpr nnm::Vector3 v1(2.0f, -3.0f, 4.0f);
@@ -537,13 +321,6 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 26.0f, -8.8f, 1.0f }));
     }
 
-    test_section("transform_at(const Vector2&, const Transform2&)");
-    {
-        constexpr nnm::Vector3f v1 { 2.0f, -3.0f, 4.0f };
-        constexpr nnm::Transform2f transform { { { 1.0f, 2.0f, 3.0f }, { -4.0f, 1.6f, 3.0f }, { 3.0f, -2.0f, 1.0f } } };
-        constexpr auto result = v1.transform_at({ -10.0f, 0.5f }, transform);
-        TEST_ASSERT(result.approx_equal({ 28.0f, 10.9f, 29.5f }));
-    }
 
     test_section("transform(const Transform3&, Real)");
     {
@@ -558,17 +335,6 @@ void vector3_tests()
         TEST_ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
     }
 
-    test_section("transform(const Vector3&, const Transform3&, Real)");
-    {
-        constexpr nnm::Vector3f v1 { 2.0f, -3.0f, 4.0f };
-        constexpr nnm::Transform3f transform { { { 1.0f, 2.0f, -3.0f, 4.0f },
-                                                 { -10.0f, 0.5f, 20.6f, 0.0f },
-                                                 { 1.0f, 3.0f, 3.3f, -1.0f },
-                                                 { 9.9f, -7.54f, 20.0f, 0.1f } } };
-        constexpr auto result = v1.transform_at(origin, transform);
-        TEST_ASSERT(result.approx_equal({ 50.9f, -16.29f, -97.5f }));
-        TEST_ASSERT(v1.transform_at(origin, transform, -2.4f).approx_equal({ 17.24f, 9.346f, -165.5f }));
-    }
 
     test_section("max");
     {
