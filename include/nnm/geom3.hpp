@@ -1893,8 +1893,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Ray3 rotate_quaternion_at(
-        const Point3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+    [[nodiscard]] Ray3 rotate_quaternion_at(const Point3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
         return { origin.rotate_quaternion_at(rotate_origin, quaternion),
                  direction.rotate_quaternion(quaternion).normalize() };
@@ -3721,8 +3720,8 @@ public:
             return std::nullopt;
         }
 
-        const Real d1 = -normal.dot(origin);
-        const Real d2 = -other.normal.dot(other.origin);
+        const Real d1 = -normal.dot(origin.to_vector());
+        const Real d2 = -other.normal.dot(other.origin.to_vector());
         Point3<Real> point;
         if (const uint8_t max_index = dir.abs_max_index(); max_index == 0) {
             point = { static_cast<Real>(0),
@@ -3750,9 +3749,9 @@ public:
         if (const Real det = a.determinant(); approx_zero(det)) {
             return std::nullopt;
         }
-        const Vector3<Real> b {
-            normal.dot(origin), other1.normal.dot(other1.origin), other2.normal.dot(other2.origin)
-        };
+        const Vector3<Real> b { normal.dot(origin.to_vector()),
+                                other1.normal.dot(other1.origin.to_vector()),
+                                other2.normal.dot(other2.origin.to_vector()) };
         const Matrix3<Real> a_inv = a.unchecked_inverse();
         const Point3<Real> point { a_inv.at(0).dot(b), a_inv.at(1).dot(b), a_inv.at(2).dot(b) };
         return point;
@@ -3922,9 +3921,9 @@ public:
     // tested
     template <typename Other>
     explicit constexpr Triangle3(const Triangle3<Other>& other)
-        : vertices { Point3<Real> { other.vertices[0] },
-                     Point3<Real> { other.vertices[1] },
-                     Point3<Real> { other.vertices[2] } }
+        : vertices {
+            Point3<Real> { other.vertices[0] }, Point3<Real> { other.vertices[1] }, Point3<Real> { other.vertices[2] }
+        }
     {
     }
 
@@ -4178,7 +4177,8 @@ public:
     [[nodiscard]] constexpr Point3<Real> lerp_point(const Vector3<Real> weights) const
     {
         return Point3<Real>::from_vector(
-            weights.x * vertices[0].to_vector() + weights.y * vertices[1].to_vector() + weights.z * vertices[2].to_vector());
+            weights.x * vertices[0].to_vector() + weights.y * vertices[1].to_vector()
+            + weights.z * vertices[2].to_vector());
     }
 
     /**
@@ -4945,7 +4945,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Triangle3 transform_at(const Vector3<Real> origin, const Basis3<Real>& by) const
+    [[nodiscard]] constexpr Triangle3 transform_at(const Point3<Real>& origin, const Basis3<Real>& by) const
     {
         return { vertices[0].transform_at(origin, by),
                  vertices[1].transform_at(origin, by),
@@ -4970,7 +4970,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Triangle3 transform_at(const Vector3<Real> origin, const Transform3<Real>& by) const
+    [[nodiscard]] constexpr Triangle3 transform_at(const Point3<Real>& origin, const Transform3<Real>& by) const
     {
         return { vertices[0].transform_at(origin, by, static_cast<Real>(1)),
                  vertices[1].transform_at(origin, by, static_cast<Real>(1)),
@@ -5007,7 +5007,7 @@ public:
      * @return Result.
      */
     // tested
-    constexpr Triangle3 scale_at(const Vector3<Real>& scale_origin, const Vector3<Real>& factor) const
+    constexpr Triangle3 scale_at(const Point3<Real>& scale_origin, const Vector3<Real>& factor) const
     {
         return { vertices[0].scale_at(scale_origin, factor),
                  vertices[1].scale_at(scale_origin, factor),
@@ -5033,8 +5033,7 @@ public:
      * @return Result.
      */
     // tested
-    Triangle3 rotate_axis_angle_at(
-        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+    Triangle3 rotate_axis_angle_at(const Point3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
         return { vertices[0].rotate_axis_angle_at(rotate_origin, axis, angle),
                  vertices[1].rotate_axis_angle_at(rotate_origin, axis, angle),
@@ -5062,7 +5061,7 @@ public:
      */
     // tested
     constexpr Triangle3 rotate_quaternion_at(
-        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+        const Point3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
         return { vertices[0].rotate_quaternion_at(rotate_origin, quaternion),
                  vertices[1].rotate_quaternion_at(rotate_origin, quaternion),
@@ -5090,7 +5089,7 @@ public:
      * @return Result.
      */
     // tested
-    constexpr Triangle3 shear_x_at(const Vector3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
+    constexpr Triangle3 shear_x_at(const Point3<Real>& shear_origin, const Real factor_y, const Real factor_z) const
     {
         return { vertices[0].shear_x_at(shear_origin, factor_y, factor_z),
                  vertices[1].shear_x_at(shear_origin, factor_y, factor_z),
@@ -5119,7 +5118,7 @@ public:
      * @return
      */
     // tested
-    constexpr Triangle3 shear_y_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
+    constexpr Triangle3 shear_y_at(const Point3<Real>& shear_origin, const Real factor_x, const Real factor_z) const
     {
         return { vertices[0].shear_y_at(shear_origin, factor_x, factor_z),
                  vertices[1].shear_y_at(shear_origin, factor_x, factor_z),
@@ -5148,7 +5147,7 @@ public:
      * @return Result.
      */
     // tested
-    constexpr Triangle3 shear_z_at(const Vector3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
+    constexpr Triangle3 shear_z_at(const Point3<Real>& shear_origin, const Real factor_x, const Real factor_y) const
     {
         return { vertices[0].shear_z_at(shear_origin, factor_x, factor_y),
                  vertices[1].shear_z_at(shear_origin, factor_x, factor_y),
@@ -5257,8 +5256,7 @@ public:
      * @param half_span_v Second half span vector v.
      */
     // tested
-    constexpr Rectangle3(
-        const Point3<Real>& center, const Vector3<Real>& half_span_u, const Vector3<Real>& half_span_v)
+    constexpr Rectangle3(const Point3<Real>& center, const Vector3<Real>& half_span_u, const Vector3<Real>& half_span_v)
         : center { center }
         , half_span_u { half_span_u }
         , half_span_v { half_span_v }
@@ -6076,7 +6074,7 @@ public:
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (const Segment3<Real> e = edge(i); !e.start.approx_equal(e.end) && plane.coplanar(e)) {
-                return {};
+                return { };
             }
         }
         Intersections3<Real> inters;
@@ -6224,7 +6222,7 @@ public:
      */
     // tested
     [[nodiscard]] Rectangle3 rotate_axis_angle_at(
-        const Vector3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
+        const Point3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
     {
         return { center.rotate_axis_angle_at(origin, axis, angle),
                  half_span_u.rotate_axis_angle(axis, angle),
@@ -6253,7 +6251,7 @@ public:
      */
     // tested
     [[nodiscard]] constexpr Rectangle3 rotate_quaternion_at(
-        const Vector3<Real>& origin, const Quaternion<Real>& quaternion) const
+        const Point3<Real>& origin, const Quaternion<Real>& quaternion) const
     {
         return { center.rotate_quaternion_at(origin, quaternion),
                  half_span_u.rotate_quaternion(quaternion),
@@ -6304,8 +6302,8 @@ public:
     // tested
     [[nodiscard]] bool coincident(const Rectangle3& other) const
     {
-        std::array<Vector3<Real>, 4> verts { vertex(0), vertex(1), vertex(2), vertex(3) };
-        std::array<Vector3<Real>, 4> verts_other { other.vertex(0), other.vertex(1), other.vertex(2), other.vertex(3) };
+        std::array<Point3<Real>, 4> verts { vertex(0), vertex(1), vertex(2), vertex(3) };
+        std::array<Point3<Real>, 4> verts_other { other.vertex(0), other.vertex(1), other.vertex(2), other.vertex(3) };
         std::sort(verts.begin(), verts.end());
         std::sort(verts_other.begin(), verts_other.end());
         for (uint8_t i = 0; i < 4; ++i) {
@@ -6630,18 +6628,18 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return {};
+            return { };
         }
         if (approx_zero(discriminant)) {
             const Real t = -b / (static_cast<Real>(2) * a);
-            const Vector3<Real> p = line.origin + line.direction * t;
+            const Point3<Real> p = line.origin + line.direction * t;
             return { p };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
         const Real t2 = (-b + disc_sqrt) / (static_cast<Real>(2) * a);
-        const Vector3<Real> p1 = line.origin + line.direction * t1;
-        const Vector3<Real> p2 = line.origin + line.direction * t2;
+        const Point3<Real> p1 = line.origin + line.direction * t1;
+        const Point3<Real> p2 = line.origin + line.direction * t2;
         return { p1, p2 };
     }
 
@@ -6681,7 +6679,7 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return {};
+            return { };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
@@ -6736,7 +6734,7 @@ public:
         const Real c = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(b) - static_cast<Real>(4) * a * c;
         if (approx_less_zero(discriminant)) {
-            return {};
+            return { };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-b - disc_sqrt) / (static_cast<Real>(2) * a);
@@ -6866,7 +6864,7 @@ public:
      */
     // tested
     [[nodiscard]] Sphere rotate_axis_angle_at(
-        const Vector3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
+        const Point3<Real>& rotate_origin, const Vector3<Real>& axis, const Real angle) const
     {
         return { center.rotate_axis_angle_at(rotate_origin, axis, angle), radius };
     }
@@ -6890,7 +6888,7 @@ public:
      */
     // tested
     [[nodiscard]] constexpr Sphere rotate_quaternion_at(
-        const Vector3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
+        const Point3<Real>& rotate_origin, const Quaternion<Real>& quaternion) const
     {
         return { center.rotate_quaternion_at(rotate_origin, quaternion), radius };
     }
@@ -6994,8 +6992,8 @@ public:
      */
     // tested
     constexpr AlignedBox()
-        : min { Vector3<Real>::zero() }
-        , max { Vector3<Real>::zero() }
+        : min { Point3<Real>::zero() }
+        , max { Point3<Real>::zero() }
     {
     }
 
@@ -7019,7 +7017,7 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedBox from_bounding_points(const Vector3<Real>& point1, const Vector3<Real>& point2)
+    static constexpr AlignedBox from_bounding_points(const Point3<Real>& point1, const Point3<Real>& point2)
     {
         AlignedBox box { point1, point1 };
         box = box.extend_bounding(point2);
@@ -7059,7 +7057,7 @@ public:
     // tested
     static constexpr AlignedBox from_bounding_rectangle(const Rectangle3<Real>& rectangle)
     {
-        std::array<Vector3<Real>, 4> vertices {
+        std::array<Point3<Real>, 4> vertices {
             rectangle.vertex(0), rectangle.vertex(1), rectangle.vertex(2), rectangle.vertex(3)
         };
         AlignedBox box { vertices[0], vertices[0] };
@@ -7077,8 +7075,8 @@ public:
     // tested
     static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere)
     {
-        const Vector3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
-        const Vector3<Real> max = sphere.center + Vector3<Real>::all(sphere.radius);
+        const Point3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
+        const Point3<Real> max = sphere.center + Vector3<Real>::all(sphere.radius);
         return { min, max };
     }
 
@@ -7550,7 +7548,7 @@ public:
     // tested
     [[nodiscard]] constexpr bool intersects(const Sphere<Real>& sphere) const
     {
-        Vector3<Real> closest = sphere.center.clamp(min, max);
+        Point3<Real> closest = sphere.center.clamp(min, max);
         const Real center_dist_sqrd = (closest - sphere.center).length_sqrd();
         return approx_less_equal(center_dist_sqrd, sqrd(sphere.radius));
     }
@@ -7680,7 +7678,7 @@ public:
      */
     // tested
     [[nodiscard]] AlignedBox rotate_axis_angle_at(
-        const Vector3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
+        const Point3<Real>& origin, const Vector3<Real>& axis, const Real angle) const
     {
         return { min.rotate_axis_angle_at(origin, axis, angle), max.rotate_axis_angle_at(origin, axis, angle) };
     }
@@ -7705,7 +7703,7 @@ public:
      */
     // tested
     [[nodiscard]] constexpr AlignedBox rotate_quaternion_at(
-        const Vector3<Real>& origin, const Quaternion<Real>& quaternion) const
+        const Point3<Real>& origin, const Quaternion<Real>& quaternion) const
     {
         return { min.rotate_quaternion_at(origin, quaternion), max.rotate_quaternion_at(origin, quaternion) };
     }
@@ -7863,7 +7861,7 @@ public:
     // tested
     template <typename Other>
     constexpr explicit Box(const Box<Other>& other)
-        : center { Vector3<Real>(other.center) }
+        : center { Point3<Real>(other.center) }
         , half_span_u { Vector3<Real>(other.half_span_u) }
         , half_span_v { Vector3<Real>(other.half_span_v) }
         , half_span_w { Vector3<Real>(other.half_span_w) }
@@ -8399,7 +8397,7 @@ public:
     }
 
     [[nodiscard]] Box rotate_axis_angle(
-        const Vector3<Real>& axis, const Real angle, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+        const Vector3<Real>& axis, const Real angle, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return { center.rotate_axis_angle_at(origin, axis, angle),
                  half_span_u.rotate_axis_angle(axis, angle),
@@ -8408,7 +8406,7 @@ public:
     }
 
     [[nodiscard]] constexpr Box rotate_quaternion(
-        const Quaternion<Real>& quaternion, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+        const Quaternion<Real>& quaternion, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return { center.rotate_quaternion_at(origin, quaternion),
                  half_span_u.rotate_quaternion(quaternion),
@@ -8417,7 +8415,7 @@ public:
     }
 
     [[nodiscard]] constexpr Box scale(
-        const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+        const Vector3<Real>& factor, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return { center.scale_at(origin, factor),
                  half_span_u.scale(factor),
@@ -8427,14 +8425,14 @@ public:
 
     [[nodiscard]] bool coincident(const Box& other) const
     {
-        auto sorted_vertices = [](const Box& b) -> std::array<Vector3<Real>, 8> {
-            std::array<Vector3<Real>, 8> verts { b.vertex(0), b.vertex(1), b.vertex(2), b.vertex(3),
-                                                 b.vertex(4), b.vertex(5), b.vertex(6), b.vertex(7) };
+        auto sorted_vertices = [](const Box& b) -> std::array<Point3<Real>, 8> {
+            std::array<Point3<Real>, 8> verts { b.vertex(0), b.vertex(1), b.vertex(2), b.vertex(3),
+                                                b.vertex(4), b.vertex(5), b.vertex(6), b.vertex(7) };
             std::sort(verts.begin(), verts.end());
             return verts;
         };
-        const std::array<Vector3<Real>, 8> verts = sorted_vertices(*this);
-        const std::array<Vector3<Real>, 8> verts_other = sorted_vertices(other);
+        const std::array<Point3<Real>, 8> verts = sorted_vertices(*this);
+        const std::array<Point3<Real>, 8> verts_other = sorted_vertices(other);
         for (uint8_t i = 0; i < 8; ++i) {
             if (!verts[i].approx_equal(verts_other[i])) {
                 return false;
@@ -8519,12 +8517,12 @@ public:
      */
     // tested
     constexpr Frustum()
-        : near_plane { Plane<Real> {} }
-        , far_plane { Plane<Real> {} }
-        , left_plane { Plane<Real> {} }
-        , right_plane { Plane<Real> {} }
-        , bottom_plane { Plane<Real> {} }
-        , top_plane { Plane<Real> {} }
+        : near_plane { Plane<Real> { } }
+        , far_plane { Plane<Real> { } }
+        , left_plane { Plane<Real> { } }
+        , right_plane { Plane<Real> { } }
+        , bottom_plane { Plane<Real> { } }
+        , top_plane { Plane<Real> { } }
     {
     }
 
@@ -8568,7 +8566,7 @@ public:
      */
     // tested
     static Frustum from_camera_left_hand(
-        const Vector3<Real>& position,
+        const Point3<Real>& position,
         const Vector3<Real>& forward,
         const Vector3<Real>& up,
         const Real fov,
@@ -8590,24 +8588,24 @@ public:
         const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
         const Real near_height_half = tan_fov_y * near;
         const Real near_width_half = near_height_half * aspect;
-        const Vector3<Real> near_origin = position + forward * near;
+        const Point3<Real> near_origin = position + forward * near;
 
         const Plane<Real> near_plane { near_origin, forward };
         const Plane<Real> far_plane { position + forward * far, -forward };
 
-        const Vector3<Real> left_origin = near_origin - right * near_width_half;
+        const Point3<Real> left_origin = near_origin - right * near_width_half;
         const Vector3<Real> left_normal = corrected_up.cross(left_origin - position).normalize();
         const Plane<Real> left_plane { left_origin, left_normal };
 
-        const Vector3<Real> right_origin = near_origin + right * near_width_half;
+        const Point3<Real> right_origin = near_origin + right * near_width_half;
         const Vector3<Real> right_normal = (right_origin - position).cross(corrected_up).normalize();
         const Plane<Real> right_plane { right_origin, right_normal };
 
-        const Vector3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
+        const Point3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
         const Vector3<Real> bottom_normal = (bottom_origin - position).cross(right).normalize();
         const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
 
-        const Vector3<Real> top_origin = near_origin + corrected_up * near_height_half;
+        const Point3<Real> top_origin = near_origin + corrected_up * near_height_half;
         const Vector3<Real> top_normal = right.cross(top_origin - position).normalize();
         const Plane<Real> top_plane { top_origin, top_normal };
 
@@ -8627,7 +8625,7 @@ public:
      */
     // tested
     static Frustum from_camera_right_hand(
-        const Vector3<Real>& position,
+        const Point3<Real>& position,
         const Vector3<Real>& forward,
         const Vector3<Real>& up,
         const Real fov,
@@ -8649,24 +8647,24 @@ public:
         const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
         const Real near_height_half = tan_fov_y * near;
         const Real near_width_half = near_height_half * aspect;
-        const Vector3<Real> near_origin = position + forward * near;
+        const Point3<Real> near_origin = position + forward * near;
 
         const Plane<Real> near_plane { near_origin, forward };
         const Plane<Real> far_plane { position + forward * far, -forward };
 
-        const Vector3<Real> left_origin = near_origin - right * near_width_half;
+        const Point3<Real> left_origin = near_origin - right * near_width_half;
         const Vector3<Real> left_normal = (left_origin - position).cross(corrected_up).normalize();
         const Plane<Real> left_plane { left_origin, left_normal };
 
-        const Vector3<Real> right_origin = near_origin + right * near_width_half;
+        const Point3<Real> right_origin = near_origin + right * near_width_half;
         const Vector3<Real> right_normal = corrected_up.cross(right_origin - position).normalize();
         const Plane<Real> right_plane { right_origin, right_normal };
 
-        const Vector3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
+        const Point3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
         const Vector3<Real> bottom_normal = right.cross(bottom_origin - position).normalize();
         const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
 
-        const Vector3<Real> top_origin = near_origin + corrected_up * near_height_half;
+        const Point3<Real> top_origin = near_origin + corrected_up * near_height_half;
         const Vector3<Real> top_normal = (top_origin - position).cross(right).normalize();
         const Plane<Real> top_plane { top_origin, top_normal };
 
@@ -8907,9 +8905,9 @@ public:
     {
         std::array<Plane<Real>, 6> planes { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
         for (const Plane<Real>& plane : planes) {
-            const Vector3<Real> furthest { plane.normal.x > static_cast<Real>(0) ? box.max.x : box.min.x,
-                                           plane.normal.y > static_cast<Real>(0) ? box.max.y : box.min.y,
-                                           plane.normal.z > static_cast<Real>(0) ? box.max.z : box.min.z };
+            const Point3<Real> furthest { plane.normal.x > static_cast<Real>(0) ? box.max.x : box.min.x,
+                                          plane.normal.y > static_cast<Real>(0) ? box.max.y : box.min.y,
+                                          plane.normal.z > static_cast<Real>(0) ? box.max.z : box.min.z };
             if (const Real signed_dist = plane.signed_distance(furthest); approx_less_zero(signed_dist)) {
                 return false;
             }
@@ -9047,7 +9045,7 @@ public:
      */
     // tested
     [[nodiscard]] Frustum rotate_axis_angle(
-        const Vector3<Real>& axis, const Real angle, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+        const Vector3<Real>& axis, const Real angle, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return { near_plane.rotate_axis_angle_at(origin, axis, angle),
                  far_plane.rotate_axis_angle_at(origin, axis, angle),
@@ -9065,7 +9063,7 @@ public:
      */
     // tested
     [[nodiscard]] constexpr Frustum rotate_quaternion(
-        const Quaternion<Real>& quaternion, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+        const Quaternion<Real>& quaternion, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return {
             near_plane.rotate_quaternion_at(origin, quaternion),   far_plane.rotate_quaternion_at(origin, quaternion),
@@ -9081,7 +9079,7 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Frustum scale(const Vector3<Real>& factor, const Vector3<Real>& origin = Vector3<Real>::zero()) const
+    [[nodiscard]] Frustum scale(const Vector3<Real>& factor, const Point3<Real>& origin = Point3<Real>::zero()) const
     {
         return { near_plane.scale_at(origin, factor),   far_plane.scale_at(origin, factor),
                  left_plane.scale_at(origin, factor),   right_plane.scale_at(origin, factor),

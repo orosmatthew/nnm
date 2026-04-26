@@ -2351,7 +2351,7 @@ inline void segment3_tests()
             = nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } }.distance_sqrd(r_degen_line);
         TEST_ASSERT(nnm::approx_equal(result10, 9.0f));
         constexpr auto result11
-            = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance_sqrd(r_degen_point);
+            = nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance_sqrd(r_degen_point);
         TEST_ASSERT(nnm::approx_equal(result11, 7.25f));
         constexpr auto result12
             = nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } }.distance_sqrd(r_degen_point);
@@ -2458,17 +2458,17 @@ inline void segment3_tests()
     test_section("distance(const Plane&)");
     {
         constexpr nnm::PlaneF p2 { { 1.0f, -2.0f, 0.0f }, { 0, 0.707107f, 0.707107f } };
-        constexpr auto d1 = nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } }.distance(p2);
+        constexpr auto d1 = nnm::Segment3f { nnm::Point3f::zero(), { 3.0f, 0.0f, 0.0f } }.distance(p2);
         TEST_ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
         constexpr auto d2 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } }.distance(p2);
         TEST_ASSERT(nnm::approx_equal(d2, 3.0f * nnm::sqrt(2.0f)));
-        constexpr auto d3 = nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } }.distance(p2);
+        constexpr auto d3 = nnm::Segment3f { nnm::Point3f::zero(), { -100.0f, -4.0f, -4.0f } }.distance(p2);
         TEST_ASSERT(nnm::approx_zero(d3));
-        constexpr auto d4 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() }.distance(p2);
+        constexpr auto d4 = nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Point3f::zero() }.distance(p2);
         TEST_ASSERT(nnm::approx_zero(d4));
-        constexpr auto d5 = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } }.distance(p2);
+        constexpr auto d5 = nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 3.0f, 0.0f } }.distance(p2);
         TEST_ASSERT(nnm::approx_equal(d5, nnm::sqrt(2.0f)));
-        constexpr auto d6 = nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() }.distance(p2);
+        constexpr auto d6 = nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Point3f::zero() }.distance(p2);
         TEST_ASSERT(nnm::approx_equal(d6, nnm::sqrt(2.0f)));
         constexpr auto d7 = nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } }.distance(p2);
         TEST_ASSERT(nnm::approx_equal(d7, nnm::sqrt(2.0f)));
@@ -2498,9 +2498,9 @@ inline void segment3_tests()
         constexpr nnm::Rectangle3f r1 { { -2.5f, 1.0f, 1.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 1.0f, 1.0f } };
         constexpr nnm::Rectangle3f r_degen_line { { -2.5f, 0.0f, 0.0f }, { -1.5f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
         constexpr nnm::Rectangle3f r_degen_point { { -2.5f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f } };
-        const auto result1 = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r1);
+        const auto result1 = nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_equal(result1, 1.0f));
-        const auto result2 = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r1);
+        const auto result2 = nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_zero(result2));
         const auto result3 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_zero(result3));
@@ -2508,9 +2508,9 @@ inline void segment3_tests()
         TEST_ASSERT(nnm::approx_equal(result4, 1.4142135624f))
         const auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
-        const auto result6 = nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
+        const auto result6 = nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
-        const auto result7 = nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
+        const auto result7 = nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_zero(result7));
         const auto result8 = nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_zero(result8));
@@ -2518,7 +2518,7 @@ inline void segment3_tests()
         TEST_ASSERT(nnm::approx_equal(result9, 2.0f));
         const auto result10 = nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_equal(result10, 3.0f));
-        const auto result11 = nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance(r_degen_point);
+        const auto result11 = nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } }.distance(r_degen_point);
         TEST_ASSERT(nnm::approx_equal(result11, 2.6925824036f));
         const auto result12
             = nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } }.distance(r_degen_point);
@@ -2535,9 +2535,9 @@ inline void segment3_tests()
         TEST_ASSERT(nnm::approx_equal(r2, 1.5f));
         const auto r3 = nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }).distance(sphere);
         TEST_ASSERT(nnm::approx_equal(r3, 7.5f));
-        const auto r4 = nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }).distance(sphere);
+        const auto r4 = nnm::Segment3f(nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f }).distance(sphere);
         TEST_ASSERT(nnm::approx_equal(r4, 2.1055512755f));
-        const auto r5 = nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }).distance(sphere);
+        const auto r5 = nnm::Segment3f(nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f }).distance(sphere);
         TEST_ASSERT(nnm::approx_equal(r5, 2.2416573868f));
         const auto r6 = nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }).distance(s_degen);
         TEST_ASSERT(nnm::approx_equal(r6, 1.0f));
@@ -3189,7 +3189,7 @@ inline void plane_tests()
         constexpr nnm::PlaneF p2 { p1.origin, -p1.normal };
         constexpr auto result = p1.coplanar(p2);
         TEST_ASSERT(result);
-        constexpr nnm::PlaneF p3 { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() };
+        constexpr nnm::PlaneF p3 { nnm::Point3f::zero(), nnm::Vector3f::axis_z() };
         constexpr nnm::PlaneF p4 { { 1.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_z() };
         TEST_ASSERT(p3.coplanar(p4));
         TEST_ASSERT(p4.coplanar(p3));
@@ -3259,12 +3259,12 @@ inline void plane_tests()
 
     test_section("distance_sqrd(const Ray3&)");
     {
-        constexpr auto d1 = p2.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        constexpr auto d1 = p2.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(d1, 2.0f));
         constexpr auto d2
-            = p2.distance_sqrd(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+            = p2.distance_sqrd(nnm::Ray3f { nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_y() } });
         TEST_ASSERT(nnm::approx_zero(d2));
-        constexpr auto d3 = p2.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto d3 = p2.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(d3, 2.0f));
         constexpr auto d4 = p2.distance_sqrd(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(d4, 18.0f));
@@ -3276,17 +3276,17 @@ inline void plane_tests()
 
     test_section("distance_sqrd(const Segment3&)");
     {
-        constexpr auto d1 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        constexpr auto d1 = p2.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { 3.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d1, 2.0f));
         constexpr auto d2 = p2.distance_sqrd(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
         TEST_ASSERT(nnm::approx_equal(d2, 18.0f));
-        constexpr auto d3 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        constexpr auto d3 = p2.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { -100.0f, -4.0f, -4.0f } });
         TEST_ASSERT(nnm::approx_zero(d3));
-        constexpr auto d4 = p2.distance_sqrd(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        constexpr auto d4 = p2.distance_sqrd(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Point3f::zero() });
         TEST_ASSERT(nnm::approx_zero(d4));
-        constexpr auto d5 = p2.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        constexpr auto d5 = p2.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 3.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d5, 2.0f));
-        constexpr auto d6 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        constexpr auto d6 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Point3f::zero() });
         TEST_ASSERT(nnm::approx_equal(d6, 2.0f));
         constexpr auto d7 = p2.distance_sqrd(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d7, 2.0f));
@@ -3398,11 +3398,11 @@ inline void plane_tests()
 
     test_section("distance(const Ray3&)");
     {
-        constexpr auto d1 = p2.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        constexpr auto d1 = p2.distance(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
-        constexpr auto d2 = p2.distance(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+        constexpr auto d2 = p2.distance(nnm::Ray3f { nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_y() } });
         TEST_ASSERT(nnm::approx_zero(d2));
-        constexpr auto d3 = p2.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto d3 = p2.distance(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(d3, nnm::sqrt(2.0f)));
         constexpr auto d4 = p2.distance(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(d4, 3.0f * nnm::sqrt(2.0f)));
@@ -3414,17 +3414,17 @@ inline void plane_tests()
 
     test_section("distance(const Segment3&)");
     {
-        constexpr auto d1 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        constexpr auto d1 = p2.distance(nnm::Segment3f { nnm::Point3f::zero(), { 3.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d1, nnm::sqrt(2.0f)));
         constexpr auto d2 = p2.distance(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
         TEST_ASSERT(nnm::approx_equal(d2, 3.0f * nnm::sqrt(2.0f)));
-        constexpr auto d3 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        constexpr auto d3 = p2.distance(nnm::Segment3f { nnm::Point3f::zero(), { -100.0f, -4.0f, -4.0f } });
         TEST_ASSERT(nnm::approx_zero(d3));
-        constexpr auto d4 = p2.distance(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        constexpr auto d4 = p2.distance(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Point3f::zero() });
         TEST_ASSERT(nnm::approx_zero(d4));
-        constexpr auto d5 = p2.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        constexpr auto d5 = p2.distance(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 3.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d5, nnm::sqrt(2.0f)));
-        constexpr auto d6 = p2.distance(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        constexpr auto d6 = p2.distance(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Point3f::zero() });
         TEST_ASSERT(nnm::approx_equal(d6, nnm::sqrt(2.0f)));
         constexpr auto d7 = p2.distance(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(d7, nnm::sqrt(2.0f)));
@@ -3543,11 +3543,11 @@ inline void plane_tests()
 
     test_section("parallel(const Ray3&)");
     {
-        constexpr auto r1 = p2.parallel(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        constexpr auto r1 = p2.parallel(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.parallel(nnm::Ray3f { nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() } });
+        constexpr auto r2 = p2.parallel(nnm::Ray3f { nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_y() } });
         TEST_ASSERT_FALSE(r2);
-        constexpr auto r3 = p2.parallel(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto r3 = p2.parallel(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(r3);
         constexpr auto r4 = p2.parallel(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, -nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(r4);
@@ -3559,17 +3559,17 @@ inline void plane_tests()
 
     test_section("parallel(const Segment&)");
     {
-        constexpr auto r1 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 3.0f, 0.0f, 0.0f } });
+        constexpr auto r1 = p2.parallel(nnm::Segment3f { nnm::Point3f::zero(), { 3.0f, 0.0f, 0.0f } });
         TEST_ASSERT(r1);
         constexpr auto r2 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, { 200.0f, -4.0f, -4.0f } });
         TEST_ASSERT(r2);
-        constexpr auto r3 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { -100.0f, -4.0f, -4.0f } });
+        constexpr auto r3 = p2.parallel(nnm::Segment3f { nnm::Point3f::zero(), { -100.0f, -4.0f, -4.0f } });
         TEST_ASSERT_FALSE(r3);
-        constexpr auto r4 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::zero() });
+        constexpr auto r4 = p2.parallel(nnm::Segment3f { { -100.0f, -4.0f, -4.0f }, nnm::Point3f::zero() });
         TEST_ASSERT_FALSE(r4);
-        constexpr auto r5 = p2.parallel(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 3.0f, 0.0f } });
+        constexpr auto r5 = p2.parallel(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 3.0f, 0.0f } });
         TEST_ASSERT_FALSE(r5);
-        constexpr auto r6 = p2.parallel(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Vector3f::zero() });
+        constexpr auto r6 = p2.parallel(nnm::Segment3f { { 0.0f, 3.0f, 0.0f }, nnm::Point3f::zero() });
         TEST_ASSERT_FALSE(r6);
         constexpr auto r7 = p2.parallel(nnm::Segment3f { { 0.0f, -4.0f, 0.0f }, { 0.0f, -8.0f, 0.0f } });
         TEST_ASSERT_FALSE(r7);
@@ -3599,9 +3599,9 @@ inline void plane_tests()
     {
         constexpr auto r1 = p2.perpendicular(nnm::Line3f::axis_x());
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.perpendicular(nnm::Line3f { nnm::Vector3f::zero(), p2.normal });
+        constexpr auto r2 = p2.perpendicular(nnm::Line3f { nnm::Point3f::zero(), p2.normal });
         TEST_ASSERT(r2);
-        constexpr auto r3 = p2.perpendicular(nnm::Line3f { nnm::Vector3f::zero(), -p2.normal });
+        constexpr auto r3 = p2.perpendicular(nnm::Line3f { nnm::Point3f::zero(), -p2.normal });
         TEST_ASSERT(r3);
         constexpr auto r4 = p2.perpendicular(nnm::Line3f::axis_z());
         TEST_ASSERT_FALSE(r4);
@@ -3609,27 +3609,27 @@ inline void plane_tests()
 
     test_section("perpendicular(const Ray3&)");
     {
-        constexpr auto r1 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto r1 = p2.perpendicular(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_y() });
+        constexpr auto r2 = p2.perpendicular(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(r2);
-        constexpr auto r3 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), p2.normal });
+        constexpr auto r3 = p2.perpendicular(nnm::Ray3f { nnm::Point3f::zero(), p2.normal });
         TEST_ASSERT(r3);
-        constexpr auto r4 = p2.perpendicular(nnm::Ray3f { nnm::Vector3f::zero(), -p2.normal });
+        constexpr auto r4 = p2.perpendicular(nnm::Ray3f { nnm::Point3f::zero(), -p2.normal });
         TEST_ASSERT(r4);
     }
 
     test_section("perpendicular(const Segment3&)");
     {
-        constexpr auto r1 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        constexpr auto r1 = p2.perpendicular(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 1.0f, 0.0f } });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        constexpr auto r2 = p2.perpendicular(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, -100.0f, 0.0f } });
         TEST_ASSERT_FALSE(r2);
         constexpr auto r3 = p2.perpendicular(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
         TEST_ASSERT_FALSE(r3);
-        constexpr auto r4 = p2.perpendicular(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 100.0f, 100.0f } });
+        constexpr auto r4 = p2.perpendicular(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 100.0f, 100.0f } });
         TEST_ASSERT(r4);
-        constexpr auto r5 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, nnm::Vector3f::zero() });
+        constexpr auto r5 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, nnm::Point3f::zero() });
         TEST_ASSERT(r5);
         constexpr auto r6 = p2.perpendicular(nnm::Segment3f { { 0.0f, 100.0f, 100.0f }, { 0.0f, -100.0, -100.0f } });
         TEST_ASSERT(r6);
@@ -3680,11 +3680,11 @@ inline void plane_tests()
 
     test_section("intersects(const Ray3&)");
     {
-        constexpr auto r1 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto r1 = p2.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        constexpr auto r2 = p2.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_z() });
         TEST_ASSERT_FALSE(r2);
-        constexpr auto r3 = p2.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        constexpr auto r3 = p2.intersects(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_z() });
         TEST_ASSERT(r3);
         constexpr auto r4 = p2.intersects(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(r4);
@@ -3698,11 +3698,11 @@ inline void plane_tests()
 
     test_section("intersection(const Ray3&)");
     {
-        constexpr auto i1 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto i1 = p2.intersection(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(i1.has_value());
-        constexpr auto i2 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        constexpr auto i2 = p2.intersection(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_z() });
         TEST_ASSERT_FALSE(i2.has_value());
-        constexpr auto i3 = p2.intersection(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        constexpr auto i3 = p2.intersection(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_z() });
         TEST_ASSERT(i3.has_value() && i3->approx_equal({ 0.0f, 0.0f, -2.0f }));
         constexpr auto i4 = p2.intersection(nnm::Ray3f { { -100.0f, -4.0f, -4.0f }, nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(i4.has_value());
@@ -3716,9 +3716,9 @@ inline void plane_tests()
 
     test_section("intersects(const Segment3&)");
     {
-        constexpr auto r1 = p2.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        constexpr auto r1 = p2.intersects(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 1.0f, 0.0f } });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = p2.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        constexpr auto r2 = p2.intersects(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, -100.0f, 0.0f } });
         TEST_ASSERT(r2);
         constexpr auto r3 = p2.intersects(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
         TEST_ASSERT_FALSE(r3);
@@ -3734,9 +3734,9 @@ inline void plane_tests()
 
     test_section("intersection(const Segment3&)");
     {
-        constexpr auto i1 = p2.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 1.0f, 0.0f } });
+        constexpr auto i1 = p2.intersection(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 1.0f, 0.0f } });
         TEST_ASSERT_FALSE(i1.has_value());
-        constexpr auto i2 = p2.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, -100.0f, 0.0f } });
+        constexpr auto i2 = p2.intersection(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, -100.0f, 0.0f } });
         TEST_ASSERT(i2.has_value() && i2->approx_equal({ 0.0f, -2.0f, 0.0f }));
         constexpr auto i3 = p2.intersection(nnm::Segment3f { { -100.0f, 10.0f, 10.0f }, { 100.0f, 10.0f, 10.0f } });
         TEST_ASSERT_FALSE(i3.has_value());
@@ -3790,7 +3790,7 @@ inline void plane_tests()
         TEST_ASSERT(
             i6.has_value() && p2.contains(i6->origin) && p2.contains(i6->origin) && p2.parallel(*i6)
             && p2.parallel(*i6));
-        constexpr nnm::PlaneF p3 { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() };
+        constexpr nnm::PlaneF p3 { nnm::Point3f::zero(), nnm::Vector3f::axis_z() };
         const auto i7 = p2.intersection(p3);
         TEST_ASSERT(
             i7.has_value() && p2.contains(i7->origin) && p3.contains(i7->origin) && p2.parallel(*i7)
@@ -3799,11 +3799,11 @@ inline void plane_tests()
 
     test_section("project");
     {
-        constexpr nnm::Vector3f pt1 = p2.project({ 1.0f, -2.0f, 3.0f });
+        constexpr nnm::Point3f pt1 = p2.project({ 1.0f, -2.0f, 3.0f });
         TEST_ASSERT(pt1.approx_equal({ 1.0f, -3.5f, 1.5f }));
-        constexpr nnm::Vector3f pt2 = p2.project({ 0.0f, -2.0f, 0.0f });
+        constexpr nnm::Point3f pt2 = p2.project({ 0.0f, -2.0f, 0.0f });
         TEST_ASSERT(pt2.approx_equal({ 0.0f, -2.0f, 0.0f }));
-        constexpr nnm::Vector3f pt3 = p2.project({ 3.0f, -4.0f, -2.0f });
+        constexpr nnm::Point3f pt3 = p2.project({ 3.0f, -4.0f, -2.0f });
         TEST_ASSERT(pt3.approx_equal({ 3.0f, -2.0f, 0.0f }));
     }
 
@@ -3827,7 +3827,7 @@ inline void plane_tests()
 
     test_section("rotate_axis_angle_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, -1.0f };
         constexpr auto axis = nnm::Vector3f::axis_y();
         constexpr auto angle = nnm::pi<float>() / 5.0f;
         const nnm::PlaneF p2r = p2.rotate_axis_angle_at(origin, axis, angle);
@@ -3848,7 +3848,7 @@ inline void plane_tests()
 
     test_section("rotate_quaternion_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, -1.0f };
         constexpr nnm::QuaternionF quat { 0.0f, -0.7071068f, 0.0f, -0.7071068f };
         constexpr nnm::PlaneF p2r = p2.rotate_quaternion_at(origin, quat);
         constexpr nnm::PlaneF p2r_expected { p2.origin.rotate_quaternion_at(origin, quat),
@@ -3866,7 +3866,7 @@ inline void plane_tests()
 
     test_section("shear_x_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, -1.0f };
         constexpr float factor_y = 2.0f;
         constexpr float factor_z = -0.5f;
         const nnm::PlaneF p2s = p2.shear_x_at(origin, factor_y, factor_z);
@@ -3887,7 +3887,7 @@ inline void plane_tests()
 
     test_section("shear_y_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, -1.0f };
         constexpr float factor_x = 2.0f;
         constexpr float factor_z = -0.5f;
         const nnm::PlaneF p2s = p2.shear_y_at(origin, factor_x, factor_z);
@@ -3908,7 +3908,7 @@ inline void plane_tests()
 
     test_section("shear_z_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, -1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, -1.0f };
         constexpr float factor_x = 2.0f;
         constexpr float factor_y = -0.5f;
         const nnm::PlaneF p2s = p2.shear_z_at(origin, factor_x, factor_y);
@@ -3964,9 +3964,9 @@ inline void triangle3_tests()
     test_section("Triangle3()");
     {
         constexpr nnm::Triangle3f t1;
-        TEST_ASSERT(t1.vertices[0].approx_equal(nnm::Vector3f::zero()));
-        TEST_ASSERT(t1.vertices[1].approx_equal(nnm::Vector3f::zero()));
-        TEST_ASSERT(t1.vertices[2].approx_equal(nnm::Vector3f::zero()));
+        TEST_ASSERT(t1.vertices[0].approx_equal(nnm::Point3f::zero()));
+        TEST_ASSERT(t1.vertices[1].approx_equal(nnm::Point3f::zero()));
+        TEST_ASSERT(t1.vertices[2].approx_equal(nnm::Point3f::zero()));
     }
 
     test_section("Triangle3(const Vector3&, const Vector3&, const Vector3&)");
@@ -4002,11 +4002,11 @@ inline void triangle3_tests()
 
     test_section("collapse_to_point");
     {
-        constexpr std::optional<nnm::Vector3f> r1 = t1.collapse_point();
+        constexpr std::optional<nnm::Point3f> r1 = t1.collapse_point();
         TEST_ASSERT_FALSE(r1.has_value());
-        constexpr std::optional<nnm::Vector3f> r2 = degen_line.collapse_point();
+        constexpr std::optional<nnm::Point3f> r2 = degen_line.collapse_point();
         TEST_ASSERT_FALSE(r2.has_value());
-        constexpr std::optional<nnm::Vector3f> r3 = degen_point.collapse_point();
+        constexpr std::optional<nnm::Point3f> r3 = degen_point.collapse_point();
         TEST_ASSERT(r3.has_value() && r3.value().approx_equal({ 1.0f, 1.0f, 1.0f }));
     }
 
@@ -4022,16 +4022,17 @@ inline void triangle3_tests()
 
     test_section("centroid");
     {
-        constexpr nnm::Vector3f c = t1.centroid();
-        constexpr nnm::Vector3f average = (t1.vertices[0] + t1.vertices[1] + t1.vertices[2]) / 3.0f;
+        constexpr nnm::Point3f c = t1.centroid();
+        constexpr nnm::Point3f average = nnm::Point3f::from_vector(
+            (t1.vertices[0].to_vector() + t1.vertices[1].to_vector() + t1.vertices[2].to_vector()) / 3.0f);
         TEST_ASSERT(c.approx_equal(average));
     }
 
     test_section("circumcenter");
     {
-        const std::optional<nnm::Vector3f> c1 = t1.circumcenter();
+        const std::optional<nnm::Point3f> c1 = t1.circumcenter();
         TEST_ASSERT(c1.has_value() && c1->approx_equal({ 0.245901704f, 0.844262301f, -0.573770523f }));
-        const std::optional<nnm::Vector3f> c2 = degen_line.circumcenter();
+        const std::optional<nnm::Point3f> c2 = degen_line.circumcenter();
         TEST_ASSERT_FALSE(c2.has_value());
     }
 
@@ -4052,9 +4053,9 @@ inline void triangle3_tests()
 
     test_section("orthocenter");
     {
-        const std::optional<nnm::Vector3f> c1 = t1.orthocenter();
+        const std::optional<nnm::Point3f> c1 = t1.orthocenter();
         TEST_ASSERT(c1.has_value() && c1->approx_equal({ 2.50819683f, -0.688524485f, 2.14754105f }));
-        const std::optional<nnm::Vector3f> c2 = degen_line.orthocenter();
+        const std::optional<nnm::Point3f> c2 = degen_line.orthocenter();
         TEST_ASSERT_FALSE(c2.has_value());
     }
 
@@ -4156,11 +4157,14 @@ inline void triangle3_tests()
 
     test_section("lerp_point");
     {
-        constexpr nnm::Vector3f p1 = t1.lerp_point({ 0.3f, 0.1f, 0.6f });
-        constexpr nnm::Vector3f expected1 = t1.vertices[0] * 0.3f + t1.vertices[1] * 0.1f + t1.vertices[2] * 0.6f;
+        constexpr nnm::Point3f p1 = t1.lerp_point({ 0.3f, 0.1f, 0.6f });
+        constexpr nnm::Point3f expected1 = nnm::Point3f::from_vector(
+            t1.vertices[0].to_vector() * 0.3f + t1.vertices[1].to_vector() * 0.1f + t1.vertices[2].to_vector() * 0.6f);
         TEST_ASSERT(p1.approx_equal(expected1));
-        constexpr nnm::Vector3f p2 = t3.lerp_point({ 0.25f, 0.56f, 0.19f });
-        constexpr nnm::Vector3f expected2 = t3.vertices[0] * 0.25f + t3.vertices[1] * 0.56f + t3.vertices[2] * 0.19f;
+        constexpr nnm::Point3f p2 = t3.lerp_point({ 0.25f, 0.56f, 0.19f });
+        constexpr nnm::Point3f expected2 = nnm::Point3f::from_vector(
+            t3.vertices[0].to_vector() * 0.25f + t3.vertices[1].to_vector() * 0.56f
+            + t3.vertices[2].to_vector() * 0.19f);
         TEST_ASSERT(p2.approx_equal(expected2));
     }
 
@@ -4178,7 +4182,7 @@ inline void triangle3_tests()
         TEST_ASSERT(w1.has_value() && w1->approx_equal({ 0.3f, 0.1f, 0.6f }));
         const std::optional<nnm::Vector3f> w2 = t3.barycentric({ 0.07f, 1.3f, -1.17f });
         TEST_ASSERT(w2.has_value() && w2->approx_equal({ 0.25f, 0.56f, 0.19f }));
-        const std::optional<nnm::Vector3f> w3 = degen_line.barycentric(nnm::Vector3f::zero());
+        const std::optional<nnm::Vector3f> w3 = degen_line.barycentric(nnm::Point3f::zero());
         TEST_ASSERT_FALSE(w3.has_value());
     }
 
@@ -4238,7 +4242,7 @@ inline void triangle3_tests()
 
     test_section("coplanar(const Vector3&)");
     {
-        const bool r1 = t1.coplanar(nnm::Vector3f::zero());
+        const bool r1 = t1.coplanar(nnm::Point3f::zero());
         TEST_ASSERT_FALSE(r1);
         const bool r2 = t1.coplanar({ 2.5f, -0.3f, 1.7f });
         TEST_ASSERT(r2);
@@ -4269,7 +4273,7 @@ inline void triangle3_tests()
 
     test_section("coplanar(const Ray3&)");
     {
-        const bool r1 = t1.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        const bool r1 = t1.coplanar(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(r1);
         const bool r2 = t1.coplanar(nnm::Ray3f::from_point_to_point(t1.edge(0).start, t1.edge(0).end));
         TEST_ASSERT(r2);
@@ -4279,7 +4283,7 @@ inline void triangle3_tests()
         TEST_ASSERT(r3);
         const bool r4 = degen_line.coplanar(nnm::Ray3f { { 0.0f, 100.0f, -100.0f }, nnm::Vector3f::axis_x() });
         TEST_ASSERT(r4);
-        const bool r5 = degen_line.coplanar(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        const bool r5 = degen_line.coplanar(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT(r5);
         const bool r6 = degen_line.coplanar(nnm::Ray3f { { -100.0f, 0.0f, 100.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(r6);
@@ -4631,7 +4635,7 @@ inline void triangle3_tests()
     {
         constexpr bool r1 = t1.parallel(nnm::Line3f::axis_x());
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = t1.parallel(nnm::Line3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
+        constexpr bool r2 = t1.parallel(nnm::Line3f(nnm::Point3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
         TEST_ASSERT(r2);
         constexpr bool r3 = degen_line.parallel(nnm::Line3f::axis_x());
         TEST_ASSERT(r3);
@@ -4645,17 +4649,17 @@ inline void triangle3_tests()
 
     test_section("parallel(const Ray3&)");
     {
-        constexpr bool r1 = t1.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool r1 = t1.parallel(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = t1.parallel(nnm::Ray3f(nnm::Vector3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
+        constexpr bool r2 = t1.parallel(nnm::Ray3f(nnm::Point3f::zero(), { -0.801783f, -0.534522f, 0.267261f }));
         TEST_ASSERT(r2);
-        constexpr bool r3 = degen_line.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool r3 = degen_line.parallel(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(r3);
-        constexpr bool r4 = degen_line.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()));
+        constexpr bool r4 = degen_line.parallel(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_y()));
         TEST_ASSERT_FALSE(r4);
-        constexpr bool r5 = degen_point.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool r5 = degen_point.parallel(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(r5);
-        constexpr bool r6 = degen_point.parallel(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()));
+        constexpr bool r6 = degen_point.parallel(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_y()));
         TEST_ASSERT(r6);
     }
 
@@ -4677,7 +4681,7 @@ inline void triangle3_tests()
 
     test_section("perpendicular(const Ray3&)");
     {
-        constexpr bool r1 = t1.perpendicular(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool r1 = t1.perpendicular(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r1);
         constexpr bool r2 = t1.perpendicular(nnm::Ray3f({ 100.0f, 0.0f, 0.0f }, { 0.271607f, -0.724286f, -0.63375f }));
         TEST_ASSERT(r2);
@@ -4825,7 +4829,7 @@ inline void triangle3_tests()
         constexpr auto i4 = t1.intersection(nnm::PlaneF::yz_offset(4.0f));
         TEST_ASSERT(i4.has_value() && i4->coincident({ { 4.0f, 0.0f, 2.0f }, { 4.0f, 0.0f, 2.0f } }));
         constexpr auto i5 = degen_line.intersection(nnm::PlaneF::yz());
-        TEST_ASSERT(i5.has_value() && i5->coincident({ nnm::Vector3f::zero(), nnm::Vector3f::zero() }))
+        TEST_ASSERT(i5.has_value() && i5->coincident({ nnm::Point3f::zero(), nnm::Point3f::zero() }))
         constexpr auto i6 = degen_line.intersection(nnm::PlaneF::xy_offset(1.0f));
         TEST_ASSERT_FALSE(i6.has_value());
     }
@@ -4893,7 +4897,7 @@ inline void triangle3_tests()
 
     test_section("transform_at(const Vector3&, const Basis3&)");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr nnm::Basis3f basis { { { 1.0f, -2.0f, 3.0f }, { 4.0f, 1.5f, 0.0f }, { -2.0f, 0.2f, 10.0f } } };
         constexpr auto r1 = t1.transform_at(origin, basis);
         TEST_ASSERT(r1.approx_equal(
@@ -4912,7 +4916,7 @@ inline void triangle3_tests()
 
     test_section("transform_at(const Vector3&, const Transform3&");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr nnm::Transform3f transform { { { 1.0f, -2.0f, 3.0f, -0.2f },
                                                  { 4.0f, 1.5f, 0.0f, 5.0f },
                                                  { -2.0f, 0.2f, 10.0f, 1.0f },
@@ -4948,7 +4952,7 @@ inline void triangle3_tests()
 
     test_section("scale_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr auto r1 = t1.scale_at(origin, { 1.0f, -2.0f, 3.0f });
         TEST_ASSERT(r1.approx_equal(
             { t1.vertices[0].scale_at(origin, { 1.0f, -2.0f, 3.0f }),
@@ -4967,7 +4971,7 @@ inline void triangle3_tests()
 
     test_section("rotate_axis_angle_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr auto axis = nnm::Vector3f::axis_y();
         constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
         const auto r1 = t1.rotate_axis_angle_at(origin, axis, angle);
@@ -4990,7 +4994,7 @@ inline void triangle3_tests()
 
     test_section("rotate_quaternion_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
         constexpr auto r1 = t1.rotate_quaternion_at(origin, quat);
         TEST_ASSERT(r1.approx_equal(
@@ -5011,7 +5015,7 @@ inline void triangle3_tests()
 
     test_section("shear_x_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr auto r1 = t1.shear_x_at(origin, -1.3f, 0.2f);
         TEST_ASSERT(r1.approx_equal(
             { t1.vertices[0].shear_x_at(origin, -1.3f, 0.2f),
@@ -5030,7 +5034,7 @@ inline void triangle3_tests()
 
     test_section("shear_y_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr auto r1 = t1.shear_y_at(origin, -1.3f, 0.2f);
         TEST_ASSERT(r1.approx_equal(
             { t1.vertices[0].shear_y_at(origin, -1.3f, 0.2f),
@@ -5049,7 +5053,7 @@ inline void triangle3_tests()
 
     test_section("shear_z_at");
     {
-        constexpr nnm::Vector3f origin { 2.0f, -10.0f, 0.5f };
+        constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr auto r1 = t1.shear_z_at(origin, -1.3f, 0.2f);
         TEST_ASSERT(r1.approx_equal(
             { t1.vertices[0].shear_z_at(origin, -1.3f, 0.2f),
@@ -5183,11 +5187,11 @@ inline void rectangle3_tests()
 
     test_section("collapse_point");
     {
-        constexpr std::optional<nnm::Vector3f> result1 = r1.collapse_point();
+        constexpr std::optional<nnm::Point3f> result1 = r1.collapse_point();
         TEST_ASSERT_FALSE(result1.has_value());
-        constexpr std::optional<nnm::Vector3f> result2 = r_degen_line.collapse_point();
+        constexpr std::optional<nnm::Point3f> result2 = r_degen_line.collapse_point();
         TEST_ASSERT_FALSE(result2.has_value());
-        constexpr std::optional<nnm::Vector3f> result3 = r_degen_point.collapse_point();
+        constexpr std::optional<nnm::Point3f> result3 = r_degen_point.collapse_point();
         TEST_ASSERT(result3.has_value() && result3.value().approx_equal({ -2.5f, 1.0f, 1.0f }));
     }
 
@@ -5203,13 +5207,13 @@ inline void rectangle3_tests()
 
     test_section("vertex");
     {
-        constexpr nnm::Vector3f v0 = r1.vertex(0);
+        constexpr nnm::Point3f v0 = r1.vertex(0);
         TEST_ASSERT(v0.approx_equal({ -1.0f, 0.0f, 0.0f }));
-        constexpr nnm::Vector3f v1 = r1.vertex(1);
+        constexpr nnm::Point3f v1 = r1.vertex(1);
         TEST_ASSERT(v1.approx_equal({ -1.0f, 2.0f, 2.0f }));
-        constexpr nnm::Vector3f v2 = r1.vertex(2);
+        constexpr nnm::Point3f v2 = r1.vertex(2);
         TEST_ASSERT(v2.approx_equal({ -4.0f, 0.0f, 0.0f }));
-        constexpr nnm::Vector3f v3 = r1.vertex(3);
+        constexpr nnm::Point3f v3 = r1.vertex(3);
         TEST_ASSERT(v3.approx_equal({ -4.0f, 2.0f, 2.0f }));
 
         TEST_ASSERT(r_degen_line.vertex(0).approx_equal({ -1.0f, 0.0f, 0.0f }));
@@ -5287,9 +5291,9 @@ inline void rectangle3_tests()
 
     test_section("coplanar(const Ray3&)");
     {
-        constexpr bool result1 = r1.coplanar(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool result1 = r1.coplanar(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(result1);
-        constexpr bool result2 = r1.coplanar(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_y()));
+        constexpr bool result2 = r1.coplanar(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_y()));
         TEST_ASSERT_FALSE(result2);
         constexpr bool result3 = r1.coplanar(nnm::Ray3f({ 0.0f, 1.0f, 1.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT(result3);
@@ -5371,9 +5375,9 @@ inline void rectangle3_tests()
 
     test_section("distance_sqrd(const Ray3&)");
     {
-        constexpr auto result1 = r1.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto result1 = r1.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(result1, 1.0f));
-        constexpr auto result2 = r1.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        constexpr auto result2 = r1.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_zero(result2));
         constexpr auto result3
             = r1.distance_sqrd(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
@@ -5385,10 +5389,10 @@ inline void rectangle3_tests()
             = r1.distance_sqrd(nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         constexpr auto result6
-            = r_degen_line.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+            = r_degen_line.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
         constexpr auto result7
-            = r_degen_line.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+            = r_degen_line.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_zero(result7));
         constexpr auto result8
             = r_degen_line.distance_sqrd(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_y() });
@@ -5400,7 +5404,7 @@ inline void rectangle3_tests()
             = r_degen_line.distance_sqrd(nnm::Ray3f { { -3.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(result10, 9.0f));
         constexpr auto result11
-            = r_degen_point.distance_sqrd(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+            = r_degen_point.distance_sqrd(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(result11, 7.25f));
         constexpr auto result12
             = r_degen_point.distance_sqrd(nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() });
@@ -5409,9 +5413,9 @@ inline void rectangle3_tests()
 
     test_section("distance_sqrd(const Segment3&)");
     {
-        constexpr auto result1 = r1.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        constexpr auto result1 = r1.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result1, 1.0f));
-        constexpr auto result2 = r1.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        constexpr auto result2 = r1.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_zero(result2));
         constexpr auto result3 = r1.distance_sqrd(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } });
         TEST_ASSERT(nnm::approx_zero(result3));
@@ -5420,10 +5424,10 @@ inline void rectangle3_tests()
         constexpr auto result5 = r1.distance_sqrd(nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } });
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         constexpr auto result6
-            = r_degen_line.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+            = r_degen_line.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
         constexpr auto result7
-            = r_degen_line.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+            = r_degen_line.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_zero(result7));
         constexpr auto result8
             = r_degen_line.distance_sqrd(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } });
@@ -5435,7 +5439,7 @@ inline void rectangle3_tests()
             = r_degen_line.distance_sqrd(nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } });
         TEST_ASSERT(nnm::approx_equal(result10, 9.0f));
         constexpr auto result11
-            = r_degen_point.distance_sqrd(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } });
+            = r_degen_point.distance_sqrd(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result11, 7.25f));
         constexpr auto result12
             = r_degen_point.distance_sqrd(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
@@ -5568,9 +5572,9 @@ inline void rectangle3_tests()
 
     test_section("distance(const Ray3&)");
     {
-        const auto result1 = r1.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        const auto result1 = r1.distance(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(result1, 1.0f));
-        const auto result2 = r1.distance(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        const auto result2 = r1.distance(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_zero(result2));
         const auto result3 = r1.distance(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
         TEST_ASSERT(nnm::approx_zero(result3));
@@ -5578,9 +5582,9 @@ inline void rectangle3_tests()
         TEST_ASSERT(nnm::approx_equal(result4, 1.4142135624f))
         const auto result5 = r1.distance(nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
-        const auto result6 = r_degen_line.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        const auto result6 = r_degen_line.distance(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
-        const auto result7 = r_degen_line.distance(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        const auto result7 = r_degen_line.distance(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(nnm::approx_zero(result7));
         const auto result8 = r_degen_line.distance(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_zero(result8));
@@ -5588,7 +5592,7 @@ inline void rectangle3_tests()
         TEST_ASSERT(nnm::approx_equal(result9, 2.0f));
         const auto result10 = r_degen_line.distance(nnm::Ray3f { { -3.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(result10, 3.0f));
-        const auto result11 = r_degen_point.distance(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+        const auto result11 = r_degen_point.distance(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT(nnm::approx_equal(result11, 2.6925824036f));
         const auto result12 = r_degen_point.distance(nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() });
         TEST_ASSERT(nnm::approx_zero(result12));
@@ -5596,9 +5600,9 @@ inline void rectangle3_tests()
 
     test_section("distance(const Segment3&)");
     {
-        const auto result1 = r1.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        const auto result1 = r1.distance(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result1, 1.0f));
-        const auto result2 = r1.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        const auto result2 = r1.distance(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_zero(result2));
         const auto result3 = r1.distance(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } });
         TEST_ASSERT(nnm::approx_zero(result3));
@@ -5606,9 +5610,9 @@ inline void rectangle3_tests()
         TEST_ASSERT(nnm::approx_equal(result4, 1.4142135624f))
         const auto result5 = r1.distance(nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } });
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
-        const auto result6 = r_degen_line.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        const auto result6 = r_degen_line.distance(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
-        const auto result7 = r_degen_line.distance(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        const auto result7 = r_degen_line.distance(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_zero(result7));
         const auto result8 = r_degen_line.distance(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_zero(result8));
@@ -5616,7 +5620,7 @@ inline void rectangle3_tests()
         TEST_ASSERT(nnm::approx_equal(result9, 2.0f));
         const auto result10 = r_degen_line.distance(nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } });
         TEST_ASSERT(nnm::approx_equal(result10, 3.0f));
-        const auto result11 = r_degen_point.distance(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } });
+        const auto result11 = r_degen_point.distance(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } });
         TEST_ASSERT(nnm::approx_equal(result11, 2.6925824036f));
         const auto result12
             = r_degen_point.distance(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
@@ -5737,7 +5741,7 @@ inline void rectangle3_tests()
         constexpr bool result2 = r1.perpendicular(nnm::Line3f::axis_z_offset(-2.5f, 1.0f));
         TEST_ASSERT_FALSE(result2)
         constexpr bool result3
-            = r1.perpendicular(nnm::Line3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
+            = r1.perpendicular(nnm::Line3f(nnm::Point3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
         TEST_ASSERT(result3);
         constexpr bool result4 = r_degen_line.perpendicular(nnm::Line3f::axis_x_offset(-1.0f, 1.0f));
         TEST_ASSERT_FALSE(result4);
@@ -5756,7 +5760,7 @@ inline void rectangle3_tests()
         constexpr bool result2 = r1.perpendicular(nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()));
         TEST_ASSERT_FALSE(result2)
         constexpr bool result3
-            = r1.perpendicular(nnm::Ray3f(nnm::Vector3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
+            = r1.perpendicular(nnm::Ray3f(nnm::Point3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }));
         TEST_ASSERT(result3);
         constexpr bool result4 = r_degen_line.perpendicular(nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(result4);
@@ -5828,9 +5832,9 @@ inline void rectangle3_tests()
 
     test_section("intersects(const Ray3&)");
     {
-        constexpr auto result1 = r1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto result1 = r1.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result1);
-        constexpr auto result2 = r1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        constexpr auto result2 = r1.intersects(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(result2);
         constexpr auto result3
             = r1.intersects(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
@@ -5841,10 +5845,9 @@ inline void rectangle3_tests()
         constexpr auto result5
             = r1.intersects(nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
         TEST_ASSERT_FALSE(result5);
-        constexpr auto result6 = r_degen_line.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto result6 = r_degen_line.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result6);
-        constexpr auto result7
-            = r_degen_line.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        constexpr auto result7 = r_degen_line.intersects(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT(result7);
         constexpr auto result8
             = r_degen_line.intersects(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_y() });
@@ -5856,7 +5859,7 @@ inline void rectangle3_tests()
             = r_degen_line.intersects(nnm::Ray3f { { -3.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(result10);
         constexpr auto result11
-            = r_degen_point.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+            = r_degen_point.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(result11);
         constexpr auto result12
             = r_degen_point.intersects(nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() });
@@ -5865,9 +5868,9 @@ inline void rectangle3_tests()
 
     test_section("intersection(const Ray3&)");
     {
-        constexpr auto result1 = r1.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto result1 = r1.intersection(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result1.has_value());
-        constexpr auto result2 = r1.intersection(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+        constexpr auto result2 = r1.intersection(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result2.has_value());
         constexpr auto result3
             = r1.intersection(nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, 0.7071067812f, -0.7071067812f } });
@@ -5879,10 +5882,10 @@ inline void rectangle3_tests()
             = r1.intersection(nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } });
         TEST_ASSERT_FALSE(result5);
         constexpr auto result6
-            = r_degen_line.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+            = r_degen_line.intersection(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result6);
         constexpr auto result7
-            = r_degen_line.intersection(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_x() });
+            = r_degen_line.intersection(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(result7.has_value());
         constexpr auto result8
             = r_degen_line.intersection(nnm::Ray3f { { -3.0f, -2.0f, 0.0f }, nnm::Vector3f::axis_y() });
@@ -5894,7 +5897,7 @@ inline void rectangle3_tests()
             = r_degen_line.intersection(nnm::Ray3f { { -3.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(result10);
         constexpr auto result11
-            = r_degen_point.intersection(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_y() });
+            = r_degen_point.intersection(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_y() });
         TEST_ASSERT_FALSE(result11);
         constexpr auto result12
             = r_degen_point.intersection(nnm::Ray3f { { -2.5f, 1.0f, 20.0f }, -nnm::Vector3f::axis_z() });
@@ -5903,9 +5906,9 @@ inline void rectangle3_tests()
 
     test_section("intersects(const Segment3&)");
     {
-        constexpr auto result1 = r1.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        constexpr auto result1 = r1.intersects(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result1);
-        constexpr auto result2 = r1.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        constexpr auto result2 = r1.intersects(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(result2);
         constexpr auto result3 = r1.intersects(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } });
         TEST_ASSERT(result3);
@@ -5914,10 +5917,10 @@ inline void rectangle3_tests()
         constexpr auto result5 = r1.intersects(nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } });
         TEST_ASSERT_FALSE(result5);
         constexpr auto result6
-            = r_degen_line.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+            = r_degen_line.intersects(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result6);
         constexpr auto result7
-            = r_degen_line.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+            = r_degen_line.intersects(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT(result7);
         constexpr auto result8
             = r_degen_line.intersects(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } });
@@ -5929,7 +5932,7 @@ inline void rectangle3_tests()
             = r_degen_line.intersects(nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } });
         TEST_ASSERT_FALSE(result10);
         constexpr auto result11
-            = r_degen_point.intersects(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } });
+            = r_degen_point.intersects(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } });
         TEST_ASSERT_FALSE(result11);
         constexpr auto result12
             = r_degen_point.intersects(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
@@ -5940,9 +5943,9 @@ inline void rectangle3_tests()
 
     test_section("intersection(const Segment3&)");
     {
-        constexpr auto result1 = r1.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+        constexpr auto result1 = r1.intersection(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result1.has_value());
-        constexpr auto result2 = r1.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+        constexpr auto result2 = r1.intersection(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result2.has_value());
         constexpr auto result3 = r1.intersection(nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, 10.0f, -8.0f } });
         TEST_ASSERT(result3.has_value() && result3->approx_equal({ -2.0f, 1.0f, 1.0f }));
@@ -5951,10 +5954,10 @@ inline void rectangle3_tests()
         constexpr auto result5 = r1.intersection(nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } });
         TEST_ASSERT_FALSE(result5.has_value());
         constexpr auto result6
-            = r_degen_line.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f } });
+            = r_degen_line.intersection(nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result6.has_value());
         constexpr auto result7
-            = r_degen_line.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f } });
+            = r_degen_line.intersection(nnm::Segment3f { nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f } });
         TEST_ASSERT_FALSE(result7.has_value());
         constexpr auto result8
             = r_degen_line.intersection(nnm::Segment3f { { -3.0f, -2.0f, 0.0f }, { -3.0f, 8.0f, 0.0f } });
@@ -5966,7 +5969,7 @@ inline void rectangle3_tests()
             = r_degen_line.intersection(nnm::Segment3f { { -3.0f, -2.0f, 3.0f }, { -3.0f, 8.0f, 3.0f } });
         TEST_ASSERT_FALSE(result10.has_value());
         constexpr auto result11
-            = r_degen_point.intersection(nnm::Segment3f { nnm::Vector3f::zero(), { 0.0f, 10.0f, 0.0f } });
+            = r_degen_point.intersection(nnm::Segment3f { nnm::Point3f::zero(), { 0.0f, 10.0f, 0.0f } });
         TEST_ASSERT_FALSE(result11.has_value());
         constexpr auto result12
             = r_degen_point.intersection(nnm::Segment3f { { -2.5f, 1.0f, 20.0f }, { -2.5f, 1.0f, -20.0f } });
@@ -6120,7 +6123,7 @@ inline void rectangle3_tests()
 
     test_section("rotate_axis_angle_at");
     {
-        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr nnm::Point3f origin { 0.5f, 1.5f, -2.0f };
         constexpr auto axis = nnm::Vector3f::axis_y();
         constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
         const auto r1_r = r1.rotate_axis_angle_at(origin, axis, angle);
@@ -6143,7 +6146,7 @@ inline void rectangle3_tests()
 
     test_section("rotate_quaternion_at");
     {
-        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr nnm::Point3f origin { 0.5f, 1.5f, -2.0f };
         constexpr nnm::QuaternionF quat { 0.0f, -0.8660254f, 0.0f, 0.5f };
         constexpr auto r1_r = r1.rotate_quaternion_at(origin, quat);
         TEST_ASSERT(r1_r.approx_equal(
@@ -6164,7 +6167,7 @@ inline void rectangle3_tests()
 
     test_section("scale_at");
     {
-        constexpr nnm::Vector3f origin { 0.5f, 1.5f, -2.0f };
+        constexpr nnm::Point3f origin { 0.5f, 1.5f, -2.0f };
         constexpr nnm::Vector3f factor { 3.0f, 0.5f, 2.0f };
         constexpr auto r1_s = r1.scale_at(origin, factor);
         TEST_ASSERT(r1_s.approx_equal(
@@ -6279,9 +6282,9 @@ void sphere_tests()
 
     test_section("collapse_point");
     {
-        constexpr std::optional<nnm::Vector3f> r1 = s1.collapse_point();
+        constexpr std::optional<nnm::Point3f> r1 = s1.collapse_point();
         TEST_ASSERT_FALSE(r1.has_value());
-        constexpr std::optional<nnm::Vector3f> r2 = s_degen.collapse_point();
+        constexpr std::optional<nnm::Point3f> r2 = s_degen.collapse_point();
         TEST_ASSERT(r2.has_value() && r2.value().approx_equal({ 0.0f, 0.0f, 0.0f }));
     }
 
@@ -6373,9 +6376,9 @@ void sphere_tests()
         TEST_ASSERT(nnm::approx_zero(r1));
         const auto r2 = s1.distance(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r2, 1.5f));
-        const auto r3 = s1.distance(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        const auto r3 = s1.distance(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r3, 2.1055512755f));
-        const auto r4 = s1.distance(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        const auto r4 = s1.distance(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r4, 2.2416573868f));
         const auto r5 = s_degen.distance(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r5, 1.0f));
@@ -6391,9 +6394,9 @@ void sphere_tests()
         TEST_ASSERT(nnm::approx_equal(r2, 1.5f));
         const auto r3 = s1.distance(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
         TEST_ASSERT(nnm::approx_equal(r3, 7.5f));
-        const auto r4 = s1.distance(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        const auto r4 = s1.distance(nnm::Segment3f(nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(nnm::approx_equal(r4, 2.1055512755f));
-        const auto r5 = s1.distance(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        const auto r5 = s1.distance(nnm::Segment3f(nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(nnm::approx_equal(r5, 2.2416573868f));
         const auto r6 = s_degen.distance(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(nnm::approx_equal(r6, 1.0f));
@@ -6487,7 +6490,7 @@ void sphere_tests()
         const auto r4 = s_degen.surface_intersections(nnm::Line3f::axis_x_offset(1.0f, 1.0f));
         TEST_ASSERT(r4.empty());
         const auto r5 = s_degen.surface_intersections(nnm::Line3f::axis_z());
-        TEST_ASSERT(r5.approx_equal({ nnm::Vector3f::zero() }));
+        TEST_ASSERT(r5.approx_equal({ nnm::Point3f::zero() }));
     }
 
     test_section("intersects(const Ray3&)");
@@ -6496,9 +6499,9 @@ void sphere_tests()
         TEST_ASSERT(r1);
         const auto r2 = s1.intersects(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r2);
-        const auto r3 = s1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        const auto r3 = s1.intersects(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r3);
-        const auto r4 = s1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        const auto r4 = s1.intersects(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r4);
         const auto r5 = s_degen.intersects(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r5);
@@ -6516,14 +6519,14 @@ void sphere_tests()
         TEST_ASSERT(r1.approx_equal({ { -0.5f, -2.0f, 3.0f }, { 2.5f, -2.0f, 3.0f } }));
         const auto r2 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
         TEST_ASSERT(r2.empty());
-        const auto r3 = s1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        const auto r3 = s1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(r3.empty());
-        const auto r4 = s1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        const auto r4 = s1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_x()));
         TEST_ASSERT(r4.empty());
         const auto r5 = s_degen.surface_intersections(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT(r5.empty());
         const auto r6 = s_degen.surface_intersections(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, -nnm::Vector3f::axis_x()));
-        TEST_ASSERT(r6.approx_equal({ nnm::Vector3f::zero() }));
+        TEST_ASSERT(r6.approx_equal({ nnm::Point3f::zero() }));
         const auto r7 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT(r7.approx_equal({ { 1.0f, -2.0f, 1.5f } }));
         const auto r8 = s1.surface_intersections(nnm::Ray3f({ -2.0f, -2.0f, 1.5f }, -nnm::Vector3f::axis_x()));
@@ -6538,9 +6541,9 @@ void sphere_tests()
         TEST_ASSERT_FALSE(r2);
         const auto r3 = s1.intersects(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
         TEST_ASSERT_FALSE(r3);
-        const auto r4 = s1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        const auto r4 = s1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r4);
-        const auto r5 = s1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        const auto r5 = s1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r5);
         const auto r6 = s_degen.intersects(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r6);
@@ -6558,14 +6561,14 @@ void sphere_tests()
         TEST_ASSERT(r2.empty());
         const auto r3 = s1.surface_intersections(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
         TEST_ASSERT(r3.empty());
-        const auto r4 = s1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        const auto r4 = s1.surface_intersections(nnm::Segment3f(nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(r4.empty());
-        const auto r5 = s1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        const auto r5 = s1.surface_intersections(nnm::Segment3f(nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(r5.empty());
         const auto r6 = s_degen.surface_intersections(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT(r6.empty());
         const auto r7 = s_degen.surface_intersections(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { -1.0f, 0.0f, 0.0f }));
-        TEST_ASSERT(r7.approx_equal({ nnm::Vector3f::zero() }));
+        TEST_ASSERT(r7.approx_equal({ nnm::Point3f::zero() }));
         const auto r8 = s1.surface_intersections(nnm::Segment3f({ -2.0f, -2.0f, 1.5f }, { 5.0f, -2.0f, 1.5f }));
         TEST_ASSERT(r8.approx_equal({ { 1.0f, -2.0f, 1.5f } }));
     }
@@ -6614,9 +6617,9 @@ void sphere_tests()
         TEST_ASSERT_FALSE(r1);
         constexpr auto r2 = s1.tangent(nnm::Ray3f({ -2.0f, -2.0f, 3.0f }, -nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r2);
-        constexpr auto r3 = s1.tangent(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr auto r3 = s1.tangent(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r3);
-        constexpr auto r4 = s1.tangent(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        constexpr auto r4 = s1.tangent(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r4);
         constexpr auto r5 = s_degen.tangent(nnm::Ray3f({ 1.0f, 0.0f, 0.0f }, nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r5);
@@ -6638,9 +6641,9 @@ void sphere_tests()
         TEST_ASSERT_FALSE(r2);
         const auto r3 = s1.tangent(nnm::Segment3f({ 10.0f, -2.0f, 3.0f }, { 20.0f, -2.0f, 3.0f }));
         TEST_ASSERT_FALSE(r3);
-        const auto r4 = s1.tangent(nnm::Segment3f(nnm::Vector3f::zero(), { 10.0f, 0.0f, 0.0f }));
+        const auto r4 = s1.tangent(nnm::Segment3f(nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r4);
-        const auto r5 = s1.tangent(nnm::Segment3f(nnm::Vector3f::zero(), { -10.0f, 0.0f, 0.0f }));
+        const auto r5 = s1.tangent(nnm::Segment3f(nnm::Point3f::zero(), { -10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r5);
         const auto r6 = s_degen.tangent(nnm::Segment3f({ 1.0f, 0.0f, 0.0f }, { 10.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r6);
@@ -6660,7 +6663,7 @@ void sphere_tests()
 
     test_section("rotate_axis_angle_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr nnm::Point3f origin { -3.0f, 4.5f, -5.0f };
         constexpr auto axis = nnm::Vector3f::axis_y();
         constexpr float angle = -2.0f * nnm::pi<float>() / 3.0f;
         const auto r1 = s1.rotate_axis_angle_at(origin, axis, angle);
@@ -6677,7 +6680,7 @@ void sphere_tests()
 
     test_section("rotate_quaternion_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr nnm::Point3f origin { -3.0f, 4.5f, -5.0f };
         constexpr nnm::QuaternionF quat { 0.0f, -0.866025447f, 0.0f, 0.5f };
         constexpr auto r1 = s1.rotate_quaternion_at(origin, quat);
         TEST_ASSERT(r1.approx_equal({ s1.center.rotate_quaternion_at(origin, quat), s1.radius }));
@@ -6692,7 +6695,7 @@ void sphere_tests()
 
     test_section("scale_at");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 4.5f, -5.0f };
+        constexpr nnm::Point3f origin { -3.0f, 4.5f, -5.0f };
         constexpr float factor = 1.25f;
         constexpr auto r1 = s1.scale_at(origin, factor);
         TEST_ASSERT(r1.approx_equal({ s1.center.scale_at(origin, nnm::Vector3f::all(factor)), s1.radius * factor }));
@@ -6881,41 +6884,41 @@ void aligned_box_tests()
 
     test_section("collapse_point");
     {
-        constexpr std::optional<nnm::Vector3f> r1 = b1.collapse_point();
+        constexpr std::optional<nnm::Point3f> r1 = b1.collapse_point();
         TEST_ASSERT_FALSE(r1.has_value());
-        constexpr std::optional<nnm::Vector3f> r2 = b_degen_rect.collapse_point();
+        constexpr std::optional<nnm::Point3f> r2 = b_degen_rect.collapse_point();
         TEST_ASSERT_FALSE(r2.has_value());
-        constexpr std::optional<nnm::Vector3f> r3 = b_degen_segment.collapse_point();
+        constexpr std::optional<nnm::Point3f> r3 = b_degen_segment.collapse_point();
         TEST_ASSERT_FALSE(r3.has_value());
-        constexpr std::optional<nnm::Vector3f> r4 = b_degen_point.collapse_point();
+        constexpr std::optional<nnm::Point3f> r4 = b_degen_point.collapse_point();
         TEST_ASSERT(r4.has_value() && r4->approx_equal({ 1.0f, -2.0f, 3.0f }));
     }
 
     test_section("vertex");
     {
-        std::vector<nnm::Vector3f> vertices;
-        constexpr nnm::Vector3f v0 = b1.vertex(0);
+        std::vector<nnm::Point3f> vertices;
+        constexpr nnm::Point3f v0 = b1.vertex(0);
         vertices.push_back(v0);
-        constexpr nnm::Vector3f v1 = b1.vertex(1);
+        constexpr nnm::Point3f v1 = b1.vertex(1);
         vertices.push_back(v1);
-        constexpr nnm::Vector3f v2 = b1.vertex(2);
+        constexpr nnm::Point3f v2 = b1.vertex(2);
         vertices.push_back(v2);
-        constexpr nnm::Vector3f v3 = b1.vertex(3);
+        constexpr nnm::Point3f v3 = b1.vertex(3);
         vertices.push_back(v3);
-        constexpr nnm::Vector3f v4 = b1.vertex(4);
+        constexpr nnm::Point3f v4 = b1.vertex(4);
         vertices.push_back(v4);
-        constexpr nnm::Vector3f v5 = b1.vertex(5);
+        constexpr nnm::Point3f v5 = b1.vertex(5);
         vertices.push_back(v5);
-        constexpr nnm::Vector3f v6 = b1.vertex(6);
+        constexpr nnm::Point3f v6 = b1.vertex(6);
         vertices.push_back(v6);
-        constexpr nnm::Vector3f v7 = b1.vertex(7);
+        constexpr nnm::Point3f v7 = b1.vertex(7);
         vertices.push_back(v7);
 
-        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+        auto vertices_contains_approx = [&vertices](const nnm::Point3f& vertex) {
             return std::find_if(
                        vertices.begin(),
                        vertices.end(),
-                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                       [&vertex](const nnm::Point3f& v) { return v.approx_equal(vertex); })
                 != vertices.end();
         };
 
@@ -7125,11 +7128,11 @@ void aligned_box_tests()
 
     test_section("distance(const Ray3&)");
     {
-        const float r1 = b1.distance(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        const float r1 = b1.distance(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r1, 0.5f));
-        const float r2 = b1.distance(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        const float r2 = b1.distance(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_z()));
         TEST_ASSERT(nnm::approx_zero(r2));
-        const float r3 = b1.distance(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        const float r3 = b1.distance(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_z()));
         TEST_ASSERT(nnm::approx_equal(r3, 0.5f));
     }
 
@@ -7190,11 +7193,11 @@ void aligned_box_tests()
 
     test_section("intersects(const Ray3&)");
     {
-        constexpr auto r1 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+        constexpr auto r1 = b1.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT_FALSE(r1);
-        constexpr auto r2 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+        constexpr auto r2 = b1.intersects(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_z() });
         TEST_ASSERT(r2);
-        constexpr auto r3 = b1.intersects(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+        constexpr auto r3 = b1.intersects(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_z() });
         TEST_ASSERT_FALSE(r3);
     }
 
@@ -7285,13 +7288,13 @@ void aligned_box_tests()
     test_section("surface_intersections(const Ray3&)");
     {
         constexpr nnm::Intersections3f r1
-            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_x() });
+            = b1.surface_intersections(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() });
         TEST_ASSERT(r1.empty());
         constexpr nnm::Intersections3f r2
-            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), nnm::Vector3f::axis_z() });
+            = b1.surface_intersections(nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_z() });
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 4.0f }, { 0.0f, 0.0f, 0.5f } }));
         constexpr nnm::Intersections3f r3
-            = b1.surface_intersections(nnm::Ray3f { nnm::Vector3f::zero(), -nnm::Vector3f::axis_z() });
+            = b1.surface_intersections(nnm::Ray3f { nnm::Point3f::zero(), -nnm::Vector3f::axis_z() });
         TEST_ASSERT(r3.empty());
     }
 
@@ -7348,7 +7351,7 @@ void aligned_box_tests()
 
     test_section("rotate_axis_angle_at");
     {
-        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::Point3f origin { -1.0f, 2.0f, -3.0f };
         constexpr auto axis = nnm::Vector3f::axis_y();
         constexpr float angle = 2.0f * nnm::pi<float>() / 3.0f;
         const nnm::AlignedBoxF r1 = b1.rotate_axis_angle_at(origin, axis, angle);
@@ -7366,7 +7369,7 @@ void aligned_box_tests()
 
     test_section("rotate_quaternion_at");
     {
-        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::Point3f origin { -1.0f, 2.0f, -3.0f };
         constexpr nnm::QuaternionF quat { 0.0f, 0.866025447f, 0.0f, 0.5f };
         constexpr nnm::AlignedBoxF r1 = b1.rotate_quaternion_at(origin, quat);
         TEST_ASSERT(
@@ -7382,7 +7385,7 @@ void aligned_box_tests()
 
     test_section("scale_at");
     {
-        constexpr nnm::Vector3f origin { -1.0f, 2.0f, -3.0f };
+        constexpr nnm::Point3f origin { -1.0f, 2.0f, -3.0f };
         constexpr nnm::Vector3f factor { 0.5f, -1.5f, 2.0f };
         constexpr nnm::AlignedBoxF r1 = b1.scale_at(origin, factor);
         TEST_ASSERT(r1.approx_equal({ b1.min.scale_at(origin, factor), b1.max.scale_at(origin, factor) }));
@@ -7435,7 +7438,7 @@ void box_tests()
     {
         constexpr nnm::BoxF b;
         TEST_ASSERT(b.approx_equal(
-            { nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero() }));
+            { nnm::Point3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero(), nnm::Vector3f::zero() }));
     }
 
     test_section("Box(const Vector3&, const Vector3&, const Vector3&, const Vector3&)");
@@ -7517,41 +7520,41 @@ void box_tests()
 
     test_section("collapse_point");
     {
-        constexpr std::optional<nnm::Vector3f> r1 = b1.collapse_point();
+        constexpr std::optional<nnm::Point3f> r1 = b1.collapse_point();
         TEST_ASSERT_FALSE(r1.has_value());
-        constexpr std::optional<nnm::Vector3f> r2 = b_degen_rect.collapse_point();
+        constexpr std::optional<nnm::Point3f> r2 = b_degen_rect.collapse_point();
         TEST_ASSERT_FALSE(r2.has_value());
-        constexpr std::optional<nnm::Vector3f> r3 = b_degen_segment.collapse_point();
+        constexpr std::optional<nnm::Point3f> r3 = b_degen_segment.collapse_point();
         TEST_ASSERT_FALSE(r3.has_value());
-        constexpr std::optional<nnm::Vector3f> r4 = b_degen_point.collapse_point();
+        constexpr std::optional<nnm::Point3f> r4 = b_degen_point.collapse_point();
         TEST_ASSERT(r4.has_value() && r4->approx_equal({ 1.0f, -2.0f, 3.0f }));
     }
 
     test_section("vertex");
     {
-        std::vector<nnm::Vector3f> vertices;
-        constexpr nnm::Vector3f v0 = b1.vertex(0);
+        std::vector<nnm::Point3f> vertices;
+        constexpr nnm::Point3f v0 = b1.vertex(0);
         vertices.push_back(v0);
-        constexpr nnm::Vector3f v1 = b1.vertex(1);
+        constexpr nnm::Point3f v1 = b1.vertex(1);
         vertices.push_back(v1);
-        constexpr nnm::Vector3f v2 = b1.vertex(2);
+        constexpr nnm::Point3f v2 = b1.vertex(2);
         vertices.push_back(v2);
-        constexpr nnm::Vector3f v3 = b1.vertex(3);
+        constexpr nnm::Point3f v3 = b1.vertex(3);
         vertices.push_back(v3);
-        constexpr nnm::Vector3f v4 = b1.vertex(4);
+        constexpr nnm::Point3f v4 = b1.vertex(4);
         vertices.push_back(v4);
-        constexpr nnm::Vector3f v5 = b1.vertex(5);
+        constexpr nnm::Point3f v5 = b1.vertex(5);
         vertices.push_back(v5);
-        constexpr nnm::Vector3f v6 = b1.vertex(6);
+        constexpr nnm::Point3f v6 = b1.vertex(6);
         vertices.push_back(v6);
-        constexpr nnm::Vector3f v7 = b1.vertex(7);
+        constexpr nnm::Point3f v7 = b1.vertex(7);
         vertices.push_back(v7);
 
-        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+        auto vertices_contains_approx = [&vertices](const nnm::Point3f& vertex) {
             return std::find_if(
                        vertices.begin(),
                        vertices.end(),
-                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                       [&vertex](const nnm::Point3f& v) { return v.approx_equal(vertex); })
                 != vertices.end();
         };
 
@@ -7751,9 +7754,9 @@ void box_tests()
 
     test_section("distance(const Ray3&)");
     {
-        const float r1 = b1.distance(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        const float r1 = b1.distance(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r1, 1.23223305f));
-        const float r2 = b1.distance(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_x()));
+        const float r2 = b1.distance(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_x()));
         TEST_ASSERT(nnm::approx_equal(r2, 1.3915069639f));
         const float r3 = b1.distance(nnm::Ray3f({ 0.0f, 0.0f, 1.5f }, nnm::Vector3f::axis_y()));
         TEST_ASSERT(nnm::approx_equal(r3, 0.2677670343f));
@@ -7799,11 +7802,11 @@ void box_tests()
 
     test_section("intersects(const Ray3&)");
     {
-        constexpr bool r1 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_y()));
+        constexpr bool r1 = b1.intersects(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_y()));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        constexpr bool r2 = b1.intersects(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_z()));
         TEST_ASSERT(r2);
-        constexpr bool r3 = b1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        constexpr bool r3 = b1.intersects(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_z()));
         TEST_ASSERT_FALSE(r3);
         constexpr bool r4 = b1.intersects(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
         TEST_ASSERT(r4);
@@ -7815,11 +7818,11 @@ void box_tests()
 
     test_section("intersects(const Segment3&)");
     {
-        constexpr bool r1 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, -3.0f, 0.0f }));
+        constexpr bool r1 = b1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, -3.0f, 0.0f }));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, 3.0f }));
+        constexpr bool r2 = b1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, 0.0f, 3.0f }));
         TEST_ASSERT(r2);
-        constexpr bool r3 = b1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -3.0f }));
+        constexpr bool r3 = b1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, 0.0f, -3.0f }));
         TEST_ASSERT_FALSE(r3);
         constexpr bool r4 = b1.intersects(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { 10.0f, -2.0f, -5.0f }));
         TEST_ASSERT(r4);
@@ -7886,31 +7889,29 @@ void box_tests()
 
     test_section("intersects(const AlignedBox&)");
     {
-        constexpr bool r1
+        const bool r1
             = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 0.0f, 0.0f }, { 1.0f, -1.0f, 1.0f }));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2
+        const bool r2
             = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, 2.0f, 0.0f }, { 0.0f, -2.0f, 3.0f }));
         TEST_ASSERT(r2);
-        constexpr bool r3 = b1.intersects(
+        const bool r3 = b1.intersects(
             nnm::AlignedBoxF::from_bounding_points({ 0.0f, 2.0f, 0.0f }, { 1000.0f, -1000.0f, 1000.0f }));
         TEST_ASSERT(r3);
-        constexpr bool r4
+        const bool r4
             = b1.intersects(nnm::AlignedBoxF::from_bounding_points({ 0.0f, -2.0f, 3.0f }, { 1.0f, -1.0f, 2.5f }));
         TEST_ASSERT(r4);
     }
 
     test_section("intersects(const Box&)");
     {
-        constexpr bool r1 = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(1.0f)));
+        const bool r1 = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(1.0f)));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(5.0f)));
+        const bool r2 = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(5.0f)));
         TEST_ASSERT(r2);
-        constexpr bool r3
-            = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(1000.0f)));
+        const bool r3 = b1.intersects(nnm::BoxF::from_center_size(nnm::Point3f::zero(), nnm::Vector3f::all(1000.0f)));
         TEST_ASSERT(r3);
-        constexpr bool r4
-            = b1.intersects(nnm::BoxF::from_center_size({ 0.0f, -2.0f, 3.0f }, nnm::Vector3f::all(0.01f)));
+        const bool r4 = b1.intersects(nnm::BoxF::from_center_size({ 0.0f, -2.0f, 3.0f }, nnm::Vector3f::all(0.01f)));
         TEST_ASSERT(r4);
     }
 
@@ -7929,13 +7930,13 @@ void box_tests()
     test_section("surface_intersections(const Ray3&)");
     {
         constexpr nnm::Intersections3f r1
-            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_y()));
+            = b1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_y()));
         TEST_ASSERT(r1.empty());
         constexpr nnm::Intersections3f r2
-            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+            = b1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_z()));
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 3.414213613f }, { 0.0f, 0.0f, 1.8786797787f } }));
         constexpr nnm::Intersections3f r3
-            = b1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+            = b1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_z()));
         TEST_ASSERT(r3.empty());
         constexpr nnm::Intersections3f r4
             = b1.surface_intersections(nnm::Ray3f({ 0.0f, -2.0f, 5.0f }, { 0.7071067812f, 0.0f, -0.7071067812f }));
@@ -7952,13 +7953,13 @@ void box_tests()
     test_section("surface_intersections(const Segment3&)");
     {
         constexpr nnm::Intersections3f r1
-            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, -3.0f, 0.0f }));
+            = b1.surface_intersections(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, -3.0f, 0.0f }));
         TEST_ASSERT(r1.empty());
         constexpr nnm::Intersections3f r2
-            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, 3.0f }));
+            = b1.surface_intersections(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, 0.0f, 3.0f }));
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 1.8786797787f } }));
         constexpr nnm::Intersections3f r3
-            = b1.surface_intersections(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -3.0f }));
+            = b1.surface_intersections(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, 0.0f, -3.0f }));
         TEST_ASSERT(r3.empty());
         constexpr nnm::Intersections3f r4
             = b1.surface_intersections(nnm::Segment3f({ 0.0f, -2.0f, 5.0f }, { 10.0f, -2.0f, -5.0f }));
@@ -7984,7 +7985,7 @@ void box_tests()
 
     test_section("rotate_axis_angle");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, 1.0f };
         constexpr auto axis = nnm::Vector3f::axis_z();
         constexpr float angle = -2.0f * nnm::pi<float>() / 3.0f;
         const nnm::BoxF r1 = b1.rotate_axis_angle(axis, angle, origin);
@@ -8003,7 +8004,7 @@ void box_tests()
 
     test_section("rotate_quaternion");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, 1.0f };
         constexpr nnm::QuaternionF quat { 0.0f, 0.0f, 0.8660254f, 0.5f };
         constexpr nnm::BoxF r1 = b1.rotate_quaternion(quat, origin);
         TEST_ASSERT(r1.approx_equal(
@@ -8021,7 +8022,7 @@ void box_tests()
 
     test_section("scale");
     {
-        constexpr nnm::Vector3f origin { -3.0f, 2.0f, 1.0f };
+        constexpr nnm::Point3f origin { -3.0f, 2.0f, 1.0f };
         constexpr nnm::Vector3f factor { 0.5f, -1.5f, 2.0f };
         constexpr nnm::BoxF r1 = b1.scale(factor, origin);
         TEST_ASSERT(r1.approx_equal(
@@ -8230,29 +8231,29 @@ void frustum_tests()
 
     test_section("vertex");
     {
-        std::vector<nnm::Vector3f> vertices;
-        constexpr nnm::Vector3f v0 = f1.vertex(0);
+        std::vector<nnm::Point3f> vertices;
+        constexpr nnm::Point3f v0 = f1.vertex(0);
         vertices.push_back(v0);
-        constexpr nnm::Vector3f v1 = f1.vertex(1);
+        constexpr nnm::Point3f v1 = f1.vertex(1);
         vertices.push_back(v1);
-        constexpr nnm::Vector3f v2 = f1.vertex(2);
+        constexpr nnm::Point3f v2 = f1.vertex(2);
         vertices.push_back(v2);
-        constexpr nnm::Vector3f v3 = f1.vertex(3);
+        constexpr nnm::Point3f v3 = f1.vertex(3);
         vertices.push_back(v3);
-        constexpr nnm::Vector3f v4 = f1.vertex(4);
+        constexpr nnm::Point3f v4 = f1.vertex(4);
         vertices.push_back(v4);
-        constexpr nnm::Vector3f v5 = f1.vertex(5);
+        constexpr nnm::Point3f v5 = f1.vertex(5);
         vertices.push_back(v5);
-        constexpr nnm::Vector3f v6 = f1.vertex(6);
+        constexpr nnm::Point3f v6 = f1.vertex(6);
         vertices.push_back(v6);
-        constexpr nnm::Vector3f v7 = f1.vertex(7);
+        constexpr nnm::Point3f v7 = f1.vertex(7);
         vertices.push_back(v7);
 
-        auto vertices_contains_approx = [&vertices](const nnm::Vector3f& vertex) {
+        auto vertices_contains_approx = [&vertices](const nnm::Point3f& vertex) {
             return std::find_if(
                        vertices.begin(),
                        vertices.end(),
-                       [&vertex](const nnm::Vector3f& v) { return v.approx_equal(vertex); })
+                       [&vertex](const nnm::Point3f& v) { return v.approx_equal(vertex); })
                 != vertices.end();
         };
 
@@ -8344,11 +8345,11 @@ void frustum_tests()
 
     test_section("intersects(const Ray3&)");
     {
-        constexpr bool r1 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+        constexpr bool r1 = f1.intersects(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+        constexpr bool r2 = f1.intersects(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_z()));
         TEST_ASSERT(r2);
-        constexpr bool r3 = f1.intersects(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+        constexpr bool r3 = f1.intersects(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_z()));
         TEST_ASSERT_FALSE(r3);
         constexpr bool r4 = f1.intersects(nnm::Ray3f({ 1.0f, -2.0f, 3.0f }, nnm::Vector3f::axis_y()));
         TEST_ASSERT(r4);
@@ -8360,11 +8361,11 @@ void frustum_tests()
 
     test_section("intersects(const Segment3&)");
     {
-        constexpr bool r1 = f1.intersects(nnm::Segment3(nnm::Vector3f::zero(), { 100.0f, 0.0f, 0.0f }));
+        constexpr bool r1 = f1.intersects(nnm::Segment3(nnm::Point3f::zero(), { 100.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(r1);
-        constexpr bool r2 = f1.intersects(nnm::Segment3(nnm::Vector3f::zero(), { 0.0f, 0.0f, 100.0f }));
+        constexpr bool r2 = f1.intersects(nnm::Segment3(nnm::Point3f::zero(), { 0.0f, 0.0f, 100.0f }));
         TEST_ASSERT(r2);
-        constexpr bool r3 = f1.intersects(nnm::Segment3f(nnm::Vector3f::zero(), { 0.0f, 0.0f, -100.0f }));
+        constexpr bool r3 = f1.intersects(nnm::Segment3f(nnm::Point3f::zero(), { 0.0f, 0.0f, -100.0f }));
         TEST_ASSERT_FALSE(r3);
         constexpr bool r4 = f1.intersects(nnm::Segment3f({ 1.0f, -2.0f, 3.0f }, { 0.0f, 100.0f, 0.0f }));
         TEST_ASSERT(r4);
@@ -8514,13 +8515,13 @@ void frustum_tests()
     test_section("surface_intersections(const Ray3&)");
     {
         constexpr nnm::Intersections3f r1
-            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_x()));
+            = f1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_x()));
         TEST_ASSERT(r1.empty());
         constexpr nnm::Intersections3f r2
-            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), nnm::Vector3f::axis_z()));
+            = f1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), nnm::Vector3f::axis_z()));
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 2.0f }, { 0.0f, 0.0f, 4.0f } }));
         constexpr nnm::Intersections3f r3
-            = f1.surface_intersections(nnm::Ray3f(nnm::Vector3f::zero(), -nnm::Vector3f::axis_z()));
+            = f1.surface_intersections(nnm::Ray3f(nnm::Point3f::zero(), -nnm::Vector3f::axis_z()));
         TEST_ASSERT(r3.empty());
         constexpr nnm::Intersections3f r4
             = f1.surface_intersections(nnm::Ray3f({ 0.0f, 0.0f, 3.0f }, nnm::Vector3f::axis_y()));
@@ -8558,7 +8559,7 @@ void frustum_tests()
 
     test_section("rotate_axis_angle");
     {
-        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::Point3f origin { -2.0f, 3.0f, 0.5f };
         constexpr auto axis = nnm::Vector3f::axis_x();
         constexpr float angle = nnm::pi<float>() / 5.0f;
         const nnm::FrustumF r1 = f1.rotate_axis_angle(axis, angle, origin);
@@ -8580,7 +8581,7 @@ void frustum_tests()
 
     test_section("rotate_quaternion");
     {
-        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::Point3f origin { -2.0f, 3.0f, 0.5f };
         constexpr nnm::QuaternionF quat { 0.309017003f, 0.0f, 0.0f, 0.95105654f };
         constexpr nnm::FrustumF r1 = f1.rotate_quaternion(quat, origin);
         constexpr nnm::FrustumF e1 {
@@ -8593,7 +8594,7 @@ void frustum_tests()
 
     test_section("scale");
     {
-        constexpr nnm::Vector3f origin { -2.0f, 3.0f, 0.5f };
+        constexpr nnm::Point3f origin { -2.0f, 3.0f, 0.5f };
         constexpr nnm::Vector3f factor { 1.5f, -0.25f, 3.0f };
         const nnm::FrustumF r1 = f1.scale(factor, origin);
         const nnm::FrustumF e1 { f1.near_plane.scale_at(origin, factor),   f1.far_plane.scale_at(origin, factor),

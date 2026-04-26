@@ -2635,7 +2635,7 @@ public:
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return {};
+            return { };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
@@ -2688,7 +2688,7 @@ public:
         const Real adjusted_dist_sqrd = dir.dot(dir) - sqrd(radius);
         const Real discriminant = sqrd(twice_proj_length) - static_cast<Real>(4) * adjusted_dist_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return {};
+            return { };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_length - disc_sqrt) / static_cast<Real>(2);
@@ -2758,7 +2758,7 @@ public:
         const Real discriminant
             = sqrd(twice_proj_len) - static_cast<Real>(4) * seg_len_sqrd * dist_sqrd_minus_radius_sqrd;
         if (discriminant < static_cast<Real>(0)) {
-            return {};
+            return { };
         }
         const Real disc_sqrt = sqrt(discriminant);
         const Real t1 = (-twice_proj_len - disc_sqrt) / (static_cast<Real>(2) * seg_len_sqrd);
@@ -3084,9 +3084,9 @@ public:
     // tested
     template <typename Other>
     explicit constexpr Triangle2(const Triangle2<Other>& other)
-        : vertices { Point2<Real> { other.vertices[0] },
-                     Point2<Real> { other.vertices[1] },
-                     Point2<Real> { other.vertices[2] } }
+        : vertices {
+            Point2<Real> { other.vertices[0] }, Point2<Real> { other.vertices[1] }, Point2<Real> { other.vertices[2] }
+        }
     {
     }
 
@@ -3290,7 +3290,8 @@ public:
     [[nodiscard]] constexpr Point2<Real> lerp_point(const Vector3<Real>& weights) const
     {
         return Point2<Real>::from_vector(
-            weights.x * vertices[0].to_vector() + weights.y * vertices[1].to_vector() + weights.z * vertices[2].to_vector());
+            weights.x * vertices[0].to_vector() + weights.y * vertices[1].to_vector()
+            + weights.z * vertices[2].to_vector());
     }
 
     /**
@@ -4558,8 +4559,7 @@ public:
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
-            if (const std::optional<Point2<Real>> intersection = edge.intersection(segment);
-                intersection.has_value()) {
+            if (const std::optional<Point2<Real>> intersection = edge.intersection(segment); intersection.has_value()) {
                 inters.insert(*intersection);
             }
         }
@@ -5501,8 +5501,7 @@ public:
         Intersections2<Real> inters;
         const std::array edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
         for (const Segment2<Real>& edge : edges) {
-            if (const std::optional<Point2<Real>> intersection = edge.intersection(segment);
-                intersection.has_value()) {
+            if (const std::optional<Point2<Real>> intersection = edge.intersection(segment); intersection.has_value()) {
                 inters.insert(*intersection);
             }
         }
@@ -5908,7 +5907,6 @@ Real Line2<Real>::distance(const Ray2<Real>& ray) const
 {
     return ray.distance(*this);
 }
-
 
 template <typename Real>
 Real Line2<Real>::distance(const Circle2<Real>& circle) const

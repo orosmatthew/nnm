@@ -321,7 +321,6 @@ void vector3_tests()
         TEST_ASSERT(result.approx_equal({ 26.0f, -8.8f, 1.0f }));
     }
 
-
     test_section("transform(const Transform3&, Real)");
     {
         constexpr nnm::Vector3 v1(2.0f, -3.0f, 4.0f);
@@ -331,10 +330,9 @@ void vector3_tests()
               { 1.0f, 3.0f, 3.3f, -1.0f },
               { 9.9f, -7.54f, 20.0f, 0.1f } });
         constexpr auto result = v1.transform(transform);
-        TEST_ASSERT(result.approx_equal({ 45.9f, 6.96f, -34.6f }));
-        TEST_ASSERT(v1.transform(transform, -2.4f).approx_equal({ 12.24f, 32.596f, -102.6f }));
+        TEST_ASSERT(result.approx_equal({ 36.0f, 14.5f, -54.6f }));
+        TEST_ASSERT(v1.transform(transform, 0.0f).approx_equal(result));
     }
-
 
     test_section("max");
     {
