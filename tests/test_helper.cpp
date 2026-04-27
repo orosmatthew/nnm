@@ -4,9 +4,13 @@
 #include <optional>
 #include <string>
 
+namespace {
+
 bool g_tests_success = true;
 std::optional<std::string> g_test_case = std::nullopt;
 std::optional<std::string> g_test_section = std::nullopt;
+
+}
 
 void test_case(const std::string& name)
 {
