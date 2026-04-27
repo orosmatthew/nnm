@@ -231,7 +231,7 @@ void vector4_tests()
               { 9.9f, -7.54f, 20.0f, 0.1f } });
         constexpr auto result = v1.transform(transform);
         TEST_ASSERT(result.approx_equal({ 15.6f, -40.16f, 114.3f, -0.6f }))
-    }
+    ;}
 
     test_section("transform_at");
     {
@@ -446,7 +446,7 @@ void vector4_tests()
                                          { -4.0f, -2.0f, -3.0f, -1.0f } };
         constexpr auto result = v1 * matrix;
         TEST_ASSERT(result.approx_equal({ 10.0f, -10.0f, 15.0f, 5.0f }))
-    }
+    ;}
 
     test_section("operator*(float)");
     {

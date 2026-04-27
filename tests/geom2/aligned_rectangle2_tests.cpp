@@ -414,7 +414,7 @@ void aligned_rectangle2_tests()
         constexpr auto result = a1 != a1;
         TEST_ASSERT_FALSE(result);
         TEST_ASSERT(a1 != nnm::AlignedRectangle2f({ -2.0f, 3.0f }, { 10.0f, 20.0f }))
-    }
+    ;}
 
     test_section("operator<");
     {

@@ -232,7 +232,7 @@ void vector3_tests()
         nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
         nnm::Vector3 v2(-4.0f, 0.5f, 10.0f);
         TEST_ASSERT(nnm::approx_equal(v1.angle(v2), 2.52872f))
-    }
+    ;}
 
     test_section("parallel");
     {
@@ -266,7 +266,7 @@ void vector3_tests()
         nnm::Vector3 v1(1.0f, 2.0f, -3.0f);
         nnm::Vector3 axis = nnm::Vector3(2.0f, 0.5f, -0.8f).normalize();
         TEST_ASSERT(v1.rotate_axis_angle(axis, nnm::pi<float>() / 5.0f).approx_equal({ 1.2574f, 3.10567f, -1.66545f }))
-    }
+    ;}
 
     test_section("rotate_quaternion");
     {
@@ -586,7 +586,7 @@ void vector3_tests()
         constexpr nnm::Matrix3f matrix { { 1.0f, -3.0f, 4.0f }, { -1.6f, 0.5f, 20.0f }, { 0.0f, 2.0f, 1.0f } };
         constexpr auto result = v2 * matrix;
         TEST_ASSERT(result.approx_equal({ -17.0f, -42.8f, 6.0f }))
-    }
+    ;}
 
     test_section("operator*(float)");
     {

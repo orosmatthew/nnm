@@ -468,7 +468,7 @@ void circle2_tests()
         constexpr auto result = c1.translate({ 0.0f, 0.0f });
         TEST_ASSERT(result.approx_equal(c1));
         TEST_ASSERT(c1.translate({ -20.0f, 30.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }))
-        TEST_ASSERT_FALSE(c1.translate({ -20.0f, 100.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }));
+        ;TEST_ASSERT_FALSE(c1.translate({ -20.0f, 100.0f }).approx_equal({ { -18.0f, 27.0f }, 5.0f }));
     }
 
     constexpr nnm::Point2f origin { -3.0f, 1.0f };
@@ -478,7 +478,7 @@ void circle2_tests()
         TEST_ASSERT(c1.rotate_at(origin, nnm::pi<float>() / 3.0f).approx_equal({ { 2.964101615f, 3.330127f }, 5.0f }));
         TEST_ASSERT_FALSE(
             c1.rotate_at({ -2.0f, 10.0f }, nnm::pi<float>() / 4.0f).approx_equal({ { 2.964101615f, 3.330127f }, 5.0f }))
-    }
+    ;}
 
     test_section("rotate");
     {
@@ -541,6 +541,6 @@ void circle2_tests()
         TEST_ASSERT_FALSE(result);
         TEST_ASSERT_FALSE(c1 < nnm::Circle2f({ -1.0f, -100.0f }, 10.0f));
         TEST_ASSERT(c1 < nnm::Circle2f({ 2.000001f, -3.0001f }, 4.999999f))
-    }
+    ;}
 }
 

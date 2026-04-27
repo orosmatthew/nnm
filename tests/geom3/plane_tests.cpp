@@ -41,7 +41,7 @@ void plane_tests()
         const auto p1 = nnm::PlaneF::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { -2.0f, -3.0f, 4.0f });
         constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
         TEST_ASSERT(p1.has_value() && (p1->normal.approx_equal(n) || p1->normal.approx_equal(-n)))
-        TEST_ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
+        ;TEST_ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
         TEST_ASSERT(p1.has_value() && p1->contains({ -4.0f, 5.0f, -6.0f }));
         TEST_ASSERT(p1.has_value() && p1->contains({ -2.0f, -3.0f, 4.0f }));
         const auto p2 = nnm::PlaneF::from_points(nnm::Point3f::zero(), nnm::Point3f::zero(), nnm::Point3f::zero());
@@ -67,7 +67,7 @@ void plane_tests()
         const auto p1 = nnm::PlaneF::from_triangle(t1);
         constexpr nnm::Vector3f n { -0.0484501608f, 0.775202572f, 0.629852057f };
         TEST_ASSERT(p1.has_value() && (p1->normal.approx_equal(n) || p1->normal.approx_equal(-n)))
-        TEST_ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
+        ;TEST_ASSERT(p1.has_value() && p1->contains({ 1.0f, -2.0f, 3.0f }));
         TEST_ASSERT(p1.has_value() && p1->contains({ -4.0f, 5.0f, -6.0f }));
         TEST_ASSERT(p1.has_value() && p1->contains({ -2.0f, -3.0f, 4.0f }));
         constexpr nnm::Triangle3f t2 { nnm::Point3f::zero(), nnm::Point3f::zero(), nnm::Point3f::zero() };

@@ -86,7 +86,7 @@ void segment3_tests()
                 { -6.1127619882f, 7.9578667834f, -9.8029715787f },
                 { -9.0362240787f, 12.0507137102f, -15.0652033417f })));
         TEST_ASSERT_FALSE(s1.collinear(nnm::Segment3f({ 0.0f, -3.0f, 2.0f }, { -5.0f, 4.0f, -7.0f })))
-    }
+    ;}
 
     constexpr nnm::Segment3f s4 { { 1.0f, -2.0f, 3.0f }, { 2.0f, -3.0f, 4.0f } };
 
@@ -268,7 +268,7 @@ void segment3_tests()
         TEST_ASSERT(nnm::approx_zero(result3));
         constexpr auto result4 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, -10.0f, 12.0f } }.distance_sqrd(r1);
         TEST_ASSERT(nnm::approx_equal(result4, 2.0f))
-        constexpr auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance_sqrd(r1);
+        ;constexpr auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance_sqrd(r1);
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         constexpr auto result6
             = nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance_sqrd(r_degen_line);
@@ -441,7 +441,7 @@ void segment3_tests()
         TEST_ASSERT(nnm::approx_zero(result3));
         const auto result4 = nnm::Segment3f { { -2.0f, 0.0f, 2.0f }, { -2.0f, -10.0f, 12.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_equal(result4, 1.4142135624f))
-        const auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance(r1);
+        ;const auto result5 = nnm::Segment3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 11.0f, 11.0f } }.distance(r1);
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         const auto result6 = nnm::Segment3f { nnm::Point3f::zero(), { 10.0f, 0.0f, 0.0f } }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
@@ -525,8 +525,8 @@ void segment3_tests()
         constexpr auto result = s1.parallel(nnm::Line3f::axis_x());
         TEST_ASSERT_FALSE(result);
         TEST_ASSERT(s1.parallel(*nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })))
-        TEST_ASSERT(s1.parallel(*nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f })))
-    }
+        ;TEST_ASSERT(s1.parallel(*nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f })))
+    ;}
 
     test_section("parallel(const Ray3&)");
     {
@@ -751,7 +751,7 @@ void segment3_tests()
     {
         constexpr auto p1 = s1.project({ 0.0f, 0.0f, 0.0f });
         TEST_ASSERT(p1.approx_equal({ -0.4838709677f, 0.0774193548f, 0.3290322581f }))
-        constexpr auto p2 = s1.project({ 2.0f, -3.0f, 4.0f });
+        ;constexpr auto p2 = s1.project({ 2.0f, -3.0f, 4.0f });
         TEST_ASSERT(p2.approx_equal(s1.start));
         constexpr auto p3 = s1.project({ -5.0f, 7.0f, -7.0f });
         TEST_ASSERT(p3.approx_equal(s1.end));

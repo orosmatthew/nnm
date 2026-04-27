@@ -119,11 +119,11 @@ void segment2_tests()
         TEST_ASSERT(nnm::approx_equal(s1.distance(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, -1.0f } }), 1.0f));
         TEST_ASSERT(nnm::approx_equal(s1.distance(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, 1.0f } }), 3.60555127f));
         TEST_ASSERT(nnm::approx_equal(s1.distance(nnm::Ray2f { { 1.0f, 5.0f }, { -1.0f, 0.0f } }), 1.0f))
-        TEST_ASSERT(nnm::approx_equal(s1.distance(nnm::Ray2f { { 1.0f, 5.0f }, { 1.0f, 0.0f } }), 3.88290137f));
+        ;TEST_ASSERT(nnm::approx_equal(s1.distance(nnm::Ray2f { { 1.0f, 5.0f }, { 1.0f, 0.0f } }), 3.88290137f));
         TEST_ASSERT(
             nnm::approx_equal(
                 s1.distance(nnm::Ray2f::from_point_to_point({ 1.0f, 2.0f }, { 3.0f, -1.0f })), 2.21880078f))
-        TEST_ASSERT(
+        ;TEST_ASSERT(
             nnm::approx_equal(s1.distance(nnm::Ray2f::from_point_to_point({ 3.0f, -2.0f }, { 4.0f, -3.0f })), 2.0f));
         TEST_ASSERT(
             nnm::approx_equal(
@@ -367,8 +367,8 @@ void segment2_tests()
         TEST_ASSERT(result);
         TEST_ASSERT(nnm::Segment2f({ -3.0f, 0.0f }, { -1.0f, 2.0f }).intersects(tri2));
         TEST_ASSERT(nnm::Segment2f({ 2.0f, 2.0f }, { -3.0f, 0.0f }).intersects(tri1))
-        TEST_ASSERT(nnm::Segment2f({ 2.0f, 2.0f }, { -3.0f, 0.0f }).intersects(tri2))
-        TEST_ASSERT_FALSE(nnm::Segment2f({ 0.0f, 0.0f }, { 2.0f, 2.0f }).intersects(tri1));
+        ;TEST_ASSERT(nnm::Segment2f({ 2.0f, 2.0f }, { -3.0f, 0.0f }).intersects(tri2))
+        ;TEST_ASSERT_FALSE(nnm::Segment2f({ 0.0f, 0.0f }, { 2.0f, 2.0f }).intersects(tri1));
         TEST_ASSERT_FALSE(nnm::Segment2f({ 0.0f, 0.0f }, { 2.0f, 2.0f }).intersects(tri2));
         TEST_ASSERT(nnm::Segment2f({ -1.0f, 0.0f }, { 2.0f, 2.0f }).intersects(tri1));
         TEST_ASSERT(nnm::Segment2f({ -1.0f, 0.0f }, { 2.0f, 2.0f }).intersects(tri2));

@@ -238,7 +238,7 @@ void vector2_tests()
         nnm::Vector2 v1(2.0f, -3.0f);
         nnm::Vector2 v2(-4.0f, 5.0f);
         TEST_ASSERT(nnm::approx_equal(v1.angle_between(v2), -3.05485f))
-        TEST_ASSERT(nnm::approx_equal(v2.angle_between(v1), 3.05485f));
+        ;TEST_ASSERT(nnm::approx_equal(v2.angle_between(v1), 3.05485f));
     }
 
     test_section("parallel");
@@ -537,7 +537,7 @@ void vector2_tests()
             return v5_copy;
         }();
         TEST_ASSERT(result == nnm::Vector2(2.0f, 2.0f))
-    }
+    ;}
 
     test_section("operator*(const Vector2&)");
     {
@@ -560,7 +560,7 @@ void vector2_tests()
         constexpr nnm::Matrix2f matrix { { 2.0f, -3.0f }, { 1.0f, -0.5f } };
         constexpr auto result = nnm::Vector2(2.0f, -3.0f) * matrix;
         TEST_ASSERT(result.approx_equal({ 13.0f, 3.5f }))
-    }
+    ;}
 
     test_section("operator*(float)");
     {

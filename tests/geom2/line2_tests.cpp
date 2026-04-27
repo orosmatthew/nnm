@@ -49,7 +49,7 @@ void line2_tests()
         constexpr auto line = nnm::Line2f::from_ray(r);
         TEST_ASSERT(line.origin == nnm::Point2f(-1.0f, 2.0f));
         TEST_ASSERT(line.direction.approx_equal({ -0.3713906764f, 0.9284766909f }))
-    }
+    ;}
 
     test_section("from_tangent(const Circle&, Real)");
     {
@@ -259,7 +259,7 @@ void line2_tests()
         constexpr auto result = line1.parallel(nnm::Ray2f { { 100.0f, -100.0f }, { -0.384615391f, 0.923076928f } });
         TEST_ASSERT(result);
         TEST_ASSERT(line1.parallel(nnm::Ray2f { { 100.0f, -100.0f }, { 0.384615391f, -0.923076928f } }))
-        TEST_ASSERT_FALSE(line1.parallel(
+        ;TEST_ASSERT_FALSE(line1.parallel(
             nnm::Ray2f { { 1.0f, -2.0f },
                          {
                              0.923076928f,
@@ -541,7 +541,7 @@ void line2_tests()
         const auto result = line3.shear_x_at({ -2.0f, 3.0f }, 0.5f);
         TEST_ASSERT(result.origin.approx_equal({ 1.0f, -1.0f }));
         TEST_ASSERT(result.direction.approx_equal({ 0.83205f, 0.5547f }))
-    }
+    ;}
 
     test_section("shear_x");
     {

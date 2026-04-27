@@ -41,5 +41,5 @@ int main()
     box_tests();
     frustum_tests();
 
-    END_TESTS
+    END_TESTS;
 }

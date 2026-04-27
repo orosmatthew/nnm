@@ -368,7 +368,7 @@ void rectangle2_tests()
         TEST_ASSERT(d3.has_value() && d3->approx_equal({ 0.25f, 0.25f }));
         const auto d4 = r2.intersect_depth(nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }));
         TEST_ASSERT(d4.has_value() && (d4->approx_equal({ 0.0f, 2.0f }) || d4->approx_equal({ -2.0f, 0.0f })))
-        const auto d5 = r1.intersect_depth(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }));
+        ;const auto d5 = r1.intersect_depth(nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }));
         TEST_ASSERT(d5.has_value() && d5->approx_equal({ 0.482050896f, 0.0f }));
         const auto d6 = r1.intersect_depth(nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }));
         TEST_ASSERT_FALSE(d6.has_value());
@@ -444,7 +444,7 @@ void rectangle2_tests()
     {
         const auto t1 = r1.rotate(nnm::pi<float>());
         TEST_ASSERT(t1.approx_equal({ { -1.0f, 2.0f }, { 3.0f, 4.0f }, -2.0f * nnm::pi<float>() / 3.0f }))
-    }
+    ;}
 
     test_section("scale_at");
     {

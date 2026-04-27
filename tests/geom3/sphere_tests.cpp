@@ -214,7 +214,7 @@ void sphere_tests()
     {
         constexpr auto r1 = s1.point_at(nnm::Vector3f::axis_x());
         TEST_ASSERT(r1.approx_equal({ 2.5f, -2.0f, 3.0f }))
-    }
+    ;}
 
     test_section("normal_at");
     {

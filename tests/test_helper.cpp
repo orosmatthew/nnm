@@ -33,7 +33,7 @@ const std::optional<std::string>& test_section()
     return g_test_section;
 }
 
-void test_failed(const char* file, const int line)
+void test_failed(const char* file, const int line, const char* expression)
 {
     g_tests_success = false;
     std::cerr << file << ":" << line << " TEST_FAILED";
@@ -42,6 +42,9 @@ void test_failed(const char* file, const int line)
     }
     if (g_test_section.has_value()) {
         std::cerr << " [" << g_test_section.value() << "]";
+    }
+    if (expression != nullptr && expression[0] != '\0') {
+        std::cerr << " (" << expression << ")";
     }
     std::cerr << std::endl;
 }

@@ -532,7 +532,7 @@ void aligned_box_tests()
     {
         constexpr nnm::PointSet<nnm::Point3f, 2> r1 = b1.surface_intersections(nnm::Line3f::axis_x());
         TEST_ASSERT(r1.empty())
-        constexpr nnm::PointSet<nnm::Point3f, 2> r2 = b1.surface_intersections(nnm::Line3f::axis_z());
+        ;constexpr nnm::PointSet<nnm::Point3f, 2> r2 = b1.surface_intersections(nnm::Line3f::axis_z());
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 0.5f }, { 0.0f, 0.0f, 4.0f } }));
     }
 

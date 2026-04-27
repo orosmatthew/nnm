@@ -53,7 +53,7 @@ void quaternion_tests()
     {
         const auto q = nnm::QuaternionF::from_axis_angle({ 2.0f, -1.0f, 0.5f }, nnm::pi<float>() / 9.0f);
         TEST_ASSERT(q.approx_equal({ 0.1515726f, -0.0757863f, 0.0378931f, 0.9848078f }))
-    }
+    ;}
 
     test_section("from_vector_to_vector");
     {

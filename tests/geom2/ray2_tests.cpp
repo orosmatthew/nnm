@@ -70,7 +70,7 @@ void ray2_tests()
         constexpr auto result = ray2.collinear(nnm::Ray2f { { 6.0f, 3.0f }, { -0.70710678f, -0.70710678f } });
         TEST_ASSERT(result);
         TEST_ASSERT(ray2.collinear(nnm::Ray2f { { 2.0f, -1.0f }, { -0.70710678f, -0.70710678f } }))
-        TEST_ASSERT_FALSE(ray2.collinear(ray1));
+        ;TEST_ASSERT_FALSE(ray2.collinear(ray1));
         TEST_ASSERT_FALSE(ray2.collinear(nnm::Ray2f { { 2.0f, -1.0f }, { 0.70710678f, -0.70710678f } }));
         TEST_ASSERT_FALSE(ray2.collinear(nnm::Ray2f { { 2.0f, -3.0f }, { -0.70710678f, -0.70710678f } }));
     }
@@ -139,11 +139,11 @@ void ray2_tests()
         TEST_ASSERT(nnm::approx_equal(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, -1.0f } }.distance(s1), 1.0f));
         TEST_ASSERT(nnm::approx_equal(nnm::Ray2f { { 2.0f, 3.0f }, { 0.0f, 1.0f } }.distance(s1), 3.60555127f));
         TEST_ASSERT(nnm::approx_equal(nnm::Ray2f { { 1.0f, 5.0f }, { -1.0f, 0.0f } }.distance(s1), 1.0f))
-        TEST_ASSERT(nnm::approx_equal(nnm::Ray2f { { 1.0f, 5.0f }, { 1.0f, 0.0f } }.distance(s1), 3.88290137f));
+        ;TEST_ASSERT(nnm::approx_equal(nnm::Ray2f { { 1.0f, 5.0f }, { 1.0f, 0.0f } }.distance(s1), 3.88290137f));
         TEST_ASSERT(
             nnm::approx_equal(
                 nnm::Ray2f::from_point_to_point({ 1.0f, 2.0f }, { 3.0f, -1.0f }).distance(s1), 2.21880078f))
-        TEST_ASSERT(
+        ;TEST_ASSERT(
             nnm::approx_equal(nnm::Ray2f::from_point_to_point({ 3.0f, -2.0f }, { 4.0f, -3.0f }).distance(s1), 2.0f));
         TEST_ASSERT(
             nnm::approx_equal(
@@ -210,7 +210,7 @@ void ray2_tests()
         TEST_ASSERT(result);
         constexpr nnm::Ray2f r2 { { 100.0f, -100.0f }, { 0.384615391f, -0.923076928f } };
         TEST_ASSERT(r2.parallel(line1))
-        constexpr nnm::Ray2f r3 { { 1.0f, -2.0f }, { 0.923076928f, 0.384615391f } };
+        ;constexpr nnm::Ray2f r3 { { 1.0f, -2.0f }, { 0.923076928f, 0.384615391f } };
         TEST_ASSERT_FALSE(r3.parallel(line1));
     }
 

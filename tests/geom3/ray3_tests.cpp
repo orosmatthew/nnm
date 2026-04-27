@@ -65,7 +65,7 @@ void ray3_tests()
         constexpr auto result = r1.collinear(r1);
         TEST_ASSERT(result);
         TEST_ASSERT_FALSE(r1.collinear(nnm::Ray3f::from_point_to_point({ 1.0f, 2.0f, 3.0f }, { 10.0f, 20.0f, -0.5f })))
-        TEST_ASSERT(
+        ;TEST_ASSERT(
             r1.collinear(nnm::Ray3f::from_point_to_point({ 4.0f, -6.0f, 8.0f }, { 5.8099f, -8.4132f, 11.0165f })));
         TEST_ASSERT(
             r1.collinear(nnm::Ray3f::from_point_to_point({ 5.8099f, -8.4132f, 11.0165f }, { 4.0f, -6.0f, 8.0f })));
@@ -250,7 +250,7 @@ void ray3_tests()
         constexpr auto result4
             = nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, -0.7071067812f, 0.7071067812f } }.distance_sqrd(rect);
         TEST_ASSERT(nnm::approx_equal(result4, 2.0f))
-        constexpr auto result5
+        ;constexpr auto result5
             = nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } }.distance_sqrd(rect);
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         constexpr auto result6
@@ -415,7 +415,7 @@ void ray3_tests()
         const auto result4
             = nnm::Ray3f { { -2.0f, 0.0f, 2.0f }, { 0.0f, -0.7071067812f, 0.7071067812f } }.distance(rect);
         TEST_ASSERT(nnm::approx_equal(result4, 1.4142135624f))
-        const auto result5 = nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } }.distance(rect);
+        ;const auto result5 = nnm::Ray3f { { 0.0f, 1.0f, 1.0f }, { 0.0f, 0.7071067812f, 0.7071067812f } }.distance(rect);
         TEST_ASSERT(nnm::approx_equal(result5, 1.0f));
         const auto result6 = nnm::Ray3f { nnm::Point3f::zero(), nnm::Vector3f::axis_x() }.distance(r_degen_line);
         TEST_ASSERT(nnm::approx_equal(result6, 1.0f));
@@ -640,7 +640,7 @@ void ray3_tests()
         TEST_ASSERT_FALSE(result1);
         constexpr bool result2 = nnm::Ray3f({ -2.5f, 1.0f, 0.0f }, nnm::Vector3f::axis_z()).perpendicular(rect);
         TEST_ASSERT_FALSE(result2)
-        constexpr bool result3
+        ;constexpr bool result3
             = nnm::Ray3f(nnm::Point3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }).perpendicular(rect);
         TEST_ASSERT(result3);
         constexpr bool result4 = nnm::Ray3f({ 0.0f, -1.0f, 1.0f }, nnm::Vector3f::axis_x()).perpendicular(r_degen_line);

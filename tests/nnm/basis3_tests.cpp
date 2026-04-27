@@ -29,7 +29,7 @@ void basis3_tests()
     {
         auto b1 = nnm::Basis3f::from_rotation_axis_angle({ 0.0f, 1.0f, 0.0f }, nnm::pi<float>());
         TEST_ASSERT(b1.matrix.approx_equal({ { -1.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, -1.0f } }))
-        auto b2 = nnm::Basis3f::from_rotation_axis_angle({ 2.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
+        ;auto b2 = nnm::Basis3f::from_rotation_axis_angle({ 2.0f, 0.0f, 0.0f }, nnm::pi<float>() / 4.0f);
         TEST_ASSERT(b2.matrix.approx_equal(
             { { 1.0f, 0.0f, 0.0f }, { 0.0f, 0.707107f, 0.707107f }, { 0.0f, -0.707107f, 0.707107f } }));
     }
@@ -137,7 +137,7 @@ void basis3_tests()
         nnm::Basis3 b1_rot = b1.rotate_axis_angle_local({ 0.0f, 0.0f, 3.0f }, nnm::pi<float>() / 2.0f);
         TEST_ASSERT(b1_rot.matrix.approx_equal(
             { { 0.0f, 1.0f, 0.0f }, { -0.707107f, 0.0f, -0.707107f }, { -0.707107f, 0.0f, 0.707107f } }))
-    }
+    ;}
 
     test_section("rotate_quaternion");
     {
@@ -209,7 +209,7 @@ void basis3_tests()
         constexpr nnm::Basis3f b1 { { { 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f }, { 0.0f, 1.0f, -3.0f } } };
         constexpr auto b1_sheared = b1.shear_y_local(1.3f, 0.3f);
         TEST_ASSERT(b1_sheared.matrix.approx_equal({ { 1.0f, -2.0f, 3.0f }, { -2.7f, 2.7f, -3.0f }, { 0.0f, 1.0f, -3.0f } }))
-    }
+    ;}
 
     test_section("shear_z");
     {
@@ -217,7 +217,7 @@ void basis3_tests()
         constexpr auto b1_sheared = b1.shear_z(1.2f, -0.8f);
         TEST_ASSERT(
             b1_sheared.matrix.approx_equal({ { 4.6f, -4.4f, 3.0f }, { -11.2f, 9.8f, -6.0f }, { -3.6f, 3.4f, -3.0f } }))
-    }
+    ;}
 
     test_section("shear_z_local");
     {
@@ -233,7 +233,7 @@ void basis3_tests()
         constexpr nnm::Basis3f b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
         constexpr auto b3 = b1.transform(b2);
         TEST_ASSERT(b3.matrix.approx_equal({ { 34.0f, 11.5f, -111.0f }, { 2.0f, -2.8f, 5.5f }, { 13.0f, 4.25f, -35.0f } }))
-    }
+    ;}
 
     test_section("transform_local");
     {
@@ -241,7 +241,7 @@ void basis3_tests()
         constexpr nnm::Basis3f b2({ { 2.0f, 1.5f, 0.0f }, { 1.0f, 2.0f, -3.0f }, { 10.0f, 2.0f, -35.0f } });
         constexpr auto b3 = b1.transform_local(b2);
         TEST_ASSERT(b3.matrix.approx_equal({ { 5.0f, -0.5f, 6.15f }, { 0.5f, -4.0f, 0.2f }, { -38.5f, 14.0f, -4.8f } }))
-    }
+    ;}
 
     test_section("approx_equal");
     {

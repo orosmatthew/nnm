@@ -53,7 +53,7 @@ void basis2_tests()
     {
         constexpr auto b = nnm::Basis2f::from_shear_y(-0.5f);
         TEST_ASSERT(b.matrix.approx_equal({ { 1.0f, -0.5f }, { 0.0f, 1.0f } }))
-    }
+    ;}
 
     test_section("trace");
     {

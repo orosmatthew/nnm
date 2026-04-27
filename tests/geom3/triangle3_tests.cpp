@@ -372,7 +372,7 @@ void triangle3_tests()
     {
         constexpr auto p1 = t1.project({ -1.5f, 3.5f, 3.0f });
         TEST_ASSERT(p1.approx_equal({ -0.2336065574f, 0.1229508197f, 0.0450819672f }))
-        constexpr auto p2 = t1.project({ -1.0f, 1.0f, 3.0f });
+        ;constexpr auto p2 = t1.project({ -1.0f, 1.0f, 3.0f });
         TEST_ASSERT(p2.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
         constexpr auto p3 = t1.project({ 0.8632112627f, -3.9685633672f, -1.3474929463f });
         TEST_ASSERT(p3.approx_equal({ 0.2409638554f, -0.734939759f, 1.2289156627f }));
@@ -778,9 +778,9 @@ void triangle3_tests()
         TEST_ASSERT(r4);
         constexpr auto r5 = degen_line.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, nnm::Vector3f::axis_y()));
         TEST_ASSERT_FALSE(r5)
-        constexpr auto r6 = degen_line.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
+        ;constexpr auto r6 = degen_line.intersects(nnm::Ray3f({ 0.0f, 2.0f, 0.0f }, -nnm::Vector3f::axis_y()));
         TEST_ASSERT(r6)
-        constexpr auto r7 = degen_line.intersects(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
+        ;constexpr auto r7 = degen_line.intersects(nnm::Ray3f({ -1.0f, 1.0f, 1.0f }, -nnm::Vector3f::axis_z()));
         TEST_ASSERT_FALSE(r7);
     }
 
@@ -873,7 +873,7 @@ void triangle3_tests()
         TEST_ASSERT(i4.has_value() && i4->coincident({ { 4.0f, 0.0f, 2.0f }, { 4.0f, 0.0f, 2.0f } }));
         constexpr auto i5 = degen_line.intersection(nnm::PlaneF::yz());
         TEST_ASSERT(i5.has_value() && i5->coincident({ nnm::Point3f::zero(), nnm::Point3f::zero() }))
-        constexpr auto i6 = degen_line.intersection(nnm::PlaneF::xy_offset(1.0f));
+        ;constexpr auto i6 = degen_line.intersection(nnm::PlaneF::xy_offset(1.0f));
         TEST_ASSERT_FALSE(i6.has_value());
     }
 

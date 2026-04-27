@@ -145,7 +145,7 @@ void matrix4_tests()
                                            { 24.0f, -16.0f, -16.0f, 14.0f } };
         constexpr auto result = m1.cofactor();
         TEST_ASSERT(result.approx_equal(expected))
-    }
+    ;}
 
     test_section("transpose");
     {
@@ -215,8 +215,8 @@ void matrix4_tests()
         TEST_ASSERT(m1.at(1, 2) == -2.0f);
         TEST_ASSERT(m1.at(3, 3) == 0.0f);
         TEST_ASSERT(m1.at(0) == nnm::Vector4(1.0f, 2.0f, 3.0f, 4.0f))
-        TEST_ASSERT(m1.at(2) == nnm::Vector4(3.0f, 2.0f, -1.0f, -4.0f))
-    }
+        ;TEST_ASSERT(m1.at(2) == nnm::Vector4(3.0f, 2.0f, -1.0f, -4.0f))
+    ;}
 
     test_section("begin");
     {

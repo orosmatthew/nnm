@@ -119,7 +119,7 @@ void triangle2_tests()
             tri1.perpendicular_bisector(0).coincident(nnm::Line2f::from_point_slope({ -3.5f, -1.0f }, 0.166666667f)));
         TEST_ASSERT(tri1.perpendicular_bisector(1).coincident(nnm::Line2f::from_point_slope({ -1.0f, 0.0f }, -0.5f)));
         TEST_ASSERT(tri1.perpendicular_bisector(2).coincident(nnm::Line2f::from_point_slope({ -1.5f, 3.0f }, -2.5f)))
-        TEST_ASSERT(tri2.perpendicular_bisector(0).coincident(nnm::Line2f::from_point_slope({ -1.0f, 0.0f }, -0.5f)));
+        ;TEST_ASSERT(tri2.perpendicular_bisector(0).coincident(nnm::Line2f::from_point_slope({ -1.0f, 0.0f }, -0.5f)));
         TEST_ASSERT(tri2.perpendicular_bisector(1).coincident(nnm::Line2f::from_point_slope({ -1.5f, 3.0f }, -2.5f)));
         TEST_ASSERT(
             tri2.perpendicular_bisector(2).coincident(nnm::Line2f::from_point_slope({ -3.5f, -1.0f }, 0.166666667f)));
@@ -181,7 +181,7 @@ void triangle2_tests()
         const auto a9 = tri3.altitude(2);
         TEST_ASSERT(a9.has_value() && a9->approx_equal({ { 1.0f, 0.0f }, { 1.0f, 0.0f } }))
 
-        TEST_ASSERT_FALSE(tri4.altitude(0).has_value());
+        ;TEST_ASSERT_FALSE(tri4.altitude(0).has_value());
         TEST_ASSERT_FALSE(tri4.altitude(1).has_value());
         TEST_ASSERT_FALSE(tri4.altitude(2).has_value());
     }
@@ -461,7 +461,7 @@ void triangle2_tests()
         TEST_ASSERT(d3.has_value() && d3->approx_equal({ -0.25f, -0.25f }));
         const auto d4 = nnm::Triangle2f({ -0.5f, 2.0f }, { -2.0f, 2.5f }, { -1.0f, 3.5f }).intersect_depth(r2);
         TEST_ASSERT(d4.has_value() && (d4->approx_equal({ 0.0f, -2.0f }) || d4->approx_equal({ 2.0f, 0.0f })))
-        const auto d5 = nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }).intersect_depth(r1);
+        ;const auto d5 = nnm::Triangle2f({ 3.0f, -0.5f }, { 4.0f, -2.0f }, { 3.0f, -2.0f }).intersect_depth(r1);
         TEST_ASSERT(d5.has_value() && d5->approx_equal({ -0.482050896f, 0.0f }));
         const auto d6 = nnm::Triangle2f({ 5.2f, -1.8f }, { 3.8f, -1.2f }, { 4.2f, -1.8f }).intersect_depth(r1);
         TEST_ASSERT_FALSE(d6.has_value());
@@ -565,8 +565,8 @@ void triangle2_tests()
         TEST_ASSERT(result);
         TEST_ASSERT(tri2.intersects(nnm::Segment2f { { -3.0f, 0.0f }, { -1.0f, 2.0f } }));
         TEST_ASSERT(tri1.intersects(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } }))
-        TEST_ASSERT(tri2.intersects(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } }))
-        TEST_ASSERT_FALSE(tri1.intersects(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }));
+        ;TEST_ASSERT(tri2.intersects(nnm::Segment2f { { 2.0f, 2.0f }, { -3.0f, 0.0f } }))
+        ;TEST_ASSERT_FALSE(tri1.intersects(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }));
         TEST_ASSERT_FALSE(tri2.intersects(nnm::Segment2f { { 0.0f, 0.0f }, { 2.0f, 2.0f } }));
         TEST_ASSERT(tri1.intersects(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } }));
         TEST_ASSERT(tri2.intersects(nnm::Segment2f { { -1.0f, 0.0f }, { 2.0f, 2.0f } }));
@@ -668,7 +668,7 @@ void triangle2_tests()
     test_section("right");
     {
         TEST_ASSERT_FALSE(tri1.right())
-        constexpr nnm::Triangle2f tri5 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
+        ;constexpr nnm::Triangle2f tri5 { { 2.0f, -4.0f }, { 4.0f, -0.535898385f }, { 6.0f, -4.0f } };
         TEST_ASSERT_FALSE(tri5.right());
         constexpr nnm::Triangle2f tri6 { { -4.0f, 4.0f }, { 4.0f, 4.0f }, { -4.0f, 8.0f } };
         TEST_ASSERT(tri6.right());

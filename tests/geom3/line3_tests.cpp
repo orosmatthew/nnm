@@ -501,8 +501,8 @@ void line3_tests()
         constexpr auto result = nnm::Line3f::axis_x().parallel(s1);
         TEST_ASSERT_FALSE(result);
         TEST_ASSERT(nnm::Line3f::from_points({ 1.0f, -2.0f, 3.0f }, { -4.0f, 5.0f, -6.0f })->parallel(s1))
-        TEST_ASSERT(nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f })->parallel(s1))
-    }
+        ;TEST_ASSERT(nnm::Line3f::from_points({ 3.0f, 0.0f, 5.0f }, { -2.0f, 7.0f, -4.0f })->parallel(s1))
+    ;}
 
     test_section("parallel(const Plane&)");
     {
@@ -630,7 +630,7 @@ void line3_tests()
         TEST_ASSERT_FALSE(result1);
         constexpr bool result2 = nnm::Line3f::axis_z_offset(-2.5f, 1.0f).perpendicular(r1);
         TEST_ASSERT_FALSE(result2)
-        constexpr bool result3
+        ;constexpr bool result3
             = nnm::Line3f(nnm::Point3f::zero(), { 0.0f, 0.70710678118655f, -0.70710678118655f }).perpendicular(r1);
         TEST_ASSERT(result3);
         constexpr bool result4 = nnm::Line3f::axis_x_offset(-1.0f, 1.0f).perpendicular(r_degen_line);
@@ -935,7 +935,7 @@ void line3_tests()
         constexpr nnm::AlignedBoxF b1 { { -1.0f, -3.0f, 0.5f }, { 2.0f, 2.0f, 4.0f } };
         constexpr nnm::PointSet<nnm::Point3f, 2> r1 = nnm::Line3f::axis_x().surface_intersections(b1);
         TEST_ASSERT(r1.empty())
-        constexpr nnm::PointSet<nnm::Point3f, 2> r2 = nnm::Line3f::axis_z().surface_intersections(b1);
+        ;constexpr nnm::PointSet<nnm::Point3f, 2> r2 = nnm::Line3f::axis_z().surface_intersections(b1);
         TEST_ASSERT(r2.approx_equal({ { 0.0f, 0.0f, 0.5f }, { 0.0f, 0.0f, 4.0f } }));
     }
 
