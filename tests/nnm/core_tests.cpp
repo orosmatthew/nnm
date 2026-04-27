@@ -122,7 +122,7 @@ void core_tests()
         TEST_ASSERT_FALSE(nnm::approx_greater(1.0e20f, 1.000000000001e20f));
     }
 
-    test_case("approx_greater");
+    test_case("approx_less_equal");
     {
         constexpr auto result = nnm::approx_less_equal(0.5f, 1.0f);
         TEST_ASSERT(result);
@@ -133,6 +133,10 @@ void core_tests()
         TEST_ASSERT_FALSE(nnm::approx_less_equal(-1.0f, -1.005f));
         TEST_ASSERT(nnm::approx_less_equal(-1.0005f, -1.0f));
         TEST_ASSERT(nnm::approx_less_equal(1.0e20f, 1.000000000001e20f));
+        TEST_ASSERT(nnm::approx_less_equal(1.0f, 1.0f));
+        TEST_ASSERT(nnm::approx_less_equal(0.0f, 0.0f));
+        TEST_ASSERT_FALSE(nnm::approx_less_equal(1.0f, 0.5f));
+        TEST_ASSERT_FALSE(nnm::approx_less_equal(2.0f, 1.0f));
     }
 
     test_case("approx_greater_equal");

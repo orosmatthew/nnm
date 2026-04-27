@@ -538,7 +538,7 @@ public:
         uint8_t min_axis = 0;
         const Real y_abs = nnm::abs(y);
         if (y_abs < min_val) {
-            min_val = y;
+            min_val = y_abs;
             min_axis = 1;
         }
         if (nnm::abs(z) < min_val) {

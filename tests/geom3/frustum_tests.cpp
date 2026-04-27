@@ -363,6 +363,10 @@ void frustum_tests()
         TEST_ASSERT_FALSE(r4);
         constexpr bool r5 = f3.intersects(f1);
         TEST_ASSERT_FALSE(r5);
+        const auto f_inner = nnm::FrustumF::from_camera_right_hand(
+            { 1.0f, 0.5f, 3.0f }, nnm::Vector3f::axis_z(), nnm::Vector3f::axis_y(), 0.2f, 1.0f, 0.1f, 0.5f);
+        TEST_ASSERT(f1.intersects(f_inner));
+        TEST_ASSERT(f_inner.intersects(f1));
     }
 
     test_section("surface_intersections(const Line3&)");
@@ -527,4 +531,3 @@ void frustum_tests()
         TEST_ASSERT_FALSE(r3);
     }
 }
-

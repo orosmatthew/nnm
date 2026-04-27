@@ -452,6 +452,10 @@ void vector3_tests()
         TEST_ASSERT(v4.abs_min_index() == 0);
         nnm::Vector3 v5(-200.0f, 100.0f, 5.0f);
         TEST_ASSERT(v5.abs_min_index() == 2);
+        nnm::Vector3 v6(10.0f, -3.0f, 100.0f);
+        TEST_ASSERT(v6.abs_min_index() == 1);
+        nnm::Vector3 v7(-1.0f, -100.0f, -50.0f);
+        TEST_ASSERT(v7.abs_min_index() == 0);
     }
 
     test_section("approx_equal");

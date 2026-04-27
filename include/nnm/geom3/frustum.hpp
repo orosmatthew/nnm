@@ -381,7 +381,7 @@ public:
     // tested.
     [[nodiscard]] constexpr bool intersects(const Frustum& other) const
     {
-        for (uint8_t i = 0; i < 4; ++i) {
+        for (uint8_t i = 0; i < 8; ++i) {
             if (contains(other.vertex(i)) || other.contains(vertex(i))) {
                 return true;
             }

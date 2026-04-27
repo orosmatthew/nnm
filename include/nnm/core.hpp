@@ -195,7 +195,7 @@ constexpr bool approx_greater(const Real first, const Real second)
 }
 
 /**
- * Determine if the first value is approximately greater-than or equal to the second value.
+ * Determine if the first value is approximately less-than or equal to the second value.
  * @tparam Real Floating-point type.
  * @param first First value.
  * @param second Second value.
