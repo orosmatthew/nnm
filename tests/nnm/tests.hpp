@@ -1,6 +1,5 @@
 #pragma once
 
-#define NNM_BOUNDS_CHECK
 #include <nnm/nnm.hpp>
 
 #include "../test_helper.hpp"
@@ -8,8 +7,6 @@
 void basis2_tests();
 void basis3_tests();
 void core_tests();
-void forward_tests();
-void nnm_tests();
 void matrix2_tests();
 void matrix3_tests();
 void matrix4_tests();

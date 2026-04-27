@@ -1,0 +1,41 @@
+add_executable(nnm_tests
+        main.cpp
+        test_helper.cpp
+        nnm/core_tests.cpp
+        nnm/vector2_tests.cpp
+        nnm/point2_tests.cpp
+        nnm/vector2i_tests.cpp
+        nnm/vector3_tests.cpp
+        nnm/point3_tests.cpp
+        nnm/vector3i_tests.cpp
+        nnm/vector4_tests.cpp
+        nnm/quaternion_tests.cpp
+        nnm/matrix2_tests.cpp
+        nnm/basis2_tests.cpp
+        nnm/matrix3_tests.cpp
+        nnm/transform2_tests.cpp
+        nnm/basis3_tests.cpp
+        nnm/matrix4_tests.cpp
+        nnm/transform3_tests.cpp
+        nnm/point_set_tests.cpp
+        geom2/line2_tests.cpp
+        geom2/ray2_tests.cpp
+        geom2/segment2_tests.cpp
+        geom2/circle2_tests.cpp
+        geom2/triangle2_tests.cpp
+        geom2/rectangle2_tests.cpp
+        geom2/aligned_rectangle2_tests.cpp
+        geom3/line3_tests.cpp
+        geom3/ray3_tests.cpp
+        geom3/segment3_tests.cpp
+        geom3/plane_tests.cpp
+        geom3/triangle3_tests.cpp
+        geom3/rectangle3_tests.cpp
+        geom3/sphere_tests.cpp
+        geom3/aligned_box_tests.cpp
+        geom3/box_tests.cpp
+        geom3/frustum_tests.cpp
+)
+
+target_compile_definitions(nnm_tests PRIVATE NNM_ENABLE_BOUNDS_CHECKS)
+target_link_libraries(nnm_tests PRIVATE nnm)
