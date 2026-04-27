@@ -2,7 +2,7 @@
 
 void triangle3_tests()
 {
-    test_case("triangle3");
+    test_case("Triangle3");
 
     test_section("Triangle3()");
     {
@@ -43,7 +43,7 @@ void triangle3_tests()
         TEST_ASSERT(r3.has_value() && r3.value().coincident({ { 1.0f, 1.0f, 1.0f }, { 1.0f, 1.0f, 1.0f } }));
     }
 
-    test_section("collapse_to_point");
+    test_section("collapse_point");
     {
         constexpr std::optional<nnm::Point3f> r1 = t1.collapse_point();
         TEST_ASSERT_FALSE(r1.has_value());
@@ -957,7 +957,7 @@ void triangle3_tests()
             { t1.vertices[0].transform(basis), t1.vertices[1].transform(basis), t1.vertices[2].transform(basis) }));
     }
 
-    test_section("transform_at(const Vector3&, const Transform3&");
+    test_section("transform_at(const Vector3&, const Transform3&)");
     {
         constexpr nnm::Point3f origin { 2.0f, -10.0f, 0.5f };
         constexpr nnm::Transform3f transform { { { 1.0f, -2.0f, 3.0f, -0.2f },

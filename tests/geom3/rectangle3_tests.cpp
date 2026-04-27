@@ -920,7 +920,7 @@ void rectangle3_tests()
         TEST_ASSERT(result8);
     }
 
-    test_section("edge_intersections");
+    test_section("edge_intersections(const Triangle3&)");
     {
         const auto result1
             = r1.edge_intersections(nnm::Triangle3f({ 0.0f, 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f }, { 0.0f, 0.0f, 1.0f }));
@@ -967,7 +967,7 @@ void rectangle3_tests()
         TEST_ASSERT(result9);
     }
 
-    test_section("edge_intersections");
+    test_section("edge_intersections(const Rectangle3&)");
     {
         const auto result1 = r1.edge_intersections(r2);
         TEST_ASSERT(result1.empty());

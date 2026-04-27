@@ -20,7 +20,7 @@ void rectangle2_tests()
         TEST_ASSERT(r.angle == nnm::pi<float>() / 3.0f);
     }
 
-    test_section("Rectangle(const Rectangle<Other>&)");
+    test_section("Rectangle2(const Rectangle2<Other>&)");
     {
         constexpr nnm::Rectangle2d r1 { { 1.0, -2.0 }, { 3.0, 4.0 }, nnm::pi<double>() / 3.0 };
         constexpr nnm::Rectangle2f r2 { r1 };

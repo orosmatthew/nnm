@@ -347,7 +347,7 @@ void aligned_box_tests()
         TEST_ASSERT(nnm::approx_zero(r3));
     }
 
-    test_section("distance(const Plane&)");
+    test_section("distance_sqrd(const Plane&)");
     {
         constexpr float r1 = b1.distance_sqrd(nnm::PlaneF::xy());
         TEST_ASSERT(nnm::approx_equal(r1, 0.25f));

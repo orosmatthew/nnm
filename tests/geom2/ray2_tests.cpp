@@ -4,7 +4,7 @@ void ray2_tests()
 {
     test_case("Ray2");
 
-    test_section("Line2()");
+    test_section("Ray2()");
     {
         constexpr nnm::Ray2f ray { };
         TEST_ASSERT(ray.origin == nnm::Point2f::zero());

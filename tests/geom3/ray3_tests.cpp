@@ -18,7 +18,7 @@ void ray3_tests()
         TEST_ASSERT(r1.direction.approx_equal({ -4.0f, 5.0f, -6.0f }));
     }
 
-    test_section("Ray3(const Ray3<Other>&");
+    test_section("Ray3(const Ray3<Other>&)");
     {
         constexpr nnm::Ray3d r1 { { 1.0, -2.0, 3.0 }, { 4.0, 5.0, -6.0 } };
         constexpr nnm::Ray3f r2 { r1 };
@@ -788,7 +788,7 @@ void ray3_tests()
         TEST_ASSERT_FALSE(r2.approx_equal(r1));
     }
 
-    test_section("operator=");
+    test_section("operator==");
     {
         // ReSharper disable once CppIdenticalOperandsInBinaryExpression
         constexpr auto result = r1 == r1;

@@ -24,7 +24,7 @@ void box_tests()
               { 1.06066012f, 0.0f, 1.06066012f } }));
     }
 
-    test_section("Box(const Box<Other>&");
+    test_section("Box(const Box<Other>&)");
     {
         constexpr nnm::BoxD bd {
             { 1.0, -2.0, 3.0 }, { 0.707106769, 0.0, 0.707106769 }, { 0.0, 2.0, 0.0 }, { 1.06066012, 0.0, 1.06066012 }

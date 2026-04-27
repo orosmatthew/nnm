@@ -204,7 +204,7 @@ void plane_tests()
         TEST_ASSERT_FALSE(p2.contains({ 5.0f, -20.0f, -100.0f }));
     }
 
-    test_section("signed_distance)");
+    test_section("signed_distance");
     {
         constexpr auto result = p2.signed_distance({ -1.89f, -3.46f, 1.46f });
         TEST_ASSERT(nnm::approx_zero(result));
@@ -536,7 +536,7 @@ void plane_tests()
         TEST_ASSERT_FALSE(r6);
     }
 
-    test_section("parallel(const Segment&)");
+    test_section("parallel(const Segment3&)");
     {
         constexpr auto r1 = p2.parallel(nnm::Segment3f { nnm::Point3f::zero(), { 3.0f, 0.0f, 0.0f } });
         TEST_ASSERT(r1);

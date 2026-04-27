@@ -2,7 +2,7 @@
 
 void sphere_tests()
 {
-    test_case("sphere");
+    test_case("Sphere");
 
     test_section("Sphere()");
     {

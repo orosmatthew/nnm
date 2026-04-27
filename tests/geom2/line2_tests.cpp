@@ -364,7 +364,7 @@ void line2_tests()
         TEST_ASSERT_FALSE(line4.intersection(s1).has_value());
     }
 
-    test_section("intersects(const Circle2&");
+    test_section("intersects(const Circle2&)");
     {
         constexpr nnm::Circle2f c1 { { 2.0f, -3.0f }, 5.0f };
         constexpr nnm::Line2f l1 { { 0.0f, 3.0f }, { -0.7071067812f, 0.7071067812f } };

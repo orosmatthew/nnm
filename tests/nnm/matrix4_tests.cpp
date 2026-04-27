@@ -387,7 +387,7 @@ void matrix4_tests()
         TEST_ASSERT(result.approx_equal(expected));
     }
 
-    test_section("operator(float, const Matrix4&)");
+    test_section("operator*(float, const Matrix4&)");
     {
         constexpr nnm::Matrix4f m3 { { 1.0f, 2.0f, 3.0f, 4.0f },
                                      { -1.0f, -3.0f, -2.0f, -4.0f },

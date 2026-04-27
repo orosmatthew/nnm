@@ -699,7 +699,7 @@ void segment3_tests()
                 { -3.5475337817f, 1.7462055396f, -10.8183445985f })));
     }
 
-    test_section("intersection(const Segment3&");
+    test_section("intersection(const Segment3&)");
     {
         constexpr auto i1 = s1.intersection(nnm::Segment3f({ 0.0f, 0.0f, 0.0f }, { -4.0f, 0.0f, 0.0f }));
         TEST_ASSERT_FALSE(i1.has_value());

@@ -433,7 +433,7 @@ void circle2_tests()
         TEST_ASSERT_FALSE(c2.tangent(r5));
     }
 
-    test_section("tangent(const Segment2&");
+    test_section("tangent(const Segment2&)");
     {
         constexpr nnm::Circle2f c2 { { 2.0f, -3.0f }, 5.0f };
         constexpr nnm::Segment2f seg1 { { 0.0f, 2.0f }, { 1.0f, 2.0f } };

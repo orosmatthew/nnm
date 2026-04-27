@@ -3,7 +3,7 @@
 void transform2_tests()
 {
     test_case("Transform2");
-    test_section("Transform2");
+    test_section("Transform2()");
     {
         constexpr nnm::Transform2f default_transform;
         TEST_ASSERT(default_transform.matrix == nnm::Matrix3f::identity());

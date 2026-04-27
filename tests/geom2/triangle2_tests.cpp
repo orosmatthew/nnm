@@ -4,7 +4,7 @@ void triangle2_tests()
 {
     test_case("Triangle2");
 
-    test_section("Triangle()");
+    test_section("Triangle2()");
     {
         constexpr nnm::Triangle2f t;
         TEST_ASSERT(t.vertices[0] == nnm::Point2f::zero());

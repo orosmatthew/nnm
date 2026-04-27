@@ -3,7 +3,7 @@
 void basis2_tests()
 {
     test_case("Basis2");
-    test_section("Basis()");
+    test_section("Basis2()");
     {
         constexpr nnm::Basis2f b;
         TEST_ASSERT(b.matrix == nnm::Matrix2f::identity());
