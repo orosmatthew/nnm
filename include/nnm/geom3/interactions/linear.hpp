@@ -530,28 +530,6 @@ template <typename Real>
 }
 
 template <typename Real>
-std::optional<Line3<Real>> Line3<Real>::from_segment(const Segment3<Real>& segment)
-{
-    if (segment.degenerate()) {
-        return std::nullopt;
-    }
-    return Line3 { segment.start, segment.start.direction(segment.end) };
-}
-
-template <typename Real>
-constexpr Line3<Real> Line3<Real>::from_ray(const Ray3<Real>& ray)
-{
-    return { ray.origin, ray.direction };
-}
-
-template <typename Real>
-Line3<Real> Line3<Real>::perpendicular_plane_parallel(const Plane<Real>& plane) const
-{
-    const Vector3<Real> dir = direction.cross(plane.normal).normalize();
-    return { origin, dir };
-}
-
-template <typename Real>
 constexpr bool Line3<Real>::collinear(const Ray3<Real>& ray) const
 {
     return ray.collinear(*this);

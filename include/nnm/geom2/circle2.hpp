@@ -10,6 +10,8 @@
 #include <nnm/geom2/forward.hpp>
 #include <nnm/nnm.hpp>
 #include <array>
+#include <nnm/geom2/line2.hpp>
+#include <nnm/geom2/segment2.hpp>
 
 namespace nnm {
 
@@ -83,7 +85,20 @@ public:
      */
     // tested
     static Circle2 from_points_unchecked(
-        const Point2<Real>& point1, const Point2<Real>& point2, const Point2<Real>& point3);
+        const Point2<Real>& point1, const Point2<Real>& point2, const Point2<Real>& point3)
+    {
+        const Point2<Real> mid12 = nnm::Segment2<Real> { point1, point2 }.midpoint();
+        const Point2<Real> mid23 = nnm::Segment2<Real> { point2, point3 }.midpoint();
+        const Vector2<Real> dir12 = point2 - point1;
+        const Vector2<Real> dir23 = point3 - point2;
+        const Vector2<Real> perp12 = dir12.arbitrary_perpendicular();
+        const Vector2<Real> perp23 = dir23.arbitrary_perpendicular();
+        const Line2<Real> l1 { mid12, perp12 };
+        const Line2<Real> l2 { mid23, perp23 };
+        const Point2<Real> center = l1.unchecked_intersection(l2);
+        const Real radius = center.distance(point1);
+        return Circle2<Real> { center, radius };
+    }
 
     /**
      * Circle from points which checks for collinearity.
@@ -94,7 +109,23 @@ public:
      */
     // tested
     static std::optional<Circle2> from_points(
-        const Point2<Real>& point1, const Point2<Real>& point2, const Point2<Real>& point3);
+        const Point2<Real>& point1, const Point2<Real>& point2, const Point2<Real>& point3)
+    {
+        const Point2<Real> mid12 = nnm::Segment2<Real> { point1, point2 }.midpoint();
+        const Point2<Real> mid23 = nnm::Segment2<Real> { point2, point3 }.midpoint();
+        const Vector2<Real> dir12 = point2 - point1;
+        const Vector2<Real> dir23 = point3 - point2;
+        const Vector2<Real> perp12 = dir12.arbitrary_perpendicular();
+        const Vector2<Real> perp23 = dir23.arbitrary_perpendicular();
+        const Line2<Real> l1 { mid12, perp12 };
+        const Line2<Real> l2 { mid23, perp23 };
+        const std::optional<Point2<Real>> center = l1.intersection(l2);
+        if (!center.has_value()) {
+            return std::nullopt;
+        }
+        const Real radius = center.value().distance(point1);
+        return Circle2<Real> { center.value(), radius };
+    }
 
     /**
      * Length of the path around the circle.

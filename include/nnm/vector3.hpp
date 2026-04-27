@@ -39,7 +39,12 @@ public:
      * @param vector Vector to cast.
      */
     template <typename Int>
-    explicit constexpr Vector3(const Vector3i<Int>& vector);
+    explicit constexpr Vector3(const Vector3i<Int>& vector)
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+        , z { static_cast<Real>(vector.z) }
+    {
+    }
 
     /**
      * Casts from other vector.
@@ -925,15 +930,6 @@ template <typename Real>
 constexpr Vector3<Real> operator/(const Real value, const Vector3<Real>& vector)
 {
     return { value / vector.x, value / vector.y, value / vector.z };
-}
-
-template <typename Real>
-template <typename Int>
-constexpr Vector3<Real>::Vector3(const Vector3i<Int>& vector)
-    : x { static_cast<Real>(vector.x) }
-    , y { static_cast<Real>(vector.y) }
-    , z { static_cast<Real>(vector.z) }
-{
 }
 
 template <typename Real>

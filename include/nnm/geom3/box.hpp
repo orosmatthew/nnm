@@ -111,14 +111,41 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const;
+    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const
+    {
+        if (half_span_u.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_v, half_span_w };
+        }
+        if (half_span_v.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_u, half_span_w };
+        }
+        if (half_span_w.approx_zero()) {
+            return Rectangle3<Real> { center, half_span_u, half_span_v };
+        }
+        return std::nullopt;
+    }
 
     /**
      * If any two half-spans are zero, return the line segment that represents the degenerate box.
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const;
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        const bool u_zero = half_span_u.approx_zero();
+        const bool v_zero = half_span_v.approx_zero();
+        const bool w_zero = half_span_w.approx_zero();
+        if (u_zero && v_zero) {
+            return Segment3<Real> { center - half_span_w, center + half_span_w };
+        }
+        if (u_zero && w_zero) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v };
+        }
+        if (v_zero && w_zero) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u };
+        }
+        return std::nullopt;
+    }
 
     /**
      * If all half-spans are zero, then return the point that represents the degenerate box.
@@ -169,7 +196,37 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const;
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Box<Real>", index < 12);
+        switch (index) {
+        case 0: // -u -v
+            return { vertex(0), vertex(1) };
+        case 1: // -u +v
+            return { vertex(2), vertex(3) };
+        case 2: // +u -v
+            return { vertex(4), vertex(5) };
+        case 3: // +u +v
+            return { vertex(6), vertex(7) };
+        case 4: // -u -w
+            return { vertex(0), vertex(2) };
+        case 5: // -u +w
+            return { vertex(1), vertex(3) };
+        case 6: // +u -w
+            return { vertex(4), vertex(6) };
+        case 7: // +u +w
+            return { vertex(5), vertex(7) };
+        case 8: // -v -w
+            return { vertex(0), vertex(4) };
+        case 9: // -v +w
+            return { vertex(1), vertex(5) };
+        case 10: // +v -w
+            return { vertex(2), vertex(6) };
+        case 11: // +v +w
+        default:
+            return { vertex(3), vertex(7) };
+        }
+    }
 
     /**
      * Face at an index.
@@ -177,7 +234,25 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const;
+    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Box<Real>", index < 6);
+        switch (index) {
+        case 0: // -u
+            return { Segment3<Real>(vertex(0), vertex(3)).midpoint(), half_span_v, half_span_w };
+        case 1: // +u
+            return { Segment3<Real>(vertex(4), vertex(7)).midpoint(), half_span_v, half_span_w };
+        case 2: // -v
+            return { Segment3<Real>(vertex(0), vertex(5)).midpoint(), half_span_u, half_span_w };
+        case 3: // +v
+            return { Segment3<Real>(vertex(2), vertex(7)).midpoint(), half_span_u, half_span_w };
+        case 4: // -w
+            return { Segment3<Real>(vertex(0), vertex(6)).midpoint(), half_span_u, half_span_v };
+        case 5: // +w
+        default:
+            return { Segment3<Real>(vertex(1), vertex(7)).midpoint(), half_span_u, half_span_v };
+        }
+    }
 
     /**
      * Determine if box is valid. A box is valid if all three half-spans are orthogonal and none are length zero.

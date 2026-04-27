@@ -36,7 +36,11 @@ public:
      * @param vector Vector to cast from.
      */
     template <typename Int>
-    explicit constexpr Vector2(const Vector2i<Int>& vector);
+    explicit constexpr Vector2(const Vector2i<Int>& vector)
+        : x { static_cast<Real>(vector.x) }
+        , y { static_cast<Real>(vector.y) }
+    {
+    }
 
     /**
      * Casts from a vector with a different floating-point type.
@@ -833,14 +837,6 @@ template <typename Real>
 Vector2<Real> constexpr operator/(const Real value, const Vector2<Real>& vector)
 {
     return { value / vector.x, value / vector.y };
-}
-
-template <typename Real>
-template <typename Int>
-constexpr Vector2<Real>::Vector2(const Vector2i<Int>& vector)
-    : x { static_cast<Real>(vector.x) }
-    , y { static_cast<Real>(vector.y) }
-{
 }
 
 template <typename Real>

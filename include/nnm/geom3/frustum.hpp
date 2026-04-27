@@ -11,6 +11,7 @@
 #include <nnm/nnm.hpp>
 #include <algorithm>
 #include <array>
+#include <nnm/geom3/plane.hpp>
 #include <nnm/geom3/aligned_box.hpp>
 
 namespace nnm {
@@ -54,7 +55,15 @@ public:
      * This is an invalid view frustum.
      */
     // tested
-    constexpr Frustum();
+    constexpr Frustum()
+        : near_plane { Plane<Real> { } }
+        , far_plane { Plane<Real> { } }
+        , left_plane { Plane<Real> { } }
+        , right_plane { Plane<Real> { } }
+        , bottom_plane { Plane<Real> { } }
+        , top_plane { Plane<Real> { } }
+    {
+    }
 
     /**
      * Initialize with 6 planes.
@@ -65,7 +74,7 @@ public:
      * @param right_plane Right plane with inward pointing normal.
      * @param bottom_plane Bottom plane with inward pointing normal.
      * @param top_plane Top plane with inward pointing normal.
-     */
+    */
     // tested
     constexpr Frustum(
         const Plane<Real> near_plane,
@@ -73,7 +82,15 @@ public:
         const Plane<Real> left_plane,
         const Plane<Real> right_plane,
         const Plane<Real> bottom_plane,
-        const Plane<Real> top_plane);
+        const Plane<Real> top_plane)
+        : near_plane { std::move(near_plane) }
+        , far_plane { std::move(far_plane) }
+        , left_plane { std::move(left_plane) }
+        , right_plane { std::move(right_plane) }
+        , bottom_plane { std::move(bottom_plane) }
+        , top_plane { std::move(top_plane) }
+    {
+    }
 
     /**
      * Create view frustum based on camera parameters in a left-handed coordinate system.
@@ -94,7 +111,45 @@ public:
         const Real fov,
         const Real aspect,
         const Real near,
-        const Real far);
+        const Real far)
+    {
+        Vector3<Real> corrected_up = up;
+        if (forward.parallel(up)) {
+            if (!forward.parallel(Vector3<Real>::axis_x())) {
+                corrected_up = Vector3<Real>::axis_x();
+            }
+            else {
+                corrected_up = Vector3<Real>::axis_y();
+            }
+        }
+        const Vector3<Real> right = corrected_up.cross(forward).normalize();
+        corrected_up = forward.cross(right).normalize();
+        const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
+        const Real near_height_half = tan_fov_y * near;
+        const Real near_width_half = near_height_half * aspect;
+        const Point3<Real> near_origin = position + forward * near;
+
+        const Plane<Real> near_plane { near_origin, forward };
+        const Plane<Real> far_plane { position + forward * far, -forward };
+
+        const Point3<Real> left_origin = near_origin - right * near_width_half;
+        const Vector3<Real> left_normal = corrected_up.cross(left_origin - position).normalize();
+        const Plane<Real> left_plane { left_origin, left_normal };
+
+        const Point3<Real> right_origin = near_origin + right * near_width_half;
+        const Vector3<Real> right_normal = (right_origin - position).cross(corrected_up).normalize();
+        const Plane<Real> right_plane { right_origin, right_normal };
+
+        const Point3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
+        const Vector3<Real> bottom_normal = (bottom_origin - position).cross(right).normalize();
+        const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
+
+        const Point3<Real> top_origin = near_origin + corrected_up * near_height_half;
+        const Vector3<Real> top_normal = right.cross(top_origin - position).normalize();
+        const Plane<Real> top_plane { top_origin, top_normal };
+
+        return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+    }
 
     /**
      * Create view frustum based on camera parameters in a right-handed coordinate system.
@@ -115,7 +170,45 @@ public:
         const Real fov,
         const Real aspect,
         const Real near,
-        const Real far);
+        const Real far)
+    {
+        Vector3<Real> corrected_up = up;
+        if (forward.parallel(up)) {
+            if (!forward.parallel(Vector3<Real>::axis_x())) {
+                corrected_up = Vector3<Real>::axis_x();
+            }
+            else {
+                corrected_up = Vector3<Real>::axis_y();
+            }
+        }
+        const Vector3<Real> right = forward.cross(corrected_up).normalize();
+        corrected_up = right.cross(forward).normalize();
+        const Real tan_fov_y = nnm::tan(fov / static_cast<Real>(2));
+        const Real near_height_half = tan_fov_y * near;
+        const Real near_width_half = near_height_half * aspect;
+        const Point3<Real> near_origin = position + forward * near;
+
+        const Plane<Real> near_plane { near_origin, forward };
+        const Plane<Real> far_plane { position + forward * far, -forward };
+
+        const Point3<Real> left_origin = near_origin - right * near_width_half;
+        const Vector3<Real> left_normal = (left_origin - position).cross(corrected_up).normalize();
+        const Plane<Real> left_plane { left_origin, left_normal };
+
+        const Point3<Real> right_origin = near_origin + right * near_width_half;
+        const Vector3<Real> right_normal = corrected_up.cross(right_origin - position).normalize();
+        const Plane<Real> right_plane { right_origin, right_normal };
+
+        const Point3<Real> bottom_origin = near_origin - corrected_up * near_height_half;
+        const Vector3<Real> bottom_normal = right.cross(bottom_origin - position).normalize();
+        const Plane<Real> bottom_plane { bottom_origin, bottom_normal };
+
+        const Point3<Real> top_origin = near_origin + corrected_up * near_height_half;
+        const Vector3<Real> top_normal = (top_origin - position).cross(right).normalize();
+        const Plane<Real> top_plane { top_origin, top_normal };
+
+        return { near_plane, far_plane, left_plane, right_plane, bottom_plane, top_plane };
+    }
 
     /**
      * Vertex at an index.
@@ -153,7 +246,37 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const;
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Frustum<Real>", index < 12);
+        switch (index) {
+        case 0: // near-left
+            return { vertex(0), vertex(1) };
+        case 1: // near-right
+            return { vertex(2), vertex(3) };
+        case 2: // near-bottom
+            return { vertex(0), vertex(2) };
+        case 3: // near-top
+            return { vertex(1), vertex(3) };
+        case 4: // far-left
+            return { vertex(4), vertex(5) };
+        case 5: // far-right
+            return { vertex(6), vertex(7) };
+        case 6: // far-bottom
+            return { vertex(4), vertex(6) };
+        case 7: // far-top
+            return { vertex(5), vertex(7) };
+        case 8: // left-bottom
+            return { vertex(0), vertex(4) };
+        case 9: // left-top
+            return { vertex(1), vertex(5) };
+        case 10: // right-bottom
+            return { vertex(2), vertex(6) };
+        case 11: // right-top
+        default:
+            return { vertex(3), vertex(7) };
+        }
+    }
 
     /**
      * Determine if contains point.

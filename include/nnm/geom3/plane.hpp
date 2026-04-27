@@ -688,6 +688,12 @@ public:
     }
 };
 
+template <typename Real>
+Line3<Real> Line3<Real>::perpendicular_plane_parallel(const Plane<Real>& plane) const
+{
+    return { origin, direction.cross(plane.normal).normalize() };
+}
+
 } // namespace nnm
 
 #endif

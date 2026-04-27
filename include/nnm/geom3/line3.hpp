@@ -11,6 +11,8 @@
 #include <nnm/nnm.hpp>
 #include <algorithm>
 #include <array>
+#include <nnm/geom3/ray3.hpp>
+#include <nnm/geom3/segment3.hpp>
 
 namespace nnm {
 
@@ -84,7 +86,13 @@ public:
      * @return Result.
      */
     // tested
-    static std::optional<Line3> from_segment(const Segment3<Real>& segment);
+    static std::optional<Line3> from_segment(const Segment3<Real>& segment)
+    {
+        if (segment.start.approx_equal(segment.end)) {
+            return std::nullopt;
+        }
+        return Line3 { segment.start, segment.start.direction(segment.end) };
+    }
 
     /**
      * Line that is an extension from a ray.
@@ -92,7 +100,10 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr Line3 from_ray(const Ray3<Real>& ray);
+    static constexpr Line3 from_ray(const Ray3<Real>& ray)
+    {
+        return { ray.origin, ray.direction };
+    }
 
     /**
      * Line that intersects the origin and is in the direction of the x-axis.

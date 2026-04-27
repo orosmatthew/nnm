@@ -22,21 +22,6 @@ namespace nnm {
 
 template <typename Real>
 /**
- * Line tangent to circle at angle.
- * @param circle Circle.
- * @param angle Angle in radians.
- * @return Result.
- */
-// tested
-Line2<Real> Line2<Real>::from_tangent(const Circle2<Real>& circle, const Real angle)
-{
-    const Point2<Real> p = circle.point_at(angle);
-    const Vector2<Real> dir = p - circle.center;
-    return { p, dir.arbitrary_perpendicular() };
-}
-
-template <typename Real>
-/**
  * Determine if collinear with a point.
  * @param point Point.
  * @return Result.
@@ -403,12 +388,6 @@ constexpr bool Line2<Real>::intersects(const Circle2<Real>& circle) const
 }
 
 template <typename Real>
-Line2<Real> Line2<Real>::from_segment(const Segment2<Real>& segment)
-{
-    return { segment.start, (segment.end - segment.start).normalize() };
-}
-
-template <typename Real>
 constexpr bool Line2<Real>::collinear(const Ray2<Real>& ray) const
 {
     return ray.collinear(*this);
@@ -484,12 +463,6 @@ template <typename Real>
 constexpr bool Line2<Real>::intersects(const Triangle2<Real>& triangle) const
 {
     return triangle.intersects(*this);
-}
-
-template <typename Real>
-constexpr Line2<Real> Line2<Real>::from_ray(const Ray2<Real>& ray)
-{
-    return { ray.origin, ray.direction };
 }
 
 template <typename Real>

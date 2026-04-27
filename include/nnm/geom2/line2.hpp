@@ -10,6 +10,8 @@
 #include <nnm/geom2/forward.hpp>
 #include <nnm/nnm.hpp>
 #include <array>
+#include <nnm/geom2/ray2.hpp>
+#include <nnm/geom2/segment2.hpp>
 
 namespace nnm {
 
@@ -80,7 +82,10 @@ public:
      * @return Result.
      */
     // tested
-    static Line2 from_segment(const Segment2<Real>& segment);
+    static Line2 from_segment(const Segment2<Real>& segment)
+    {
+        return { segment.start, segment.start.direction(segment.end) };
+    }
 
     /**
      * Extends a 2D ray to an infinite 2D line.
@@ -88,7 +93,10 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr Line2 from_ray(const Ray2<Real>& ray);
+    static constexpr Line2 from_ray(const Ray2<Real>& ray)
+    {
+        return { ray.origin, ray.direction };
+    }
 
     /**
      * Line tangent to circle at angle.
@@ -97,7 +105,12 @@ public:
      * @return Result.
      */
     // tested
-    static Line2 from_tangent(const Circle2<Real>& circle, const Real angle);
+    static Line2 from_tangent(const Circle2<Real>& circle, const Real angle)
+    {
+        const Point2<Real> p = circle.point_at(angle);
+        const Vector2<Real> dir = p - circle.center;
+        return { p, dir.arbitrary_perpendicular() };
+    }
 
     /**
      * Line at zero origin in the direction of the x-axis.

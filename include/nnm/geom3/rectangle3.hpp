@@ -11,6 +11,7 @@
 #include <nnm/nnm.hpp>
 #include <algorithm>
 #include <array>
+#include <nnm/geom3/plane.hpp>
 #include <nnm/geom3/segment3.hpp>
 
 namespace nnm {
@@ -116,7 +117,16 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const;
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        if (half_span_u.approx_zero()) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v };
+        }
+        if (half_span_v.approx_zero()) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u };
+        }
+        return std::nullopt;
+    }
 
     /**
      * If both half-spans are zero, returns the point that represents the degenerate rectangle.
@@ -168,7 +178,20 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const;
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Rectangle3<Real>", index < 4);
+        switch (index) {
+        case 1:
+            return { vertex(1), vertex(3) };
+        case 2:
+            return { vertex(3), vertex(2) };
+        case 3:
+            return { vertex(2), vertex(0) };
+        default:
+            return { vertex(0), vertex(1) };
+        }
+    }
 
     /**
      * Size of the first dimension which is defined by the direction of half_span_u.
@@ -216,7 +239,15 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const;
+    [[nodiscard]] constexpr bool coplanar(const Line3<Real>& line) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (!normal.perpendicular(line.direction)) {
+            return false;
+        }
+        const Vector3<Real> dir = center.direction_unnormalized(line.origin);
+        return normal.perpendicular(dir);
+    }
 
     /**
      * Determine if coplanar with a ray.
@@ -224,10 +255,21 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const;
+    [[nodiscard]] constexpr bool coplanar(const Ray3<Real>& ray) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        if (!normal.perpendicular(ray.direction)) {
+            return false;
+        }
+        const Vector3<Real> dir = center.direction_unnormalized(ray.origin);
+        return normal.perpendicular(dir);
+    }
 
     // TODO: test
-    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const;
+    [[nodiscard]] constexpr bool coplanar(const Plane<Real>& plane) const
+    {
+        return half_span_u.perpendicular(plane.normal) && half_span_v.perpendicular(plane.normal);
+    }
 
     /**
      * Determine if contains a point.
@@ -235,7 +277,28 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr bool contains(const Point3<Real>& point) const;
+    [[nodiscard]] constexpr bool contains(const Point3<Real>& point) const
+    {
+        const Vector3<Real> normal = half_span_u.cross(half_span_v);
+        const Vector3<Real> diff = point - center;
+        if (!approx_zero(diff.dot(normal))) {
+            return false;
+        }
+        const Real u_dot = half_span_u.dot(half_span_u);
+        const Real v_dot = half_span_v.dot(half_span_v);
+        if (approx_zero(u_dot) && approx_zero(v_dot)) {
+            return point.approx_equal(center);
+        }
+        if (approx_zero(u_dot)) {
+            return Segment3<Real> { center - half_span_v, center + half_span_v }.contains(point);
+        }
+        if (approx_zero(v_dot)) {
+            return Segment3<Real> { center - half_span_u, center + half_span_u }.contains(point);
+        }
+        const Vector2<Real> local { diff.dot(half_span_u) / u_dot, diff.dot(half_span_v) / v_dot };
+        return approx_greater_equal(local.x, static_cast<Real>(-1)) && approx_less_equal(local.x, static_cast<Real>(1))
+            && approx_greater_equal(local.y, static_cast<Real>(-1)) && approx_less_equal(local.y, static_cast<Real>(1));
+    }
 
     /**
      * Closest distance squared to a point.
@@ -705,6 +768,12 @@ public:
         return half_span_v < other.half_span_v;
     }
 };
+
+template <typename Real>
+Plane<Real> Plane<Real>::from_rectangle(const Rectangle3<Real>& rectangle)
+{
+    return { rectangle.center, rectangle.half_span_u.cross(rectangle.half_span_v).normalize() };
+}
 
 } // namespace nnm
 

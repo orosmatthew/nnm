@@ -11,8 +11,11 @@
 #include <nnm/nnm.hpp>
 #include <algorithm>
 #include <array>
+#include <nnm/geom3/plane.hpp>
 #include <nnm/geom3/rectangle3.hpp>
 #include <nnm/geom3/segment3.hpp>
+#include <nnm/geom3/sphere.hpp>
+#include <nnm/geom3/triangle3.hpp>
 
 namespace nnm {
 
@@ -73,7 +76,10 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedBox from_bounding_segment(const Segment3<Real>& segment);
+    static constexpr AlignedBox from_bounding_segment(const Segment3<Real>& segment)
+    {
+        return from_bounding_points(segment.start, segment.end);
+    }
 
     /**
      * The smallest bounding box containing a triangle.
@@ -81,7 +87,13 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedBox from_bounding_triangle(const Triangle3<Real>& triangle);
+    static constexpr AlignedBox from_bounding_triangle(const Triangle3<Real>& triangle)
+    {
+        AlignedBox box { triangle.vertices[0], triangle.vertices[0] };
+        box = box.extend_bounding(triangle.vertices[1]);
+        box = box.extend_bounding(triangle.vertices[2]);
+        return box;
+    }
 
     /**
      * The smallest bounding box containing a rectangle.
@@ -89,7 +101,17 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedBox from_bounding_rectangle(const Rectangle3<Real>& rectangle);
+    static constexpr AlignedBox from_bounding_rectangle(const Rectangle3<Real>& rectangle)
+    {
+        std::array<Point3<Real>, 4> vertices {
+            rectangle.vertex(0), rectangle.vertex(1), rectangle.vertex(2), rectangle.vertex(3)
+        };
+        AlignedBox box { vertices[0], vertices[0] };
+        box = box.extend_bounding(vertices[1]);
+        box = box.extend_bounding(vertices[2]);
+        box = box.extend_bounding(vertices[3]);
+        return box;
+    }
 
     /**
      * The smallest bounding box containing a sphere.
@@ -97,7 +119,12 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere);
+    static constexpr AlignedBox from_bounding_sphere(const Sphere<Real>& sphere)
+    {
+        const Point3<Real> min = sphere.center - Vector3<Real>::all(sphere.radius);
+        const Point3<Real> max = sphere.center + Vector3<Real>::all(sphere.radius);
+        return { min, max };
+    }
 
     /**
      * If min and max are parallel with the xy, xz, or yz planes,
@@ -105,7 +132,20 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const;
+    [[nodiscard]] constexpr std::optional<Rectangle3<Real>> collapse_rectangle() const
+    {
+        const Segment3<Real> s { min, max };
+        if (Plane<Real>::xy().parallel(s)) {
+            return Rectangle3<Real>::from_xy_offset_size(s.midpoint(), max.x - min.x, max.y - min.y);
+        }
+        if (Plane<Real>::xz().parallel(s)) {
+            return Rectangle3<Real>::from_xz_offset_size(s.midpoint(), max.x - min.x, max.z - min.z);
+        }
+        if (Plane<Real>::yz().parallel(s)) {
+            return Rectangle3<Real>::from_yz_offset_size(s.midpoint(), max.y - min.y, max.z - min.z);
+        }
+        return std::nullopt;
+    }
 
     /**
      * If min and max are parallel with the x, y, or z axes,
@@ -113,7 +153,17 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const;
+    [[nodiscard]] constexpr std::optional<Segment3<Real>> collapse_segment() const
+    {
+        const Vector3<Real> diff = max - min;
+        const bool x_zero = approx_zero(diff.x);
+        const bool y_zero = approx_zero(diff.y);
+        const bool z_zero = approx_zero(diff.z);
+        if ((x_zero && y_zero) || (x_zero && z_zero) || (y_zero && z_zero)) {
+            return Segment3<Real> { min, max };
+        }
+        return std::nullopt;
+    }
 
     /**
      * If min and and max are equal, then return the point that represents the degenerate aligned box.
@@ -162,7 +212,36 @@ public:
      * @param index Index from 0-11.
      * @return Result.
      */
-    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const;
+    [[nodiscard]] constexpr Segment3<Real> edge(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("AlignedBox<Real>", index < 12);
+        switch (index) {
+        case 0: // -x -y
+            return { vertex(0), vertex(1) };
+        case 1: // -x +y
+            return { vertex(2), vertex(3) };
+        case 2: // +x -y
+            return { vertex(4), vertex(5) };
+        case 3: // +x +y
+            return { vertex(6), vertex(7) };
+        case 4: // -x -z
+            return { vertex(0), vertex(2) };
+        case 5: // -x +z
+            return { vertex(1), vertex(3) };
+        case 6: // +x -z
+            return { vertex(4), vertex(6) };
+        case 7: // +x +z
+            return { vertex(5), vertex(7) };
+        case 8: // -y -z
+            return { vertex(0), vertex(4) };
+        case 9: // -y +z
+            return { vertex(1), vertex(5) };
+        case 10: // +y -z
+            return { vertex(2), vertex(6) };
+        default: // +y +z
+            return { vertex(3), vertex(7) };
+        }
+    }
 
     /**
      * Face at an index.
@@ -170,7 +249,37 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const;
+    [[nodiscard]] constexpr Rectangle3<Real> face(const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("AlignedBox<Real>", index < 6);
+        const Vector3<Real> half_size = size() / static_cast<Real>(2);
+        switch (index) {
+        case 0: // -x
+            return { Segment3<Real> { vertex(0), vertex(3) }.midpoint(),
+                     Vector3<Real>::axis_y() * half_size.y,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 1: // +x
+            return { Segment3<Real> { vertex(4), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_y() * half_size.y,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 2: // -y
+            return { Segment3<Real> { vertex(0), vertex(5) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 3: // +y
+            return { Segment3<Real> { vertex(2), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_z() * half_size.z };
+        case 4: // -z
+            return { Segment3<Real> { vertex(0), vertex(6) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_y() * half_size.y };
+        default: // +z
+            return { Segment3<Real> { vertex(1), vertex(7) }.midpoint(),
+                     Vector3<Real>::axis_x() * half_size.x,
+                     Vector3<Real>::axis_y() * half_size.y };
+        }
+    }
 
     /**
      * Size.

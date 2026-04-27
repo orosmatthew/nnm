@@ -10,6 +10,7 @@
 #include <nnm/geom2/forward.hpp>
 #include <nnm/nnm.hpp>
 #include <array>
+#include <nnm/geom2/segment2.hpp>
 
 namespace nnm {
 
@@ -120,28 +121,40 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Segment2<Real> edge_nx() const;
+    [[nodiscard]] Segment2<Real> edge_nx() const
+    {
+        return { vertex_nx_ny(), vertex_nx_py() };
+    }
 
     /**
      * Edge in the negative y direction before rotation.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Segment2<Real> edge_ny() const;
+    [[nodiscard]] Segment2<Real> edge_ny() const
+    {
+        return { vertex_nx_ny(), vertex_px_ny() };
+    }
 
     /**
      * Edge in the positive x direction before rotation.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Segment2<Real> edge_px() const;
+    [[nodiscard]] Segment2<Real> edge_px() const
+    {
+        return { vertex_px_ny(), vertex_px_py() };
+    }
 
     /**
      * Edge in the positive y direction before rotation.
      * @return Result.
      */
     // tested
-    [[nodiscard]] Segment2<Real> edge_py() const;
+    [[nodiscard]] Segment2<Real> edge_py() const
+    {
+        return { vertex_nx_py(), vertex_px_py() };
+    }
 
     /**
      * Normal of the edge in the negative x direction before rotation.
@@ -226,7 +239,18 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Real signed_distance(const Point2<Real>& point) const;
+    [[nodiscard]] Real signed_distance(const Point2<Real>& point) const
+    {
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return contains(point) ? -min_dist : min_dist;
+    }
 
     /**
      * Closest distance to point. Zero if point is inside the rectangle.

@@ -227,7 +227,10 @@ public:
      * @param offset Offset.
      * @return Resulting translated point.
      */
-    [[nodiscard]] constexpr Point3 translate(const Vector3<Real>& offset) const;
+    [[nodiscard]] constexpr Point3 translate(const Vector3<Real>& offset) const
+    {
+        return { x + offset.x, y + offset.y, z + offset.z };
+    }
 
     /**
      * Rotate via normalized axis and angle in radians about the origin.
@@ -590,12 +593,6 @@ public:
         return x != static_cast<Real>(0) || y != static_cast<Real>(0) || z != static_cast<Real>(0);
     }
 };
-
-template <typename Real>
-constexpr Point3<Real> Point3<Real>::translate(const Vector3<Real>& offset) const
-{
-    return transform(Transform3<Real>::from_translation(offset));
-}
 
 template <typename Real>
 Point3<Real> Point3<Real>::rotate_axis_angle(const Vector3<Real>& axis, const Real angle) const

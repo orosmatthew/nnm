@@ -10,6 +10,10 @@
 #include <nnm/geom2/forward.hpp>
 #include <nnm/nnm.hpp>
 #include <array>
+#include <nnm/geom2/circle2.hpp>
+#include <nnm/geom2/rectangle2.hpp>
+#include <nnm/geom2/segment2.hpp>
+#include <nnm/geom2/triangle2.hpp>
 
 namespace nnm {
 
@@ -82,7 +86,10 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment);
+    static constexpr AlignedRectangle2 from_bounding_segment(const Segment2<Real>& segment)
+    {
+        return from_bounding_points(segment.start, segment.end);
+    }
 
     /**
      * Smallest aligned rectangle that contains a circle.
@@ -90,7 +97,12 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle);
+    static constexpr AlignedRectangle2 from_bounding_circle(const Circle2<Real>& circle)
+    {
+        const Point2<Real> min = circle.center - Vector2<Real>::all(circle.radius);
+        const Point2<Real> max = circle.center + Vector2<Real>::all(circle.radius);
+        return { min, max };
+    }
 
     /**
      * Smallest aligned rectangle that contains a triangle.
@@ -98,7 +110,18 @@ public:
      * @return Result.
      */
     // tested
-    static constexpr AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle);
+    static constexpr AlignedRectangle2 from_bounding_triangle(const Triangle2<Real>& triangle)
+    {
+        Point2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
+        Point2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
+        for (const Point2<Real>& v : triangle.vertices) {
+            min.x = nnm::min(min.x, v.x);
+            min.y = nnm::min(min.y, v.y);
+            max.x = nnm::max(max.x, v.x);
+            max.y = nnm::max(max.y, v.y);
+        }
+        return { min, max };
+    }
 
     /**
      * Smallest aligned rectangle that contains a non-aligned rectangle.
@@ -106,7 +129,21 @@ public:
      * @return Result.
      */
     // tested
-    static AlignedRectangle2 from_bounding_rectangle(const Rectangle2<Real>& rectangle);
+    static AlignedRectangle2 from_bounding_rectangle(const Rectangle2<Real>& rectangle)
+    {
+        Point2<Real> min { std::numeric_limits<Real>::max(), std::numeric_limits<Real>::max() };
+        Point2<Real> max { std::numeric_limits<Real>::lowest(), std::numeric_limits<Real>::lowest() };
+        const std::array<Point2<Real>, 4> vertices {
+            rectangle.vertex_nx_ny(), rectangle.vertex_nx_py(), rectangle.vertex_px_ny(), rectangle.vertex_px_py()
+        };
+        for (const Point2<Real>& v : vertices) {
+            min.x = nnm::min(min.x, v.x);
+            min.y = nnm::min(min.y, v.y);
+            max.x = nnm::max(max.x, v.x);
+            max.y = nnm::max(max.y, v.y);
+        }
+        return { min, max };
+    }
 
     /**
      * Vertex in the negative x and negative y corner.
@@ -153,28 +190,40 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> edge_nx() const;
+    [[nodiscard]] constexpr Segment2<Real> edge_nx() const
+    {
+        return { vertex_nx_ny(), vertex_nx_py() };
+    }
 
     /**
      * Edge in the negative y direction.
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> edge_ny() const;
+    [[nodiscard]] constexpr Segment2<Real> edge_ny() const
+    {
+        return { vertex_nx_ny(), vertex_px_ny() };
+    }
 
     /**
      * Edge in the positive x direction.
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> edge_px() const;
+    [[nodiscard]] constexpr Segment2<Real> edge_px() const
+    {
+        return { vertex_px_ny(), vertex_px_py() };
+    }
 
     /**
      * Edge in the positive y direction.
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> edge_py() const;
+    [[nodiscard]] constexpr Segment2<Real> edge_py() const
+    {
+        return { vertex_nx_py(), vertex_px_py() };
+    }
 
     /**
      * Normal of the edge in the negative x direction.
@@ -266,7 +315,18 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Real signed_distance(const Point2<Real>& point) const;
+    [[nodiscard]] Real signed_distance(const Point2<Real>& point) const
+    {
+        const std::array<Segment2<Real>, 4> edges { edge_nx(), edge_ny(), edge_px(), edge_py() };
+        Real min_dist = std::numeric_limits<Real>::max();
+        for (const Segment2<Real>& edge : edges) {
+            const Real dist = edge.distance(point);
+            if (dist < min_dist) {
+                min_dist = dist;
+            }
+        }
+        return contains(point) ? -min_dist : min_dist;
+    }
 
     /**
      * Closest distance to the rectangle. Zero if point is inside the rectangle.

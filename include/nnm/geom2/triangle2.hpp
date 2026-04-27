@@ -10,6 +10,8 @@
 #include <nnm/geom2/forward.hpp>
 #include <nnm/nnm.hpp>
 #include <array>
+#include <nnm/geom2/line2.hpp>
+#include <nnm/geom2/segment2.hpp>
 #include <nnm/geom2/circle2.hpp>
 
 namespace nnm {
@@ -64,7 +66,12 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> edge(const int index) const;
+    [[nodiscard]] constexpr Segment2<Real> edge(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2<Real>", index >= 0 && index <= 2);
+        const int next_index = (index + 1) % 3;
+        return { vertices[index], vertices[next_index] };
+    }
 
     /**
      * Centroid which is the average between all vertices.
@@ -82,7 +89,14 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] std::optional<Point2<Real>> circumcenter() const;
+    [[nodiscard]] std::optional<Point2<Real>> circumcenter() const
+    {
+        const Segment2<Real> e0 = edge(0);
+        const Segment2<Real> e1 = edge(1);
+        const Line2<Real> l0 { e0.midpoint(), e0.direction().arbitrary_perpendicular() };
+        const Line2<Real> l1 { e1.midpoint(), e1.direction().arbitrary_perpendicular() };
+        return l0.intersection(l1);
+    }
 
     /**
      * Perimeter which is the combined length of all edges.
@@ -109,7 +123,18 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] std::optional<Point2<Real>> orthocenter() const;
+    [[nodiscard]] std::optional<Point2<Real>> orthocenter() const
+    {
+        const std::optional<Segment2<Real>> a0 = altitude(0);
+        if (!a0.has_value()) {
+            return std::nullopt;
+        }
+        const std::optional<Segment2<Real>> a1 = altitude(1);
+        if (!a1.has_value()) {
+            return std::nullopt;
+        }
+        return Line2<Real>::from_segment(*a0).intersection(Line2<Real>::from_segment(*a1));
+    }
 
     /**
      * Area.
@@ -131,7 +156,12 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] constexpr Segment2<Real> median(const int index) const;
+    [[nodiscard]] constexpr Segment2<Real> median(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2<Real>", index >= 0 && index <= 2);
+        const int next_index = (index + 1) % 3;
+        return { vertices[index], edge(next_index).midpoint() };
+    }
 
     /**
      * Perpendicular bisector of an edge.
@@ -140,7 +170,11 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const;
+    [[nodiscard]] Line2<Real> perpendicular_bisector(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2<Real>", index >= 0 && index <= 2);
+        return { edge(index).midpoint(), edge(index).direction().arbitrary_perpendicular() };
+    }
 
     /**
      * Interior angle at a vertex index.
@@ -169,7 +203,16 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] Line2<Real> angle_bisector(const int index) const;
+    [[nodiscard]] Line2<Real> angle_bisector(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2<Real>", index >= 0 && index <= 2);
+        const int next_index = (index + 1) % 3;
+        const int prev_index = (index + 2) % 3;
+        const Vector2<Real> dir1 = (vertices[prev_index] - vertices[index]).normalize();
+        const Vector2<Real> dir2 = (vertices[next_index] - vertices[index]).normalize();
+        const Vector2<Real> bisector_dir = (dir1 + dir2).normalize();
+        return { vertices[index], bisector_dir };
+    }
 
     /**
      * Normal of an edge which is the vector perpendicular to the edge and points outward from the triangle.
@@ -194,7 +237,19 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] std::optional<Segment2<Real>> altitude(const int index) const;
+    [[nodiscard]] std::optional<Segment2<Real>> altitude(const int index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Triangle2<Real>", index >= 0 && index <= 2);
+        const Point2<Real>& vertex = vertices[index];
+        const Segment2<Real> base = edge((index + 1) % 3);
+        const Vector2<Real> perp_dir = (base.end - base.start).arbitrary_perpendicular().normalize();
+        const Line2<Real> altitude_line { vertex, perp_dir };
+        const std::optional<Point2<Real>> intersection = altitude_line.intersection(Line2<Real>::from_segment(base));
+        if (!intersection.has_value()) {
+            return std::nullopt;
+        }
+        return Segment2<Real> { vertex, *intersection };
+    }
 
     /**
      * A point that is the result of linearly interpolating between all vertices with given weights.
@@ -262,14 +317,24 @@ public:
      * @return Result.
      */
     // tested
-    [[nodiscard]] std::optional<Circle2<Real>> circumcircle() const;
+    [[nodiscard]] std::optional<Circle2<Real>> circumcircle() const
+    {
+        return Circle2<Real>::from_points(vertices[0], vertices[1], vertices[2]);
+    }
 
     /**
      * Incircle which is a circle inside the triangle and tangent to all edges.
      * @return Result.
      */
     // tested
-    [[nodiscard]] std::optional<Circle2<Real>> incircle() const;
+    [[nodiscard]] std::optional<Circle2<Real>> incircle() const
+    {
+        const std::optional<Point2<Real>> center = incenter();
+        if (!center.has_value()) {
+            return std::nullopt;
+        }
+        return Circle2<Real> { *center, edge(0).distance(*center) };
+    }
 
     /**
      * Determine if vertices are collinear.
