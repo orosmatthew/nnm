@@ -2,7 +2,7 @@
 #ifndef NNM_POINT_SET_HPP
 #define NNM_POINT_SET_HPP
 
-#include <nnm/nnm.hpp>
+#include <nnm/core.hpp>
 
 #include <cstdint>
 #include <initializer_list>

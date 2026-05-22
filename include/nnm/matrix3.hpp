@@ -33,7 +33,7 @@ public:
     }
 
     /**
-     * Case from other matrix type.
+     * Cast from other matrix type.
      * @tparam Other Other matrix type.
      * @param matrix Matrix to cast from
      */
@@ -430,7 +430,7 @@ public:
      * @param other Other matrix.
      * @return True if not equal, false otherwise.
      */
-    constexpr bool operator!=(const Matrix3& other) const
+    [[nodiscard]] constexpr bool operator!=(const Matrix3& other) const
     {
         for (uint8_t i = 0; i < 3; ++i) {
             if (at(i) != other.at(i)) {
@@ -606,7 +606,7 @@ public:
     /**
      * Evaluates to false if all components are zero, true otherwise.
      */
-    constexpr explicit operator bool() const
+    [[nodiscard]] constexpr explicit operator bool() const
     {
         for (uint8_t c = 0; c < 3; ++c) { // NOLINT(*-loop-convert)
             if (!static_cast<bool>(at(c))) {

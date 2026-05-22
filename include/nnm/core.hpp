@@ -12,7 +12,6 @@
 #include <functional>
 #include <limits>
 #include <optional>
-#include <stdexcept>
 
 // ReSharper disable CppDFATimeOver
 
@@ -211,13 +210,13 @@ constexpr bool approx_less_equal(const Real first, const Real second)
  * Determine if the first value is approximately greater-than or equal to the second value.
  * @tparam Real Floating-point type.
  * @param first First value.
- * @param b Second value.
+ * @param second Second value.
  * @return Result.
  */
 template <typename Real>
-constexpr bool approx_greater_equal(const Real first, const Real b)
+constexpr bool approx_greater_equal(const Real first, const Real second)
 {
-    return first >= b || approx_equal(first, b);
+    return first >= second || approx_equal(first, second);
 }
 
 /**

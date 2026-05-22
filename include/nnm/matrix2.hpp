@@ -350,7 +350,7 @@ public:
      * @param other Other matrix.
      * @return True if equal, false otherwise.
      */
-    constexpr bool operator==(const Matrix2& other) const
+    [[nodiscard]] constexpr bool operator==(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
@@ -365,7 +365,7 @@ public:
      * @param other Other matrix.
      * @return True if unequal, false otherwise.
      */
-    constexpr bool operator!=(const Matrix2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 2; ++i) {
             if (at(i) != other.at(i)) {
@@ -521,7 +521,7 @@ public:
      * @param other Other matrix.
      * @return True if less than, false otherwise.
      */
-    constexpr bool operator<(const Matrix2& other) const
+    [[nodiscard]] constexpr bool operator<(const Matrix2& other) const
     {
         for (uint8_t i = 0; i < 4; ++i) {
             if (at(i) < other.at(i)) {
@@ -537,7 +537,7 @@ public:
     /**
      * Evaluates to false if all elements are zero, true otherwise.
      */
-    constexpr explicit operator bool() const
+    [[nodiscard]] constexpr explicit operator bool() const
     {
         for (uint8_t c = 0; c < 2; ++c) {
             for (uint8_t r = 0; r < 2; ++r) {

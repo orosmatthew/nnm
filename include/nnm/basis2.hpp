@@ -326,7 +326,7 @@ public:
      * @param other Other basis.
      * @return True if equal, false otherwise.
      */
-    constexpr bool operator==(const Basis2& other) const
+    [[nodiscard]] constexpr bool operator==(const Basis2& other) const
     {
         return matrix == other.matrix;
     }
@@ -336,7 +336,7 @@ public:
      * @param other Other basis.
      * @return True if not equal, false otherwise.
      */
-    constexpr bool operator!=(const Basis2& other) const
+    [[nodiscard]] constexpr bool operator!=(const Basis2& other) const
     {
         return matrix != other.matrix;
     }
@@ -346,7 +346,7 @@ public:
      * @param other Other basis.
      * @return True if less than, false otherwise.
      */
-    constexpr bool operator<(const Basis2& other) const
+    [[nodiscard]] constexpr bool operator<(const Basis2& other) const
     {
         return matrix < other.matrix;
     }

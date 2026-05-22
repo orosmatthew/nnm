@@ -213,8 +213,8 @@ public:
      */
     [[nodiscard]] Quaternion slerp(const Quaternion& to, const Real weight) const
     {
-        const Vector4 vector = Vector4<Real>::from_quaternion(*this);
-        const Vector4 vector_to = Vector4<Real>::from_quaternion(to);
+        const Vector4<Real> vector = Vector4<Real>::from_quaternion(*this);
+        const Vector4<Real> vector_to = Vector4<Real>::from_quaternion(to);
         const Real dot = clamp(vector.dot(vector_to), static_cast<Real>(-1), static_cast<Real>(1));
         const Real angle = acos(dot);
         const Real sin_angle = sin(angle);
