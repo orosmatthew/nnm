@@ -165,6 +165,16 @@ void matrix2_tests()
         TEST_ASSERT(mat.at(1, 1) == 4.0f);
     }
 
+    test_section("operator[]");
+    {
+        constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
+        constexpr auto result = mat[0][0];
+        TEST_ASSERT(result == 1.0f);
+        TEST_ASSERT(mat[0][1] == -2.0f);
+        TEST_ASSERT(mat[1][0] == -3.0f);
+        TEST_ASSERT(mat[1][1] == 4.0f);
+    }
+
     test_section("begin");
     {
         constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
@@ -175,16 +185,6 @@ void matrix2_tests()
     {
         constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
         TEST_ASSERT(mat.end() == &mat.columns[1].y + 1);
-    }
-
-    test_section("operator[]");
-    {
-        constexpr nnm::Matrix2f mat({ 1.0f, -2.0f }, { -3.0f, 4.0f });
-        constexpr auto result = mat[0][0];
-        TEST_ASSERT(result == 1.0f);
-        TEST_ASSERT(mat[0][1] == -2.0f);
-        TEST_ASSERT(mat[1][0] == -3.0f);
-        TEST_ASSERT(mat[1][1] == 4.0f);
     }
 
     constexpr nnm::Matrix2f m1({ 1.0f, -2.0f }, { -3.0f, 4.0f });

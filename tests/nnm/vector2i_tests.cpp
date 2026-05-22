@@ -464,6 +464,15 @@ void vector2i_tests()
         TEST_ASSERT(result == nnm::Vector2i(1, 0));
     }
 
+    test_section("operator<");
+    {
+        constexpr nnm::Vector2i v7(1, 2);
+        constexpr nnm::Vector2i v8(3, 4);
+        constexpr auto result = v7 < v8;
+        TEST_ASSERT(result);
+        TEST_ASSERT_FALSE(v8 < v7);
+    }
+
     test_section("operator+");
     {
         constexpr auto result = +v4;
@@ -474,15 +483,6 @@ void vector2i_tests()
     {
         constexpr auto result = -v4;
         TEST_ASSERT(result == nnm::Vector2i(-1, -2));
-    }
-
-    test_section("operator<");
-    {
-        constexpr nnm::Vector2i v7(1, 2);
-        constexpr nnm::Vector2i v8(3, 4);
-        constexpr auto result = v7 < v8;
-        TEST_ASSERT(result);
-        TEST_ASSERT_FALSE(v8 < v7);
     }
 
     test_section("operator bool");

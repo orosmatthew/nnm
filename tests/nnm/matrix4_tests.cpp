@@ -218,6 +218,14 @@ void matrix4_tests()
         ;TEST_ASSERT(m1.at(2) == nnm::Vector4(3.0f, 2.0f, -1.0f, -4.0f))
     ;}
 
+    test_section("operator[]");
+    {
+        constexpr auto result = m1[0][0];
+        TEST_ASSERT(result == 1.0f);
+        TEST_ASSERT(m1[1][2] == -2.0f);
+        TEST_ASSERT(m1[3][3] == 0.0f);
+    }
+
     test_section("begin");
     {
         TEST_ASSERT(m1.begin() == &m1.columns[0].x);
@@ -226,14 +234,6 @@ void matrix4_tests()
     test_section("end");
     {
         TEST_ASSERT(m1.end() == &m1.columns[3].w + 1);
-    }
-
-    test_section("operator[]");
-    {
-        constexpr auto result = m1[0][0];
-        TEST_ASSERT(result == 1.0f);
-        TEST_ASSERT(m1[1][2] == -2.0f);
-        TEST_ASSERT(m1[3][3] == 0.0f);
     }
 
     constexpr nnm::Matrix4f m2 { { 1.5f, 3.0f, -3.0f, 4.0f },

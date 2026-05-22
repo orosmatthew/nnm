@@ -188,6 +188,13 @@ void matrix3_tests()
         TEST_ASSERT(m1.at(1, 2) == -1.0f);
     }
 
+    test_section("operator[]");
+    {
+        constexpr auto result = m1[0];
+        TEST_ASSERT(result == nnm::Vector3(1.0f, 2.0f, 3.0f));
+        TEST_ASSERT(m1[1] == nnm::Vector3(-3.0f, -2.0f, -1.0f));
+    }
+
     test_section("begin");
     {
         TEST_ASSERT(m1.begin() == &m1.columns[0].x);
@@ -196,13 +203,6 @@ void matrix3_tests()
     test_section("end");
     {
         TEST_ASSERT(m1.end() == &m1.columns[2].z + 1);
-    }
-
-    test_section("operator[]");
-    {
-        constexpr auto result = m1[0];
-        TEST_ASSERT(result == nnm::Vector3(1.0f, 2.0f, 3.0f));
-        TEST_ASSERT(m1[1] == nnm::Vector3(-3.0f, -2.0f, -1.0f));
     }
 
     test_section("operator==");

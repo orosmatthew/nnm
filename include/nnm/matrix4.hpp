@@ -389,6 +389,28 @@ public:
     }
 
     /**
+     * Constant reference to column at index.
+     * @param index Index of column.
+     * @return Constant reference to column.
+     */
+    constexpr const Vector4<Real>& operator[](const uint8_t index) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
+        return columns[index];
+    }
+
+    /**
+     * Reference to column at index.
+     * @param index
+     * @return
+     */
+    constexpr Vector4<Real>& operator[](const uint8_t index)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
+        return columns[index];
+    }
+
+    /**
      * Start of constant iterator.
      * @return Constant iterator.
      */
@@ -422,28 +444,6 @@ public:
     Real* end()
     {
         return columns[3].end();
-    }
-
-    /**
-     * Constant reference to column at index.
-     * @param index Index of column.
-     * @return Constant reference to column.
-     */
-    constexpr const Vector4<Real>& operator[](const uint8_t index) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
-        return columns[index];
-    }
-
-    /**
-     * Reference to column at index.
-     * @param index
-     * @return
-     */
-    constexpr Vector4<Real>& operator[](const uint8_t index)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix4", index <= 3);
-        return columns[index];
     }
 
     /**

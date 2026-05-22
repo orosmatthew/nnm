@@ -578,6 +578,22 @@ public:
     }
 
     /**
+     * Lexicographical comparison between components.
+     * @param other Other vector.
+     * @return True if less than, false otherwise.
+     */
+    [[nodiscard]] constexpr bool operator<(const Vector2i& other) const
+    {
+        if (x < other.x) {
+            return true;
+        }
+        if (x > other.x) {
+            return false;
+        }
+        return y < other.y;
+    }
+
+    /**
      * Unary plus. Does nothing but specified for symmetry with unary minus.
      * @return Result.
      */
@@ -593,22 +609,6 @@ public:
     [[nodiscard]] constexpr Vector2i operator-() const
     {
         return { -x, -y };
-    }
-
-    /**
-     * Lexicographical comparison between components.
-     * @param other Other vector.
-     * @return True if less than, false otherwise.
-     */
-    [[nodiscard]] constexpr bool operator<(const Vector2i& other) const
-    {
-        if (x < other.x) {
-            return true;
-        }
-        if (x > other.x) {
-            return false;
-        }
-        return y < other.y;
     }
 
     /**

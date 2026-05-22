@@ -353,6 +353,28 @@ public:
     }
 
     /**
+     * Constant reference to column at index.
+     * @param column Column.
+     * @return Constant reference.
+     */
+    constexpr const Vector3<Real>& operator[](const uint8_t column) const
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
+        return columns[column];
+    }
+
+    /**
+     * Reference to column at index.
+     * @param column Column.
+     * @return Reference.
+     */
+    constexpr Vector3<Real>& operator[](const uint8_t column)
+    {
+        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
+        return columns[column];
+    }
+
+    /**
      * Start constant iterator.
      * @return Constant iterator.
      */
@@ -386,28 +408,6 @@ public:
     Real* end()
     {
         return columns[2].end();
-    }
-
-    /**
-     * Constant reference to column at index.
-     * @param column Column.
-     * @return Constant reference.
-     */
-    constexpr const Vector3<Real>& operator[](const uint8_t column) const
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
-        return columns[column];
-    }
-
-    /**
-     * Reference to column at index.
-     * @param column Column.
-     * @return Reference.
-     */
-    constexpr Vector3<Real>& operator[](const uint8_t column)
-    {
-        NNM_BOUNDS_CHECK_ASSERT("Matrix3", column <= 2);
-        return columns[column];
     }
 
     /**

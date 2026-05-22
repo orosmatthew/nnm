@@ -64,12 +64,6 @@ void quaternion_tests()
         TEST_ASSERT(rotated_from.approx_equal(to));
     }
 
-    test_section("normalize");
-    {
-        constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
-        TEST_ASSERT(q.normalize().approx_equal({ 0.182574f, -0.365148f, 0.547723f, -0.730297f }));
-    }
-
     test_section("axis_to");
     {
         const auto q1 = nnm::QuaternionF::from_axis_angle(nnm::Vector3f::axis_x(), 0.0f);
@@ -124,6 +118,12 @@ void quaternion_tests()
     {
         constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
         TEST_ASSERT(nnm::approx_equal(q.length(), 5.47723f));
+    }
+
+    test_section("normalize");
+    {
+        constexpr nnm::Quaternion q(1.0f, -2.0f, 3.0f, -4.0f);
+        TEST_ASSERT(q.normalize().approx_equal({ 0.182574f, -0.365148f, 0.547723f, -0.730297f }));
     }
 
     constexpr auto q1 = nnm::Quaternion(0.151572555f, -0.0757862777f, 0.0378931388f, 0.984807729f);

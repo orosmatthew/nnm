@@ -121,15 +121,6 @@ public:
     }
 
     /**
-     * Normalize quaternion.
-     * @return Result.
-     */
-    [[nodiscard]] Quaternion normalize() const
-    {
-        return Quaternion(Vector4<Real>::from_quaternion(*this).normalize());
-    }
-
-    /**
      * The normalized axis of rotation between this quaternion and another quaternion.
      * @param to Quaternion to.
      * @return Resulting normalized, three-dimensional axis.
@@ -203,6 +194,15 @@ public:
     [[nodiscard]] Real length() const
     {
         return sqrt(length_sqrd());
+    }
+
+    /**
+     * Normalize quaternion.
+     * @return Result.
+     */
+    [[nodiscard]] Quaternion normalize() const
+    {
+        return Quaternion(Vector4<Real>::from_quaternion(*this).normalize());
     }
 
     /**
